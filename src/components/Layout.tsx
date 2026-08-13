@@ -1,6 +1,5 @@
-import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
-import { useAuth } from '../hooks/useAuth';
 import logoUrl from '../assets/logo.png';
 
 const NavItems = [
@@ -21,20 +20,7 @@ const MoreItems = [
 
 export default function Layout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut, loading: authLoading } = useAuth();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
-
-  const userInitial = user?.user_metadata?.display_name?.[0]?.toUpperCase()
-    || user?.email?.[0]?.toUpperCase()
-    || '?';
-
-  const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen overflow-hidden"
@@ -112,46 +98,6 @@ export default function Layout() {
               <span className="text-lg">{theme === 'light' ? '🌙' : '☀️'}</span>
               <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
             </button>
-
-            {/* User Account */}
-            {!authLoading && (
-              user ? (
-                <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
-                     style={{ backgroundColor: 'var(--color-bg-card)' }}>
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                       style={{ 
-                         background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-teal-light))',
-                         color: 'var(--color-text-on-accent)' 
-                       }}>
-                    {userInitial}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate" style={{ color: 'var(--color-text-primary)' }}>
-                      {userName}
-                    </p>
-                    <button 
-                      onClick={handleSignOut}
-                      className="text-[10px] hover:underline transition-colors"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <NavLink
-                  to="/signin"
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-full transition-colors text-sm font-medium"
-                  style={{ 
-                    backgroundColor: 'color-mix(in srgb, var(--color-accent-teal) 12%, transparent)',
-                    color: 'var(--color-accent-teal)',
-                  }}
-                >
-                  <span>👤</span>
-                  <span>Sign In</span>
-                </NavLink>
-              )
-            )}
           </div>
         </nav>
       </aside>
@@ -173,29 +119,6 @@ export default function Layout() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            {!authLoading && !user && (
-              <NavLink
-                to="/signin"
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-sm"
-                style={{ 
-                  backgroundColor: 'color-mix(in srgb, var(--color-accent-teal) 15%, transparent)',
-                  color: 'var(--color-accent-teal)' 
-                }}
-              >
-                👤
-              </NavLink>
-            )}
-            {!authLoading && user && (
-              <div 
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
-                style={{ 
-                  background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-teal-light))',
-                  color: 'var(--color-text-on-accent)' 
-                }}
-              >
-                {userInitial}
-              </div>
-            )}
             <button
               onClick={toggleTheme}
               className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"

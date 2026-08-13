@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { AuthGuard } from './components/AuthGuard';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -20,7 +19,7 @@ const Display = React.lazy(() => import('./pages/Display'));
 const Control = React.lazy(() => import('./pages/Control'));
 const Constitution = React.lazy(() => import('./pages/Constitution'));
 const Notes = React.lazy(() => import('./pages/Notes'));
-const SignIn = React.lazy(() => import('./pages/SignIn'));
+
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -41,7 +40,6 @@ function App() {
         <Routes>
           {/* Standalone pages - no layout */}
           <Route path="/display" element={<Display />} />
-          <Route path="/signin" element={<SignIn />} />
           
           {/* Main layout pages */}
           <Route element={<Layout />}>
