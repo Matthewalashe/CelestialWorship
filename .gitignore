@@ -7,8 +7,7 @@ node_modules/
 dist/
 dist-ssr/
 
-# Environment
-.env
+# Environment (keep secrets in .env.local)
 .env.local
 .env.*.local
 
