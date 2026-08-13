@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTodaysLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 /**
  * Compute Easter Sunday for a given year using the Anonymous Gregorian algorithm.
@@ -86,6 +87,8 @@ export default function Home() {
         return { name: "Service", time: "Scheduled", icon: "⛪" };
     }
   };
+
+  const { isInstallable, install } = usePWAInstall();
 
   return (
     <div className="px-4 py-6 pb-24 animate-fade-in">
@@ -218,9 +221,11 @@ export default function Home() {
               { label: 'Hymnal', icon: '🎵', path: '/hymns', desc: '486 hymns' },
               { label: 'Order of Service', icon: '📜', path: '/services', desc: '21 liturgies' },
               { label: 'Bible Lessons', icon: '📅', path: '/lessons', desc: '2026 calendar' },
+              { label: 'Constitution', icon: '⚖️', path: '/constitution', desc: 'Church rules' },
               { label: 'Live Display', icon: '📺', path: '/control', desc: 'Projector mode' },
               { label: 'My Notes', icon: '📝', path: '/notes', desc: 'Notes & passages' },
               { label: 'Hymn Selector', icon: '🎶', path: '/suggestions', desc: 'Plan hymns' },
+              { label: 'Devotion', icon: '🕊️', path: '/devotion', desc: 'Daily devotion' },
             ].map((action) => (
               <Link 
                 key={action.path}
@@ -240,6 +245,34 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* PWA Install Banner */}
+        {isInstallable && (
+          <section className="card p-4 relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10"
+                 style={{ background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))' }} />
+            <div className="relative flex items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                  📲 Install CelestialWorship
+                </h3>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+                  Add to your home screen for offline access
+                </p>
+              </div>
+              <button
+                onClick={install}
+                className="px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition-all hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))',
+                  color: 'var(--color-text-on-accent)',
+                }}
+              >
+                Install
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* Upcoming */}
         <section>

@@ -9,6 +9,31 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'logo.png', 'og-image.png'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: { maxEntries: 10, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: { maxEntries: 10, maxAgeSeconds: 365 * 24 * 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'CelestialWorship: Celestial Church of Christ Hymn, Liturgy, Broadcast & Bible',
         short_name: 'CelestialWorship',
@@ -16,6 +41,10 @@ export default defineConfig({
         theme_color: '#0A1628',
         background_color: '#0A1628',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        orientation: 'any',
+        categories: ['education', 'lifestyle', 'books'],
         icons: [
           {
             src: '/pwa-192x192.png',
@@ -32,6 +61,15 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
+          }
+        ],
+        screenshots: [
+          {
+            src: '/og-image.png',
+            sizes: '1200x630',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'CelestialWorship Home'
           }
         ]
       }
