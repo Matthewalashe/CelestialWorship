@@ -1,0 +1,3684 @@
+[
+  {
+    "date": "2026-01-01",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Year Service",
+    "firstLesson": {
+      "raw": "Isaiah 40:1-11",
+      "book": "Isaiah",
+      "chapter": 40,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": {
+      "raw": "2 Corinthians 1:1-11",
+      "book": "2 Corinthians",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 11
+    }
+  },
+  {
+    "date": "2026-01-01",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Isaiah 43:15-21",
+      "book": "Isaiah",
+      "chapter": 43,
+      "verseStart": 15,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-02",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": "Universal Week of Prayer",
+    "firstLesson": {
+      "raw": "2 Corinthians 5:16-19",
+      "book": "2 Corinthians",
+      "chapter": 5,
+      "verseStart": 16,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-04",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 1:1-10",
+      "book": "Genesis",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "John 1:1-12",
+      "book": "John",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 12
+    }
+  },
+  {
+    "date": "2026-01-04",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Genesis 1:26-31",
+      "book": "Genesis",
+      "chapter": 1,
+      "verseStart": 26,
+      "verseEnd": 31
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-07",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 8:13-19",
+      "book": "Luke",
+      "chapter": 8,
+      "verseStart": 13,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-09",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Deuteronomy 18:13-19",
+      "book": "Deuteronomy",
+      "chapter": 18,
+      "verseStart": 13,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-11",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Exodus 4:1-10",
+      "book": "Exodus",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "Matthew 13:18-24",
+      "book": "Matthew",
+      "chapter": 13,
+      "verseStart": 18,
+      "verseEnd": 24
+    }
+  },
+  {
+    "date": "2026-01-11",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Deuteronomy 20:1-4",
+      "book": "Deuteronomy",
+      "chapter": 20,
+      "verseStart": 1,
+      "verseEnd": 4
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-14",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 17:1-8",
+      "book": "Genesis",
+      "chapter": 17,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-16",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 7:21-27",
+      "book": "Matthew",
+      "chapter": 7,
+      "verseStart": 21,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-18",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Deuteronomy 28:1-8",
+      "book": "Deuteronomy",
+      "chapter": 28,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": {
+      "raw": "James 1:21-24",
+      "book": "James",
+      "chapter": 1,
+      "verseStart": 21,
+      "verseEnd": 24
+    }
+  },
+  {
+    "date": "2026-01-18",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Deuteronomy 28:15-20",
+      "book": "Deuteronomy",
+      "chapter": 28,
+      "verseStart": 15,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-21",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Samuel 22:21-31",
+      "book": "2 Samuel",
+      "chapter": 22,
+      "verseStart": 21,
+      "verseEnd": 31
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-23",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 6:20-27",
+      "book": "Proverbs",
+      "chapter": 6,
+      "verseStart": 20,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-25",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Joshua 1:1-10",
+      "book": "Joshua",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 4:1-6",
+      "book": "1 Corinthians",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 6
+    }
+  },
+  {
+    "date": "2026-01-25",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "1 John 3:7-10",
+      "book": "1 John",
+      "chapter": 3,
+      "verseStart": 7,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-28",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Nehemiah 9:1-3",
+      "book": "Nehemiah",
+      "chapter": 9,
+      "verseStart": 1,
+      "verseEnd": 3
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-01-30",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 4:6-12",
+      "book": "Genesis",
+      "chapter": 4,
+      "verseStart": 6,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-01",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Nehemiah 8:1-10",
+      "book": "Nehemiah",
+      "chapter": 8,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "Romans 12:1-3",
+      "book": "Romans",
+      "chapter": 12,
+      "verseStart": 1,
+      "verseEnd": 3
+    }
+  },
+  {
+    "date": "2026-02-01",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Colossians 3:10-17",
+      "book": "Colossians",
+      "chapter": 3,
+      "verseStart": 10,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-04",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 6:12-19",
+      "book": "Proverbs",
+      "chapter": 6,
+      "verseStart": 12,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-05",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Ezekiel 28:14-19",
+      "book": "Ezekiel",
+      "chapter": 28,
+      "verseStart": 14,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-06",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 12:20-24",
+      "book": "Acts",
+      "chapter": 12,
+      "verseStart": 20,
+      "verseEnd": 24
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-08",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Daniel 4:29-33",
+      "book": "Daniel",
+      "chapter": 4,
+      "verseStart": 29,
+      "verseEnd": 33
+    },
+    "secondLesson": {
+      "raw": "1 Peter 5:5-7",
+      "book": "1 Peter",
+      "chapter": 5,
+      "verseStart": 5,
+      "verseEnd": 7
+    }
+  },
+  {
+    "date": "2026-02-08",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "1 Timothy 6:17-21",
+      "book": "1 Timothy",
+      "chapter": 6,
+      "verseStart": 17,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-11",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Samuel 16:4-11",
+      "book": "1 Samuel",
+      "chapter": 16,
+      "verseStart": 4,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-13",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 12:1-8",
+      "book": "John",
+      "chapter": 12,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-15",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Joshua 7:19-26",
+      "book": "Joshua",
+      "chapter": 7,
+      "verseStart": 19,
+      "verseEnd": 26
+    },
+    "secondLesson": {
+      "raw": "Acts 5:1-10",
+      "book": "Acts",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-02-15",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Proverbs 12:18-22",
+      "book": "Proverbs",
+      "chapter": 12,
+      "verseStart": 18,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-18",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 25:18-20",
+      "book": "Proverbs",
+      "chapter": 25,
+      "verseStart": 18,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-20",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 21:26-36",
+      "book": "Acts",
+      "chapter": 21,
+      "verseStart": 26,
+      "verseEnd": 36
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-22",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Numbers 16:41-50",
+      "book": "Numbers",
+      "chapter": 16,
+      "verseStart": 41,
+      "verseEnd": 50
+    },
+    "secondLesson": {
+      "raw": "Matthew 9:32-34",
+      "book": "Matthew",
+      "chapter": 9,
+      "verseStart": 32,
+      "verseEnd": 34
+    }
+  },
+  {
+    "date": "2026-02-22",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Matthew 26:14-23",
+      "book": "Matthew",
+      "chapter": 26,
+      "verseStart": 14,
+      "verseEnd": 23
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-25",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Titus 3:8-11",
+      "book": "Titus",
+      "chapter": 3,
+      "verseStart": 8,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-02-27",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Judges 20:34-44",
+      "book": "Judges",
+      "chapter": 20,
+      "verseStart": 34,
+      "verseEnd": 44
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-01",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 13:8-18",
+      "book": "Genesis",
+      "chapter": 13,
+      "verseStart": 8,
+      "verseEnd": 18
+    },
+    "secondLesson": {
+      "raw": "Romans 16:10-20",
+      "book": "Romans",
+      "chapter": 16,
+      "verseStart": 10,
+      "verseEnd": 20
+    }
+  },
+  {
+    "date": "2026-03-01",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Proverbs 16:16-18",
+      "book": "Proverbs",
+      "chapter": 16,
+      "verseStart": 16,
+      "verseEnd": 18
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-04",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 10:38-42",
+      "book": "Luke",
+      "chapter": 10,
+      "verseStart": 38,
+      "verseEnd": 42
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-05",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Judges 4:1-9",
+      "book": "Judges",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-06",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Mark 15:37-43",
+      "book": "Mark",
+      "chapter": 15,
+      "verseStart": 37,
+      "verseEnd": 43
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-08",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Proverbs 31:1-10",
+      "book": "Proverbs",
+      "chapter": 31,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "Acts 9:36-43",
+      "book": "Acts",
+      "chapter": 9,
+      "verseStart": 36,
+      "verseEnd": 43
+    }
+  },
+  {
+    "date": "2026-03-08",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 1:39-48",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 39,
+      "verseEnd": 48
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-11",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Corinthians 11:21-30",
+      "book": "2 Corinthians",
+      "chapter": 11,
+      "verseStart": 21,
+      "verseEnd": 30
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-13",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Jeremiah 38:1-6",
+      "book": "Jeremiah",
+      "chapter": 38,
+      "verseStart": 1,
+      "verseEnd": 6
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-15",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 37:16-37",
+      "book": "Genesis",
+      "chapter": 37,
+      "verseStart": 16,
+      "verseEnd": 37
+    },
+    "secondLesson": {
+      "raw": "Matthew 10:32-40",
+      "book": "Matthew",
+      "chapter": 10,
+      "verseStart": 32,
+      "verseEnd": 40
+    }
+  },
+  {
+    "date": "2026-03-15",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 14:25-33",
+      "book": "Luke",
+      "chapter": 14,
+      "verseStart": 25,
+      "verseEnd": 33
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-18",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 43:16-21",
+      "book": "Isaiah",
+      "chapter": 43,
+      "verseStart": 16,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-20",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 26:24-32",
+      "book": "Acts",
+      "chapter": 26,
+      "verseStart": 24,
+      "verseEnd": 32
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-22",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Isaiah 29:11-16",
+      "book": "Isaiah",
+      "chapter": 29,
+      "verseStart": 11,
+      "verseEnd": 16
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 1:18-21",
+      "book": "1 Corinthians",
+      "chapter": 1,
+      "verseStart": 18,
+      "verseEnd": 21
+    }
+  },
+  {
+    "date": "2026-03-22",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Matthew 4:16-21",
+      "book": "Matthew",
+      "chapter": 4,
+      "verseStart": 16,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-25",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 16:20-24",
+      "book": "Matthew",
+      "chapter": 16,
+      "verseStart": 20,
+      "verseEnd": 24
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-27",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 4:22-34",
+      "book": "Matthew",
+      "chapter": 4,
+      "verseStart": 22,
+      "verseEnd": 34
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-28",
+    "day": "Saturday",
+    "time": "12:00",
+    "occasion": "Washing of Feet (KM53 Lagos-Ibadan Exp. Rd)",
+    "firstLesson": {
+      "raw": "John 13:1-17",
+      "book": "John",
+      "chapter": 13,
+      "verseStart": 1,
+      "verseEnd": 17
+    },
+    "secondLesson": {
+      "raw": "Matthew 26:17-56",
+      "book": "Matthew",
+      "chapter": 26,
+      "verseStart": 17,
+      "verseEnd": 56
+    }
+  },
+  {
+    "date": "2026-03-29",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Palm Sunday",
+    "firstLesson": {
+      "raw": "Zechariah 9:9-12",
+      "book": "Zechariah",
+      "chapter": 9,
+      "verseStart": 9,
+      "verseEnd": 12
+    },
+    "secondLesson": {
+      "raw": "Luke 19:28-38",
+      "book": "Luke",
+      "chapter": 19,
+      "verseStart": 28,
+      "verseEnd": 38
+    }
+  },
+  {
+    "date": "2026-03-29",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Titus 1:5-9",
+      "book": "Titus",
+      "chapter": 1,
+      "verseStart": 5,
+      "verseEnd": 9
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-30",
+    "day": "Monday",
+    "time": "18:00",
+    "occasion": "Holy Monday",
+    "firstLesson": {
+      "raw": "Matthew 26:1-13",
+      "book": "Matthew",
+      "chapter": 26,
+      "verseStart": 1,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-03-31",
+    "day": "Tuesday",
+    "time": "18:00",
+    "occasion": "Holy Tuesday",
+    "firstLesson": {
+      "raw": "1 Corinthians 1:10-17",
+      "book": "1 Corinthians",
+      "chapter": 1,
+      "verseStart": 10,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-01",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": "Holy Wednesday",
+    "firstLesson": {
+      "raw": "John 17:1-19",
+      "book": "John",
+      "chapter": 17,
+      "verseStart": 1,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-02",
+    "day": "Thursday",
+    "time": "18:00",
+    "occasion": "Holy Thursday",
+    "firstLesson": {
+      "raw": "John 12:44-50",
+      "book": "John",
+      "chapter": 12,
+      "verseStart": 44,
+      "verseEnd": 50
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-02",
+    "day": "Thursday",
+    "time": "20:00",
+    "occasion": "Washing of Feet",
+    "firstLesson": {
+      "raw": "John 13:1-17",
+      "book": "John",
+      "chapter": 13,
+      "verseStart": 1,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-02",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "The Lord's Supper / New Moon Service",
+    "firstLesson": {
+      "raw": "Matthew 21:1-11",
+      "book": "Matthew",
+      "chapter": 21,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-03",
+    "day": "Friday",
+    "time": "09:00",
+    "occasion": "Good Friday",
+    "firstLesson": {
+      "raw": "Mark 15:21-32",
+      "book": "Mark",
+      "chapter": 15,
+      "verseStart": 21,
+      "verseEnd": 32
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-03",
+    "day": "Friday",
+    "time": "12:00",
+    "occasion": "Good Friday",
+    "firstLesson": {
+      "raw": "Mark 15:33-41",
+      "book": "Mark",
+      "chapter": 15,
+      "verseStart": 33,
+      "verseEnd": 41
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-03",
+    "day": "Friday",
+    "time": "15:00",
+    "occasion": "Good Friday",
+    "firstLesson": {
+      "raw": "Mark 15:42-47",
+      "book": "Mark",
+      "chapter": 15,
+      "verseStart": 42,
+      "verseEnd": 47
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-04",
+    "day": "Saturday",
+    "time": "18:00",
+    "occasion": "Holy Saturday",
+    "firstLesson": {
+      "raw": "Luke 23:50-56",
+      "book": "Luke",
+      "chapter": 23,
+      "verseStart": 50,
+      "verseEnd": 56
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-04",
+    "day": "Saturday",
+    "time": "22:00",
+    "occasion": "Holy Saturday",
+    "firstLesson": {
+      "raw": "Luke 24:1-7",
+      "book": "Luke",
+      "chapter": 24,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-05",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Easter Sunday",
+    "firstLesson": {
+      "raw": "Psalm 16:5-11",
+      "book": "Psalm",
+      "chapter": 16,
+      "verseStart": 5,
+      "verseEnd": 11
+    },
+    "secondLesson": {
+      "raw": "Luke 24:1-10",
+      "book": "Luke",
+      "chapter": 24,
+      "verseStart": 1,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-04-05",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Matthew 28:9-20",
+      "book": "Matthew",
+      "chapter": 28,
+      "verseStart": 9,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-06",
+    "day": "Monday",
+    "time": "",
+    "occasion": "Family Day - KM53 Express Way (no lessons listed)",
+    "firstLesson": null,
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-08",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Romans 3:21-24",
+      "book": "Romans",
+      "chapter": 3,
+      "verseStart": 21,
+      "verseEnd": 24
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-10",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 24:28-35",
+      "book": "Luke",
+      "chapter": 24,
+      "verseStart": 28,
+      "verseEnd": 35
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-12",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "2 Kings 4:32-37",
+      "book": "2 Kings",
+      "chapter": 4,
+      "verseStart": 32,
+      "verseEnd": 37
+    },
+    "secondLesson": {
+      "raw": "Mark 16:12-20",
+      "book": "Mark",
+      "chapter": 16,
+      "verseStart": 12,
+      "verseEnd": 20
+    }
+  },
+  {
+    "date": "2026-04-12",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "John 20:19-23",
+      "book": "John",
+      "chapter": 20,
+      "verseStart": 19,
+      "verseEnd": 23
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-15",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Mark 5:25-43",
+      "book": "Mark",
+      "chapter": 5,
+      "verseStart": 25,
+      "verseEnd": 43
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-17",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Samuel 17:41-51",
+      "book": "1 Samuel",
+      "chapter": 17,
+      "verseStart": 41,
+      "verseEnd": 51
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-19",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 22:1-18",
+      "book": "Genesis",
+      "chapter": 22,
+      "verseStart": 1,
+      "verseEnd": 18
+    },
+    "secondLesson": {
+      "raw": "Hebrews 11:1-12",
+      "book": "Hebrews",
+      "chapter": 11,
+      "verseStart": 1,
+      "verseEnd": 12
+    }
+  },
+  {
+    "date": "2026-04-19",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "James 2:14-23",
+      "book": "James",
+      "chapter": 2,
+      "verseStart": 14,
+      "verseEnd": 23
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-22",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 1:21-31",
+      "book": "John",
+      "chapter": 1,
+      "verseStart": 21,
+      "verseEnd": 31
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-24",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 3:11-17",
+      "book": "Matthew",
+      "chapter": 3,
+      "verseStart": 11,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-26",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Ezekiel 36:23-36",
+      "book": "Ezekiel",
+      "chapter": 36,
+      "verseStart": 23,
+      "verseEnd": 36
+    },
+    "secondLesson": {
+      "raw": "Acts 19:1-10",
+      "book": "Acts",
+      "chapter": 19,
+      "verseStart": 1,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-04-26",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Exodus 14:13-22",
+      "book": "Exodus",
+      "chapter": 14,
+      "verseStart": 13,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-04-29",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 12:32-37",
+      "book": "Matthew",
+      "chapter": 12,
+      "verseStart": 32,
+      "verseEnd": 37
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-01",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 26:14-21",
+      "book": "Isaiah",
+      "chapter": 26,
+      "verseStart": 14,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-03",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Daniel 7:23-28",
+      "book": "Daniel",
+      "chapter": 7,
+      "verseStart": 23,
+      "verseEnd": 28
+    },
+    "secondLesson": {
+      "raw": "Revelation 20:11-15",
+      "book": "Revelation",
+      "chapter": 20,
+      "verseStart": 11,
+      "verseEnd": 15
+    }
+  },
+  {
+    "date": "2026-05-03",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "2 Corinthians 5:1-10",
+      "book": "2 Corinthians",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-06",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 30:20-24",
+      "book": "Isaiah",
+      "chapter": 30,
+      "verseStart": 20,
+      "verseEnd": 24
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-07",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Daniel 5:1-12",
+      "book": "Daniel",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-08",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 3:1-18",
+      "book": "Luke",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 18
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-10",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Exodus 3:1-10",
+      "book": "Exodus",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "John 16:7-16",
+      "book": "John",
+      "chapter": 16,
+      "verseStart": 7,
+      "verseEnd": 16
+    }
+  },
+  {
+    "date": "2026-05-10",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 1:34-38",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 34,
+      "verseEnd": 38
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-13",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Kings 18:27-39",
+      "book": "1 Kings",
+      "chapter": 18,
+      "verseStart": 27,
+      "verseEnd": 39
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-14",
+    "day": "Thursday",
+    "time": "18:00",
+    "occasion": "Ascension",
+    "firstLesson": {
+      "raw": "2 Kings 2:1-13",
+      "book": "2 Kings",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 13
+    },
+    "secondLesson": {
+      "raw": "Acts 1:1-11",
+      "book": "Acts",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 11
+    }
+  },
+  {
+    "date": "2026-05-15",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 4:1-4",
+      "book": "John",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 4
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-17",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Exodus 13:17-22",
+      "book": "Exodus",
+      "chapter": 13,
+      "verseStart": 17,
+      "verseEnd": 22
+    },
+    "secondLesson": {
+      "raw": "Matthew 3:13-17",
+      "book": "Matthew",
+      "chapter": 3,
+      "verseStart": 13,
+      "verseEnd": 17
+    }
+  },
+  {
+    "date": "2026-05-17",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "John 15:20-27",
+      "book": "John",
+      "chapter": 15,
+      "verseStart": 20,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-18",
+    "day": "",
+    "time": "",
+    "occasion": "Special Week of Prayer - preparation for Pentecost (18th-24th)",
+    "firstLesson": null,
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-20",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 14:12-20",
+      "book": "John",
+      "chapter": 14,
+      "verseStart": 12,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-22",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Exodus 31:1-11",
+      "book": "Exodus",
+      "chapter": 31,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-24",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Pentecost Day",
+    "firstLesson": {
+      "raw": "Exodus 19:1-20",
+      "book": "Exodus",
+      "chapter": 19,
+      "verseStart": 1,
+      "verseEnd": 20
+    },
+    "secondLesson": {
+      "raw": "Acts 2:1-21",
+      "book": "Acts",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 21
+    }
+  },
+  {
+    "date": "2026-05-24",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Acts 14:1-11",
+      "book": "Acts",
+      "chapter": 14,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-27",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Psalm 51:4-13",
+      "book": "Psalm",
+      "chapter": 51,
+      "verseStart": 4,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-29",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 15:18-27",
+      "book": "John",
+      "chapter": 15,
+      "verseStart": 18,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-05-31",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Joel 2:23-32",
+      "book": "Joel",
+      "chapter": 2,
+      "verseStart": 23,
+      "verseEnd": 32
+    },
+    "secondLesson": {
+      "raw": "Luke 4:12-21",
+      "book": "Luke",
+      "chapter": 4,
+      "verseStart": 12,
+      "verseEnd": 21
+    }
+  },
+  {
+    "date": "2026-05-31",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Acts 21:10-14",
+      "book": "Acts",
+      "chapter": 21,
+      "verseStart": 10,
+      "verseEnd": 14
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-03",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 2:41-52",
+      "book": "Luke",
+      "chapter": 2,
+      "verseStart": 41,
+      "verseEnd": 52
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-04",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Genesis 22:1-8",
+      "book": "Genesis",
+      "chapter": 22,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-05",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Samuel 3:1-10",
+      "book": "1 Samuel",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-07",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Juvenile Harvest",
+    "firstLesson": {
+      "raw": "Proverbs 4:20-27",
+      "book": "Proverbs",
+      "chapter": 4,
+      "verseStart": 20,
+      "verseEnd": 27
+    },
+    "secondLesson": {
+      "raw": "Luke 18:15-17",
+      "book": "Luke",
+      "chapter": 18,
+      "verseStart": 15,
+      "verseEnd": 17
+    }
+  },
+  {
+    "date": "2026-06-07",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Exodus 39:23-28",
+      "book": "Exodus",
+      "chapter": 39,
+      "verseStart": 23,
+      "verseEnd": 28
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-10",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Exodus 3:7-15",
+      "book": "Exodus",
+      "chapter": 3,
+      "verseStart": 7,
+      "verseEnd": 15
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-12",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 11:14-28",
+      "book": "Luke",
+      "chapter": 11,
+      "verseStart": 14,
+      "verseEnd": 28
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-14",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "1 Samuel 3:8-18",
+      "book": "1 Samuel",
+      "chapter": 3,
+      "verseStart": 8,
+      "verseEnd": 18
+    },
+    "secondLesson": {
+      "raw": "2 Timothy 1:1-14",
+      "book": "2 Timothy",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 14
+    }
+  },
+  {
+    "date": "2026-06-14",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Leviticus 10:1-7",
+      "book": "Leviticus",
+      "chapter": 10,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-17",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 29:18-22",
+      "book": "Proverbs",
+      "chapter": 29,
+      "verseStart": 18,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-19",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 25:1-5",
+      "book": "Genesis",
+      "chapter": 25,
+      "verseStart": 1,
+      "verseEnd": 5
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-21",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Deuteronomy 5:11-16",
+      "book": "Deuteronomy",
+      "chapter": 5,
+      "verseStart": 11,
+      "verseEnd": 16
+    },
+    "secondLesson": {
+      "raw": "Matthew 15:1-9",
+      "book": "Matthew",
+      "chapter": 15,
+      "verseStart": 1,
+      "verseEnd": 9
+    }
+  },
+  {
+    "date": "2026-06-21",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "1 John 2:12-15",
+      "book": "1 John",
+      "chapter": 2,
+      "verseStart": 12,
+      "verseEnd": 15
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-24",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 19:1-12",
+      "book": "Matthew",
+      "chapter": 19,
+      "verseStart": 1,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-26",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Samuel 16:1-16",
+      "book": "1 Samuel",
+      "chapter": 16,
+      "verseStart": 1,
+      "verseEnd": 16
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-06-28",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "2 Kings 16:1-8",
+      "book": "2 Kings",
+      "chapter": 16,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": {
+      "raw": "Ephesians 6:1-8",
+      "book": "Ephesians",
+      "chapter": 6,
+      "verseStart": 1,
+      "verseEnd": 8
+    }
+  },
+  {
+    "date": "2026-06-28",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "2 Kings 17:13-23",
+      "book": "2 Kings",
+      "chapter": 17,
+      "verseStart": 13,
+      "verseEnd": 23
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-01",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 3:1-8",
+      "book": "Genesis",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-02",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Genesis 2:18-25",
+      "book": "Genesis",
+      "chapter": 2,
+      "verseStart": 18,
+      "verseEnd": 25
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-03",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": "Holy Mary Day",
+    "firstLesson": {
+      "raw": "Luke 1:26-38",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 26,
+      "verseEnd": 38
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-05",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 3:1-16",
+      "book": "Genesis",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 16
+    },
+    "secondLesson": {
+      "raw": "Luke 1:39-55",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 39,
+      "verseEnd": 55
+    }
+  },
+  {
+    "date": "2026-07-05",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 2:1-8",
+      "book": "Luke",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-08",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 7:36-50",
+      "book": "Luke",
+      "chapter": 7,
+      "verseStart": 36,
+      "verseEnd": 50
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-10",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "John 8:1-11",
+      "book": "John",
+      "chapter": 8,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-12",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Joshua 2:1-21",
+      "book": "Joshua",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 21
+    },
+    "secondLesson": {
+      "raw": "John 4:19-39",
+      "book": "John",
+      "chapter": 4,
+      "verseStart": 19,
+      "verseEnd": 39
+    }
+  },
+  {
+    "date": "2026-07-12",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Genesis 38:24-30",
+      "book": "Genesis",
+      "chapter": 38,
+      "verseStart": 24,
+      "verseEnd": 30
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-15",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Kings 21:1-16",
+      "book": "1 Kings",
+      "chapter": 21,
+      "verseStart": 1,
+      "verseEnd": 16
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-17",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 27:15-26",
+      "book": "Matthew",
+      "chapter": 27,
+      "verseStart": 15,
+      "verseEnd": 26
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-19",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "2 Samuel 6:19-23",
+      "book": "2 Samuel",
+      "chapter": 6,
+      "verseStart": 19,
+      "verseEnd": 23
+    },
+    "secondLesson": {
+      "raw": "Mark 6:14-29",
+      "book": "Mark",
+      "chapter": 6,
+      "verseStart": 14,
+      "verseEnd": 29
+    }
+  },
+  {
+    "date": "2026-07-19",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Esther 7:1-10",
+      "book": "Esther",
+      "chapter": 7,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-22",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Samuel 2:1-10",
+      "book": "1 Samuel",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-24",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 1:46-56",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 46,
+      "verseEnd": 56
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-26",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "1 Samuel 1:1-20",
+      "book": "1 Samuel",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 20
+    },
+    "secondLesson": {
+      "raw": "Luke 2:25-39",
+      "book": "Luke",
+      "chapter": 2,
+      "verseStart": 25,
+      "verseEnd": 39
+    }
+  },
+  {
+    "date": "2026-07-26",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Exodus 15:11-21",
+      "book": "Exodus",
+      "chapter": 15,
+      "verseStart": 11,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-29",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Judges 4:1-9",
+      "book": "Judges",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-07-31",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Esther 2:5-17",
+      "book": "Esther",
+      "chapter": 2,
+      "verseStart": 5,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-02",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Harvest National / Higiara Makoko",
+    "firstLesson": {
+      "raw": "1 Samuel 25:21-40",
+      "book": "1 Samuel",
+      "chapter": 25,
+      "verseStart": 21,
+      "verseEnd": 40
+    },
+    "secondLesson": {
+      "raw": "Acts 5:1-10",
+      "book": "Acts",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-08-02",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Acts 9:36-43",
+      "book": "Acts",
+      "chapter": 9,
+      "verseStart": 36,
+      "verseEnd": 43
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-05",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Nehemiah 10:34-39",
+      "book": "Nehemiah",
+      "chapter": 10,
+      "verseStart": 34,
+      "verseEnd": 39
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-06",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Genesis 14:10-20",
+      "book": "Genesis",
+      "chapter": 14,
+      "verseStart": 10,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-07",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Leviticus 27:28-34",
+      "book": "Leviticus",
+      "chapter": 27,
+      "verseStart": 28,
+      "verseEnd": 34
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-09",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Malachi 3:7-12",
+      "book": "Malachi",
+      "chapter": 3,
+      "verseStart": 7,
+      "verseEnd": 12
+    },
+    "secondLesson": {
+      "raw": "Hebrews 7:4-10",
+      "book": "Hebrews",
+      "chapter": 7,
+      "verseStart": 4,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-08-09",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 18:10-14",
+      "book": "Luke",
+      "chapter": 18,
+      "verseStart": 10,
+      "verseEnd": 14
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-12",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Chronicles 31:1-12",
+      "book": "2 Chronicles",
+      "chapter": 31,
+      "verseStart": 1,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-14",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Deuteronomy 12:4-12",
+      "book": "Deuteronomy",
+      "chapter": 12,
+      "verseStart": 4,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-16",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Deuteronomy 14:22-29",
+      "book": "Deuteronomy",
+      "chapter": 14,
+      "verseStart": 22,
+      "verseEnd": 29
+    },
+    "secondLesson": {
+      "raw": "Galatians 6:3-10",
+      "book": "Galatians",
+      "chapter": 6,
+      "verseStart": 3,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-08-16",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Deuteronomy 26:12-19",
+      "book": "Deuteronomy",
+      "chapter": 26,
+      "verseStart": 12,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-19",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Kings 17:8-16",
+      "book": "1 Kings",
+      "chapter": 17,
+      "verseStart": 8,
+      "verseEnd": 16
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-21",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Kings 4:8-17",
+      "book": "2 Kings",
+      "chapter": 4,
+      "verseStart": 8,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-23",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 18:1-14",
+      "book": "Genesis",
+      "chapter": 18,
+      "verseStart": 1,
+      "verseEnd": 14
+    },
+    "secondLesson": {
+      "raw": "Hebrews 13:1-8",
+      "book": "Hebrews",
+      "chapter": 13,
+      "verseStart": 1,
+      "verseEnd": 8
+    }
+  },
+  {
+    "date": "2026-08-23",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 8:30-38",
+      "book": "Luke",
+      "chapter": 8,
+      "verseStart": 30,
+      "verseEnd": 38
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-26",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 10:25-27",
+      "book": "Luke",
+      "chapter": 10,
+      "verseStart": 25,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-28",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Chronicles 21:17-27",
+      "book": "1 Chronicles",
+      "chapter": 21,
+      "verseStart": 17,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-08-30",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "John 17:1-16 [verify: source shows \"1 John 17:1-16\" - likely OCR/print error; John's Gospel ch.17 fits; 1 John has only 5 chapters]",
+      "book": "John 17:1-16 [verify: source shows \"1 John 17:1-16\" - likely OCR/print error; John's Gospel ch.17 fits; 1 John has only 5 chapters]",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 1
+    },
+    "secondLesson": {
+      "raw": "Luke 21:1-6",
+      "book": "Luke",
+      "chapter": 21,
+      "verseStart": 1,
+      "verseEnd": 6
+    }
+  },
+  {
+    "date": "2026-08-30",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Exodus 35:4-9",
+      "book": "Exodus",
+      "chapter": 35,
+      "verseStart": 4,
+      "verseEnd": 9
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-02",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 16:13-18",
+      "book": "Matthew",
+      "chapter": 16,
+      "verseStart": 13,
+      "verseEnd": 18
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-03",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Acts 11:19-26",
+      "book": "Acts",
+      "chapter": 11,
+      "verseStart": 19,
+      "verseEnd": 26
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-04",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 15:5-20",
+      "book": "Acts",
+      "chapter": 15,
+      "verseStart": 5,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-06",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 46:1-7",
+      "book": "Genesis",
+      "chapter": 46,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": {
+      "raw": "Acts 2:29-41",
+      "book": "Acts",
+      "chapter": 2,
+      "verseStart": 29,
+      "verseEnd": 41
+    }
+  },
+  {
+    "date": "2026-09-06",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Acts 2:38-47",
+      "book": "Acts",
+      "chapter": 2,
+      "verseStart": 38,
+      "verseEnd": 47
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-09",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Leviticus 26:1-13",
+      "book": "Leviticus",
+      "chapter": 26,
+      "verseStart": 1,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-10",
+    "day": "Thursday",
+    "time": "18:00",
+    "occasion": "Service of Songs - All Saints",
+    "firstLesson": {
+      "raw": "Revelation 14:6-13",
+      "book": "Revelation",
+      "chapter": 14,
+      "verseStart": 6,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-11",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 13:1-12",
+      "book": "Acts",
+      "chapter": 13,
+      "verseStart": 1,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-13",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Imeko Adult Harvest",
+    "firstLesson": {
+      "raw": "Exodus 14:19-31",
+      "book": "Exodus",
+      "chapter": 14,
+      "verseStart": 19,
+      "verseEnd": 31
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 10:17-23",
+      "book": "1 Corinthians",
+      "chapter": 10,
+      "verseStart": 17,
+      "verseEnd": 23
+    }
+  },
+  {
+    "date": "2026-09-13",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "1 Corinthians 10:1-11",
+      "book": "1 Corinthians",
+      "chapter": 10,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-16",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Acts 9:1-8",
+      "book": "Acts",
+      "chapter": 9,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-18",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Ephesians 4:1-13",
+      "book": "Ephesians",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-20",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Imeko Adult Harvest",
+    "firstLesson": {
+      "raw": "Numbers 11:10-26",
+      "book": "Numbers",
+      "chapter": 11,
+      "verseStart": 10,
+      "verseEnd": 26
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 12:1-14",
+      "book": "1 Corinthians",
+      "chapter": 12,
+      "verseStart": 1,
+      "verseEnd": 14
+    }
+  },
+  {
+    "date": "2026-09-20",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Numbers 11:25-30",
+      "book": "Numbers",
+      "chapter": 11,
+      "verseStart": 25,
+      "verseEnd": 30
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-23",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 18:12-20",
+      "book": "Matthew",
+      "chapter": 18,
+      "verseStart": 12,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-25",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": "CCC Founder's Day",
+    "firstLesson": {
+      "raw": "Matthew 16:13-21",
+      "book": "Matthew",
+      "chapter": 16,
+      "verseStart": 13,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-27",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Imeko Adult Harvest",
+    "firstLesson": {
+      "raw": "Exodus 19:1-11",
+      "book": "Exodus",
+      "chapter": 19,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": {
+      "raw": "Revelation 1:1-11",
+      "book": "Revelation",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 11
+    }
+  },
+  {
+    "date": "2026-09-27",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Exodus 3:13-18",
+      "book": "Exodus",
+      "chapter": 3,
+      "verseStart": 13,
+      "verseEnd": 18
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-09-30",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Job 1:1-12",
+      "book": "Job",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-01",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Genesis 3:1-7",
+      "book": "Genesis",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-02",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Exodus 32:1-8",
+      "book": "Exodus",
+      "chapter": 32,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-04",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Adult Harvest CCC HQ Porto-Novo",
+    "firstLesson": {
+      "raw": "Ezekiel 28:12-19",
+      "book": "Ezekiel",
+      "chapter": 28,
+      "verseStart": 12,
+      "verseEnd": 19
+    },
+    "secondLesson": {
+      "raw": "John 8:42-49",
+      "book": "John",
+      "chapter": 8,
+      "verseStart": 42,
+      "verseEnd": 49
+    }
+  },
+  {
+    "date": "2026-10-04",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Ezekiel 14:1-8",
+      "book": "Ezekiel",
+      "chapter": 14,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-07",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Jude 1:4-11",
+      "book": "Jude",
+      "chapter": 1,
+      "verseStart": 4,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-09",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 4:1-13",
+      "book": "Luke",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-11",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Numbers 16:1-14",
+      "book": "Numbers",
+      "chapter": 16,
+      "verseStart": 1,
+      "verseEnd": 14
+    },
+    "secondLesson": {
+      "raw": "2 Thessalonians 2:3-10",
+      "book": "2 Thessalonians",
+      "chapter": 2,
+      "verseStart": 3,
+      "verseEnd": 10
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Revelation 5:1-5",
+      "book": "Revelation",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 5
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-14",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": "Service of Songs - Papa Oshoffa",
+    "firstLesson": {
+      "raw": "Nehemiah 4:1-11",
+      "book": "Nehemiah",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-16",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 15:10-20",
+      "book": "Matthew",
+      "chapter": 15,
+      "verseStart": 10,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-18",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Zechariah 3:1-8",
+      "book": "Zechariah",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 8
+    },
+    "secondLesson": {
+      "raw": "Revelation 12:7-12",
+      "book": "Revelation",
+      "chapter": 12,
+      "verseStart": 7,
+      "verseEnd": 12
+    }
+  },
+  {
+    "date": "2026-10-18",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Ecclesiastes 3:16-22",
+      "book": "Ecclesiastes",
+      "chapter": 3,
+      "verseStart": 16,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-19",
+    "day": "Monday",
+    "time": "10:00",
+    "occasion": "Remembrance of the Founder",
+    "firstLesson": {
+      "raw": "Job 19:23-29",
+      "book": "Job",
+      "chapter": 19,
+      "verseStart": 23,
+      "verseEnd": 29
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 3:9-15",
+      "book": "1 Corinthians",
+      "chapter": 3,
+      "verseStart": 9,
+      "verseEnd": 15
+    }
+  },
+  {
+    "date": "2026-10-21",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Chronicles 21:1-10",
+      "book": "1 Chronicles",
+      "chapter": 21,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-23",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Matthew 16:21-28",
+      "book": "Matthew",
+      "chapter": 16,
+      "verseStart": 21,
+      "verseEnd": 28
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-25",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Job 2:1-10",
+      "book": "Job",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "Acts 5:1-6",
+      "book": "Acts",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 6
+    }
+  },
+  {
+    "date": "2026-10-25",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Luke 8:11-14",
+      "book": "Luke",
+      "chapter": 8,
+      "verseStart": 11,
+      "verseEnd": 14
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-28",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Mark 15:14-20",
+      "book": "Mark",
+      "chapter": 15,
+      "verseStart": 14,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-10-30",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Peter 5:1-10",
+      "book": "1 Peter",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-01",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "2 Kings 23:4-9",
+      "book": "2 Kings",
+      "chapter": 23,
+      "verseStart": 4,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "Ephesians 4:17-32",
+      "book": "Ephesians",
+      "chapter": 4,
+      "verseStart": 17,
+      "verseEnd": 32
+    }
+  },
+  {
+    "date": "2026-11-01",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "James 4:5-10",
+      "book": "James",
+      "chapter": 4,
+      "verseStart": 5,
+      "verseEnd": 10
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-04",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 3:1-7",
+      "book": "Genesis",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-05",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Genesis 2:14-20",
+      "book": "Genesis",
+      "chapter": 2,
+      "verseStart": 14,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-06",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Kings 4:38-41",
+      "book": "2 Kings",
+      "chapter": 4,
+      "verseStart": 38,
+      "verseEnd": 41
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-08",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 3:9-19",
+      "book": "Genesis",
+      "chapter": 3,
+      "verseStart": 9,
+      "verseEnd": 19
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 15:51-56",
+      "book": "1 Corinthians",
+      "chapter": 15,
+      "verseStart": 51,
+      "verseEnd": 56
+    }
+  },
+  {
+    "date": "2026-11-08",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Romans 7:2-11",
+      "book": "Romans",
+      "chapter": 7,
+      "verseStart": 2,
+      "verseEnd": 11
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-11",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 20:17-22",
+      "book": "Proverbs",
+      "chapter": 20,
+      "verseStart": 17,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-13",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Proverbs 5:1-6",
+      "book": "Proverbs",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 6
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-15",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning - Adult Harvest Archdiocese International Ketu",
+    "firstLesson": {
+      "raw": "Proverbs 13:11-15",
+      "book": "Proverbs",
+      "chapter": 13,
+      "verseStart": 11,
+      "verseEnd": 15
+    },
+    "secondLesson": {
+      "raw": "1 Timothy 6:4-11",
+      "book": "1 Timothy",
+      "chapter": 6,
+      "verseStart": 4,
+      "verseEnd": 11
+    }
+  },
+  {
+    "date": "2026-11-15",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Deuteronomy 28:15-22",
+      "book": "Deuteronomy",
+      "chapter": 28,
+      "verseStart": 15,
+      "verseEnd": 22
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-18",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Romans 6:19-23",
+      "book": "Romans",
+      "chapter": 6,
+      "verseStart": 19,
+      "verseEnd": 23
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-20",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Job 20:1-16",
+      "book": "Job",
+      "chapter": 20,
+      "verseStart": 1,
+      "verseEnd": 16
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-22",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "1 Samuel 25:32-38",
+      "book": "1 Samuel",
+      "chapter": 25,
+      "verseStart": 32,
+      "verseEnd": 38
+    },
+    "secondLesson": {
+      "raw": "Romans 1:24-32",
+      "book": "Romans",
+      "chapter": 1,
+      "verseStart": 24,
+      "verseEnd": 32
+    }
+  },
+  {
+    "date": "2026-11-22",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Psalm 10:4-15",
+      "book": "Psalm",
+      "chapter": 10,
+      "verseStart": 4,
+      "verseEnd": 15
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-25",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Mark 5:37-43",
+      "book": "Mark",
+      "chapter": 5,
+      "verseStart": 37,
+      "verseEnd": 43
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-27",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "2 Kings 4:32-37",
+      "book": "2 Kings",
+      "chapter": 4,
+      "verseStart": 32,
+      "verseEnd": 37
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-11-29",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Psalm 51:1-9",
+      "book": "Psalm",
+      "chapter": 51,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "1 Corinthians 15:51-58",
+      "book": "1 Corinthians",
+      "chapter": 15,
+      "verseStart": 51,
+      "verseEnd": 58
+    }
+  },
+  {
+    "date": "2026-11-29",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "1 Corinthians 15:21-28",
+      "book": "1 Corinthians",
+      "chapter": 15,
+      "verseStart": 21,
+      "verseEnd": 28
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-02",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Genesis 49:8-12",
+      "book": "Genesis",
+      "chapter": 49,
+      "verseStart": 8,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-03",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "New Moon Service",
+    "firstLesson": {
+      "raw": "Exodus 3:14-21",
+      "book": "Exodus",
+      "chapter": 3,
+      "verseStart": 14,
+      "verseEnd": 21
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-04",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Deuteronomy 14:8-20",
+      "book": "Deuteronomy",
+      "chapter": 14,
+      "verseStart": 8,
+      "verseEnd": 20
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-06",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Genesis 14:14-24",
+      "book": "Genesis",
+      "chapter": 14,
+      "verseStart": 14,
+      "verseEnd": 24
+    },
+    "secondLesson": {
+      "raw": "John 8:51-59",
+      "book": "John",
+      "chapter": 8,
+      "verseStart": 51,
+      "verseEnd": 59
+    }
+  },
+  {
+    "date": "2026-12-06",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Psalm 10:1-7",
+      "book": "Psalm",
+      "chapter": 10,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-09",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 8:5-13",
+      "book": "Isaiah",
+      "chapter": 8,
+      "verseStart": 5,
+      "verseEnd": 13
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-11",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Deuteronomy 18:13-19",
+      "book": "Deuteronomy",
+      "chapter": 18,
+      "verseStart": 13,
+      "verseEnd": 19
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-13",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Micah 5:1-9",
+      "book": "Micah",
+      "chapter": 5,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "Matthew 2:1-8",
+      "book": "Matthew",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 8
+    }
+  },
+  {
+    "date": "2026-12-13",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Amos 9:8-15",
+      "book": "Amos",
+      "chapter": 9,
+      "verseStart": 8,
+      "verseEnd": 15
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-16",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Jeremiah 31:31-38",
+      "book": "Jeremiah",
+      "chapter": 31,
+      "verseStart": 31,
+      "verseEnd": 38
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-18",
+    "day": "Friday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 44:1-5",
+      "book": "Isaiah",
+      "chapter": 44,
+      "verseStart": 1,
+      "verseEnd": 5
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-18",
+    "day": "",
+    "time": "",
+    "occasion": "Special Week - preparation for Xmas (18th-24th)",
+    "firstLesson": null,
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-20",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Isaiah 66:15-24",
+      "book": "Isaiah",
+      "chapter": 66,
+      "verseStart": 15,
+      "verseEnd": 24
+    },
+    "secondLesson": {
+      "raw": "Revelation 3:1-6",
+      "book": "Revelation",
+      "chapter": 3,
+      "verseStart": 1,
+      "verseEnd": 6
+    }
+  },
+  {
+    "date": "2026-12-20",
+    "day": "Sunday",
+    "time": "00:00",
+    "occasion": "Evening [labelled Christmas Eve in source - verify placement]",
+    "firstLesson": {
+      "raw": "Acts 4:8-12",
+      "book": "Acts",
+      "chapter": 4,
+      "verseStart": 8,
+      "verseEnd": 12
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-23",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Luke 1:26-38",
+      "book": "Luke",
+      "chapter": 1,
+      "verseStart": 26,
+      "verseEnd": 38
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-24",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": "Christmas Eve",
+    "firstLesson": {
+      "raw": "Isaiah 42:1-9",
+      "book": "Isaiah",
+      "chapter": 42,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "Romans 15:8-13",
+      "book": "Romans",
+      "chapter": 15,
+      "verseStart": 8,
+      "verseEnd": 13
+    }
+  },
+  {
+    "date": "2026-12-25",
+    "day": "Friday",
+    "time": "10:00",
+    "occasion": "Christmas Day",
+    "firstLesson": {
+      "raw": "Isaiah 11:1-9",
+      "book": "Isaiah",
+      "chapter": 11,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "Luke 2:1-20",
+      "book": "Luke",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 20
+    }
+  },
+  {
+    "date": "2026-12-25",
+    "day": "Friday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Isaiah 9:1-7",
+      "book": "Isaiah",
+      "chapter": 9,
+      "verseStart": 1,
+      "verseEnd": 7
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-27",
+    "day": "Sunday",
+    "time": "10:00",
+    "occasion": "Morning",
+    "firstLesson": {
+      "raw": "Isaiah 25:1-10",
+      "book": "Isaiah",
+      "chapter": 25,
+      "verseStart": 1,
+      "verseEnd": 10
+    },
+    "secondLesson": {
+      "raw": "1 John 2:7-17",
+      "book": "1 John",
+      "chapter": 2,
+      "verseStart": 7,
+      "verseEnd": 17
+    }
+  },
+  {
+    "date": "2026-12-27",
+    "day": "Sunday",
+    "time": "19:00",
+    "occasion": "Evening",
+    "firstLesson": {
+      "raw": "Matthew 1:1-17",
+      "book": "Matthew",
+      "chapter": 1,
+      "verseStart": 1,
+      "verseEnd": 17
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-30",
+    "day": "Wednesday",
+    "time": "18:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "1 Chronicles 17:16-27",
+      "book": "1 Chronicles",
+      "chapter": 17,
+      "verseStart": 16,
+      "verseEnd": 27
+    },
+    "secondLesson": null
+  },
+  {
+    "date": "2026-12-31",
+    "day": "Thursday",
+    "time": "22:00",
+    "occasion": null,
+    "firstLesson": {
+      "raw": "Isaiah 60:1-9",
+      "book": "Isaiah",
+      "chapter": 60,
+      "verseStart": 1,
+      "verseEnd": 9
+    },
+    "secondLesson": {
+      "raw": "Ephesians 2:1-5",
+      "book": "Ephesians",
+      "chapter": 2,
+      "verseStart": 1,
+      "verseEnd": 5
+    }
+  }
+]

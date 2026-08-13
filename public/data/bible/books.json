@@ -1,0 +1,398 @@
+[
+  {
+    "name": "Genesis",
+    "abbreviation": "Gen",
+    "chapterCount": 50,
+    "testament": "OT"
+  },
+  {
+    "name": "Exodus",
+    "abbreviation": "Exo",
+    "chapterCount": 40,
+    "testament": "OT"
+  },
+  {
+    "name": "Leviticus",
+    "abbreviation": "Lev",
+    "chapterCount": 27,
+    "testament": "OT"
+  },
+  {
+    "name": "Numbers",
+    "abbreviation": "Num",
+    "chapterCount": 36,
+    "testament": "OT"
+  },
+  {
+    "name": "Deuteronomy",
+    "abbreviation": "Deu",
+    "chapterCount": 34,
+    "testament": "OT"
+  },
+  {
+    "name": "Joshua",
+    "abbreviation": "Jos",
+    "chapterCount": 24,
+    "testament": "OT"
+  },
+  {
+    "name": "Judges",
+    "abbreviation": "Jdg",
+    "chapterCount": 21,
+    "testament": "OT"
+  },
+  {
+    "name": "Ruth",
+    "abbreviation": "Rut",
+    "chapterCount": 4,
+    "testament": "OT"
+  },
+  {
+    "name": "1 Samuel",
+    "abbreviation": "1Sa",
+    "chapterCount": 31,
+    "testament": "OT"
+  },
+  {
+    "name": "2 Samuel",
+    "abbreviation": "2Sa",
+    "chapterCount": 24,
+    "testament": "OT"
+  },
+  {
+    "name": "1 Kings",
+    "abbreviation": "1Ki",
+    "chapterCount": 22,
+    "testament": "OT"
+  },
+  {
+    "name": "2 Kings",
+    "abbreviation": "2Ki",
+    "chapterCount": 25,
+    "testament": "OT"
+  },
+  {
+    "name": "1 Chronicles",
+    "abbreviation": "1Ch",
+    "chapterCount": 29,
+    "testament": "OT"
+  },
+  {
+    "name": "2 Chronicles",
+    "abbreviation": "2Ch",
+    "chapterCount": 36,
+    "testament": "OT"
+  },
+  {
+    "name": "Ezra",
+    "abbreviation": "Ezr",
+    "chapterCount": 10,
+    "testament": "OT"
+  },
+  {
+    "name": "Nehemiah",
+    "abbreviation": "Neh",
+    "chapterCount": 13,
+    "testament": "OT"
+  },
+  {
+    "name": "Esther",
+    "abbreviation": "Est",
+    "chapterCount": 10,
+    "testament": "OT"
+  },
+  {
+    "name": "Job",
+    "abbreviation": "Job",
+    "chapterCount": 42,
+    "testament": "OT"
+  },
+  {
+    "name": "Psalms",
+    "abbreviation": "Psa",
+    "chapterCount": 150,
+    "testament": "OT"
+  },
+  {
+    "name": "Proverbs",
+    "abbreviation": "Pro",
+    "chapterCount": 31,
+    "testament": "OT"
+  },
+  {
+    "name": "Ecclesiastes",
+    "abbreviation": "Ecc",
+    "chapterCount": 12,
+    "testament": "OT"
+  },
+  {
+    "name": "Song of Solomon",
+    "abbreviation": "Sng",
+    "chapterCount": 8,
+    "testament": "OT"
+  },
+  {
+    "name": "Isaiah",
+    "abbreviation": "Isa",
+    "chapterCount": 66,
+    "testament": "OT"
+  },
+  {
+    "name": "Jeremiah",
+    "abbreviation": "Jer",
+    "chapterCount": 52,
+    "testament": "OT"
+  },
+  {
+    "name": "Lamentations",
+    "abbreviation": "Lam",
+    "chapterCount": 5,
+    "testament": "OT"
+  },
+  {
+    "name": "Ezekiel",
+    "abbreviation": "Eze",
+    "chapterCount": 48,
+    "testament": "OT"
+  },
+  {
+    "name": "Daniel",
+    "abbreviation": "Dan",
+    "chapterCount": 12,
+    "testament": "OT"
+  },
+  {
+    "name": "Hosea",
+    "abbreviation": "Hos",
+    "chapterCount": 14,
+    "testament": "OT"
+  },
+  {
+    "name": "Joel",
+    "abbreviation": "Joe",
+    "chapterCount": 3,
+    "testament": "OT"
+  },
+  {
+    "name": "Amos",
+    "abbreviation": "Amo",
+    "chapterCount": 9,
+    "testament": "OT"
+  },
+  {
+    "name": "Obadiah",
+    "abbreviation": "Oba",
+    "chapterCount": 1,
+    "testament": "OT"
+  },
+  {
+    "name": "Jonah",
+    "abbreviation": "Jon",
+    "chapterCount": 4,
+    "testament": "OT"
+  },
+  {
+    "name": "Micah",
+    "abbreviation": "Mic",
+    "chapterCount": 7,
+    "testament": "OT"
+  },
+  {
+    "name": "Nahum",
+    "abbreviation": "Nah",
+    "chapterCount": 3,
+    "testament": "OT"
+  },
+  {
+    "name": "Habakkuk",
+    "abbreviation": "Hab",
+    "chapterCount": 3,
+    "testament": "OT"
+  },
+  {
+    "name": "Zephaniah",
+    "abbreviation": "Zep",
+    "chapterCount": 3,
+    "testament": "OT"
+  },
+  {
+    "name": "Haggai",
+    "abbreviation": "Hag",
+    "chapterCount": 2,
+    "testament": "OT"
+  },
+  {
+    "name": "Zechariah",
+    "abbreviation": "Zec",
+    "chapterCount": 14,
+    "testament": "OT"
+  },
+  {
+    "name": "Malachi",
+    "abbreviation": "Mal",
+    "chapterCount": 4,
+    "testament": "OT"
+  },
+  {
+    "name": "Matthew",
+    "abbreviation": "Mat",
+    "chapterCount": 28,
+    "testament": "NT"
+  },
+  {
+    "name": "Mark",
+    "abbreviation": "Mar",
+    "chapterCount": 16,
+    "testament": "NT"
+  },
+  {
+    "name": "Luke",
+    "abbreviation": "Luk",
+    "chapterCount": 24,
+    "testament": "NT"
+  },
+  {
+    "name": "John",
+    "abbreviation": "Joh",
+    "chapterCount": 21,
+    "testament": "NT"
+  },
+  {
+    "name": "Acts",
+    "abbreviation": "Act",
+    "chapterCount": 28,
+    "testament": "NT"
+  },
+  {
+    "name": "Romans",
+    "abbreviation": "Rom",
+    "chapterCount": 16,
+    "testament": "NT"
+  },
+  {
+    "name": "1 Corinthians",
+    "abbreviation": "1Co",
+    "chapterCount": 16,
+    "testament": "NT"
+  },
+  {
+    "name": "2 Corinthians",
+    "abbreviation": "2Co",
+    "chapterCount": 13,
+    "testament": "NT"
+  },
+  {
+    "name": "Galatians",
+    "abbreviation": "Gal",
+    "chapterCount": 6,
+    "testament": "NT"
+  },
+  {
+    "name": "Ephesians",
+    "abbreviation": "Eph",
+    "chapterCount": 6,
+    "testament": "NT"
+  },
+  {
+    "name": "Philippians",
+    "abbreviation": "Php",
+    "chapterCount": 4,
+    "testament": "NT"
+  },
+  {
+    "name": "Colossians",
+    "abbreviation": "Col",
+    "chapterCount": 4,
+    "testament": "NT"
+  },
+  {
+    "name": "1 Thessalonians",
+    "abbreviation": "1Th",
+    "chapterCount": 5,
+    "testament": "NT"
+  },
+  {
+    "name": "2 Thessalonians",
+    "abbreviation": "2Th",
+    "chapterCount": 3,
+    "testament": "NT"
+  },
+  {
+    "name": "1 Timothy",
+    "abbreviation": "1Ti",
+    "chapterCount": 6,
+    "testament": "NT"
+  },
+  {
+    "name": "2 Timothy",
+    "abbreviation": "2Ti",
+    "chapterCount": 4,
+    "testament": "NT"
+  },
+  {
+    "name": "Titus",
+    "abbreviation": "Tit",
+    "chapterCount": 3,
+    "testament": "NT"
+  },
+  {
+    "name": "Philemon",
+    "abbreviation": "Phm",
+    "chapterCount": 1,
+    "testament": "NT"
+  },
+  {
+    "name": "Hebrews",
+    "abbreviation": "Heb",
+    "chapterCount": 13,
+    "testament": "NT"
+  },
+  {
+    "name": "James",
+    "abbreviation": "Jas",
+    "chapterCount": 5,
+    "testament": "NT"
+  },
+  {
+    "name": "1 Peter",
+    "abbreviation": "1Pe",
+    "chapterCount": 5,
+    "testament": "NT"
+  },
+  {
+    "name": "2 Peter",
+    "abbreviation": "2Pe",
+    "chapterCount": 3,
+    "testament": "NT"
+  },
+  {
+    "name": "1 John",
+    "abbreviation": "1Jo",
+    "chapterCount": 5,
+    "testament": "NT"
+  },
+  {
+    "name": "2 John",
+    "abbreviation": "2Jo",
+    "chapterCount": 1,
+    "testament": "NT"
+  },
+  {
+    "name": "3 John",
+    "abbreviation": "3Jo",
+    "chapterCount": 1,
+    "testament": "NT"
+  },
+  {
+    "name": "Jude",
+    "abbreviation": "Jud",
+    "chapterCount": 1,
+    "testament": "NT"
+  },
+  {
+    "name": "Revelation",
+    "abbreviation": "Rev",
+    "chapterCount": 22,
+    "testament": "NT"
+  }
+]

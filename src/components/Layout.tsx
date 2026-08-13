@@ -1,0 +1,246 @@
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
+import logoUrl from '../assets/logo.png';
+
+const NavItems = [
+  { path: '/', label: 'Home', icon: '🏠' },
+  { path: '/services', label: 'Services', icon: '⛪' },
+  { path: '/hymns', label: 'Hymnal', icon: '🎵' },
+  { path: '/bible', label: 'Bible', icon: '📖' },
+  { path: '/lessons', label: 'Lessons', icon: '📅' },
+];
+
+const MoreItems = [
+  { path: '/notes', label: 'Notes', icon: '📝' },
+  { path: '/constitution', label: 'Constitution', icon: '📜' },
+  { path: '/devotion', label: 'Devotion', icon: '🕊️' },
+  { path: '/suggestions', label: 'Hymn Selector', icon: '🎶' },
+  { path: '/control', label: 'Operator', icon: '📺' },
+];
+
+export default function Layout() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { user, signOut, loading: authLoading } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const userInitial = user?.user_metadata?.display_name?.[0]?.toUpperCase()
+    || user?.email?.[0]?.toUpperCase()
+    || '?';
+
+  const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
+
+  return (
+    <div className="flex flex-col md:flex-row min-h-screen overflow-hidden"
+         style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>
+      
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 glass-sidebar h-screen sticky top-0 z-10 p-6">
+        <div className="flex items-center gap-3 mb-8">
+          <img 
+            src={logoUrl}
+            alt="CelestialWorship Logo" 
+            className="w-10 h-10 rounded-xl object-contain"
+            style={{ backgroundColor: 'var(--color-bg-card)' }}
+          />
+          <div>
+            <h1 className="text-lg font-[Outfit] font-bold tracking-wide"
+                style={{ color: 'var(--color-text-primary)' }}>
+              CelestialWorship
+            </h1>
+            <p className="text-[9px] uppercase tracking-widest"
+               style={{ color: 'var(--color-text-muted)' }}>
+              Celestial Worship Companion
+            </p>
+          </div>
+        </div>
+        
+        <nav className="flex flex-col gap-1 flex-1">
+          {NavItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
+                  isActive 
+                    ? 'shadow-sm' 
+                    : 'hover:opacity-80'
+                }`
+              }
+              style={({ isActive }) => ({
+                backgroundColor: isActive ? 'var(--color-accent-teal)' : 'transparent',
+                color: isActive ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
+              })}
+            >
+              <span className="text-lg">{item.icon}</span>
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+
+          <div className="mt-6 pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
+            <p className="text-[10px] uppercase tracking-wider px-4 mb-2"
+               style={{ color: 'var(--color-text-muted)' }}>More</p>
+            {MoreItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm"
+                style={({ isActive }) => ({
+                  color: isActive ? 'var(--color-accent-teal)' : 'var(--color-text-muted)',
+                })}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Theme Toggle & User Section */}
+          <div className="mt-auto pt-4 space-y-2" style={{ borderTop: '1px solid var(--color-border)' }}>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-full transition-colors text-sm"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
+              <span className="text-lg">{theme === 'light' ? '🌙' : '☀️'}</span>
+              <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+            </button>
+
+            {/* User Account */}
+            {!authLoading && (
+              user ? (
+                <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
+                     style={{ backgroundColor: 'var(--color-bg-card)' }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                       style={{ 
+                         background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-teal-light))',
+                         color: 'var(--color-text-on-accent)' 
+                       }}>
+                    {userInitial}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate" style={{ color: 'var(--color-text-primary)' }}>
+                      {userName}
+                    </p>
+                    <button 
+                      onClick={handleSignOut}
+                      className="text-[10px] hover:underline transition-colors"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <NavLink
+                  to="/signin"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-full transition-colors text-sm font-medium"
+                  style={{ 
+                    backgroundColor: 'color-mix(in srgb, var(--color-accent-teal) 12%, transparent)',
+                    color: 'var(--color-accent-teal)',
+                  }}
+                >
+                  <span>👤</span>
+                  <span>Sign In</span>
+                </NavLink>
+              )
+            )}
+          </div>
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col min-h-screen relative">
+        {/* Mobile Header */}
+        <header className="md:hidden flex items-center justify-between px-4 py-3 glass-nav z-10 sticky top-0">
+          <div className="flex items-center gap-2">
+            <img 
+              src={logoUrl}
+              alt="CelestialWorship" 
+              className="w-8 h-8 rounded-lg object-contain"
+              style={{ backgroundColor: 'var(--color-bg-card)' }}
+            />
+            <h1 className="text-base font-[Outfit] font-bold tracking-wide"
+                style={{ color: 'var(--color-text-primary)' }}>
+              CelestialWorship
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {!authLoading && !user && (
+              <NavLink
+                to="/signin"
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-sm"
+                style={{ 
+                  backgroundColor: 'color-mix(in srgb, var(--color-accent-teal) 15%, transparent)',
+                  color: 'var(--color-accent-teal)' 
+                }}
+              >
+                👤
+              </NavLink>
+            )}
+            {!authLoading && user && (
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
+                style={{ 
+                  background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-teal-light))',
+                  color: 'var(--color-text-on-accent)' 
+                }}
+              >
+                {userInitial}
+              </div>
+            )}
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+              style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar pb-20 md:pb-0">
+          <div className="max-w-5xl mx-auto animate-fade-in">
+            <Outlet />
+          </div>
+        </div>
+      </main>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-20 flex items-center justify-around px-2 py-1 pb-safe"
+           style={{ height: '68px' }}>
+        {NavItems.map((item) => {
+          const isActive = item.path === '/' 
+            ? location.pathname === '/' 
+            : location.pathname.startsWith(item.path);
+          
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              className="flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-all duration-200"
+            >
+              <span className={`text-xl mb-0.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] font-medium"
+                    style={{ color: isActive ? 'var(--color-accent-teal)' : 'var(--color-text-muted)' }}>
+                {item.label}
+              </span>
+            </NavLink>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
