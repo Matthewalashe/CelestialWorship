@@ -98,7 +98,7 @@ export default function Home() {
         
         <h1 className="text-3xl font-[Outfit] font-bold mb-1 tracking-tight"
             style={{ color: 'var(--color-text-primary)' }}>
-          {greeting}, <span style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</span>
+          <span style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</span> {greeting}
         </h1>
         <p className="text-sm mb-3 font-medium"
            style={{ color: 'var(--color-text-secondary)' }}>
