@@ -88,7 +88,7 @@ export default function Home() {
     }
   };
 
-  const { isInstallable, install } = usePWAInstall();
+  const { canPrompt, isInstalled, isIOS, install } = usePWAInstall();
 
   return (
     <div className="px-4 py-6 pb-24 animate-fade-in">
@@ -243,36 +243,25 @@ export default function Home() {
                 </span>
               </Link>
             ))}
+            {!isInstalled && (
+              <button
+                onClick={canPrompt ? install : undefined}
+                className="card p-4 flex flex-col items-center justify-center text-center group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 opacity-10"
+                     style={{ background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))' }} />
+                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform relative z-10">📲</div>
+                <span className="text-sm font-semibold relative z-10" style={{ color: 'var(--color-text-primary)' }}>
+                  Install App
+                </span>
+                <span className="text-[10px] mt-0.5 relative z-10" style={{ color: 'var(--color-text-muted)' }}>
+                  {canPrompt ? 'Tap to install' : isIOS ? 'Share → Add to Home' : 'Menu → Install'}
+                </span>
+              </button>
+            )}
           </div>
         </section>
 
-        {/* PWA Install Banner */}
-        {isInstallable && (
-          <section className="card p-4 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10"
-                 style={{ background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))' }} />
-            <div className="relative flex items-center justify-between gap-4">
-              <div>
-                <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-                  📲 Install CelestialWorship
-                </h3>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-                  Add to your home screen for offline access
-                </p>
-              </div>
-              <button
-                onClick={install}
-                className="px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition-all hover:scale-105"
-                style={{
-                  background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))',
-                  color: 'var(--color-text-on-accent)',
-                }}
-              >
-                Install
-              </button>
-            </div>
-          </section>
-        )}
 
         {/* Upcoming */}
         <section>

@@ -7,12 +7,20 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [canPrompt, setCanPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [dismissed, setDismissed] = useState(() => {
+    return sessionStorage.getItem('pwa-install-dismissed') === 'true';
+  });
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || (navigator as any).standalone === true;
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (isStandalone) {
       setIsInstalled(true);
       return;
     }
@@ -20,15 +28,13 @@ export function usePWAInstall() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setIsInstallable(true);
+      setCanPrompt(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
-
-    // Detect when installed
     window.addEventListener('appinstalled', () => {
       setIsInstalled(true);
-      setIsInstallable(false);
+      setCanPrompt(false);
       setDeferredPrompt(null);
     });
 
@@ -37,18 +43,32 @@ export function usePWAInstall() {
 
   const install = async () => {
     if (!deferredPrompt) return false;
-    
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
     if (outcome === 'accepted') {
       setIsInstalled(true);
-      setIsInstallable(false);
+      setCanPrompt(false);
     }
-    
     setDeferredPrompt(null);
     return outcome === 'accepted';
   };
 
-  return { isInstallable, isInstalled, install };
+  const dismiss = () => {
+    setDismissed(true);
+    sessionStorage.setItem('pwa-install-dismissed', 'true');
+  };
+
+  // Show banner if not installed, not dismissed
+  const showBanner = !isInstalled && !dismissed;
+
+  return {
+    canPrompt,     // true if native install prompt available (Chrome/Edge)
+    isInstalled,
+    isIOS,
+    isAndroid,
+    isSafari,
+    showBanner,
+    install,
+    dismiss,
+  };
 }
