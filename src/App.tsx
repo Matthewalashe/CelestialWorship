@@ -57,11 +57,11 @@ function App() {
             <Route path="/bible/:book/:chapter" element={<BibleChapter />} />
             <Route path="/devotion" element={<Devotion />} />
 
-            {/* Protected routes — require sign-in */}
-            <Route path="/suggestions" element={<AuthGuard><Suggestions /></AuthGuard>} />
-            <Route path="/control" element={<AuthGuard><Control /></AuthGuard>} />
-            <Route path="/notes" element={<AuthGuard><Notes /></AuthGuard>} />
-            <Route path="/constitution" element={<AuthGuard><Constitution /></AuthGuard>} />
+            {/* Routes — auth guard removed for now, re-enable when domain is ready */}
+            <Route path="/suggestions" element={<Suggestions />} />
+            <Route path="/control" element={<Control />} />
+            <Route path="/notes" element={<Notes />} />
+            <Route path="/constitution" element={<Constitution />} />
           </Route>
         </Routes>
       </Suspense>
