@@ -50,7 +50,10 @@ function getLiturgicalExclamation(date: Date): string {
   return 'Halleluyah';
 }
 
+import { usePageView } from '../hooks/useAnalytics';
+
 export default function Home() {
+  usePageView('home');
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
   

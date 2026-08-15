@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { BIBLE_BOOKS, OT_BOOKS, NT_BOOKS } from '../data/bibleBooks';
 import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
 import { useBibleAvailability } from '../hooks/useBible';
+import { usePageView } from '../hooks/useAnalytics';
 
 export default function Bible() {
+  usePageView('bible');
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [testament, setTestament] = useState<'all' | 'OT' | 'NT'>('all');

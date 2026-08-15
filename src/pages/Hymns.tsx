@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePageView } from '../hooks/useAnalytics';
 import { useHymnSearch } from '../hooks/useHymns';
 import { CATEGORY_LABELS, CATEGORY_COLORS, HymnCategory } from '../types';
 
 export default function Hymns() {
+  usePageView('hymns');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<HymnCategory[]>([]);

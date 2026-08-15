@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { openDB, IDBPDatabase } from 'idb';
 import { Note, NoteTag, SavedPassage } from '../types/notes';
+import { backupNoteToSupabase, deleteNoteFromSupabase } from './useNotesSync';
 
 const DB_NAME = 'celestialworship-notes';
 const DB_VERSION = 1;
@@ -50,6 +51,7 @@ export const notesApi = {
       updatedAt: now,
     };
     await db.put('notes', newNote);
+    backupNoteToSupabase(newNote);
     return newNote;
   },
   
@@ -67,12 +69,14 @@ export const notesApi = {
     };
     await store.put(updatedNote);
     await tx.done;
+    backupNoteToSupabase(updatedNote);
     return updatedNote;
   },
   
   async deleteNote(id: string): Promise<void> {
     const db = await getDB();
     await db.delete('notes', id);
+    deleteNoteFromSupabase(id);
   },
   
   async searchNotes(query: string): Promise<Note[]> {
@@ -103,6 +107,14 @@ export const notesApi = {
       savedAt: new Date().toISOString(),
     };
     await db.put('savedPassages', newPassage);
+    backupNoteToSupabase({
+      id: newPassage.id,
+      title: `${book} ${chapter}:${verseStart}${verseEnd > verseStart ? '-' + verseEnd : ''}`,
+      content: text,
+      tags: ['bible'],
+      createdAt: newPassage.savedAt,
+      updatedAt: newPassage.savedAt
+    });
     return newPassage;
   },
   

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useConstitutionSearch } from '../hooks/useConstitution';
 import type { ConstitutionSection, ConstitutionClause } from '../types';
+import { usePageView } from '../hooks/useAnalytics';
 
 function highlightText(text: string, query: string): React.ReactNode {
   if (!query.trim()) return <>{text}</>;
@@ -81,6 +82,7 @@ function NarrativeSection({ section, searchTerm }: { section: ConstitutionSectio
 }
 
 export default function Constitution() {
+  usePageView('constitution');
   const [expandedSection, setExpandedSection] = useState<string | null>('foundation_history');
   const [searchTerm, setSearchTerm] = useState('');
   const { sections, meta, loading, error } = useConstitutionSearch(searchTerm);

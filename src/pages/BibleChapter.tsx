@@ -4,6 +4,7 @@ import { BIBLE_BOOKS } from '../data/bibleBooks';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { useSavedPassages } from '../hooks/useNotes';
 import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
+import { usePageView } from '../hooks/useAnalytics';
 
 interface BibleChapterData {
   book: string;
@@ -12,6 +13,7 @@ interface BibleChapterData {
 }
 
 export default function BibleChapter() {
+  usePageView('bible_chapter');
   const { book: bookSlug, chapter: chapterStr } = useParams<{ book: string; chapter: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();

@@ -4,6 +4,7 @@ import { useHymnSearch } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
 import { DisplayState, Hymn } from '../types';
+import { usePageView } from '../hooks/useAnalytics';
 
 interface HistoryItem {
   id: string;
@@ -12,6 +13,7 @@ interface HistoryItem {
 }
 
 export default function Control() {
+  usePageView('operator');
   const { sendToDisplay, blankScreen, showLogo } = useDisplayController();
   const [displayState, setDisplayState] = useState<DisplayState>({ type: 'blank', content: '' });
   const [history, setHistory] = useState<HistoryItem[]>([]);

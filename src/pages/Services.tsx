@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
+import { usePageView } from '../hooks/useAnalytics';
 
 const SERVICE_GROUPS = [
   {
@@ -26,6 +27,7 @@ const SERVICE_GROUPS = [
 ];
 
 export default function Services() {
+  usePageView('services');
   const { services, loading } = useServices();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');

@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useHymn } from '../hooks/useHymns';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
+import { usePageView } from '../hooks/useAnalytics';
 
 export default function HymnDetail() {
+  usePageView('hymn_detail');
   const { number } = useParams();
   const navigate = useNavigate();
   const { hymn, loading } = useHymn(Number(number));
