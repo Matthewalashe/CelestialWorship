@@ -142,6 +142,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
   const [search, setSearch] = useState('');
   const { results: hymns = [] } = useHymnSearch(search, []);
   const [selectedHymn, setSelectedHymn] = useState<Hymn | null>(null);
+  const [displayLang, setDisplayLang] = useState<'en' | 'yo'>('en');
 
   const handleSelectHymn = (hymn: Hymn) => {
     setSelectedHymn(hymn);
@@ -152,12 +153,14 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
     if (!selectedHymn) return;
     const totalVerses = selectedHymn.verses?.length || 1;
 
+    // Send only the selected language
+    const content = displayLang === 'yo' ? (yoContent || enContent) : (enContent || yoContent);
+
     updateDisplay({
       type: 'hymn',
       hymnNumber: selectedHymn.number,
       title: selectedHymn.englishTitle || selectedHymn.yorubaTitle || `Hymn ${selectedHymn.number}`,
-      content: enContent,
-      subtitle: yoContent,
+      content,
       verseIndex: verseIndex,
       totalVerses: totalVerses
     });
@@ -169,11 +172,10 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
     if (selectedHymn.verses && selectedHymn.verses.length > 0) {
       hymnVerses = selectedHymn.verses.map((v: any) => ({
         index: v.number || (selectedHymn.verses!.indexOf(v) + 1),
-        en: (v.englishLines || []).join('\n'),
-        yo: (v.yorubaLines || []).join('\n'),
+        en: (v.english_lines || v.englishLines || []).join('\n'),
+        yo: (v.yoruba_lines || v.yorubaLines || []).join('\n'),
       }));
     } else {
-      // Fallback to splitting flat lyrics if no structured verses
       const enVerses = selectedHymn.englishLyrics ? selectedHymn.englishLyrics.split(/\n\n+/) : [];
       const yoVerses = selectedHymn.yorubaLyrics ? selectedHymn.yorubaLyrics.split(/\n\n+/) : [];
       const total = Math.max(enVerses.length, yoVerses.length);
@@ -259,24 +261,47 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
         </button>
       </div>
       
-      {/* Quick Nav */}
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-[Outfit] font-bold text-[var(--color-accent-gold)]">Verses</h3>
-        <div className="flex gap-2">
-          <button 
-            onClick={handlePrevVerse}
-            disabled={!activeVerseIndex || activeVerseIndex <= 1}
-            className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-          >
-            ← Prev
-          </button>
-          <button 
-            onClick={handleNextVerse}
-            disabled={!activeVerseIndex || activeVerseIndex >= hymnVerses.length}
-            className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-          >
-            Next →
-          </button>
+      {/* Quick Nav + Language Toggle */}
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-[Outfit] font-bold text-[var(--color-accent-gold)]">Verses</h3>
+          <div className="flex gap-2">
+            <button 
+              onClick={handlePrevVerse}
+              disabled={!activeVerseIndex || activeVerseIndex <= 1}
+              className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+            >
+              ← Prev
+            </button>
+            <button 
+              onClick={handleNextVerse}
+              disabled={!activeVerseIndex || activeVerseIndex >= hymnVerses.length}
+              className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">Display Language:</span>
+          <div className="flex bg-[var(--color-bg-card)] rounded-lg p-0.5 border border-[var(--color-border)]">
+            <button
+              onClick={() => setDisplayLang('en')}
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                displayLang === 'en' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+              }`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => setDisplayLang('yo')}
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                displayLang === 'yo' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+              }`}
+            >
+              Yorùbá
+            </button>
+          </div>
         </div>
       </div>
       
@@ -320,8 +345,9 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
   const [selectedBook, setSelectedBook] = useState<string>('Genesis');
   const [selectedChapter, setSelectedChapter] = useState<number>(1);
   const [selectedVerseRange, setSelectedVerseRange] = useState<number[]>([]);
+  const [bibleLang, setBibleLang] = useState<'en' | 'yo'>('en');
 
-  const { data: chapterData, loading } = useBible(selectedBook, selectedChapter);
+  const { data: chapterData, loading } = useBible(selectedBook, selectedChapter, bibleLang);
 
   const bookInfo = BIBLE_BOOKS.find(b => b.name === selectedBook) || BIBLE_BOOKS[0];
   const chapters = Array.from({ length: bookInfo.chapters }, (_, i) => i + 1);
@@ -330,7 +356,6 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
     e.preventDefault();
     if (!quickRef) return;
     
-    // Simple parser: "John 3:16", "1 John 1", "Genesis 1:1-5"
     const match = quickRef.match(/^(\d?\s*[a-zA-Z\s]+)\s+(\d+)(?::(\d+)(?:-(\d+))?)?$/);
     if (match) {
       const bookStr = match[1].trim();
@@ -357,7 +382,6 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
     setSelectedVerseRange([vNum]);
   };
   
-  // Create books grouped by testament
   const otBooks = BIBLE_BOOKS.filter(b => b.testament === 'OT');
   const ntBooks = BIBLE_BOOKS.filter(b => b.testament === 'NT');
 
@@ -376,6 +400,29 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
               className="w-full bg-[var(--color-bg-card)] border-2 border-[var(--color-border)] rounded-xl py-3 pl-12 pr-4 text-md focus:outline-none focus:border-[var(--color-accent-teal)] shadow-sm"
             />
           </form>
+
+          {/* Bible Language Toggle */}
+          <div className="flex items-center gap-2 bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-3">
+            <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">Language:</span>
+            <div className="flex bg-[var(--color-bg-secondary)] rounded-lg p-0.5 flex-1">
+              <button
+                onClick={() => setBibleLang('en')}
+                className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  bibleLang === 'en' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                }`}
+              >
+                English (KJV)
+              </button>
+              <button
+                onClick={() => setBibleLang('yo')}
+                className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  bibleLang === 'yo' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                }`}
+              >
+                Yorùbá
+              </button>
+            </div>
+          </div>
 
           <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 flex flex-col flex-1 overflow-hidden shadow-sm">
             <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-widest mb-3">Books</h3>

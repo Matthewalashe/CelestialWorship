@@ -62,15 +62,6 @@ export default function Display() {
                   </p>
                 ))}
               </div>
-              {state.subtitle && (
-                <div className="text-center mt-6 border-t border-white/10 pt-6">
-                  {state.subtitle.split('\n').map((line, i) => (
-                    <p key={i} className="text-[0.6em] leading-[1.4] font-medium italic text-[var(--color-accent-gold)]/90 drop-shadow-xl" style={{ marginBottom: line.trim() === '' ? '0.6em' : '0.15em' }}>
-                      {line || '\u00A0'}
-                    </p>
-                  ))}
-                </div>
-              )}
             </AutoScaledText>
 
             {(state.verseIndex !== undefined && state.totalVerses !== undefined) && (
