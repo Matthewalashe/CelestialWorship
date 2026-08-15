@@ -76,10 +76,16 @@ export default function ServiceDetail() {
           <span>{service.time}</span>
         </div>
         {headerStep && (
-          <p className="text-sm italic pl-3" 
+          <div className="text-sm italic pl-3" 
              style={{ color: 'var(--color-text-secondary)', borderLeft: '2px solid var(--color-accent-gold)' }}>
-            {headerStep.text}
-          </p>
+            {headerStep.textLines && headerStep.textLines.length > 0 ? (
+              headerStep.textLines.map((line: string, i: number) => (
+                <p key={i} className={i > 0 ? "mt-1" : ""}>{line}</p>
+              ))
+            ) : (
+              <p>{headerStep.text}</p>
+            )}
+          </div>
         )}
       </div>
 
@@ -110,13 +116,17 @@ export default function ServiceDetail() {
               {/* Step content */}
               <div className="card p-4 flex-1 mb-1">
                 {isRubric ? (
-                  <p className="text-sm italic" style={{ color: 'var(--color-text-muted)' }}>
-                    ✦ {step.text}
-                  </p>
+                  <div className="text-sm italic space-y-2" style={{ color: 'var(--color-text-muted)' }}>
+                    {step.textLines && step.textLines.length > 0 ? step.textLines.map((line: string, i: number) => (
+                      <p key={i}>{i === 0 ? '✦ ' : '  '}{line}</p>
+                    )) : <p>✦ {step.text}</p>}
+                  </div>
                 ) : (
-                  <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                    {step.text}
-                  </p>
+                  <div className="text-sm font-medium space-y-2" style={{ color: 'var(--color-text-primary)' }}>
+                    {step.textLines && step.textLines.length > 0 ? step.textLines.map((line: string, i: number) => (
+                      <p key={i}>{line}</p>
+                    )) : <p>{step.text}</p>}
+                  </div>
                 )}
 
                 {/* Hymn slot button */}
@@ -134,8 +144,25 @@ export default function ServiceDetail() {
                   </Link>
                 )}
 
-                {/* Scripture reference button */}
-                {step.scriptureRef && (
+                {/* Scripture reference buttons */}
+                {step.scriptureReferences && step.scriptureReferences.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 mt-2 ml-2">
+                    {step.scriptureReferences.map((ref: ScriptureReference, i: number) => (
+                      <Link
+                        key={i}
+                        to={scriptureRefLink(ref)}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                        style={{
+                          backgroundColor: 'color-mix(in srgb, var(--color-accent-blue) 15%, transparent)',
+                          color: 'var(--color-accent-blue)',
+                          border: '1px solid color-mix(in srgb, var(--color-accent-blue) 25%, transparent)',
+                        }}
+                      >
+                        📖 {formatScriptureRef(ref)}
+                      </Link>
+                    ))}
+                  </div>
+                ) : step.scriptureRef && (
                   <Link
                     to={scriptureRefLink(step.scriptureRef)}
                     className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold mt-2 ml-2 transition-colors"

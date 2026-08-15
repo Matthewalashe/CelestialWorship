@@ -23,11 +23,11 @@ export default function Layout() {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen overflow-hidden"
+    <div className="flex flex-col md:flex-row min-h-screen"
          style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>
       
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 glass-sidebar h-screen sticky top-0 z-10 p-6">
+      <aside className="hidden md:flex flex-col w-64 glass-sidebar fixed top-0 left-0 h-screen z-10 p-6">
         <div className="flex items-center gap-3 mb-8">
           <img 
             src={logoUrl}
@@ -47,7 +47,7 @@ export default function Layout() {
           </div>
         </div>
         
-        <nav className="flex flex-col gap-1 flex-1">
+        <nav className="flex flex-col gap-1 flex-1 overflow-y-auto min-h-0">
           {NavItems.map((item) => (
             <NavLink
               key={item.path}
@@ -103,7 +103,7 @@ export default function Layout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-h-screen relative">
+      <main className="flex-1 flex flex-col min-h-screen relative md:ml-64">
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 glass-nav z-10 sticky top-0">
           <div className="flex items-center gap-2">

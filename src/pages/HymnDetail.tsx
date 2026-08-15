@@ -16,19 +16,12 @@ export default function HymnDetail() {
   if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">Loading...</div>;
   if (!hymn) return <div className="p-4 text-center text-red-400">Hymn not found</div>;
 
-  const englishVerses = hymn.englishLyrics ? hymn.englishLyrics.split(/\n\n+/) : [];
-  const yorubaVerses = hymn.yorubaLyrics ? hymn.yorubaLyrics.split(/\n\n+/) : [];
-  
-  const totalVerses = Math.max(englishVerses.length, yorubaVerses.length);
-  const verses = Array.from({ length: totalVerses }).map((_, i) => ({
-    number: i + 1,
-    en: englishVerses[i] || '',
-    yo: yorubaVerses[i] || ''
-  }));
+  const verses = hymn.verses || [];
+  const totalVerses = verses.length;
 
   const handleShare = () => {
     const text = `Hymn ${hymn.number} - ${hymn.englishTitle || hymn.yorubaTitle}\n\n` + 
-      verses.map(v => `Verse ${v.number}\n${v.en || v.yo}`).join('\n\n');
+      verses.map((v: any) => `Verse ${v.number}\n${(v.englishLines || []).join('\n') || (v.yorubaLines || []).join('\n')}`).join('\n\n');
     navigator.clipboard.writeText(text);
     alert('Lyrics copied to clipboard!');
   };
@@ -37,13 +30,16 @@ export default function HymnDetail() {
     const verse = verses[verseIndex];
     if (!verse) return;
     
-    let content = verse.en;
-    if (activeTab === 'Yoruba' && verse.yo) {
-      content = verse.yo;
-    } else if (activeTab === 'Side-by-Side' && verse.en && verse.yo) {
-      content = `${verse.en}\n\n${verse.yo}`;
-    } else if (!content && verse.yo) {
-      content = verse.yo;
+    const enText = (verse.englishLines || []).join('\n');
+    const yoText = (verse.yorubaLines || []).join('\n');
+    
+    let content = enText;
+    if (activeTab === 'Yoruba' && yoText) {
+      content = yoText;
+    } else if (activeTab === 'Side-by-Side' && enText && yoText) {
+      content = `${enText}\n\n${yoText}`;
+    } else if (!content && yoText) {
+      content = yoText;
     }
 
     const title = hymn.englishTitle || hymn.yorubaTitle || `Hymn ${hymn.number}`;
@@ -100,8 +96,10 @@ export default function HymnDetail() {
             {showSolfa ? 'Hide Solfa Notation' : 'Show Solfa Notation'}
           </button>
           {showSolfa && (
-            <div className="p-4 bg-[var(--color-bg-card)] rounded-lg mt-2 border border-[var(--color-border)] font-mono text-sm text-[var(--color-accent-teal)] whitespace-pre-wrap">
-              {hymn.solfaNotation}
+            <div className="p-4 bg-[var(--color-bg-card)] rounded-lg mt-2 border border-[var(--color-border)] font-mono text-sm text-[var(--color-accent-teal)] overflow-x-auto">
+              {hymn.solfaNotation.split('\n').map((line: string, i: number) => (
+                <div key={i} className="min-h-[1.25rem] whitespace-pre">{line}</div>
+              ))}
             </div>
           )}
         </div>
@@ -125,36 +123,75 @@ export default function HymnDetail() {
         </div>
       </div>
 
-      <div className="space-y-12">
-        {verses.map((verse, idx) => (
-          <div key={idx} className="relative group">
-            <div className="absolute -left-4 md:-left-12 top-0 text-3xl font-black text-[var(--color-border)] group-hover:text-[var(--color-accent-gold)]/30 transition-colors font-outfit">
-              {verse.number}
-            </div>
-            
-            <div className={`grid gap-8 ${activeTab === 'Side-by-Side' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
-              {(activeTab === 'English' || activeTab === 'Side-by-Side') && verse.en && (
-                <div className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter whitespace-pre-line">
-                  {verse.en}
-                </div>
-              )}
-              {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && verse.yo && (
-                <div className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter whitespace-pre-line italic">
-                  {verse.yo}
-                </div>
-              )}
-            </div>
+      {hymn.needsVerseSplitReview && (
+        <div className="bg-orange-500/10 border border-orange-500/30 p-4 rounded-xl mb-6 text-orange-400 text-sm flex items-center justify-center font-medium">
+          ℹ️ Verse numbering pending review
+        </div>
+      )}
 
-            <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button 
-                onClick={() => handleSendToDisplay(idx)}
-                className="bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded shadow-lg hover:scale-105 transition-transform cursor-pointer"
-              >
-                Display Verse {verse.number}
-              </button>
+      <div className="space-y-8">
+        {hymn.needsVerseSplitReview ? (
+          <div className="relative group card p-6 md:p-8 rounded-2xl bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50">
+            <div className={`grid gap-8 ${activeTab === 'Side-by-Side' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+              {(activeTab === 'English' || activeTab === 'Side-by-Side') && (
+                <div className="flex flex-col gap-4">
+                  {verses.flatMap((v: any) => v.englishLines || []).map((line: string, i: number) => (
+                    <p key={`en-${i}`} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter">
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && (
+                <div className="flex flex-col gap-4">
+                  {verses.flatMap((v: any) => v.yorubaLines || []).map((line: string, i: number) => (
+                    <p key={`yo-${i}`} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter italic">
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        ) : (
+          verses.map((verse: any, idx: number) => (
+            <div key={idx} className="relative group card p-6 md:p-8 rounded-2xl bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50 overflow-hidden">
+              <div className="absolute top-2 right-4 md:-left-4 md:top-2 md:right-auto text-6xl md:text-8xl font-black text-[var(--color-accent-gold)]/10 font-outfit select-none pointer-events-none">
+                {verse.number}
+              </div>
+              
+              <div className={`grid gap-8 ${activeTab === 'Side-by-Side' ? 'md:grid-cols-2' : 'grid-cols-1'} relative z-10`}>
+                {(activeTab === 'English' || activeTab === 'Side-by-Side') && verse.englishLines && verse.englishLines.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    {verse.englishLines.map((line: string, i: number) => (
+                      <p key={i} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                )}
+                {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && verse.yorubaLines && verse.yorubaLines.length > 0 && (
+                  <div className="flex flex-col gap-4">
+                    {verse.yorubaLines.map((line: string, i: number) => (
+                      <p key={i} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter italic">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                <button 
+                  onClick={() => handleSendToDisplay(idx)}
+                  className="bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                >
+                  Display Verse {verse.number}
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-[var(--color-bg-primary)]/80 backdrop-blur-xl border-t border-[var(--color-border)] z-50">

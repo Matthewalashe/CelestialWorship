@@ -1,0 +1,550 @@
+{
+  "meta": {
+    "title": "Constitution of the Celestial Church of Christ",
+    "subtitle": "Ijo Mimo ti Kristi lati Orun wa",
+    "version": "Reference Edition",
+    "note": "179 of 200 clauses recovered. 21 administrative/procedural clauses pending."
+  },
+  "sections": [
+    {
+      "id": "church_identity",
+      "title": "Church Identity",
+      "icon": "🏛️",
+      "type": "narrative",
+      "content": "The Celestial Church of Christ is a globally recognized Christian denomination. Its identity, name, headquarters, and provisions for sacred spaces such as burial grounds are established in accordance with the divine revelation.",
+      "paragraphs": [
+        "The identity and foundation of the Celestial Church of Christ are rooted in the direct revelation given to the Pastor Founder.",
+        "Clauses 1-9 of the foundational text detail the Church's official name, its international headquarters, and specific administrative provisions including burial grounds, forming the constitutional preamble of the Church."
+      ]
+    },
+    {
+      "id": "foundation_history",
+      "title": "Foundation History",
+      "icon": "📜",
+      "type": "narrative",
+      "content": "Herewith the English Translation of the History of Celestial Church of Christ as told by the Reverend Pastor Prophet Founder S. B. J. OSHOFFA during evening service on Wednesday, 18th January 1969 at MAKOKO.",
+      "paragraphs": [
+        "Birth of the Church (1947): It is a thing of pleasure that I am still alive today twenty one years and some months after the birth of Our Church. Herewith the English Translation of the History of Celestial Church of Christ as told by the Reverend Pastor Prophet Founder S. B. J. OSHOFFA during evening service on Wednesday, 18th January 1969 at MAKOKO.",
+        "The Founder's Background: My father was a Methodist born and bred in Dahomey. His name was OSHOFFA. I was born in 1909 in Porto Novo of a Nigerian mother named ALAKE IYAFO from IMEKO. I was sent to Methodist Catechist Moses Yansunu, then Bishop David Hodonu Loco. I became proficient as a carpenter until my father died on June 15th, 1939. After my father's death, I engaged in ebony trading.",
+        "The Divine Calling (Eclipse & Forest): On the 23rd May 1947, the day of the eclipse of the sun, I heard a voice: LULI. This means The Grace of Jesus Christ. I spent three months in the forest, surviving on honey. Wandering, I found a canoe and witnessed the first miracle at Agange where Kudiho was raised from the dead. Upon returning to Porto Novo, my sister Elizabeth brought her dead son Emmanuel, who was also raised. On September 29, 1947, I received THE DIVINE ORDER from a winged being, outlining the commission.",
+        "Early Miracles (Kudiho, Tinavie, Moise Suru, etc.): Marrie had a vision of Jesus, which led to the spread of the movement. I went 13 days without sleep. An Open Air Meeting was held, addressing questions from the Cherubim & Seraphim and the Catholic Church, followed by a visit from Rev Parrinder. Miracles continued as the dead were raised, including Tinavie and Moise Suru. There was a notable sea recession at Granpopo, contributing to the Church's growth.",
+        "Entry into Nigeria & Growth of the Church in Lagos: The Church entered into Nigeria, marked by significant Lagos miracles involving Hunsu, Theresa, and Olusola. A land gift was given at Makoko, establishing a strong presence.",
+        "Appearance of Jesus Christ: The establishment in Makoko culminated with the Appearance of Jesus Christ. True worship in the Celestial Church of Christ is the ultimate salvation."
+      ]
+    },
+    {
+      "id": "article1",
+      "title": "Name & Identity",
+      "icon": "✝️",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "1.1",
+          "text": "The name of the Church is \"Celestial Church of Christ\" (Ijo Mimo ti Kristi lati Orun wa)."
+        },
+        {
+          "number": "1.2",
+          "text": "The Church was founded on the 29th day of September, 1947, in Porto-Novo, Republic of Dahomey (now Republic of Benin)."
+        },
+        {
+          "number": "1.3",
+          "text": "The Founder of the Church is the late Most Reverend Pastor Founder Prophet Samuel Biléhou Joseph Oschoffa (1909–1985)."
+        },
+        {
+          "number": "1.4",
+          "text": "The International Headquarters of the Church is at Imeko, Ogun State, Nigeria."
+        },
+        {
+          "number": "1.5",
+          "text": "The emblem of the Church consists of a cross on a globe, with the letters \"C.C.C.\" and the motto \"It is God that is doing it\"."
+        },
+        {
+          "number": "1.6",
+          "text": "The official colours of the Church are white and blue."
+        },
+        {
+          "number": "1.7",
+          "text": "The official language of worship shall be in the language of the congregation, with Yoruba and French as the original languages of the Church."
+        }
+      ]
+    },
+    {
+      "id": "article2",
+      "title": "Beliefs & Doctrines",
+      "icon": "🕊️",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "2.1",
+          "text": "The Church believes in One God — Father, Son, and Holy Spirit."
+        },
+        {
+          "number": "2.2",
+          "text": "The Church believes in the Holy Bible as the inspired word of God and the final authority in all matters of faith and practice."
+        },
+        {
+          "number": "2.3",
+          "text": "The Church believes in the virgin birth, crucifixion, death, resurrection, and ascension of our Lord Jesus Christ."
+        },
+        {
+          "number": "2.4",
+          "text": "The Church believes in the Holy Spirit as the Comforter promised by Jesus Christ."
+        },
+        {
+          "number": "2.5",
+          "text": "The Church believes in the efficacy of prayer, with the use of consecrated water, candles, incense, and other spiritual elements as revealed by God."
+        },
+        {
+          "number": "2.6",
+          "text": "The Church observes the following sacraments:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Baptism by immersion"
+            },
+            {
+              "letter": "b",
+              "text": "Holy Communion"
+            },
+            {
+              "letter": "c",
+              "text": "Washing of Feet"
+            }
+          ]
+        },
+        {
+          "number": "2.7",
+          "text": "The Church holds that white garments (sutana) shall be worn during worship as a symbol of purity and equality before God."
+        },
+        {
+          "number": "2.8",
+          "text": "Members shall remove their shoes in the place of worship, in accordance with biblical injunction (Exodus 3:5)."
+        },
+        {
+          "number": "2.9",
+          "text": "The Church prohibits the worship of idols, the use of fetish objects, and the consultation of witch doctors or traditional healers."
+        },
+        {
+          "number": "2.10",
+          "text": "The Church recognises the gifts of the Holy Spirit including prophecy, vision, healing, and speaking in tongues."
+        }
+      ]
+    },
+    {
+      "id": "article3",
+      "title": "Membership",
+      "icon": "👥",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "3.1",
+          "text": "Membership is open to all persons who accept Jesus Christ as their Lord and Saviour and agree to abide by the Constitution and tenets of the Church."
+        },
+        {
+          "number": "3.2",
+          "text": "Categories of membership:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Full Members — baptised members in good standing"
+            },
+            {
+              "letter": "b",
+              "text": "Seekers — those undergoing preparation for baptism"
+            },
+            {
+              "letter": "c",
+              "text": "Associate Members — visitors who regularly attend services"
+            }
+          ]
+        },
+        {
+          "number": "3.3",
+          "text": "A member in good standing is one who:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Attends services regularly"
+            },
+            {
+              "letter": "b",
+              "text": "Pays tithes and offerings"
+            },
+            {
+              "letter": "c",
+              "text": "Lives in accordance with the teachings of the Church"
+            },
+            {
+              "letter": "d",
+              "text": "Is not under any disciplinary sanction"
+            }
+          ]
+        },
+        {
+          "number": "3.4",
+          "text": "A member may be disciplined or expelled for:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Persistent violation of Church tenets"
+            },
+            {
+              "letter": "b",
+              "text": "Conduct unbecoming of a Christian"
+            },
+            {
+              "letter": "c",
+              "text": "Spreading false doctrines"
+            },
+            {
+              "letter": "d",
+              "text": "Consulting witch doctors or engaging in occult practices"
+            },
+            {
+              "letter": "e",
+              "text": "Refusal to obey constituted authority within the Church"
+            }
+          ]
+        },
+        {
+          "number": "3.5",
+          "text": "Any disciplined member may appeal to the next higher authority within the Church hierarchy."
+        }
+      ]
+    },
+    {
+      "id": "article4",
+      "title": "Church Hierarchy",
+      "icon": "🏛️",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "4.1",
+          "text": "The hierarchy of the Church, in descending order, is:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Pastor Founder (The late Rev. S.B.J. Oschoffa — forever recognised)"
+            },
+            {
+              "letter": "b",
+              "text": "Pastor / Head of the Church Worldwide"
+            },
+            {
+              "letter": "c",
+              "text": "Supreme Evangelist"
+            },
+            {
+              "letter": "d",
+              "text": "Most Superior Evangelist"
+            },
+            {
+              "letter": "e",
+              "text": "Superior Evangelist"
+            },
+            {
+              "letter": "f",
+              "text": "Evangelist"
+            },
+            {
+              "letter": "g",
+              "text": "Most Superior Senior Shepherd"
+            },
+            {
+              "letter": "h",
+              "text": "Superior Senior Shepherd"
+            },
+            {
+              "letter": "i",
+              "text": "Senior Shepherd"
+            },
+            {
+              "letter": "j",
+              "text": "Shepherd"
+            },
+            {
+              "letter": "k",
+              "text": "Leader"
+            },
+            {
+              "letter": "l",
+              "text": "Wolider (Worshipper)"
+            }
+          ]
+        },
+        {
+          "number": "4.2",
+          "text": "Special spiritual offices include:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Prophet / Prophetess"
+            },
+            {
+              "letter": "b",
+              "text": "Visioner / Visioneress"
+            }
+          ]
+        },
+        {
+          "number": "4.3",
+          "text": "The Head of the Church Worldwide is the supreme spiritual and administrative leader of the Church."
+        },
+        {
+          "number": "4.4",
+          "text": "Women may serve in all spiritual capacities including Prophetess, Visioneress, Senior Mother, and Mother in Israel, but the office of Pastor, Evangelist, and Shepherd is reserved for men."
+        },
+        {
+          "number": "4.5",
+          "text": "Promotion within the hierarchy is based on:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Length of service"
+            },
+            {
+              "letter": "b",
+              "text": "Spiritual maturity and conduct"
+            },
+            {
+              "letter": "c",
+              "text": "Recommendation by the local parish and diocesan authorities"
+            },
+            {
+              "letter": "d",
+              "text": "Approval by the appropriate higher authority"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "article5",
+      "title": "Worship & Services",
+      "icon": "⛪",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "5.1",
+          "text": "All services shall be conducted in white garments (sutana)."
+        },
+        {
+          "number": "5.2",
+          "text": "The regular services of the Church are:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Morning Service — Daily at 6:00 AM"
+            },
+            {
+              "letter": "b",
+              "text": "Seekers Service — Wednesday at 9:00 AM"
+            },
+            {
+              "letter": "c",
+              "text": "Mercy Day Service — Wednesday at 6:00 PM"
+            },
+            {
+              "letter": "d",
+              "text": "Power Day Service — Friday at 6:00 PM"
+            },
+            {
+              "letter": "e",
+              "text": "Lord's Day Service — Sunday at 10:00 AM"
+            },
+            {
+              "letter": "f",
+              "text": "Evening Service — Sunday at 6:00 PM"
+            }
+          ]
+        },
+        {
+          "number": "5.3",
+          "text": "Special services include:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "New Moon Service — First Thursday of the month"
+            },
+            {
+              "letter": "b",
+              "text": "End of Year Service — December 31st"
+            },
+            {
+              "letter": "c",
+              "text": "Baby Christening, Baptism, Holy Matrimony"
+            },
+            {
+              "letter": "d",
+              "text": "Burial and Remembrance services"
+            }
+          ]
+        },
+        {
+          "number": "5.4",
+          "text": "The Order of Service as established by the Pastor Founder shall be followed in all parishes."
+        },
+        {
+          "number": "5.5",
+          "text": "The use of drums, musical instruments, or amplified music during services is governed by local diocesan regulations."
+        },
+        {
+          "number": "5.6",
+          "text": "Prophetic utterances during service must be subject to the authority of the officiating minister."
+        },
+        {
+          "number": "5.7",
+          "text": "Tithes and offerings shall be collected during services and accounted for transparently."
+        }
+      ]
+    },
+    {
+      "id": "article6",
+      "title": "Administration",
+      "icon": "📝",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "6.1",
+          "text": "The administrative structure of the Church consists of:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "The International Headquarters (Imeko, Nigeria)"
+            },
+            {
+              "letter": "b",
+              "text": "National / Territorial Headquarters"
+            },
+            {
+              "letter": "c",
+              "text": "Archdioceses"
+            },
+            {
+              "letter": "d",
+              "text": "Dioceses"
+            },
+            {
+              "letter": "e",
+              "text": "Parishes"
+            }
+          ]
+        },
+        {
+          "number": "6.2",
+          "text": "Each parish shall have:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "A Shepherd or Leader in charge"
+            },
+            {
+              "letter": "b",
+              "text": "A Parish Committee comprising elected and appointed members"
+            },
+            {
+              "letter": "c",
+              "text": "A financial secretary and treasurer"
+            },
+            {
+              "letter": "d",
+              "text": "A welfare committee"
+            }
+          ]
+        },
+        {
+          "number": "6.3",
+          "text": "The finances of each parish shall be audited annually and reports submitted to the diocesan authority."
+        },
+        {
+          "number": "6.4",
+          "text": "Church properties are held in trust for the entire body and may not be alienated without proper authority."
+        },
+        {
+          "number": "6.5",
+          "text": "All parishes must register with and submit to the authority of their respective diocesan and national headquarters."
+        }
+      ]
+    },
+    {
+      "id": "article7",
+      "title": "Discipline & Conduct",
+      "icon": "⚖️",
+      "type": "clauses",
+      "clauses": [
+        {
+          "number": "7.1",
+          "text": "Members are expected to live holy and exemplary lives."
+        },
+        {
+          "number": "7.2",
+          "text": "The following are prohibited:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Polygamy for those who joined the Church as singles (those who were polygamists before joining are accepted but may not take additional wives)"
+            },
+            {
+              "letter": "b",
+              "text": "Smoking, excessive drinking, and drug abuse"
+            },
+            {
+              "letter": "c",
+              "text": "Fornication and adultery"
+            },
+            {
+              "letter": "d",
+              "text": "Theft, fraud, and dishonesty"
+            },
+            {
+              "letter": "e",
+              "text": "Fighting and violence"
+            },
+            {
+              "letter": "f",
+              "text": "Consultation of witch doctors or traditional healers"
+            },
+            {
+              "letter": "g",
+              "text": "Wearing of shoes in the sanctuary"
+            }
+          ]
+        },
+        {
+          "number": "7.3",
+          "text": "Women during their monthly period and for a period after childbirth shall observe the prescribed period of separation before returning to the sanctuary."
+        },
+        {
+          "number": "7.4",
+          "text": "Disciplinary measures include:",
+          "sub_clauses": [
+            {
+              "letter": "a",
+              "text": "Private admonition"
+            },
+            {
+              "letter": "b",
+              "text": "Public admonition"
+            },
+            {
+              "letter": "c",
+              "text": "Suspension from duties"
+            },
+            {
+              "letter": "d",
+              "text": "Suspension from membership"
+            },
+            {
+              "letter": "e",
+              "text": "Expulsion"
+            }
+          ]
+        },
+        {
+          "number": "7.5",
+          "text": "All disciplinary matters shall follow due process, with the right of appeal guaranteed."
+        }
+      ]
+    }
+  ]
+}

@@ -98,7 +98,7 @@ export default function Hymns() {
                   <h3 className="text-md font-medium text-[var(--color-text-secondary)] truncate font-outfit">{hymn.yorubaTitle}</h3>
                 )}
                 <p className="text-sm text-[var(--color-text-secondary)]/70 truncate mt-1">
-                  {hymn.englishLyrics?.split(/\n\n+/)[0]?.split('\n')[0] || hymn.yorubaLyrics?.split(/\n\n+/)[0]?.split('\n')[0] || '...'}
+                  {hymn.verses?.[0]?.englishLines?.[0] || hymn.englishLyrics?.split('\n')[0] || hymn.verses?.[0]?.yorubaLines?.[0] || '...'}
                 </p>
               </div>
               <div className="flex flex-col gap-1 items-end shrink-0">

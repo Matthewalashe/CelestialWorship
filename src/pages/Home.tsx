@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTodaysLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { useNotifications } from '../hooks/useNotifications';
 
 /**
  * Compute Easter Sunday for a given year using the Anonymous Gregorian algorithm.
@@ -89,6 +90,7 @@ export default function Home() {
   };
 
   const { canPrompt, isInstalled, isIOS, install } = usePWAInstall();
+  const { isSupported: notifSupported, permission: notifPermission, requestPermission, prefs: notifPrefs, toggleServiceReminders, toggleDevotionReminders } = useNotifications();
 
   return (
     <div className="px-4 py-6 pb-24 animate-fade-in">
@@ -112,6 +114,44 @@ export default function Home() {
           Celestial Worship Companion
         </p>
       </header>
+
+      {/* Notification Prompt */}
+      {notifSupported && notifPermission !== 'granted' && (
+        <div
+          className="card p-4 mb-6 flex items-center justify-between"
+          style={{ borderLeft: '3px solid var(--color-accent-gold)' }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🔔</span>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Enable Notifications</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Get service reminders & daily devotion alerts</p>
+            </div>
+          </div>
+          <button
+            onClick={requestPermission}
+            className="btn-primary px-4 py-2 rounded-lg text-xs font-bold"
+          >
+            Enable
+          </button>
+        </div>
+      )}
+
+      {/* Notification Settings (when enabled) */}
+      {notifSupported && notifPermission === 'granted' && !notifPrefs.enabled && (
+        <div
+          className="card p-4 mb-6 flex items-center justify-between"
+          style={{ borderLeft: '3px solid var(--color-accent-teal)' }}
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">✅</span>
+            <div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Notifications Ready</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>You'll receive service & devotion reminders</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Today's Services */}

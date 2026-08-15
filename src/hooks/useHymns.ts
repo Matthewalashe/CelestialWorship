@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Hymn, HymnCategory } from '../types';
+import { Hymn, HymnCategory, HymnVerse } from '../types';
 import { searchHymns, filterByCategory } from '../utils/search';
 
 let hymnsCache: Hymn[] | null = null;
@@ -11,16 +11,27 @@ async function loadHymns(): Promise<Hymn[]> {
   const raw: any[] = await response.json();
   
   // Map snake_case JSON fields to camelCase TypeScript interface
-  const data: Hymn[] = raw.map(h => ({
-    number: h.number,
-    yorubaTitle: h.yoruba_title ?? h.yorubaTitle ?? null,
-    englishTitle: h.english_title ?? h.englishTitle ?? null,
-    yorubaLyrics: h.yoruba_lyrics ?? h.yorubaLyrics ?? '',
-    englishLyrics: h.english_lyrics ?? h.englishLyrics ?? '',
-    solfaNotation: h.solfa_notation ?? h.solfaNotation ?? null,
-    categories: h.categories ?? [],
-    needsClergyReview: h.needs_clergy_review ?? h.needsClergyReview ?? false,
-  }));
+  const data: Hymn[] = raw.map(h => {
+    // Map structured verses
+    const verses: HymnVerse[] = (h.verses || []).map((v: any) => ({
+      number: v.number,
+      englishLines: v.english_lines ?? v.englishLines ?? [],
+      yorubaLines: v.yoruba_lines ?? v.yorubaLines ?? [],
+    }));
+
+    return {
+      number: h.number,
+      yorubaTitle: h.yoruba_title ?? h.yorubaTitle ?? null,
+      englishTitle: h.english_title ?? h.englishTitle ?? null,
+      yorubaLyrics: h.yoruba_lyrics ?? h.yorubaLyrics ?? '',
+      englishLyrics: h.english_lyrics ?? h.englishLyrics ?? '',
+      solfaNotation: h.solfa_notation ?? h.solfaNotation ?? null,
+      categories: h.categories ?? [],
+      needsClergyReview: h.needs_clergy_review ?? h.needsClergyReview ?? false,
+      needsVerseSplitReview: h.needs_verse_split_review ?? h.needsVerseSplitReview ?? false,
+      verses,
+    };
+  });
   
   hymnsCache = data;
   return data;

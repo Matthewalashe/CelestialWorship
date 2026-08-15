@@ -1,5 +1,5 @@
 // ============================================================
-// CCC Live — Core Type Definitions
+// CelestialWorship — Core Type Definitions
 // ============================================================
 
 // ---------- Hymn Category Taxonomy ----------
@@ -50,6 +50,13 @@ export const CATEGORY_COLORS: Record<HymnCategory, string> = {
   christ_the_king: '#D4A843',          // Gold
 };
 
+// ---------- Hymn Verse (structured) ----------
+export interface HymnVerse {
+  number: number;
+  englishLines: string[];
+  yorubaLines: string[];
+}
+
 // ---------- Hymn ----------
 export interface Hymn {
   number: number;
@@ -60,6 +67,8 @@ export interface Hymn {
   solfaNotation: string | null;
   categories: HymnCategory[];
   needsClergyReview: boolean;
+  needsVerseSplitReview: boolean;
+  verses: HymnVerse[];
 }
 
 // ---------- Scripture Reference ----------
@@ -82,9 +91,11 @@ export interface HymnSlot {
 export interface ServiceStep {
   stepNumber: number | null;
   text: string;
+  textLines: string[];
   type: ServiceStepType;
   hymnSlot: HymnSlot | null;
   scriptureRef: ScriptureReference | null;
+  scriptureReferences: ScriptureReference[];
   isHeader?: boolean;
 }
 
@@ -108,6 +119,13 @@ export interface BibleLesson {
 }
 
 // ---------- Bible ----------
+export type BibleLanguage = 'en' | 'yo';
+
+export const BIBLE_LANGUAGE_LABELS: Record<BibleLanguage, string> = {
+  en: 'English (KJV)',
+  yo: 'Yorùbá (OYCB)',
+};
+
 export interface BibleBook {
   name: string;
   abbreviation: string;
@@ -119,6 +137,38 @@ export interface BibleChapter {
   book: string;
   chapter: number;
   verses: Record<string, string>;
+}
+
+// ---------- Constitution ----------
+export interface ConstitutionSubClause {
+  letter: string;
+  text: string;
+}
+
+export interface ConstitutionClause {
+  number: string;
+  text: string;
+  subClauses: ConstitutionSubClause[];
+}
+
+export interface ConstitutionSection {
+  id: string;
+  title: string;
+  icon: string;
+  type: 'narrative' | 'clauses';
+  content?: string;
+  paragraphs?: string[];
+  clauses?: ConstitutionClause[];
+}
+
+export interface ConstitutionData {
+  meta: {
+    title: string;
+    subtitle: string;
+    version: string;
+    note: string;
+  };
+  sections: ConstitutionSection[];
 }
 
 // ---------- Live Display ----------

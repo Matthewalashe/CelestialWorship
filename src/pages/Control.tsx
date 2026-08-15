@@ -148,9 +148,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
 
   const handleDisplayVerse = (verseIndex: number, enContent: string, yoContent: string) => {
     if (!selectedHymn) return;
-    const enVerses = selectedHymn.englishLyrics ? selectedHymn.englishLyrics.split(/\n\n+/) : [];
-    const yoVerses = selectedHymn.yorubaLyrics ? selectedHymn.yorubaLyrics.split(/\n\n+/) : [];
-    const totalVerses = Math.max(enVerses.length, yoVerses.length);
+    const totalVerses = selectedHymn.verses?.length || 1;
 
     updateDisplay({
       type: 'hymn',
@@ -165,14 +163,24 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
 
   let hymnVerses: { index: number; en: string; yo: string }[] = [];
   if (selectedHymn) {
-    const enVerses = selectedHymn.englishLyrics ? selectedHymn.englishLyrics.split(/\n\n+/) : [];
-    const yoVerses = selectedHymn.yorubaLyrics ? selectedHymn.yorubaLyrics.split(/\n\n+/) : [];
-    const total = Math.max(enVerses.length, yoVerses.length);
-    hymnVerses = Array.from({ length: total }).map((_, i) => ({
-      index: i + 1,
-      en: enVerses[i] || '',
-      yo: yoVerses[i] || ''
-    }));
+    // Use structured verses array
+    if (selectedHymn.verses && selectedHymn.verses.length > 0) {
+      hymnVerses = selectedHymn.verses.map((v: any) => ({
+        index: v.number || (selectedHymn.verses!.indexOf(v) + 1),
+        en: (v.englishLines || []).join('\n'),
+        yo: (v.yorubaLines || []).join('\n'),
+      }));
+    } else {
+      // Fallback to splitting flat lyrics if no structured verses
+      const enVerses = selectedHymn.englishLyrics ? selectedHymn.englishLyrics.split(/\n\n+/) : [];
+      const yoVerses = selectedHymn.yorubaLyrics ? selectedHymn.yorubaLyrics.split(/\n\n+/) : [];
+      const total = Math.max(enVerses.length, yoVerses.length);
+      hymnVerses = Array.from({ length: total }).map((_, i) => ({
+        index: i + 1,
+        en: enVerses[i] || '',
+        yo: yoVerses[i] || ''
+      }));
+    }
   }
 
   const activeVerseIndex = displayState.type === 'hymn' && displayState.hymnNumber === selectedHymn?.number ? displayState.verseIndex : -1;
