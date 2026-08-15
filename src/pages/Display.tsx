@@ -54,13 +54,21 @@ export default function Display() {
               <h3 className="text-4xl text-white/90 font-medium drop-shadow-lg">{state.title}</h3>
             </div>
             
-            <AutoScaledText maxFontSize={5.5} className="mt-16 animate-slide-up w-full flex-1 flex flex-col justify-center hide-scrollbar" style={{ animationDelay: '100ms' }}>
-              <div className="leading-[1.3] text-center font-bold whitespace-pre-line drop-shadow-2xl text-white">
-                {state.content}
+            <AutoScaledText maxFontSize={8} minFontSize={2.5} className="mt-16 animate-slide-up w-full flex-1 flex flex-col justify-center hide-scrollbar" style={{ animationDelay: '100ms' }}>
+              <div className="text-center drop-shadow-2xl text-white">
+                {state.content.split('\n').map((line, i) => (
+                  <p key={i} className="leading-[1.4] font-bold" style={{ marginBottom: line.trim() === '' ? '0.6em' : '0.15em' }}>
+                    {line || '\u00A0'}
+                  </p>
+                ))}
               </div>
               {state.subtitle && (
-                <div className="text-[0.7em] leading-[1.3] text-center font-medium italic whitespace-pre-line drop-shadow-xl text-[var(--color-accent-gold)]/90 mt-4">
-                  {state.subtitle}
+                <div className="text-center mt-6 border-t border-white/10 pt-6">
+                  {state.subtitle.split('\n').map((line, i) => (
+                    <p key={i} className="text-[0.6em] leading-[1.4] font-medium italic text-[var(--color-accent-gold)]/90 drop-shadow-xl" style={{ marginBottom: line.trim() === '' ? '0.6em' : '0.15em' }}>
+                      {line || '\u00A0'}
+                    </p>
+                  ))}
                 </div>
               )}
             </AutoScaledText>
@@ -80,11 +88,15 @@ export default function Display() {
                 <h2 className="text-5xl font-[Outfit] text-[var(--color-accent-teal)] font-bold tracking-wider">{state.title}</h2>
               </div>
             </div>
-            <AutoScaledText maxFontSize={5.5} className="mt-12 w-full flex-1 flex flex-col justify-center hide-scrollbar animate-slide-up" style={{ animationDelay: '100ms' }}>
-              <div className="leading-[1.4] text-center font-bold drop-shadow-2xl text-white">
-                <span className="text-[var(--color-accent-teal)]/50 mr-4 font-serif">"</span>
-                {state.content}
-                <span className="text-[var(--color-accent-teal)]/50 ml-4 font-serif">"</span>
+            <AutoScaledText maxFontSize={8} minFontSize={2.5} className="mt-12 w-full flex-1 flex flex-col justify-center hide-scrollbar animate-slide-up" style={{ animationDelay: '100ms' }}>
+              <div className="text-center drop-shadow-2xl text-white">
+                <span className="text-[var(--color-accent-teal)]/50 font-serif text-[0.6em]">"</span>
+                {state.content.split('\n').map((line, i) => (
+                  <p key={i} className="leading-[1.5] font-bold" style={{ marginBottom: '0.15em' }}>
+                    {line || '\u00A0'}
+                  </p>
+                ))}
+                <span className="text-[var(--color-accent-teal)]/50 font-serif text-[0.6em]">"</span>
               </div>
             </AutoScaledText>
           </div>
@@ -99,7 +111,7 @@ export default function Display() {
                   {state.title}
                 </h2>
               )}
-              <AutoScaledText maxFontSize={4.5} className="flex-1 flex flex-col justify-center hide-scrollbar">
+              <AutoScaledText maxFontSize={6} minFontSize={2} className="flex-1 flex flex-col justify-center hide-scrollbar">
                 <div className={`leading-[1.4] text-center font-bold text-white whitespace-pre-line drop-shadow-xl ${!state.title ? 'mt-8' : ''}`}>
                   {state.content}
                 </div>
@@ -112,44 +124,106 @@ export default function Display() {
   );
 }
 
-function AutoScaledText({ children, maxFontSize, className = '', style = {} }: { children: React.ReactNode, maxFontSize: number, className?: string, style?: React.CSSProperties }) {
+function AutoScaledText({ 
+  children, 
+  maxFontSize = 8, 
+  minFontSize = 2.5,
+  className = '', 
+  style = {} 
+}: { 
+  children: React.ReactNode; 
+  maxFontSize?: number;
+  minFontSize?: number;
+  className?: string; 
+  style?: React.CSSProperties;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [fontSize, setFontSize] = useState(maxFontSize);
+  const [computedSize, setComputedSize] = useState(maxFontSize);
 
   useLayoutEffect(() => {
     const container = containerRef.current;
     const content = contentRef.current;
     if (!container || !content) return;
 
-    let currentSize = maxFontSize;
-    const minSize = 1.5; // absolute minimum size in rem
-    content.style.fontSize = `${currentSize}rem`;
+    // Binary search for the largest font size that fits
+    let lo = minFontSize;
+    let hi = maxFontSize;
+    let best = minFontSize;
 
-    const adjustSize = () => {
-      if (
-        (content.scrollHeight > container.clientHeight || content.scrollWidth > container.clientWidth) &&
-        currentSize > minSize
-      ) {
-        currentSize -= 0.1;
-        content.style.fontSize = `${currentSize}rem`;
-        requestAnimationFrame(adjustSize);
+    // Temporarily remove transition for measurement
+    content.style.transition = 'none';
+
+    for (let i = 0; i < 20; i++) { // 20 iterations = very precise
+      const mid = (lo + hi) / 2;
+      content.style.fontSize = `${mid}rem`;
+
+      // Force layout recalculation
+      const contentHeight = content.scrollHeight;
+      const contentWidth = content.scrollWidth;
+      const containerHeight = container.clientHeight;
+      const containerWidth = container.clientWidth;
+
+      if (contentHeight <= containerHeight && contentWidth <= containerWidth) {
+        best = mid;
+        lo = mid; // Try larger
+      } else {
+        hi = mid; // Too big, try smaller
       }
+    }
+
+    // Apply the best size found
+    content.style.transition = '';
+    content.style.fontSize = `${best}rem`;
+    setComputedSize(best);
+  }, [children, maxFontSize, minFontSize]);
+
+  // Also re-measure on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const container = containerRef.current;
+      const content = contentRef.current;
+      if (!container || !content) return;
+
+      let lo = minFontSize;
+      let hi = maxFontSize;
+      let best = minFontSize;
+      content.style.transition = 'none';
+
+      for (let i = 0; i < 20; i++) {
+        const mid = (lo + hi) / 2;
+        content.style.fontSize = `${mid}rem`;
+        if (content.scrollHeight <= container.clientHeight && content.scrollWidth <= container.clientWidth) {
+          best = mid;
+          lo = mid;
+        } else {
+          hi = mid;
+        }
+      }
+
+      content.style.transition = '';
+      content.style.fontSize = `${best}rem`;
+      setComputedSize(best);
     };
 
-    // Reset on content change
-    setFontSize(maxFontSize);
-    content.style.fontSize = `${maxFontSize}rem`;
-    
-    // Using requestAnimationFrame to let the browser paint with the max size and then adjust
-    requestAnimationFrame(adjustSize);
-  }, [children, maxFontSize]);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [maxFontSize, minFontSize]);
 
   return (
-    <div ref={containerRef} className={`overflow-y-auto ${className}`} style={style}>
-      <div ref={contentRef} className="w-full h-auto transition-all duration-200 flex flex-col items-center justify-center" style={{ fontSize: `${fontSize}rem` }}>
+    <div 
+      ref={containerRef} 
+      className={`overflow-hidden ${className}`} 
+      style={style}
+    >
+      <div 
+        ref={contentRef} 
+        className="w-full flex flex-col items-center justify-center transition-[font-size] duration-300" 
+        style={{ fontSize: `${computedSize}rem` }}
+      >
         {children}
       </div>
     </div>
   );
 }
+

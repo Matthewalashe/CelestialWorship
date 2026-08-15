@@ -58,11 +58,6 @@ export default function HymnDetail() {
           ← Back
         </button>
         <div className="flex gap-2">
-          {hymn.needsClergyReview && (
-            <span className="bg-orange-500/20 text-orange-400 text-xs font-bold px-2 py-1 rounded border border-orange-500/30">
-              Needs Clergy Review
-            </span>
-          )}
         </div>
       </div>
 
@@ -125,38 +120,8 @@ export default function HymnDetail() {
         </div>
       </div>
 
-      {hymn.needsVerseSplitReview && (
-        <div className="bg-orange-500/10 border border-orange-500/30 p-4 rounded-xl mb-6 text-orange-400 text-sm flex items-center justify-center font-medium">
-          ℹ️ Verse numbering pending review
-        </div>
-      )}
-
       <div className="space-y-8">
-        {hymn.needsVerseSplitReview ? (
-          <div className="relative group card p-6 md:p-8 rounded-2xl bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50">
-            <div className={`grid gap-8 ${activeTab === 'Side-by-Side' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
-              {(activeTab === 'English' || activeTab === 'Side-by-Side') && (
-                <div className="flex flex-col gap-4">
-                  {verses.flatMap((v: any) => v.englishLines || []).map((line: string, i: number) => (
-                    <p key={`en-${i}`} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              )}
-              {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && (
-                <div className="flex flex-col gap-4">
-                  {verses.flatMap((v: any) => v.yorubaLines || []).map((line: string, i: number) => (
-                    <p key={`yo-${i}`} className="text-xl md:text-2xl leading-relaxed text-[var(--color-text-primary)] font-inter italic">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          verses.map((verse: any, idx: number) => (
+        {verses.map((verse: any, idx: number) => (
             <div key={idx} className="relative group card p-6 md:p-8 rounded-2xl bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50 overflow-hidden">
               <div className="absolute top-2 right-4 md:-left-4 md:top-2 md:right-auto text-6xl md:text-8xl font-black text-[var(--color-accent-gold)]/10 font-outfit select-none pointer-events-none">
                 {verse.number}
@@ -193,7 +158,7 @@ export default function HymnDetail() {
               </div>
             </div>
           ))
-        )}
+        }
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-[var(--color-bg-primary)]/80 backdrop-blur-xl border-t border-[var(--color-border)] z-50">
