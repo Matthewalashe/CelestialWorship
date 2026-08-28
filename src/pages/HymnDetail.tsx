@@ -4,6 +4,7 @@ import { useHymn } from '../hooks/useHymns';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { useReaderMode } from '../hooks/useReaderMode';
 
 /** Detect if a verse is a chorus based on its number or line content */
 function isChorus(verse: any): boolean {
@@ -37,6 +38,8 @@ export default function HymnDetail() {
   const { hymn, loading } = useHymn(Number(number));
   const { showHymnVerse } = useDisplayController();
   
+  const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
+
   const [activeTab, setActiveTab] = useState<'English' | 'Yoruba' | 'Side-by-Side'>('English');
   const [showSolfa, setShowSolfa] = useState(false);
 
@@ -78,14 +81,27 @@ export default function HymnDetail() {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto pb-32">
-      {/* Back button */}
-      <button 
-        onClick={() => navigate(-1)}
-        className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer mb-6 inline-flex items-center gap-1"
-      >
-        ← Back
-      </button>
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className="p-4 max-w-4xl mx-auto pb-32">
+      {/* Header Bar */}
+      <div className="flex items-center justify-between mb-6">
+        <button 
+          onClick={() => navigate(-1)}
+          className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer inline-flex items-center gap-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
+        </button>
+        <button
+          onClick={cycleReaderMode}
+          className="px-3 py-1.5 rounded-lg text-xs font-medium"
+          style={{
+            backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
+            color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+            border: '1px solid var(--color-border)',
+          }}
+        >
+          {readerMode === 'off' ? '📖 Reader' : readerMode === 'paper' ? '🌑 Dim' : '✕ Exit'}
+        </button>
+      </div>
 
       {/* Header */}
       <div className="text-center mb-10">

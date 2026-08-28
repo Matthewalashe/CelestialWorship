@@ -16,7 +16,6 @@ const ThemeContext = createContext<ThemeContextValue>({
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Check localStorage, then system preference
     const stored = localStorage.getItem('ccc-theme') as Theme | null;
     if (stored === 'light' || stored === 'dark') return stored;
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
@@ -28,7 +27,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('ccc-theme', theme);
   }, [theme]);
 
-  // Listen for system preference changes
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
     const handler = (e: MediaQueryListEvent) => {

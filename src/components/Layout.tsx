@@ -32,8 +32,7 @@ export default function Layout() {
           <img 
             src={logoUrl}
             alt="CelestialWorship Logo" 
-            className="w-10 h-10 rounded-xl object-contain"
-            style={{ backgroundColor: 'var(--color-bg-card)' }}
+            className="w-10 h-10 rounded-xl object-cover shadow-md"
           />
           <div>
             <h1 className="text-lg font-[Outfit] font-bold tracking-wide"
@@ -110,8 +109,7 @@ export default function Layout() {
             <img 
               src={logoUrl}
               alt="CelestialWorship" 
-              className="w-8 h-8 rounded-lg object-contain"
-              style={{ backgroundColor: 'var(--color-bg-card)' }}
+              className="w-8 h-8 rounded-lg object-cover shadow-sm"
             />
             <h1 className="text-base font-[Outfit] font-bold tracking-wide"
                 style={{ color: 'var(--color-text-primary)' }}>

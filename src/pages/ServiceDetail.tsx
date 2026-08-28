@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useService } from '../hooks/useServices';
 import { CATEGORY_LABELS } from '../types';
 import type { HymnSlot, ScriptureReference, HymnCategory } from '../types';
+import { parseStepContent, getStepAccentColor, type ContentSegment } from '../utils/contentParser';
 
 function formatHymnSlot(slot: HymnSlot): string {
   if (slot.fixedHymnNumber) return `Hymn ${slot.fixedHymnNumber}`;
@@ -61,7 +62,7 @@ export default function ServiceDetail() {
         className="flex items-center gap-1 text-sm mb-6 transition-colors"
         style={{ color: 'var(--color-text-secondary)' }}
       >
-        ← Back
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
       </button>
 
       {/* Service Header */}
@@ -95,6 +96,9 @@ export default function ServiceDetail() {
           const isRubric = step.type === 'rubric';
           const isHymn = step.type === 'hymn';
           const isScripture = step.type === 'scripture';
+          const isPrayer = step.type === 'prayer';
+          const accentColor = getStepAccentColor(step.type);
+          const segments = parseStepContent(step.text, step.textLines, step.type);
           
           return (
             <div key={idx} className="flex gap-3 animate-slide-up" style={{ animationDelay: `${idx * 40}ms` }}>
@@ -102,32 +106,82 @@ export default function ServiceDetail() {
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
                      style={{
-                       backgroundColor: isHymn ? 'var(--color-accent-gold)' : isScripture ? 'var(--color-accent-blue)' : 'var(--color-bg-card)',
-                       color: isHymn || isScripture ? 'var(--color-text-on-accent)' : 'var(--color-accent-teal)',
-                       border: isHymn || isScripture ? 'none' : '2px solid var(--color-border)',
+                       backgroundColor: isHymn ? 'var(--color-accent-gold)' : isScripture ? 'var(--color-accent-blue)' : isPrayer ? 'var(--color-accent-teal)' : 'var(--color-bg-card)',
+                       color: isHymn || isScripture || isPrayer ? 'var(--color-text-on-accent)' : 'var(--color-accent-teal)',
+                       border: isHymn || isScripture || isPrayer ? 'none' : '2px solid var(--color-border)',
                      }}>
-                  {isHymn ? '🎵' : isScripture ? '📖' : idx + 1}
+                  {isHymn ? '🎵' : isScripture ? '📖' : isPrayer ? '🙏' : idx + 1}
                 </div>
                 {idx < steps.length - 1 && (
                   <div className="w-px flex-1 my-1" style={{ backgroundColor: 'var(--color-border)' }} />
                 )}
               </div>
 
-              {/* Step content */}
-              <div className="card p-4 flex-1 mb-1">
-                {isRubric ? (
-                  <div className="text-sm italic space-y-2" style={{ color: 'var(--color-text-muted)' }}>
-                    {step.textLines && step.textLines.length > 0 ? step.textLines.map((line: string, i: number) => (
-                      <p key={i}>{i === 0 ? '✦ ' : '  '}{line}</p>
-                    )) : <p>✦ {step.text}</p>}
-                  </div>
-                ) : (
-                  <div className="text-sm font-medium space-y-2" style={{ color: 'var(--color-text-primary)' }}>
-                    {step.textLines && step.textLines.length > 0 ? step.textLines.map((line: string, i: number) => (
-                      <p key={i}>{line}</p>
-                    )) : <p>{step.text}</p>}
-                  </div>
+              {/* Step content — structured rendering */}
+              <div className="p-4 flex-1 mb-1 rounded-xl" style={{ borderLeftWidth: '3px', borderLeftColor: accentColor, backgroundColor: 'var(--color-bg-card)' }}>
+                {/* Type badge */}
+                {step.type !== 'instruction' && (
+                  <span className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full mb-2"
+                        style={{ 
+                          backgroundColor: `color-mix(in srgb, ${accentColor} 12%, transparent)`,
+                          color: accentColor,
+                        }}>
+                    {step.type}
+                  </span>
                 )}
+
+                {/* Render structured segments */}
+                {segments.map((segment, sIdx) => {
+                  switch (segment.type) {
+                    case 'hymn':
+                      return (
+                        <div key={sIdx} className="space-y-1">
+                          {segment.title && (
+                            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-accent-gold)' }}>
+                              {segment.title}
+                            </p>
+                          )}
+                          <div className="pl-3 space-y-0.5" style={{ borderLeft: `2px solid color-mix(in srgb, var(--color-accent-gold) 30%, transparent)` }}>
+                            {segment.lines.map((line: string, li: number) => (
+                              <p key={li} className="text-sm italic leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>
+                                {line}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    case 'scripture':
+                      return (
+                        <div key={sIdx} className="space-y-1">
+                          {segment.reference && (
+                            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-accent-blue)' }}>
+                              📖 {segment.reference}
+                            </p>
+                          )}
+                          <div className="pl-3 space-y-0.5">
+                            {segment.verses.map((v, vi: number) => (
+                              <p key={vi} className="text-sm leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>
+                                <sup className="text-[10px] font-bold mr-1" style={{ color: 'var(--color-accent-blue)' }}>
+                                  {v.number}
+                                </sup>
+                                {v.text}
+                              </p>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    case 'instruction':
+                    default:
+                      return (
+                        <div key={sIdx} className={`text-sm ${isRubric ? 'italic' : 'font-medium'} space-y-2`}
+                             style={{ color: isRubric ? 'var(--color-text-muted)' : 'var(--color-text-primary)' }}>
+                          {segment.text.split('\n').filter(l => l.trim()).map((line: string, li: number) => (
+                            <p key={li}>{isRubric && li === 0 ? '✦ ' : ''}{line}</p>
+                          ))}
+                        </div>
+                      );
+                  }
+                })}
 
                 {/* Hymn slot button */}
                 {step.hymnSlot && (

@@ -5,6 +5,7 @@ import { useDisplayController } from '../hooks/useLiveDisplay';
 import { useSavedPassages } from '../hooks/useNotes';
 import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { useReaderMode } from '../hooks/useReaderMode';
 
 interface BibleChapterData {
   book: string;
@@ -22,6 +23,8 @@ export default function BibleChapter() {
 
   const langParam = (searchParams.get('lang') as BibleLanguage) || 'en';
   const sideBySideParam = searchParams.get('sbs') === 'true';
+
+  const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
 
   const [currentLang, setCurrentLang] = useState<BibleLanguage>(langParam);
   const [sideBySide, setSideBySide] = useState(sideBySideParam);
@@ -190,15 +193,15 @@ export default function BibleChapter() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
         <p className="text-red-400 mb-4">{error || 'Book not found'}</p>
-        <Link to="/bible" className="text-[var(--color-accent-gold)] hover:underline">
-          ← Back to Books
+        <Link to="/bible" className="text-[var(--color-accent-gold)] hover:underline inline-flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Books
         </Link>
       </div>
     );
   }
 
   return (
-    <div className={`max-w-${sideBySide ? '4xl' : '2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`}>
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`max-w-${sideBySide ? '4xl' : '2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`}>
       {/* Saved Toast */}
       {savedToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up"
@@ -217,9 +220,22 @@ export default function BibleChapter() {
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <Link to={`/bible?lang=${currentLang}`} className="text-[var(--color-accent-gold)] text-sm hover:underline">
-          ← Books
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to={`/bible?lang=${currentLang}`} className="text-[var(--color-accent-gold)] text-sm hover:underline">
+            ← Books
+          </Link>
+          <button
+            onClick={cycleReaderMode}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium"
+            style={{
+              backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
+              color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            {readerMode === 'off' ? '📖 Reader' : readerMode === 'paper' ? '🌑 Dim' : '✕ Exit'}
+          </button>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Language Toggles */}
           <div className="flex rounded-lg overflow-hidden border border-[var(--color-border)]">

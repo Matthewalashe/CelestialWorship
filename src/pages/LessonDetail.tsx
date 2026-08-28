@@ -18,8 +18,8 @@ export default function LessonDetail() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
         <p className="text-[var(--color-text-secondary)]">No lessons found for this date.</p>
-        <Link to="/lessons" className="text-[var(--color-accent-gold)] hover:underline mt-4 inline-block">
-          ← Back to Calendar
+        <Link to="/lessons" className="text-[var(--color-accent-gold)] hover:underline mt-4 inline-flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Calendar
         </Link>
       </div>
     );
@@ -31,8 +31,8 @@ export default function LessonDetail() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
       {/* Header */}
-      <Link to="/lessons" className="text-[var(--color-accent-gold)] text-sm hover:underline mb-4 inline-block">
-        ← Back to Calendar
+      <Link to="/lessons" className="text-[var(--color-accent-gold)] text-sm hover:underline mb-4 inline-flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Calendar
       </Link>
 
       <div className="mb-6">

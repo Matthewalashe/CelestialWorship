@@ -108,16 +108,47 @@ export function getWeekStart(date: Date): Date {
  * Get the next N service days from a given date
  */
 export function getUpcomingServiceDays(from: Date, count: number): Date[] {
-  const serviceDays = [0, 3, 5]; // Sun, Wed, Fri
   const result: Date[] = [];
   const d = new Date(from);
   
   while (result.length < count) {
-    if (serviceDays.includes(d.getDay())) {
-      result.push(new Date(d));
-    }
+    result.push(new Date(d));
     d.setDate(d.getDate() + 1);
   }
   
   return result;
+}
+
+/** Service schedule with times for notification scheduling */
+export interface ServiceScheduleItem {
+  id: string;
+  name: string;
+  icon: string;
+  hour: number;
+  minute: number;
+}
+
+/** Get all services with their scheduled times for a given date */
+export function getServiceScheduleForDate(date: Date): ServiceScheduleItem[] {
+  const day = date.getDay();
+  const schedule: ServiceScheduleItem[] = [];
+
+  // Every day has 6AM morning service
+  schedule.push({ id: 'morning_service', name: 'Morning Service', icon: '☀️', hour: 6, minute: 0 });
+
+  switch (day) {
+    case 0: // Sunday
+      schedule.push({ id: 'lords_day_service', name: "Lord's Day Service", icon: '✝️', hour: 10, minute: 0 });
+      schedule.push({ id: 'evening_service_lords_day', name: 'Evening Service', icon: '🌅', hour: 18, minute: 0 });
+      break;
+    case 3: // Wednesday
+      schedule.push({ id: 'seekers_service', name: 'Seekers Service', icon: '🕯️', hour: 9, minute: 0 });
+      schedule.push({ id: 'mercy_day_service', name: 'Mercy Day Service', icon: '🙏', hour: 18, minute: 0 });
+      break;
+    case 5: // Friday
+      schedule.push({ id: 'power_day_service', name: 'Power Day Service', icon: '⚡', hour: 18, minute: 0 });
+      break;
+  }
+
+  return schedule;
 }

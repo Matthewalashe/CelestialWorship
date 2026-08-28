@@ -1,22 +1,28 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getServiceTypesForDate } from '../utils/dateUtils';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getServiceScheduleForDate, type ServiceScheduleItem } from '../utils/dateUtils';
 
 const PREFS_KEY = 'cw-notification-prefs';
+const SCHEDULED_KEY = 'cw-scheduled-notifications';
 
 interface NotificationPrefs {
   enabled: boolean;
   serviceReminders: boolean;
   devotionReminders: boolean;
-  lastServiceNotifyDate: string;
-  lastDevotionNotifyDate: string;
+}
+
+interface ScheduledNotification {
+  id: string;
+  fireAt: number; // timestamp ms
+  title: string;
+  body: string;
+  tag: string;
+  icon: string;
 }
 
 const defaultPrefs: NotificationPrefs = {
   enabled: false,
   serviceReminders: true,
   devotionReminders: true,
-  lastServiceNotifyDate: '',
-  lastDevotionNotifyDate: '',
 };
 
 function getPrefs(): NotificationPrefs {
@@ -32,35 +38,17 @@ function savePrefs(prefs: NotificationPrefs) {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
 }
 
-// Service day info
-function getTodayServiceInfo(): { hasService: boolean; serviceNames: string[]; serviceIcons: string[] } {
-  const today = new Date();
-  const types = getServiceTypesForDate(today);
-  
-  const serviceMap: Record<string, { name: string; icon: string }> = {
-    sunday_full: { name: 'Sunday Divine Service', icon: '⛪' },
-    sunday_evening: { name: 'Sunday Evening Service', icon: '🌙' },
-    wednesday_midweek: { name: 'Midweek Service', icon: '📖' },
-    thursday_mercy: { name: 'Mercy Day Service', icon: '🙏' },
-    friday_power: { name: 'Power Day Service', icon: '⚡' },
-    first_friday: { name: 'First Friday Service', icon: '🕯️' },
-    mercy_day_service: { name: 'Mercy Day Service', icon: '🙏' },
-    power_day_service: { name: 'Power Day Service', icon: '⚡' },
-    prophets_prophetess_dreamers: { name: 'Prophets & Prophetesses', icon: '⭐' },
-  };
-  
-  const serviceNames = types.map(t => serviceMap[t]?.name || 'Church Service');
-  const serviceIcons = types.map(t => serviceMap[t]?.icon || '⛪');
-  
-  return { hasService: types.length > 0, serviceNames, serviceIcons };
+function getScheduledNotifications(): ScheduledNotification[] {
+  try {
+    const stored = localStorage.getItem(SCHEDULED_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
 }
 
-// Get greeting-appropriate devotion message
-function getDevotionMessage(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return '🕊️ Good morning! Start your day with the Word of God.';
-  if (hour < 17) return '🕊️ Take a moment for your afternoon devotion.';
-  return '🕊️ End your day with evening devotion and prayer.';
+function saveScheduledNotifications(items: ScheduledNotification[]) {
+  localStorage.setItem(SCHEDULED_KEY, JSON.stringify(items));
 }
 
 async function showNotification(title: string, body: string, tag: string, icon?: string) {
@@ -69,14 +57,14 @@ async function showNotification(title: string, body: string, tag: string, icon?:
     if (registration) {
       await registration.showNotification(title, {
         body,
-        tag, // Prevents duplicate notifications
+        tag,
         icon: icon || '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
         vibrate: [200, 100, 200],
         data: { url: '/' },
         requireInteraction: false,
         silent: false,
-      });
+      } as NotificationOptions & { vibrate?: number[] });
       return true;
     }
   } catch (err) {
@@ -85,29 +73,79 @@ async function showNotification(title: string, body: string, tag: string, icon?:
   return false;
 }
 
+/** Build notification schedule for today and tomorrow */
+function buildSchedule(): ScheduledNotification[] {
+  const notifications: ScheduledNotification[] = [];
+  const now = new Date();
+
+  // Schedule for today and tomorrow
+  for (let dayOffset = 0; dayOffset <= 1; dayOffset++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() + dayOffset);
+    date.setHours(0, 0, 0, 0);
+
+    const services = getServiceScheduleForDate(date);
+    const dateStr = date.toISOString().split('T')[0];
+
+    for (const service of services) {
+      const serviceTime = new Date(date);
+      serviceTime.setHours(service.hour, service.minute, 0, 0);
+
+      // 30 minutes before
+      const thirtyMinBefore = new Date(serviceTime.getTime() - 30 * 60 * 1000);
+      if (thirtyMinBefore.getTime() > now.getTime()) {
+        notifications.push({
+          id: `${service.id}-30-${dateStr}`,
+          fireAt: thirtyMinBefore.getTime(),
+          title: `${service.icon} ${service.name} in 30 minutes`,
+          body: `Prepare your heart for worship. Service begins at ${service.hour}:${String(service.minute).padStart(2, '0')} ${service.hour < 12 ? 'AM' : 'PM'}.`,
+          tag: `service-30-${service.id}-${dateStr}`,
+          icon: '/pwa-192x192.png',
+        });
+      }
+
+      // 10 minutes before
+      const tenMinBefore = new Date(serviceTime.getTime() - 10 * 60 * 1000);
+      if (tenMinBefore.getTime() > now.getTime()) {
+        notifications.push({
+          id: `${service.id}-10-${dateStr}`,
+          fireAt: tenMinBefore.getTime(),
+          title: `${service.icon} ${service.name} starts in 10 minutes!`,
+          body: `Service is about to begin. ${service.hour < 12 ? 'Good morning' : 'God bless you'}!`,
+          tag: `service-10-${service.id}-${dateStr}`,
+          icon: '/pwa-192x192.png',
+        });
+      }
+    }
+  }
+
+  return notifications;
+}
+
 export function useNotifications() {
   const [prefs, setPrefs] = useState<NotificationPrefs>(getPrefs);
   const [permission, setPermission] = useState<NotificationPermission>(
     typeof Notification !== 'undefined' ? Notification.permission : 'denied'
   );
   const [isSupported] = useState(() => 'Notification' in window && 'serviceWorker' in navigator);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Request permission
   const requestPermission = useCallback(async () => {
     if (!isSupported) return false;
-    
+
     const result = await Notification.requestPermission();
     setPermission(result);
-    
+
     if (result === 'granted') {
       const newPrefs = { ...prefs, enabled: true };
       setPrefs(newPrefs);
       savePrefs(newPrefs);
-      
+
       // Show welcome notification
       await showNotification(
         'CelestialWorship',
-        'Notifications enabled! You\'ll receive service and devotion reminders.',
+        'Notifications enabled! You\'ll receive reminders 30 and 10 minutes before every service.',
         'welcome'
       );
       return true;
@@ -129,41 +167,82 @@ export function useNotifications() {
     savePrefs(newPrefs);
   }, [prefs]);
 
-  // Check and fire notifications on app load
+  // Schedule notifications using setTimeout
   useEffect(() => {
-    if (permission !== 'granted' || !prefs.enabled) return;
+    // Clear any existing timers
+    timersRef.current.forEach(t => clearTimeout(t));
+    timersRef.current = [];
 
-    const today = new Date().toISOString().split('T')[0];
+    if (permission !== 'granted' || !prefs.enabled || !prefs.serviceReminders) return;
 
-    // Service reminder
-    if (prefs.serviceReminders && prefs.lastServiceNotifyDate !== today) {
-      const { hasService, serviceNames, serviceIcons } = getTodayServiceInfo();
-      if (hasService) {
-        const icon = serviceIcons[0] || '⛪';
-        const names = serviceNames.join(' & ');
-        showNotification(
-          `${icon} Service Today`,
-          `${names} — Prepare your heart for worship.`,
-          `service-${today}`
-        );
-        const newPrefs = { ...prefs, lastServiceNotifyDate: today };
-        setPrefs(newPrefs);
-        savePrefs(newPrefs);
+    const schedule = buildSchedule();
+    const alreadyFired = getScheduledNotifications();
+    const alreadyFiredIds = new Set(alreadyFired.map(n => n.id));
+    const now = Date.now();
+
+    const newFired: ScheduledNotification[] = [...alreadyFired];
+
+    for (const notification of schedule) {
+      if (alreadyFiredIds.has(notification.id)) continue;
+      
+      const delay = notification.fireAt - now;
+      if (delay <= 0) {
+        // Already past, fire immediately if within last 5 minutes
+        if (delay > -5 * 60 * 1000) {
+          showNotification(notification.title, notification.body, notification.tag, notification.icon);
+          newFired.push(notification);
+        }
+        continue;
+      }
+
+      // Schedule future notification
+      const timer = setTimeout(() => {
+        showNotification(notification.title, notification.body, notification.tag, notification.icon);
+        // Mark as fired
+        const current = getScheduledNotifications();
+        current.push(notification);
+        saveScheduledNotifications(current);
+      }, delay);
+
+      timersRef.current.push(timer);
+    }
+
+    // Save updated fired list and clean old entries (older than 2 days)
+    const twoDaysAgo = now - 2 * 24 * 60 * 60 * 1000;
+    const cleaned = newFired.filter(n => n.fireAt > twoDaysAgo);
+    saveScheduledNotifications(cleaned);
+
+    // Devotion reminder — fire once per session if enabled
+    if (prefs.devotionReminders) {
+      const devotionKey = `cw-devotion-reminder-${new Date().toISOString().split('T')[0]}`;
+      if (!sessionStorage.getItem(devotionKey)) {
+        const hour = new Date().getHours();
+        let msg: string;
+        if (hour < 12) msg = '🕊️ Good morning! Start your day with the Word of God.';
+        else if (hour < 17) msg = '🕊️ Take a moment for your afternoon devotion.';
+        else msg = '🕊️ End your day with evening devotion and prayer.';
+        
+        showNotification('Daily Devotion', msg, `devotion-${new Date().toISOString().split('T')[0]}`);
+        sessionStorage.setItem(devotionKey, 'true');
       }
     }
 
-    // Devotion reminder  
-    if (prefs.devotionReminders && prefs.lastDevotionNotifyDate !== today) {
-      const msg = getDevotionMessage();
-      showNotification(
-        'Daily Devotion',
-        msg,
-        `devotion-${today}`
-      );
-      const newPrefs = { ...prefs, lastDevotionNotifyDate: today };
-      setPrefs(newPrefs);
-      savePrefs(newPrefs);
-    }
+    return () => {
+      timersRef.current.forEach(t => clearTimeout(t));
+      timersRef.current = [];
+    };
+  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders]);
+
+  // Re-schedule when app becomes visible (user returns to app)
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible' && permission === 'granted' && prefs.enabled) {
+        // Force re-render to re-run scheduling effect
+        setPrefs(prev => ({ ...prev }));
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [permission, prefs.enabled]);
 
   return {

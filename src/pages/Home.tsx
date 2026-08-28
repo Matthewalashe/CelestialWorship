@@ -121,8 +121,8 @@ export default function Home() {
       {/* Notification Prompt */}
       {notifSupported && notifPermission !== 'granted' && (
         <div
-          className="card p-4 mb-6 flex items-center justify-between"
-          style={{ borderLeft: '3px solid var(--color-accent-gold)' }}
+          className="p-4 mb-6 flex items-center justify-between rounded-2xl"
+          style={{ backgroundColor: 'var(--color-bg-card)' }}
         >
           <div className="flex items-center gap-3">
             <span className="text-2xl">🔔</span>
@@ -143,8 +143,8 @@ export default function Home() {
       {/* Notification Settings (when enabled) */}
       {notifSupported && notifPermission === 'granted' && !notifPrefs.enabled && (
         <div
-          className="card p-4 mb-6 flex items-center justify-between"
-          style={{ borderLeft: '3px solid var(--color-accent-teal)' }}
+          className="p-4 mb-6 flex items-center justify-between rounded-2xl"
+          style={{ backgroundColor: 'var(--color-bg-card)' }}
         >
           <div className="flex items-center gap-3">
             <span className="text-2xl">✅</span>
@@ -163,7 +163,7 @@ export default function Home() {
               style={{ color: 'var(--color-text-primary)' }}>
             Today's Services
           </h2>
-          <div className="card p-4 space-y-3">
+          <div className="p-4 space-y-3 rounded-2xl" style={{ backgroundColor: 'var(--color-bg-card)' }}>
             {serviceTypes.map(type => {
               const details = getServiceDetails(type);
               return (
@@ -205,7 +205,8 @@ export default function Home() {
               Bible Lessons
             </h2>
             <div 
-              className="card p-4 cursor-pointer"
+              className="p-4 cursor-pointer rounded-2xl"
+              style={{ backgroundColor: 'var(--color-bg-card)' }}
               onClick={() => navigate(`/lessons/${todayLessons[0].date}`)}
             >
               <div className="flex justify-between items-start mb-3">
@@ -273,7 +274,8 @@ export default function Home() {
               <Link 
                 key={action.path}
                 to={action.path}
-                className="card p-4 flex flex-col items-center justify-center text-center group"
+                className="p-4 flex flex-col items-center justify-center text-center group rounded-2xl"
+                style={{ backgroundColor: 'var(--color-bg-card)' }}
               >
                 <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">
                   {action.icon}
@@ -289,7 +291,8 @@ export default function Home() {
             {!isInstalled && (
               <button
                 onClick={canPrompt ? install : undefined}
-                className="card p-4 flex flex-col items-center justify-center text-center group relative overflow-hidden"
+                className="p-4 flex flex-col items-center justify-center text-center group relative overflow-hidden rounded-2xl"
+                style={{ backgroundColor: 'var(--color-bg-card)' }}
               >
                 <div className="absolute inset-0 opacity-10"
                      style={{ background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))' }} />
@@ -321,7 +324,8 @@ export default function Home() {
                 <Link 
                   key={idx}
                   to={`/lessons/${isoDate}`}
-                  className="card p-3 flex items-center justify-between"
+                  className="p-3 flex items-center justify-between rounded-2xl"
+                  style={{ backgroundColor: 'var(--color-bg-card)' }}
                 >
                   <div>
                     <p className="font-medium text-sm" style={{ color: 'var(--color-text-primary)' }}>
