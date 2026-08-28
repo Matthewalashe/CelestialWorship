@@ -110,9 +110,14 @@ export function getWeekStart(date: Date): Date {
 export function getUpcomingServiceDays(from: Date, count: number): Date[] {
   const result: Date[] = [];
   const d = new Date(from);
+  // Only return days with special services (Sun=0, Wed=3, Fri=5)
+  const specialDays = new Set([0, 3, 5]);
   
-  while (result.length < count) {
-    result.push(new Date(d));
+  // Look ahead up to 30 days max to find enough special service days
+  for (let i = 0; i < 30 && result.length < count; i++) {
+    if (specialDays.has(d.getDay())) {
+      result.push(new Date(d));
+    }
     d.setDate(d.getDate() + 1);
   }
   

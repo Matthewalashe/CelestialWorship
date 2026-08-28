@@ -356,7 +356,7 @@ export default function Devotion() {
         )}
 
         {/* Reading content — fills the screen */}
-        <div className="flex-1 flex flex-col justify-center px-8 py-16 overflow-hidden relative z-0">
+        <div className="flex-1 flex flex-col justify-start px-8 py-16 overflow-y-auto relative z-0">
           {/* Subtle step indicator — top of reading area */}
           <div className="text-center mb-8">
             <span className="text-xs tracking-widest uppercase"
