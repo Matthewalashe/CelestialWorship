@@ -7,6 +7,8 @@ import { extractHymnSlots, getCandidateHymns, ScoredHymnSuggestion, recordHymnUs
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ServiceOrder, Hymn, HymnCategory } from '../types';
 import { getServiceTypesForDate, formatDate } from '../utils/dateUtils';
+import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay } from 'lucide-react';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 interface SlotSelection {
   stepNumber: number;
@@ -30,6 +32,7 @@ interface SavedPlan {
 }
 
 export default function Suggestions() {
+  usePageTitle('suggestions');
   const { services, loading: servicesLoading } = useServices();
   const { hymns, loading: hymnsLoading } = useHymns();
   const { lessons: todaysLessons } = useTodaysLessons();
@@ -227,7 +230,7 @@ export default function Suggestions() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
-          🎵 Hymn Selector
+          <><Music size={24} className="inline-block mr-2 align-text-bottom" /> Hymn Selector</>
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Plan hymns for your service. AI-matched suggestions you can accept, swap, or override.
@@ -359,9 +362,9 @@ export default function Suggestions() {
           {/* Today's Readings Context */}
           {todaysLessons.length > 0 && (
             <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 mb-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-accent-teal)]"></div>
+              <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-accent-brand)]"></div>
               <div className="text-xs uppercase font-semibold text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
-                📖 Today's Readings
+                <><BookOpen size={14} className="inline mr-1" /> Today's Readings</>
               </div>
               <div className="space-y-1">
                 {todaysLessons.map((l, i) => (
@@ -445,10 +448,10 @@ export default function Suggestions() {
                           className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
                           title={isLocked ? "Unlock slot" : "Lock slot"}
                         >
-                          {isLocked ? '🔒' : '🔓'}
+                          {isLocked ? <Lock size={16} /> : <Unlock size={16} />}
                         </button>
                         <div className="text-[var(--color-text-muted)] w-4 text-center">
-                          {isExpanded ? '▲' : '▼'}
+                          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </div>
                       </div>
                     </div>
@@ -488,7 +491,7 @@ export default function Suggestions() {
                             >
                               {/* Score Indicator Bar */}
                               {!manualSearches[idx] && (
-                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--color-accent-gold)] to-[var(--color-accent-teal)] opacity-50" />
+                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--color-accent-gold)] to-[var(--color-accent-brand)] opacity-50" />
                               )}
                               
                               <div className="pl-2">
@@ -502,7 +505,7 @@ export default function Suggestions() {
                                     </span>
                                   </div>
                                   {isSelected && (
-                                    <span className="text-[var(--color-accent-gold)] text-lg">✓</span>
+                                    <span className="text-[var(--color-accent-gold)] text-lg"><Check size={18} className="inline-block" /></span>
                                   )}
                                 </div>
                                 
@@ -516,17 +519,17 @@ export default function Suggestions() {
                                   </span>
                                   {isRecentlyUsed && (
                                     <span className="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
-                                      🕒 Recently Used
+                                      <><Clock size={12} className="inline mr-1" /> Recently Used</>
                                     </span>
                                   )}
                                   {duplicates.length > 0 && (
                                     <span className="text-[10px] text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full border border-red-400/20">
-                                      ⚠️ Used in Step {duplicates.join(', ')}
+                                      <><AlertTriangle size={12} className="inline mr-1" /> Used in Step {duplicates.join(', ')}</>
                                     </span>
                                   )}
                                   {!manualSearches[idx] && score >= 90 && (
                                     <span className="text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
-                                      ⭐ Top Match
+                                      <><Star size={12} className="inline mr-1" /> Top Match</>
                                     </span>
                                   )}
                                 </div>
@@ -565,28 +568,28 @@ export default function Suggestions() {
                 }}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 transition-all"
               >
-                {showExport ? '✓ Copied' : '📋 Copy Text'}
+                {showExport ? <><Check size={14} className="inline mr-1" /> Copied</> : <><ClipboardCopy size={14} className="inline mr-1" /> Copy Text</>}
               </button>
               
               <button
                 onClick={() => window.print()}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 transition-all"
               >
-                🖨️ Print
+                <><Printer size={14} className="inline mr-1" /> Print</>
               </button>
 
               <button
                 onClick={savePlan}
-                className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-accent-teal)] text-sm font-medium hover:bg-[var(--color-accent-teal)]/10 transition-all"
+                className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-accent-brand)] text-sm font-medium hover:bg-[var(--color-accent-brand)]/10 transition-all"
               >
-                💾 Save Plan
+                <><Save size={14} className="inline mr-1" /> Save Plan</>
               </button>
               
               <button
                 onClick={sendToOperator}
                 className="py-2.5 rounded-xl bg-gradient-to-r from-[var(--color-accent-gold)] to-[#E8C36A] text-[#0A1628] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
               >
-                ▶️ Send to Operator
+                <><MonitorPlay size={14} className="inline mr-1" /> Send to Operator</>
               </button>
             </div>
           )}

@@ -1,8 +1,11 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useService } from '../hooks/useServices';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { CATEGORY_LABELS } from '../types';
 import type { HymnSlot, ScriptureReference, HymnCategory } from '../types';
 import { parseStepContent, getStepAccentColor, type ContentSegment } from '../utils/contentParser';
+import { Music, BookOpen } from 'lucide-react';
+import { MemberInPrayer } from '../components/icons/celestial-icons';
 
 function formatHymnSlot(slot: HymnSlot): string {
   if (slot.fixedHymnNumber) return `Hymn ${slot.fixedHymnNumber}`;
@@ -29,6 +32,8 @@ export default function ServiceDetail() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const { service, loading } = useService(serviceId || '');
+  
+  usePageTitle('service_detail', service ? `${service.displayName} — CCC Liturgy` : undefined);
 
   if (loading) {
     return (
@@ -71,7 +76,7 @@ export default function ServiceDetail() {
         <h1 className="text-2xl font-[Outfit] font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>
           {service.displayName}
         </h1>
-        <div className="flex gap-3 text-sm font-medium mb-3" style={{ color: 'var(--color-accent-teal)' }}>
+        <div className="flex gap-3 text-sm font-medium mb-3" style={{ color: 'var(--color-accent-brand)' }}>
           <span>{service.day}</span>
           <span style={{ color: 'var(--color-text-muted)' }}>•</span>
           <span>{service.time}</span>
@@ -106,11 +111,11 @@ export default function ServiceDetail() {
               <div className="flex flex-col items-center flex-shrink-0">
                 <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
                      style={{
-                       backgroundColor: isHymn ? 'var(--color-accent-gold)' : isScripture ? 'var(--color-accent-blue)' : isPrayer ? 'var(--color-accent-teal)' : 'var(--color-bg-card)',
-                       color: isHymn || isScripture || isPrayer ? 'var(--color-text-on-accent)' : 'var(--color-accent-teal)',
+                       backgroundColor: isHymn ? 'var(--color-accent-gold)' : isScripture ? 'var(--color-accent-blue)' : isPrayer ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+                       color: isHymn || isScripture || isPrayer ? 'var(--color-text-on-accent)' : 'var(--color-accent-brand)',
                        border: isHymn || isScripture || isPrayer ? 'none' : '2px solid var(--color-border)',
                      }}>
-                  {isHymn ? '🎵' : isScripture ? '📖' : isPrayer ? '🙏' : idx + 1}
+                  {isHymn ? <Music size={14} /> : isScripture ? <BookOpen size={14} /> : isPrayer ? <MemberInPrayer size={14} /> : idx + 1}
                 </div>
                 {idx < steps.length - 1 && (
                   <div className="w-px flex-1 my-1" style={{ backgroundColor: 'var(--color-border)' }} />
@@ -155,7 +160,7 @@ export default function ServiceDetail() {
                         <div key={sIdx} className="space-y-1">
                           {segment.reference && (
                             <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-accent-blue)' }}>
-                              📖 {segment.reference}
+                              <><BookOpen size={14} className="inline mr-1" /> {segment.reference}</>
                             </p>
                           )}
                           <div className="pl-3 space-y-0.5">
@@ -194,7 +199,7 @@ export default function ServiceDetail() {
                       border: '1px solid color-mix(in srgb, var(--color-accent-gold) 25%, transparent)',
                     }}
                   >
-                    🎵 {formatHymnSlot(step.hymnSlot)}
+                    <><Music size={14} className="inline mr-1" /> {formatHymnSlot(step.hymnSlot)}</>
                   </Link>
                 )}
 
@@ -212,7 +217,7 @@ export default function ServiceDetail() {
                           border: '1px solid color-mix(in srgb, var(--color-accent-blue) 25%, transparent)',
                         }}
                       >
-                        📖 {formatScriptureRef(ref)}
+                        <><BookOpen size={14} className="inline mr-1" /> {formatScriptureRef(ref)}</>
                       </Link>
                     ))}
                   </div>
@@ -226,7 +231,7 @@ export default function ServiceDetail() {
                       border: '1px solid color-mix(in srgb, var(--color-accent-blue) 25%, transparent)',
                     }}
                   >
-                    📖 {formatScriptureRef(step.scriptureRef)}
+                    <><BookOpen size={14} className="inline mr-1" /> {formatScriptureRef(step.scriptureRef)}</>
                   </Link>
                 )}
               </div>

@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
@@ -28,7 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] p-8 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
+          <div className="mb-4" style={{ color: 'var(--color-warning)' }}><AlertTriangle size={48} /></div>
           <h2 className="text-xl font-[Outfit] font-bold mb-2"
               style={{ color: 'var(--color-text-primary)' }}>
             Something went wrong

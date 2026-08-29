@@ -1,10 +1,16 @@
 import { useParams, Link } from 'react-router-dom';
 import { useLessonsByDate } from '../hooks/useLessons';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { referenceToPath } from '../utils/parseReference';
+import { BookOpen, Clock, Moon, Flame, Sun, Zap } from 'lucide-react';
+import { CCCLogo, MemberInPrayer } from '../components/icons/celestial-icons';
 
 export default function LessonDetail() {
   const { date } = useParams<{ date: string }>();
   const { lessons, loading } = useLessonsByDate(date || '');
+  
+  const firstLesson = lessons[0];
+  usePageTitle('lesson_detail', firstLesson ? `Lessons for ${date} — CCC Liturgy` : undefined);
 
   if (loading) {
     return (
@@ -25,7 +31,7 @@ export default function LessonDetail() {
     );
   }
 
-  const firstLesson = lessons[0];
+
   const dayDisplay = firstLesson.day;
 
   return (
@@ -56,7 +62,7 @@ export default function LessonDetail() {
           >
             {lesson.time && (
               <div className="text-sm text-[var(--color-text-muted)] mb-3">
-                🕐 {lesson.time}
+                <><Clock size={14} className="inline mr-1" /> {lesson.time}</>
               </div>
             )}
 
@@ -76,7 +82,7 @@ export default function LessonDetail() {
                   to={referenceToPath(lesson.firstLesson)}
                   className="flex items-center gap-2 p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-card-hover)] transition-colors group"
                 >
-                  <span className="text-lg">📖</span>
+                  <BookOpen size={18} />
                   <span className="text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-gold)] transition-colors font-medium">
                     {lesson.firstLesson.raw}
                   </span>
@@ -97,7 +103,7 @@ export default function LessonDetail() {
                   to={referenceToPath(lesson.secondLesson)}
                   className="flex items-center gap-2 p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-card-hover)] transition-colors group"
                 >
-                  <span className="text-lg">📖</span>
+                  <BookOpen size={18} />
                   <span className="text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-gold)] transition-colors font-medium">
                     {lesson.secondLesson.raw}
                   </span>
@@ -121,7 +127,7 @@ export default function LessonDetail() {
               to={`/services/${svc.id}`}
               className="px-3 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] hover:border-[var(--color-accent-gold)]/50 transition-colors"
             >
-              {svc.emoji} {svc.name}
+              {svc.icon} {svc.name}
             </Link>
           ))}
         </div>
@@ -130,25 +136,25 @@ export default function LessonDetail() {
   );
 }
 
-function getDayServices(day: string): { id: string; name: string; emoji: string }[] {
+function getDayServices(day: string): { id: string; name: string; icon: JSX.Element }[] {
   switch (day?.toLowerCase()) {
     case 'sunday':
       return [
-        { id: 'lords_day_service', name: "Lord's Day Service", emoji: '✝️' },
-        { id: 'evening_service_lords_day', name: 'Evening Service', emoji: '🌙' },
+        { id: 'lords_day_service', name: "Lord's Day Service", icon: <CCCLogo size={16} /> },
+        { id: 'evening_service_lords_day', name: 'Evening Service', icon: <Moon size={16} /> },
       ];
     case 'wednesday':
       return [
-        { id: 'seekers_service', name: 'Seekers Service', emoji: '🕯️' },
-        { id: 'mercy_day_service', name: 'Mercy Day Service', emoji: '🙏' },
+        { id: 'seekers_service', name: 'Seekers Service', icon: <Flame size={16} /> },
+        { id: 'mercy_day_service', name: 'Mercy Day Service', icon: <MemberInPrayer size={16} /> },
       ];
     case 'friday':
       return [
-        { id: 'power_day_service', name: 'Power Day Service', emoji: '⚡' },
+        { id: 'power_day_service', name: 'Power Day Service', icon: <Zap size={16} /> },
       ];
     default:
       return [
-        { id: 'morning_service', name: 'Morning Service', emoji: '☀️' },
+        { id: 'morning_service', name: 'Morning Service', icon: <Sun size={16} /> },
       ];
   }
 }

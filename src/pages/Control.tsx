@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CCCLogo } from '../components/icons/celestial-icons';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { useHymnSearch } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
 import { DisplayState, Hymn } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 interface HistoryItem {
   id: string;
@@ -14,6 +17,7 @@ interface HistoryItem {
 
 export default function Control() {
   usePageView('operator');
+  usePageTitle('control');
   const { sendToDisplay, blankScreen, showLogo } = useDisplayController();
   const [displayState, setDisplayState] = useState<DisplayState>({ type: 'blank', content: '' });
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -59,7 +63,7 @@ export default function Control() {
         <div className="flex items-center gap-4">
           <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-bold text-right">Live Preview</div>
           <div className="w-48 h-24 bg-black border-2 border-[var(--color-accent-gold)] rounded-lg overflow-hidden relative flex flex-col items-center justify-center p-2 text-center text-white shrink-0">
-            {displayState.type === 'logo' && <div className="text-[var(--color-accent-gold)] font-bold text-sm">⛪ CCC LIVE</div>}
+            {displayState.type === 'logo' && <div className="text-[var(--color-accent-gold)] font-bold text-sm flex items-center justify-center"><CCCLogo size={18} className="inline mr-1" /> CCC LIVE</div>}
             {displayState.type === 'hymn' && (
               <>
                 <div className="text-[10px] text-[var(--color-accent-gold)] font-bold">Hymn {displayState.hymnNumber} (V{displayState.verseIndex})</div>
@@ -88,15 +92,15 @@ export default function Control() {
         {/* Sidebar Tabs */}
         <div className="w-24 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] flex flex-col shrink-0">
           <button onClick={() => setActiveTab('hymns')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'hymns' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <span className="text-3xl mb-1">🎵</span>
+            <Music size={28} className="mb-1" />
             <span className="text-xs font-bold">Hymns</span>
           </button>
           <button onClick={() => setActiveTab('bible')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'bible' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <span className="text-3xl mb-1">📖</span>
+            <BookOpen size={28} className="mb-1" />
             <span className="text-xs font-bold">Bible</span>
           </button>
           <button onClick={() => setActiveTab('announcements')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'announcements' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <span className="text-3xl mb-1">📢</span>
+            <Megaphone size={28} className="mb-1" />
             <span className="text-xs font-bold">Alerts</span>
           </button>
         </div>
@@ -125,9 +129,9 @@ export default function Control() {
         </div>
         <button 
           onClick={() => window.open('/display', 'celestialworship-display', 'width=1920,height=1080')}
-          className="ml-4 shrink-0 bg-[var(--color-accent-teal)]/20 text-[var(--color-accent-teal)] border border-[var(--color-accent-teal)]/50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[var(--color-accent-teal)]/40 transition-colors flex items-center gap-2"
+          className="ml-4 shrink-0 bg-[var(--color-accent-brand)]/20 text-[var(--color-accent-brand)] border border-[var(--color-accent-brand)]/50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[var(--color-accent-brand)]/40 transition-colors flex items-center gap-2"
         >
-          <span>🖥️</span> Open Display Window
+          <MonitorPlay size={18} className="inline mr-1" /> Open Display Window
         </button>
       </div>
     </div>
@@ -208,7 +212,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
       <div className="max-w-4xl mx-auto h-full flex flex-col">
         <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-accent-gold)] mb-6">Select a Hymn</h2>
         <div className="relative mb-6">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-[var(--color-text-muted)]">🔍</span>
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <input 
             type="text" 
             placeholder="Search Hymn Number or Title..." 
@@ -271,14 +275,14 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
               disabled={!activeVerseIndex || activeVerseIndex <= 1}
               className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
             >
-              ← Prev
+              <ChevronLeft size={16} className="inline" /> Prev
             </button>
             <button 
               onClick={handleNextVerse}
               disabled={!activeVerseIndex || activeVerseIndex >= hymnVerses.length}
               className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
             >
-              Next →
+              Next <ChevronRight size={16} className="inline" />
             </button>
           </div>
         </div>
@@ -288,7 +292,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
             <button
               onClick={() => setDisplayLang('en')}
               className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                displayLang === 'en' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                displayLang === 'en' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
               }`}
             >
               English
@@ -296,7 +300,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
             <button
               onClick={() => setDisplayLang('yo')}
               className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                displayLang === 'yo' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                displayLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
               }`}
             >
               Yorùbá
@@ -391,13 +395,13 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
         {/* Left side: Book & Chapter Selection */}
         <div className="w-full xl:w-1/3 flex flex-col gap-4">
           <form onSubmit={handleQuickRef} className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">⚡</span>
+            <Zap size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input
               type="text"
               placeholder="Quick Jump (e.g. John 3:16)"
               value={quickRef}
               onChange={e => setQuickRef(e.target.value)}
-              className="w-full bg-[var(--color-bg-card)] border-2 border-[var(--color-border)] rounded-xl py-3 pl-12 pr-4 text-md focus:outline-none focus:border-[var(--color-accent-teal)] shadow-sm"
+              className="w-full bg-[var(--color-bg-card)] border-2 border-[var(--color-border)] rounded-xl py-3 pl-12 pr-4 text-md focus:outline-none focus:border-[var(--color-accent-brand)] shadow-sm"
             />
           </form>
 
@@ -408,7 +412,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
               <button
                 onClick={() => setBibleLang('en')}
                 className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                  bibleLang === 'en' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                  bibleLang === 'en' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
                 }`}
               >
                 English (KJV)
@@ -416,7 +420,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
               <button
                 onClick={() => setBibleLang('yo')}
                 className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                  bibleLang === 'yo' ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                  bibleLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
                 }`}
               >
                 Yorùbá
@@ -434,7 +438,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                     <button
                       key={b.name}
                       onClick={() => { setSelectedBook(b.name); setSelectedChapter(1); setSelectedVerseRange([]); }}
-                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-teal)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
+                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-brand)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
                       title={b.name}
                     >
                       {b.abbreviation}
@@ -449,7 +453,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                     <button
                       key={b.name}
                       onClick={() => { setSelectedBook(b.name); setSelectedChapter(1); setSelectedVerseRange([]); }}
-                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-teal)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
+                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-brand)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
                       title={b.name}
                     >
                       {b.abbreviation}
@@ -470,7 +474,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                 <button
                   key={ch}
                   onClick={() => { setSelectedChapter(ch); setSelectedVerseRange([]); }}
-                  className={`px-4 py-2 rounded-lg font-bold shrink-0 transition-colors ${selectedChapter === ch ? 'bg-[var(--color-accent-teal)] text-white shadow-md' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:border-[var(--color-accent-teal)]/50'}`}
+                  className={`px-4 py-2 rounded-lg font-bold shrink-0 transition-colors ${selectedChapter === ch ? 'bg-[var(--color-accent-brand)] text-white shadow-md' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:border-[var(--color-accent-brand)]/50'}`}
                 >
                   Ch {ch}
                 </button>
@@ -494,7 +498,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                     <div 
                       key={vNumStr} 
                       className={`flex gap-4 p-4 rounded-xl border-l-4 transition-all hover:bg-[var(--color-bg-card)] ${
-                        isActiveOnDisplay ? 'border-[var(--color-accent-teal)] bg-[var(--color-accent-teal)]/10 shadow-sm' : 
+                        isActiveOnDisplay ? 'border-[var(--color-accent-brand)] bg-[var(--color-accent-brand)]/10 shadow-sm' : 
                         isSelected ? 'border-[var(--color-accent-gold)] bg-[var(--color-accent-gold)]/5' : 'border-transparent'
                       }`}
                     >
@@ -503,7 +507,7 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                       <button 
                         onClick={() => handleSelectVerse(vNumStr, text)}
                         className={`shrink-0 px-6 py-2 rounded-lg font-bold self-start transition-all shadow-sm ${
-                          isActiveOnDisplay ? 'bg-[var(--color-accent-teal)] text-white ring-2 ring-offset-2 ring-offset-[var(--color-bg-primary)] ring-[var(--color-accent-teal)]' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:bg-[var(--color-accent-teal)] hover:text-white hover:border-[var(--color-accent-teal)]'
+                          isActiveOnDisplay ? 'bg-[var(--color-accent-brand)] text-white ring-2 ring-offset-2 ring-offset-[var(--color-bg-primary)] ring-[var(--color-accent-brand)]' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:bg-[var(--color-accent-brand)] hover:text-white hover:border-[var(--color-accent-brand)]'
                         }`}
                       >
                         {isActiveOnDisplay ? 'Live' : 'Send'}
@@ -545,16 +549,16 @@ function AnnouncementsTab({ updateDisplay }: { updateDisplay: (state: DisplaySta
       
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
         <button onClick={() => applyPreset('Welcome', 'Welcome to Celestial Church of Christ!\nWe are glad you are here.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          👋 Welcome
+          Welcome
         </button>
         <button onClick={() => applyPreset('Tithes & Offering', 'Please prepare your tithes and offering.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          💰 Offering
+          Offering
         </button>
         <button onClick={() => applyPreset('Closing', 'Thanks for worshipping with us!\nHave a blessed week ahead.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          🙏 Closing
+          Closing
         </button>
         <button onClick={() => applyPreset('Notice', '')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          📢 Custom Notice
+          Custom Notice
         </button>
       </div>
 

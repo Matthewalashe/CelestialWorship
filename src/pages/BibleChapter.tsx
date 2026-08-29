@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2 } from 'lucide-react';
+import { useSwipe } from '../hooks/useSwipe';
 import { BIBLE_BOOKS } from '../data/bibleBooks';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { useSavedPassages } from '../hooks/useNotes';
 import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
 
 interface BibleChapterData {
@@ -12,6 +15,88 @@ interface BibleChapterData {
   chapter: number;
   verses: Record<string, string>;
 }
+
+const VerseItem = React.memo(function VerseItem({ 
+  verseNum, text, textSec, isHighlighted, isSaved, onToggleSave, onSendToDisplay, onShare, sideBySide
+}: {
+  verseNum: number;
+  text: string;
+  textSec?: string;
+  isHighlighted: boolean;
+  isSaved: boolean;
+  onToggleSave: (num: number, text: string) => void;
+  onSendToDisplay: (num: number, text: string) => void;
+  onShare: (num: number, text: string) => void;
+  sideBySide: boolean;
+}) {
+  return (
+    <div
+      id={`verse-${verseNum}`}
+      className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative ${
+        isHighlighted
+          ? 'bg-[var(--color-accent-gold)]/15 border-l-2 border-[var(--color-accent-gold)]'
+          : ''
+      } ${sideBySide ? 'flex flex-col sm:flex-row gap-4' : ''}`}
+    >
+      {sideBySide ? (
+        <>
+          <div className="flex-1 pr-4 relative">
+            <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
+              {verseNum}
+            </span>
+            <span className="text-[var(--color-text-primary)]">{text}</span>
+          </div>
+          {textSec && (
+            <div className="flex-1 pt-2 sm:pt-0 sm:border-l border-[var(--color-border)] sm:pl-4 relative">
+              <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super sm:hidden">
+                {verseNum}
+              </span>
+              <span className="text-[var(--color-text-secondary)]">{textSec}</span>
+            </div>
+          )}
+        </>
+      ) : (
+        <p className="pr-12">
+          <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
+            {verseNum}
+          </span>
+          <span className="text-[var(--color-text-primary)]">{text}</span>
+        </p>
+      )}
+      
+      {/* Action buttons - visible on hover/focus */}
+      <span className={`inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity absolute right-2 ${sideBySide ? 'top-1' : 'top-1/2 -translate-y-1/2 bg-[var(--color-bg-primary)] px-2 rounded-lg shadow-sm border border-[var(--color-border)]'}`}>
+        <button
+          onClick={() => onSendToDisplay(verseNum, text)}
+          className="text-[var(--color-accent-brand)] text-xs hover:scale-110 transition-transform p-1"
+          title="Send to display"
+          aria-label="Send to display"
+        >
+          <Tv size={18} />
+        </button>
+        <button
+          onClick={() => onToggleSave(verseNum, text)}
+          className={`text-xs hover:scale-110 transition-transform p-1 ${
+            isSaved ? 'text-[var(--color-accent-gold)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent-gold)]'
+          }`}
+          title={isSaved ? 'Remove from saved' : 'Save passage'}
+          aria-label={isSaved ? 'Remove bookmark' : 'Add bookmark'}
+        >
+          <Bookmark size={18} fill={isSaved ? "currentColor" : "none"} />
+        </button>
+        <button
+          onClick={() => onShare(verseNum, text)}
+          className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)] text-xs hover:scale-110 transition-transform p-1"
+          title="Share verse"
+          aria-label="Share verse link"
+        >
+          <Share2 size={16} />
+        </button>
+      </span>
+    </div>
+  );
+});
+
 
 export default function BibleChapter() {
   usePageView('bible_chapter');
@@ -69,6 +154,8 @@ export default function BibleChapter() {
 
   const chapter = parseInt(chapterStr || '1', 10);
 
+  usePageTitle('bible_chapter', bookInfo ? `${bookInfo.name} Chapter ${chapter} — KJV Bible` : undefined);
+
   // Parse verse highlight range from ?v=1-5
   const highlightRange = useMemo(() => {
     const v = searchParams.get('v');
@@ -109,6 +196,23 @@ export default function BibleChapter() {
     }
     setTimeout(() => setSavedToast(null), 2000);
   };
+
+  const handleShareVerse = useCallback(async (verseNum: number, text: string) => {
+    if (!bookInfo) return;
+    const url = `${window.location.origin}/bible/${bookSlug}/${chapter}?lang=${currentLang}&v=${verseNum}`;
+    const shareText = `${bookInfo.name} ${chapter}:${verseNum} — "${text}"`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${bookInfo.name} ${chapter}:${verseNum}`, text: shareText, url });
+        return;
+      } catch {}
+    }
+    // Fallback: copy to clipboard
+    await navigator.clipboard.writeText(`${shareText}\n${url}`);
+    setSavedToast('Verse link copied!');
+    setTimeout(() => setSavedToast(null), 2000);
+  }, [bookInfo, bookSlug, chapter, currentLang]);
 
   // Load chapter data
   useEffect(() => {
@@ -181,6 +285,20 @@ export default function BibleChapter() {
       .sort(([a], [b]) => parseInt(a) - parseInt(b));
   }, [data]);
 
+  // Swipe navigation — swipe left for next chapter, right for previous
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: () => {
+      if (bookInfo && chapter < bookInfo.chapters) {
+        navigate(`/bible/${bookSlug}/${chapter + 1}?${searchParams.toString()}`);
+      }
+    },
+    onSwipeRight: () => {
+      if (chapter > 1) {
+        navigate(`/bible/${bookSlug}/${chapter - 1}?${searchParams.toString()}`);
+      }
+    },
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -201,7 +319,7 @@ export default function BibleChapter() {
   }
 
   return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`max-w-${sideBySide ? '4xl' : '2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`}>
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`max-w-${sideBySide ? '4xl' : '2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`} {...swipeHandlers}>
       {/* Saved Toast */}
       {savedToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up"
@@ -222,7 +340,7 @@ export default function BibleChapter() {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-4">
           <Link to={`/bible?lang=${currentLang}`} className="text-[var(--color-accent-gold)] text-sm hover:underline">
-            ← Books
+            <ChevronLeft size={16} className="inline" /> Books
           </Link>
           <button
             onClick={cycleReaderMode}
@@ -233,7 +351,7 @@ export default function BibleChapter() {
               border: '1px solid var(--color-border)',
             }}
           >
-            {readerMode === 'off' ? '📖 Reader' : readerMode === 'paper' ? '🌑 Dim' : '✕ Exit'}
+            {readerMode === 'off' ? <><BookOpen size={16} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={16} className="inline mr-1" /> Dim</> : <><X size={16} className="inline mr-1" /> Exit</>}
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -241,13 +359,13 @@ export default function BibleChapter() {
           <div className="flex rounded-lg overflow-hidden border border-[var(--color-border)]">
             <button
               onClick={() => handleLangToggle('en')}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'en' ? 'bg-[var(--color-accent-teal)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'en' ? 'bg-[var(--color-accent-brand)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
             >
               EN
             </button>
             <button
               onClick={() => handleLangToggle('yo')}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'yo' ? 'bg-[var(--color-accent-teal)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
             >
               YO
             </button>
@@ -313,68 +431,25 @@ export default function BibleChapter() {
         {sortedVerses.map(([verseNum, text]) => {
           const num = parseInt(verseNum);
           const isHighlighted =
-            highlightRange &&
+            highlightRange !== null &&
             num >= highlightRange.start &&
             num <= highlightRange.end;
           const saved = isVerseSaved(num);
           const secText = dataSec?.verses[verseNum];
 
           return (
-            <div
+            <VerseItem
               key={verseNum}
-              id={`verse-${verseNum}`}
-              className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative ${
-                isHighlighted
-                  ? 'bg-[var(--color-accent-gold)]/15 border-l-2 border-[var(--color-accent-gold)]'
-                  : ''
-              } ${sideBySide ? 'flex flex-col sm:flex-row gap-4' : ''}`}
-            >
-              {sideBySide ? (
-                <>
-                  <div className="flex-1 pr-4 relative">
-                    <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
-                      {verseNum}
-                    </span>
-                    <span className="text-[var(--color-text-primary)]">{text}</span>
-                  </div>
-                  {secText && (
-                    <div className="flex-1 pt-2 sm:pt-0 sm:border-l border-[var(--color-border)] sm:pl-4 relative">
-                      <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super sm:hidden">
-                        {verseNum}
-                      </span>
-                      <span className="text-[var(--color-text-secondary)]">{secText}</span>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="pr-12">
-                  <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
-                    {verseNum}
-                  </span>
-                  <span className="text-[var(--color-text-primary)]">{text}</span>
-                </p>
-              )}
-              
-              {/* Action buttons - visible on hover/focus */}
-              <span className={`inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity absolute right-2 ${sideBySide ? 'top-1' : 'top-1/2 -translate-y-1/2 bg-[var(--color-bg-primary)] px-2 rounded-lg shadow-sm border border-[var(--color-border)]'}`}>
-                <button
-                  onClick={() => showBibleVerse(`${bookInfo.name} ${chapter}:${verseNum}`, text)}
-                  className="text-[var(--color-accent-teal)] text-xs hover:scale-110 transition-transform p-1"
-                  title="Send to display"
-                >
-                  📺
-                </button>
-                <button
-                  onClick={() => handleToggleSave(num, text)}
-                  className={`text-xs hover:scale-110 transition-transform p-1 ${
-                    saved ? 'text-[var(--color-accent-gold)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent-gold)]'
-                  }`}
-                  title={saved ? 'Remove from saved' : 'Save passage'}
-                >
-                  {saved ? '★' : '☆'}
-                </button>
-              </span>
-            </div>
+              verseNum={num}
+              text={text}
+              textSec={secText}
+              isHighlighted={isHighlighted}
+              isSaved={saved}
+              onToggleSave={handleToggleSave}
+              onSendToDisplay={(v, t) => showBibleVerse(`${bookInfo.name} ${chapter}:${v}`, t)}
+              onShare={handleShareVerse}
+              sideBySide={sideBySide}
+            />
           );
         })}
       </div>
@@ -386,7 +461,7 @@ export default function BibleChapter() {
             to={`/bible/${bookSlug}/${chapter - 1}?${searchParams.toString()}`}
             className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
           >
-            ← Chapter {chapter - 1}
+            <ChevronLeft size={16} className="inline" /> Chapter {chapter - 1}
           </Link>
         ) : (
           <div />
@@ -396,7 +471,7 @@ export default function BibleChapter() {
             to={`/bible/${bookSlug}/${chapter + 1}?${searchParams.toString()}`}
             className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
           >
-            Chapter {chapter + 1} →
+            Chapter {chapter + 1} <ChevronRight size={16} className="inline" />
           </Link>
         ) : (
           <div />

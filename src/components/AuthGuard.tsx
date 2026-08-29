@@ -11,7 +11,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
         <div 
           className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" 
-          style={{ borderColor: 'var(--color-accent-teal)', borderTopColor: 'transparent' }}
+          style={{ borderColor: 'var(--color-accent-brand)', borderTopColor: 'transparent' }}
         ></div>
       </div>
     );

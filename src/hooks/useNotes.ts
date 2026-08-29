@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { openDB, IDBPDatabase } from 'idb';
-import { Note, NoteTag, SavedPassage } from '../types/notes';
+import { Note, NoteTag, SavedPassage, PassageCategory } from '../types/notes';
 import { backupNoteToSupabase, deleteNoteFromSupabase } from './useNotesSync';
 
 const DB_NAME = 'celestialworship-notes';
@@ -94,7 +94,7 @@ export const notesApi = {
     return passages.reverse();
   },
   
-  async savePassage(book: string, chapter: number, verseStart: number, verseEnd: number, text: string): Promise<SavedPassage> {
+  async savePassage(book: string, chapter: number, verseStart: number, verseEnd: number, text: string, category?: PassageCategory): Promise<SavedPassage> {
     const db = await getDB();
     const newPassage: SavedPassage = {
       id: crypto.randomUUID(),
@@ -104,6 +104,7 @@ export const notesApi = {
       verseEnd,
       text,
       annotation: '',
+      category,
       savedAt: new Date().toISOString(),
     };
     await db.put('savedPassages', newPassage);
@@ -217,8 +218,8 @@ export function useSavedPassages() {
     fetchPassages();
   }, [fetchPassages]);
 
-  const savePassage = async (book: string, chapter: number, verseStart: number, verseEnd: number, text: string) => {
-    const newPassage = await notesApi.savePassage(book, chapter, verseStart, verseEnd, text);
+  const savePassage = async (book: string, chapter: number, verseStart: number, verseEnd: number, text: string, category?: PassageCategory) => {
+    const newPassage = await notesApi.savePassage(book, chapter, verseStart, verseEnd, text, category);
     await fetchPassages();
     return newPassage;
   };

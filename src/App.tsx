@@ -1,7 +1,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton, PageSkeleton } from './components/SkeletonScreens';
 import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -25,7 +28,7 @@ const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
     <div className="flex flex-col items-center gap-3">
       <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-           style={{ borderColor: 'var(--color-accent-teal)', borderTopColor: 'transparent' }} />
+           style={{ borderColor: 'var(--color-accent-brand)', borderTopColor: 'transparent' }} />
       <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
         Loading...
       </span>
@@ -47,13 +50,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:serviceId" element={<ServiceDetail />} />
-            <Route path="/hymns" element={<Hymns />} />
-            <Route path="/hymns/:number" element={<HymnDetail />} />
+            <Route path="/hymns" element={<Suspense fallback={<HymnsSkeleton />}><Hymns /></Suspense>} />
+            <Route path="/hymns/:number" element={<Suspense fallback={<HymnsSkeleton />}><HymnDetail /></Suspense>} />
             <Route path="/lessons" element={<Lessons />} />
             <Route path="/lessons/:date" element={<LessonDetail />} />
-            <Route path="/bible" element={<Bible />} />
-            <Route path="/bible/:book/:chapter" element={<BibleChapter />} />
-            <Route path="/devotion" element={<Devotion />} />
+            <Route path="/bible" element={<Suspense fallback={<BibleSkeleton />}><Bible /></Suspense>} />
+            <Route path="/bible/:book/:chapter" element={<Suspense fallback={<BibleSkeleton />}><BibleChapter /></Suspense>} />
+            <Route path="/devotion" element={<Suspense fallback={<DevotionSkeleton />}><Devotion /></Suspense>} />
 
             {/* Routes — auth guard removed for now, re-enable when domain is ready */}
             <Route path="/suggestions" element={<Suggestions />} />
@@ -63,6 +66,8 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      <OfflineIndicator />
+      <SpeedInsights />
     </ErrorBoundary>
   );
 }

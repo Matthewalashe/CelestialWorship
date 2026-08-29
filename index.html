@@ -2,28 +2,185 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="CelestialWorship — Digital worship companion for the Celestial Church of Christ. Hymnal, Liturgy, Broadcast, Bible, Notes and more." />
+    
+    <!-- Primary Meta Tags -->
+    <title>CelestialWorship — Celestial Church of Christ Hymnal, Bible, Liturgy & Devotion</title>
+    <meta name="description" content="Free digital worship companion for the Celestial Church of Christ (CCC). KJV Bible in English & Yoruba, 500+ CCC Hymns with solfa, Order of Service, Daily Devotion, Bible Lessons & more." />
+    <meta name="keywords" content="Celestial Church of Christ, CCC, CCC hymns, CCC hymnal, Celestial Church hymn book, Yoruba Bible, KJV Bible, Order of Service, CCC liturgy, CCC devotion, Celestial worship, CCC songs, church hymns, daily devotion, Bible lessons, CCC constitution" />
+    <meta name="author" content="CelestialWorship" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://celestialworship.vercel.app/" />
     <meta name="theme-color" content="#0A1628" />
-
-    <!-- Open Graph / Social Sharing -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CelestialWorship" />
+    <meta name="application-name" content="CelestialWorship" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Language alternates -->
+    <link rel="alternate" hreflang="en" href="https://celestialworship.vercel.app/" />
+    <link rel="alternate" hreflang="yo" href="https://celestialworship.vercel.app/?lang=yo" />
+    <link rel="alternate" hreflang="x-default" href="https://celestialworship.vercel.app/" />
+    
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="CelestialWorship: Celestial Church of Christ Hymn, Liturgy, Broadcast & Bible" />
-    <meta property="og:description" content="Your complete digital worship companion — Hymnal, Order of Service, Live Broadcast, Bible Reader, Notes and more." />
-    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:url" content="https://celestialworship.vercel.app/" />
+    <meta property="og:title" content="CelestialWorship — Celestial Church of Christ Hymnal, Bible & Devotion" />
+    <meta property="og:description" content="Free digital worship companion for the Celestial Church of Christ. KJV Bible in English & Yoruba, 500+ CCC Hymns, Order of Service, Daily Devotion & more." />
+    <meta property="og:image" content="https://celestialworship.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CelestialWorship - Celestial Church of Christ digital worship companion" />
     <meta property="og:site_name" content="CelestialWorship" />
-
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="yo_NG" />
+    
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="CelestialWorship" />
-    <meta name="twitter:description" content="Celestial Church of Christ digital worship companion" />
-    <meta name="twitter:image" content="/og-image.png" />
-
-    <title>CelestialWorship: Celestial Church of Christ Hymn, Liturgy, Broadcast & Bible</title>
+    <meta name="twitter:title" content="CelestialWorship — CCC Hymnal, Bible & Devotion" />
+    <meta name="twitter:description" content="Free digital worship companion for the Celestial Church of Christ. Bible, Hymns, Liturgy, Devotion & more." />
+    <meta name="twitter:image" content="https://celestialworship.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt" content="CelestialWorship app" />
+    
+    <!-- Structured Data: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "CelestialWorship",
+      "alternateName": "CCC Worship App",
+      "url": "https://celestialworship.vercel.app",
+      "description": "Free digital worship companion for the Celestial Church of Christ (CCC). Features KJV Bible in English and Yoruba, 500+ CCC hymns with solfa notation, full order of service, daily devotion guide, and Bible lessons.",
+      "applicationCategory": "ReligiousApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript. Works offline via Service Worker.",
+      "softwareVersion": "1.0",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "CelestialWorship",
+        "url": "https://celestialworship.vercel.app"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "CelestialWorship",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://celestialworship.vercel.app/logo.png"
+        }
+      },
+      "inLanguage": ["en", "yo"],
+      "image": "https://celestialworship.vercel.app/og-image.png",
+      "screenshot": "https://celestialworship.vercel.app/og-image.png",
+      "featureList": [
+        "KJV Bible in English and Yoruba",
+        "500+ CCC Hymns with Solfa Notation",
+        "Full Order of Service / Liturgy",
+        "Daily Private Devotion Guide",
+        "Weekly Bible Lessons",
+        "CCC Constitution",
+        "Offline Support (PWA)",
+        "Dark Mode",
+        "Live Broadcast Display"
+      ]
+    }
+    </script>
+    
+    <!-- Structured Data: ReligiousOrganization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ReligiousOrganization",
+      "name": "Celestial Church of Christ",
+      "alternateName": ["CCC", "Ijo Mimo ti Kristi lati Orun"],
+      "url": "https://celestialworship.vercel.app",
+      "description": "The Celestial Church of Christ is an African Initiated Church founded by Rev. Pastor Samuel Bilewu Joseph Oshoffa in 1947 in Porto-Novo, Benin Republic.",
+      "foundingDate": "1947-09-29",
+      "founder": {
+        "@type": "Person",
+        "name": "Rev. Pastor Samuel Bilewu Joseph Oshoffa"
+      }
+    }
+    </script>
+    
+    <!-- Structured Data: Book (Bible) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Book",
+      "name": "Holy Bible - King James Version",
+      "alternateName": "KJV Bible",
+      "url": "https://celestialworship.vercel.app/bible",
+      "inLanguage": ["en", "yo"],
+      "isAccessibleForFree": true,
+      "numberOfPages": "66 books",
+      "description": "Read the King James Version Bible in English and Yoruba. All 66 books with side-by-side bilingual reading."
+    }
+    </script>
+    
+    <!-- Structured Data: MusicPlaylist (Hymnal) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicPlaylist",
+      "name": "Celestial Church of Christ Hymnal",
+      "alternateName": "CCC Hymn Book",
+      "url": "https://celestialworship.vercel.app/hymns",
+      "description": "Complete collection of 500+ Celestial Church of Christ hymns in English and Yoruba with solfa notation.",
+      "inLanguage": ["en", "yo"],
+      "numTracks": 500,
+      "isAccessibleForFree": true
+    }
+    </script>
+    
+    <!-- Structured Data: BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://celestialworship.vercel.app/" },
+        { "@type": "ListItem", "position": 2, "name": "Bible", "item": "https://celestialworship.vercel.app/bible" },
+        { "@type": "ListItem", "position": 3, "name": "Hymns", "item": "https://celestialworship.vercel.app/hymns" },
+        { "@type": "ListItem", "position": 4, "name": "Services", "item": "https://celestialworship.vercel.app/services" },
+        { "@type": "ListItem", "position": 5, "name": "Devotion", "item": "https://celestialworship.vercel.app/devotion" },
+        { "@type": "ListItem", "position": 6, "name": "Lessons", "item": "https://celestialworship.vercel.app/lessons" }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>CelestialWorship</h1>
+        <p>Digital worship companion for the Celestial Church of Christ.</p>
+        <p>Features: KJV Bible (English & Yoruba), 500+ CCC Hymns, Order of Service, Daily Devotion, Bible Lessons.</p>
+        <p>Please enable JavaScript to use this application.</p>
+        <nav>
+          <a href="/bible">Bible</a> | 
+          <a href="/hymns">Hymns</a> | 
+          <a href="/services">Services</a> | 
+          <a href="/devotion">Devotion</a> | 
+          <a href="/lessons">Lessons</a>
+        </nav>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

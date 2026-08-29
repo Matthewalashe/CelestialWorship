@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { ScrollText, ChevronDown } from 'lucide-react';
 import { useConstitutionSearch } from '../hooks/useConstitution';
 import type { ConstitutionSection, ConstitutionClause } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 function highlightText(text: string, query: string): React.ReactNode {
   if (!query.trim()) return <>{text}</>;
@@ -83,6 +85,7 @@ function NarrativeSection({ section, searchTerm }: { section: ConstitutionSectio
 
 export default function Constitution() {
   usePageView('constitution');
+  usePageTitle('constitution');
   const [expandedSection, setExpandedSection] = useState<string | null>('foundation_history');
   const [searchTerm, setSearchTerm] = useState('');
   const { sections, meta, loading, error } = useConstitutionSearch(searchTerm);
@@ -108,7 +111,7 @@ export default function Constitution() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-[Outfit] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          📜 Constitution
+          <ScrollText size={24} className="inline-block mr-2 align-text-bottom" /> Constitution
         </h1>
         {meta && (
           <>
@@ -169,7 +172,7 @@ export default function Constitution() {
                     color: 'var(--color-accent-teal)',
                   }}
                 >
-                  ▾
+                  <ChevronDown size={16} className="inline" />
                 </span>
               </button>
 

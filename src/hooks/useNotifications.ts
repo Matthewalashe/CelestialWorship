@@ -218,9 +218,9 @@ export function useNotifications() {
       if (!sessionStorage.getItem(devotionKey)) {
         const hour = new Date().getHours();
         let msg: string;
-        if (hour < 12) msg = '🕊️ Good morning! Start your day with the Word of God.';
-        else if (hour < 17) msg = '🕊️ Take a moment for your afternoon devotion.';
-        else msg = '🕊️ End your day with evening devotion and prayer.';
+        if (hour < 12) msg = 'Good morning! Start your day with the Word of God.';
+        else if (hour < 17) msg = 'Take a moment for your afternoon devotion.';
+        else msg = 'End your day with evening devotion and prayer.';
         
         showNotification('Daily Devotion', msg, `devotion-${new Date().toISOString().split('T')[0]}`);
         sessionStorage.setItem(devotionKey, 'true');

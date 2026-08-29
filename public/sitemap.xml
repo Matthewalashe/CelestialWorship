@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core pages -->
+  <url><loc>https://celestialworship.vercel.app/</loc><lastmod>2026-08-29</lastmod><priority>1.0</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/bible</loc><lastmod>2026-08-29</lastmod><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/hymns</loc><lastmod>2026-08-29</lastmod><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/services</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/lessons</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/devotion</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://celestialworship.vercel.app/constitution</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority><changefreq>yearly</changefreq></url>
+
+  <!-- Bible books (Old Testament) -->
+  <url><loc>https://celestialworship.vercel.app/bible/genesis/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/exodus/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/leviticus/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/numbers/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/deuteronomy/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/joshua/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/judges/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/ruth/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-samuel/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-samuel/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-kings/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-kings/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-chronicles/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-chronicles/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/ezra/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/nehemiah/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/esther/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/job/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/psalms/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/proverbs/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/ecclesiastes/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/song-of-solomon/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/isaiah/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/jeremiah/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/lamentations/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/ezekiel/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/daniel/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/hosea/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/joel/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/amos/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/obadiah/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/jonah/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/micah/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/nahum/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/habakkuk/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/zephaniah/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/haggai/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/zechariah/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/malachi/1</loc><lastmod>2026-08-29</lastmod><priority>0.5</priority></url>
+
+  <!-- Bible books (New Testament) -->
+  <url><loc>https://celestialworship.vercel.app/bible/matthew/1</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/mark/1</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/luke/1</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/john/1</loc><lastmod>2026-08-29</lastmod><priority>0.8</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/acts/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/romans/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-corinthians/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-corinthians/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/galatians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/ephesians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/philippians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/colossians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-thessalonians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-thessalonians/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-timothy/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-timothy/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/titus/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/philemon/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/hebrews/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/james/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-peter/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-peter/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/1-john/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/2-john/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/3-john/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/jude/1</loc><lastmod>2026-08-29</lastmod><priority>0.6</priority></url>
+  <url><loc>https://celestialworship.vercel.app/bible/revelation/1</loc><lastmod>2026-08-29</lastmod><priority>0.7</priority></url>
+</urlset>

@@ -4,7 +4,9 @@ import { useHymn } from '../hooks/useHymns';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
+import { BookOpen, Moon, X, Tv, ClipboardCopy, Music2 } from 'lucide-react';
 
 /** Detect if a verse is a chorus based on its number or line content */
 function isChorus(verse: any): boolean {
@@ -37,6 +39,8 @@ export default function HymnDetail() {
   const navigate = useNavigate();
   const { hymn, loading } = useHymn(Number(number));
   const { showHymnVerse } = useDisplayController();
+  
+  usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${hymn.englishTitle || hymn.yorubaTitle}` : undefined);
   
   const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
 
@@ -99,7 +103,7 @@ export default function HymnDetail() {
             border: '1px solid var(--color-border)',
           }}
         >
-          {readerMode === 'off' ? '📖 Reader' : readerMode === 'paper' ? '🌑 Dim' : '✕ Exit'}
+          {readerMode === 'off' ? <><BookOpen size={14} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={14} className="inline mr-1" /> Dim</> : <><X size={14} className="inline mr-1" /> Exit</>}
         </button>
       </div>
 
@@ -109,7 +113,7 @@ export default function HymnDetail() {
           {hymn.number}
         </div>
         {hymn.englishTitle && <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] font-outfit mb-1">{hymn.englishTitle}</h2>}
-        {hymn.yorubaTitle && <h3 className="text-lg font-medium text-[var(--color-text-secondary)] font-outfit italic">{hymn.yorubaTitle}</h3>}
+        {hymn.yorubaTitle && <h3 className="text-lg font-medium text-[var(--color-text-secondary)] font-outfit italic" lang="yo">{hymn.yorubaTitle}</h3>}
         
         <div className="flex flex-wrap justify-center gap-2 mt-4">
           {hymn.categories?.map((cat: string) => {
@@ -132,13 +136,13 @@ export default function HymnDetail() {
         <div className="mb-8">
           <button 
             onClick={() => setShowSolfa(!showSolfa)}
-            className="w-full bg-[var(--color-bg-card)]/50 border border-[var(--color-border)] py-2.5 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent-teal)] hover:border-[var(--color-accent-teal)]/30 transition-colors cursor-pointer flex items-center justify-center gap-2"
+            className="w-full bg-[var(--color-bg-card)]/50 border border-[var(--color-border)] py-2.5 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent-brand)] hover:border-[var(--color-accent-brand)]/30 transition-colors cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>🎼</span>
+            <Music2 size={18} />
             {showSolfa ? 'Hide Solfa' : 'Show Solfa Notation'}
           </button>
           {showSolfa && (
-            <div className="p-5 bg-[var(--color-bg-card)] rounded-xl mt-2 border border-[var(--color-accent-teal)]/20 font-mono text-[13px] leading-relaxed text-[var(--color-accent-teal)] overflow-x-auto">
+            <div className="p-5 bg-[var(--color-bg-card)] rounded-xl mt-2 border border-[var(--color-accent-brand)]/20 font-mono text-[13px] leading-relaxed text-[var(--color-accent-brand)] overflow-x-auto">
               {cleanSolfa(solfa).split('\n').map((line: string, i: number) => (
                 <div key={i} className="min-h-[1.25rem]">{line}</div>
               ))}
@@ -156,7 +160,7 @@ export default function HymnDetail() {
               onClick={() => setActiveTab(tab as any)}
               className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
                 activeTab === tab 
-                  ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] shadow-md' 
+                  ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow-md' 
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
             >
@@ -188,7 +192,7 @@ export default function HymnDetail() {
                 <span className={`inline-flex items-center justify-center font-bold font-outfit rounded-lg text-sm ${
                   chorus
                     ? 'bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] px-3 py-1'
-                    : 'bg-[var(--color-accent-teal)]/10 text-[var(--color-accent-teal)] w-8 h-8'
+                    : 'bg-[var(--color-accent-brand)]/10 text-[var(--color-accent-brand)] w-8 h-8'
                 }`}>
                   {stanzaLabel}
                 </span>
@@ -209,7 +213,7 @@ export default function HymnDetail() {
                   </div>
                 )}
                 {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && yoLines.length > 0 && (
-                  <div className={`flex flex-col gap-0.5 ${activeTab === 'Side-by-Side' ? 'md:border-l md:border-[var(--color-border)]/30 md:pl-6' : ''}`}>
+                  <div className={`flex flex-col gap-0.5 ${activeTab === 'Side-by-Side' ? 'md:border-l md:border-[var(--color-border)]/30 md:pl-6' : ''}`} lang="yo">
                     {yoLines.map((line: string, i: number) => (
                       <p key={i} className={`text-lg md:text-xl leading-snug ${
                         chorus 
@@ -227,9 +231,9 @@ export default function HymnDetail() {
               <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                 <button 
                   onClick={() => handleSendToDisplay(idx)}
-                  className="bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer"
+                  className="bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer"
                 >
-                  📺 Display
+                  <><Tv size={14} className="inline mr-1" /> Display</>
                 </button>
               </div>
             </div>
@@ -244,13 +248,13 @@ export default function HymnDetail() {
             onClick={handleShare}
             className="px-5 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text-primary)] font-bold hover:bg-[var(--color-bg-card)] transition-colors cursor-pointer text-sm"
           >
-            📋 Copy
+            <><ClipboardCopy size={14} className="inline mr-1" /> Copy</>
           </button>
           <button 
             onClick={() => handleSendToDisplay(0)}
-            className="px-5 py-3 rounded-xl bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] font-bold shadow-lg shadow-[var(--color-accent-teal)]/20 hover:shadow-[var(--color-accent-teal)]/40 transition-all flex items-center gap-2 cursor-pointer text-sm"
+            className="px-5 py-3 rounded-xl bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] font-bold shadow-lg shadow-[var(--color-accent-brand)]/20 hover:shadow-[var(--color-accent-brand)]/40 transition-all flex items-center gap-2 cursor-pointer text-sm"
           >
-            📺 Send Verse 1
+            <><Tv size={14} className="inline mr-1" /> Send Verse 1</>
           </button>
         </div>
       </div>

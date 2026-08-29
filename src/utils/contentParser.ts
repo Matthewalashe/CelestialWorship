@@ -174,7 +174,7 @@ export function getStepAccentColor(type: string): string {
   switch (type) {
     case 'hymn': return 'var(--color-accent-gold)';
     case 'scripture': return 'var(--color-accent-blue)';
-    case 'prayer': return 'var(--color-accent-teal)';
+    case 'prayer': return 'var(--color-accent-brand)';
     default: return 'var(--color-border)';
   }
 }

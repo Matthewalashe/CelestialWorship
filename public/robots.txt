@@ -1,0 +1,35 @@
+# CelestialWorship — Celestial Church of Christ Digital Worship Companion
+# https://celestialworship.vercel.app
+
+User-agent: *
+Allow: /
+Allow: /bible/
+Allow: /hymns/
+Allow: /services/
+Allow: /lessons/
+Allow: /devotion/
+Allow: /constitution/
+Disallow: /control
+Disallow: /display
+Disallow: /suggestions
+Disallow: /notes
+Crawl-delay: 1
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /control
+Disallow: /display
+Disallow: /suggestions
+Disallow: /notes
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /control
+Disallow: /display
+Disallow: /suggestions
+Disallow: /notes
+Crawl-delay: 2
+
+Sitemap: https://celestialworship.vercel.app/sitemap.xml

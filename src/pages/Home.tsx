@@ -4,6 +4,8 @@ import { useTodaysLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { useNotifications } from '../hooks/useNotifications';
+import { BookOpen, Music, ScrollText, Calendar, Scale, MonitorPlay, StickyNote, ListMusic, Bird, Bell, CircleCheck, Download, Zap, Star, Flame, Sunrise, ChevronRight } from 'lucide-react';
+import { CCCLogo, MemberInPrayer, MercyDayItems } from '../components/icons/celestial-icons';
 
 /**
  * Compute Easter Sunday for a given year using the Anonymous Gregorian algorithm.
@@ -51,9 +53,11 @@ function getLiturgicalExclamation(date: Date): string {
 }
 
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Home() {
   usePageView('home');
+  usePageTitle('home');
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
   
@@ -66,29 +70,30 @@ export default function Home() {
 
   useEffect(() => {
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting('Good Morning');
-    else if (hour < 18) setGreeting('Good Afternoon');
-    else setGreeting('Good Evening');
+    if (hour >= 5 && hour < 12) setGreeting('Good Morning');
+    else if (hour >= 12 && hour < 17) setGreeting('Good Afternoon');
+    else if (hour >= 17 && hour < 21) setGreeting('Good Evening');
+    else setGreeting('Peace Be Unto You');
   }, []);
 
   const getServiceDetails = (type: string) => {
     switch (type) {
       case 'lords_day_service':
-        return { name: "Lord's Day Service", time: "10:00 AM", icon: "✝️" };
+        return { name: "Lord's Day Service", time: "10:00 AM", icon: <CCCLogo size={24} />, desc: "Full Sunday worship with hymns, readings, and sermon" };
       case 'evening_service_lords_day':
-        return { name: "Evening Service", time: "6:00 PM", icon: "🌅" };
+        return { name: "Evening Service", time: "6:00 PM", icon: <Sunrise size={24} />, desc: "Evening praise and thanksgiving" };
       case 'morning_service':
-        return { name: "Morning Service", time: "6:00 AM", icon: "☀️" };
+        return { name: "Morning Service", time: "6:00 AM", icon: <Sunrise size={24} />, desc: "Early morning prayer and devotion" };
       case 'seekers_service':
-        return { name: "Seekers Service", time: "9:00 AM", icon: "🕯️" };
+        return { name: "Seekers Service", time: "9:00 AM", icon: <Flame size={24} />, desc: "Midweek prayer and spiritual seeking" };
       case 'mercy_day_service':
-        return { name: "Mercy Day Service", time: "6:00 PM", icon: "🙏" };
+        return { name: "Mercy Day Service", time: "6:00 PM", icon: <MemberInPrayer size={24} />, desc: "Supplication, mercy, and intercession" };
       case 'power_day_service':
-        return { name: "Power Day Service", time: "6:00 PM", icon: "⚡" };
+        return { name: "Power Day Service", time: "6:00 PM", icon: <Zap size={24} />, desc: "37 steps of prayer, hymns, and scripture" };
       case 'prophets_prophetess_dreamers':
-        return { name: "Prophets & Prophetesses", time: "Evening", icon: "⭐" };
+        return { name: "Prophets & Prophetesses", time: "Evening", icon: <Star size={24} />, desc: "Prophetic gathering and spiritual gifts" };
       default:
-        return { name: "Service", time: "Scheduled", icon: "⛪" };
+        return { name: "Service", time: "Scheduled", icon: <CCCLogo size={24} />, desc: "Church service" };
     }
   };
 
@@ -101,7 +106,7 @@ export default function Home() {
       <header className="mb-8 relative">
         <div className="absolute top-0 right-0 opacity-15 pointer-events-none">
           <div className="w-28 h-28 rounded-full blur-[60px]"
-               style={{ backgroundColor: 'var(--color-accent-teal)' }} />
+               style={{ backgroundColor: 'var(--color-accent-brand)' }} />
         </div>
         
         <h1 className="text-3xl font-[Outfit] font-bold mb-1 tracking-tight"
@@ -113,7 +118,7 @@ export default function Home() {
           {todayFormatted}
         </p>
         <p className="text-xs font-semibold tracking-widest uppercase"
-           style={{ color: 'var(--color-accent-teal)' }}>
+           style={{ color: 'var(--color-accent-brand)' }}>
           Celestial Worship Companion
         </p>
       </header>
@@ -125,7 +130,7 @@ export default function Home() {
           style={{ backgroundColor: 'var(--color-bg-card)' }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🔔</span>
+            <Bell size={24} style={{ color: 'var(--color-accent-gold)' }} />
             <div>
               <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Enable Notifications</p>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Get service reminders & daily devotion alerts</p>
@@ -147,7 +152,7 @@ export default function Home() {
           style={{ backgroundColor: 'var(--color-bg-card)' }}
         >
           <div className="flex items-center gap-3">
-            <span className="text-2xl">✅</span>
+            <CircleCheck size={24} style={{ color: 'var(--color-success)' }} />
             <div>
               <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Notifications Ready</p>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>You'll receive service & devotion reminders</p>
@@ -173,7 +178,7 @@ export default function Home() {
                   className="flex items-center p-3 rounded-xl transition-colors"
                   style={{ backgroundColor: 'var(--color-bg-primary)' }}
                 >
-                  <div className="text-2xl mr-3 flex-shrink-0">{details.icon}</div>
+                  <div className="mr-3 flex-shrink-0" style={{ color: 'var(--color-accent-brand)' }}>{details.icon}</div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
                       {details.name}
@@ -181,6 +186,9 @@ export default function Home() {
                     <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                       {details.time}
                     </p>
+                    {details.desc && (
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{details.desc}</p>
+                    )}
                   </div>
                   <span style={{ color: 'var(--color-text-muted)' }}>›</span>
                 </Link>
@@ -221,7 +229,7 @@ export default function Home() {
                     </span>
                   )}
                 </div>
-                <span className="text-2xl opacity-60">📖</span>
+                <BookOpen size={24} className="opacity-60" />
               </div>
               
               <div className="space-y-2 mt-3">
@@ -229,7 +237,7 @@ export default function Home() {
                   <div className="flex items-center gap-2 p-2 rounded-lg"
                        style={{ backgroundColor: 'var(--color-bg-primary)' }}>
                     <span className="text-xs font-semibold px-2 py-0.5 rounded"
-                          style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent-teal) 15%, transparent)', color: 'var(--color-accent-teal)' }}>
+                          style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent-brand) 15%, transparent)', color: 'var(--color-accent-brand)' }}>
                       1st
                     </span>
                     <span className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
@@ -262,14 +270,14 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Hymnal', icon: '🎵', path: '/hymns', desc: '486 hymns' },
-              { label: 'Order of Service', icon: '📜', path: '/services', desc: '21 liturgies' },
-              { label: 'Bible Lessons', icon: '📅', path: '/lessons', desc: '2026 calendar' },
-              { label: 'Constitution', icon: '⚖️', path: '/constitution', desc: 'Church rules' },
-              { label: 'Live Display', icon: '📺', path: '/control', desc: 'Projector mode' },
-              { label: 'My Notes', icon: '📝', path: '/notes', desc: 'Notes & passages' },
-              { label: 'Hymn Selector', icon: '🎶', path: '/suggestions', desc: 'Plan hymns' },
-              { label: 'Devotion', icon: '🕊️', path: '/devotion', desc: 'Daily devotion' },
+              { label: 'Hymnal', icon: <Music size={24} />, path: '/hymns', desc: '486 hymns' },
+              { label: 'Order of Service', icon: <ScrollText size={24} />, path: '/services', desc: '21 liturgies' },
+              { label: 'Bible Lessons', icon: <Calendar size={24} />, path: '/lessons', desc: '2026 calendar' },
+              { label: 'Constitution', icon: <Scale size={24} />, path: '/constitution', desc: 'Church rules' },
+              { label: 'Live Display', icon: <MonitorPlay size={24} />, path: '/control', desc: 'Projector mode' },
+              { label: 'My Notes', icon: <StickyNote size={24} />, path: '/notes', desc: 'Notes & passages' },
+              { label: 'Hymn Selector', icon: <ListMusic size={24} />, path: '/suggestions', desc: 'Plan hymns' },
+              { label: 'Devotion', icon: <Bird size={24} />, path: '/devotion', desc: 'Daily devotion' },
             ].map((action) => (
               <Link 
                 key={action.path}
@@ -277,7 +285,7 @@ export default function Home() {
                 className="p-4 flex flex-col items-center justify-center text-center group rounded-2xl"
                 style={{ backgroundColor: 'var(--color-bg-card)' }}
               >
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">
+                <div className="mb-2 group-hover:scale-110 transition-transform" style={{ color: 'var(--color-accent-brand)' }}>
                   {action.icon}
                 </div>
                 <span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
@@ -295,8 +303,8 @@ export default function Home() {
                 style={{ backgroundColor: 'var(--color-bg-card)' }}
               >
                 <div className="absolute inset-0 opacity-10"
-                     style={{ background: 'linear-gradient(135deg, var(--color-accent-teal), var(--color-accent-gold))' }} />
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform relative z-10">📲</div>
+                     style={{ background: 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }} />
+                <div className="mb-2 group-hover:scale-110 transition-transform relative z-10" style={{ color: 'var(--color-accent-brand)' }}><Download size={24} /></div>
                 <span className="text-sm font-semibold relative z-10" style={{ color: 'var(--color-text-primary)' }}>
                   Install App
                 </span>
@@ -337,7 +345,7 @@ export default function Home() {
                   </div>
                   <div className="flex gap-1">
                     {dateTypes.map(type => (
-                      <span key={type} className="text-lg" title={getServiceDetails(type).name}>
+                      <span key={type} title={getServiceDetails(type).name} style={{ color: 'var(--color-accent-brand)' }}>
                         {getServiceDetails(type).icon}
                       </span>
                     ))}

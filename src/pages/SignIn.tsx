@@ -59,7 +59,7 @@ export default function SignIn() {
       <div 
         className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle at top right, var(--color-accent-teal), transparent 40%), radial-gradient(circle at bottom left, var(--color-accent-gold), transparent 40%)'
+          background: 'radial-gradient(circle at top right, var(--color-accent-brand), transparent 40%), radial-gradient(circle at bottom left, var(--color-accent-gold), transparent 40%)'
         }}
       />
 
@@ -188,7 +188,7 @@ export default function SignIn() {
               disabled={isSubmitting}
               className="w-full py-3 rounded-xl font-medium font-inter text-white transition-all duration-200 hover:shadow-lg active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               style={{ 
-                background: 'linear-gradient(135deg, var(--color-accent-teal) 0%, var(--color-accent-teal-light, #2dd4bf) 100%)',
+                background: 'linear-gradient(135deg, var(--color-accent-brand) 0%, var(--color-accent-brand-light, #2dd4bf) 100%)',
                 boxShadow: '0 4px 14px 0 rgba(13, 148, 136, 0.39)'
               }}
             >
@@ -206,7 +206,7 @@ export default function SignIn() {
                   setAuthError(null);
                 }}
                 className="font-medium hover:underline focus:outline-none transition-colors"
-                style={{ color: 'var(--color-accent-teal)' }}
+                style={{ color: 'var(--color-accent-brand)' }}
               >
                 {isSignUp ? 'Sign In' : 'Sign Up'}
               </button>

@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLessons } from '../hooks/useLessons';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { getDatesInMonth, formatDate, toISODate } from '../utils/dateUtils';
 import type { BibleLesson } from '../types';
+import { Calendar, BookOpen } from 'lucide-react';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -12,6 +14,7 @@ const MONTHS = [
 const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function Lessons() {
+  usePageTitle('lessons');
   const { lessons, loading } = useLessons();
   const [year] = useState(2026);
   const [month, setMonth] = useState(() => {
@@ -51,7 +54,7 @@ export default function Lessons() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
-          📅 Bible Lessons 2026
+          <><Calendar size={24} className="inline-block mr-2 align-text-bottom" /> Bible Lessons 2026</>
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Lectionary calendar for the Celestial Church of Christ
@@ -187,12 +190,12 @@ export default function Lessons() {
                   <div className="mt-2 space-y-1">
                     {lesson.firstLesson && (
                       <div className="text-sm text-[var(--color-text-primary)]">
-                        📖 {lesson.firstLesson.raw}
+                        <><BookOpen size={14} className="inline mr-1" /> {lesson.firstLesson.raw}</>
                       </div>
                     )}
                     {lesson.secondLesson && (
                       <div className="text-sm text-[var(--color-text-secondary)]">
-                        📖 {lesson.secondLesson.raw}
+                        <><BookOpen size={14} className="inline mr-1" /> {lesson.secondLesson.raw}</>
                       </div>
                     )}
                   </div>

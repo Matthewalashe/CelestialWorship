@@ -75,19 +75,19 @@ export default function Display() {
         {state?.type === 'verse' && (
           <div className="w-full h-full max-w-7xl flex flex-col items-center justify-center animate-fade-in relative pt-24 pb-16">
             <div className="absolute top-0 left-0 right-0 text-center animate-slide-up">
-              <div className="inline-block bg-[var(--color-accent-teal)]/20 border border-[var(--color-accent-teal)]/50 px-8 py-3 rounded-2xl backdrop-blur-md">
-                <h2 className="text-5xl font-[Outfit] text-[var(--color-accent-teal)] font-bold tracking-wider">{state.title}</h2>
+              <div className="inline-block bg-[var(--color-accent-brand)]/20 border border-[var(--color-accent-brand)]/50 px-8 py-3 rounded-2xl backdrop-blur-md">
+                <h2 className="text-5xl font-[Outfit] text-[var(--color-accent-brand)] font-bold tracking-wider">{state.title}</h2>
               </div>
             </div>
             <AutoScaledText maxFontSize={8} minFontSize={2.5} className="mt-12 w-full flex-1 flex flex-col justify-center hide-scrollbar animate-slide-up" style={{ animationDelay: '100ms' }}>
               <div className="text-center drop-shadow-2xl text-white">
-                <span className="text-[var(--color-accent-teal)]/50 font-serif text-[0.6em]">"</span>
+                <span className="text-[var(--color-accent-brand)]/50 font-serif text-[0.6em]">"</span>
                 {state.content.split('\n').map((line, i) => (
                   <p key={i} className="leading-[1.5] font-bold" style={{ marginBottom: '0.15em' }}>
                     {line || '\u00A0'}
                   </p>
                 ))}
-                <span className="text-[var(--color-accent-teal)]/50 font-serif text-[0.6em]">"</span>
+                <span className="text-[var(--color-accent-brand)]/50 font-serif text-[0.6em]">"</span>
               </div>
             </AutoScaledText>
           </div>

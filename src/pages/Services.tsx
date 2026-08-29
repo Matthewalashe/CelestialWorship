@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Church } from 'lucide-react';
 import { useServices } from '../hooks/useServices';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const SERVICE_GROUPS = [
   {
@@ -28,6 +30,7 @@ const SERVICE_GROUPS = [
 
 export default function Services() {
   usePageView('services');
+  usePageTitle('services');
   const { services, loading } = useServices();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,7 +76,7 @@ export default function Services() {
                     className="flex flex-col text-left bg-[var(--color-bg-card)]/80 hover:bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent-gold)]/50 rounded-2xl p-5 transition-all duration-300 backdrop-blur-sm group shadow-lg"
                   >
                     <div className="flex items-center justify-between mb-2 w-full">
-                      <span className="text-2xl">⛪</span>
+                      <Church size={24} style={{ color: 'var(--color-accent-brand)' }} />
                       <span className="text-xs font-medium text-[var(--color-text-secondary)] bg-[var(--color-bg-secondary)] px-2 py-1 rounded-full group-hover:text-[var(--color-accent-gold)] transition-colors">
                         {service.day}
                       </span>

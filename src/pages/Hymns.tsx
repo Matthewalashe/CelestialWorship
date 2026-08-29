@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePageView } from '../hooks/useAnalytics';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useHymnSearch } from '../hooks/useHymns';
 import { CATEGORY_LABELS, CATEGORY_COLORS, HymnCategory } from '../types';
+import { sanitizeSearchInput } from '../utils/sanitize';
 
 export default function Hymns() {
   usePageView('hymns');
+  usePageTitle('hymns');
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedTerm(searchTerm), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const [selectedCategories, setSelectedCategories] = useState<HymnCategory[]>([]);
   const [language, setLanguage] = useState<'Both' | 'English' | 'Yoruba'>('Both');
 
-  const { results: hymns = [], loading } = useHymnSearch(searchTerm, selectedCategories);
+  const { results: hymns = [], loading } = useHymnSearch(debouncedTerm, selectedCategories);
 
   const toggleCategory = (cat: HymnCategory) => {
     setSelectedCategories(prev => 
@@ -29,8 +39,8 @@ export default function Hymns() {
             type="text" 
             placeholder="Search by number, title, or lyrics..." 
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl py-4 px-5 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent-teal)] transition-colors placeholder:text-[var(--color-text-secondary)] text-lg shadow-lg"
+            onChange={e => setSearchTerm(sanitizeSearchInput(e.target.value))}
+            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl py-4 px-5 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent-brand)] transition-colors placeholder:text-[var(--color-text-secondary)] text-lg shadow-lg"
           />
         </div>
 
@@ -55,6 +65,52 @@ export default function Hymns() {
           })}
         </div>
 
+        {/* A-Z Quick Jump */}
+        <div className="flex flex-wrap gap-1 mt-3">
+          {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(letter => (
+            <button
+              key={letter}
+              onClick={() => setSearchTerm(letter)}
+              className="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-colors"
+              style={{
+                backgroundColor: searchTerm.toUpperCase() === letter ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+                color: searchTerm.toUpperCase() === letter ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
+                border: '1px solid var(--color-border)',
+              }}
+              aria-label={`Filter hymns starting with ${letter}`}
+            >
+              {letter}
+            </button>
+          ))}
+          <button
+            onClick={() => setSearchTerm('')}
+            className="px-3 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-colors"
+            style={{
+              backgroundColor: searchTerm === '' ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+              color: searchTerm === '' ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
+              border: '1px solid var(--color-border)',
+            }}
+            aria-label="Show all hymns"
+          >
+            All
+          </button>
+        </div>
+
+        {/* Quick number jump */}
+        <div className="flex gap-1 mt-2">
+          {[1, 50, 100, 150, 200, 250, 300, 350, 400, 450].map(n => (
+            <button
+              key={n}
+              onClick={() => setSearchTerm(String(n))}
+              className="px-2 h-7 rounded text-[10px] font-semibold transition-colors"
+              style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
+              aria-label={`Jump to hymn ${n}`}
+            >
+              {n}+
+            </button>
+          ))}
+        </div>
+
         <div className="flex justify-between items-center mt-4">
           <p className="text-sm text-[var(--color-text-secondary)]">
             Showing {hymns.length} hymn{hymns.length !== 1 ? 's' : ''}
@@ -66,7 +122,7 @@ export default function Hymns() {
                 onClick={() => setLanguage(lang as any)}
                 className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
                   language === lang 
-                    ? 'bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)]' 
+                    ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)]' 
                     : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
                 }`}
               >
@@ -87,7 +143,7 @@ export default function Hymns() {
             <button
               key={hymn.number}
               onClick={() => navigate(`/hymns/${hymn.number}`)}
-              className="w-full text-left bg-[var(--color-bg-card)]/60 hover:bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent-teal)]/40 rounded-xl p-4 transition-all flex items-center gap-4 group cursor-pointer"
+              className="w-full text-left bg-[var(--color-bg-card)]/60 hover:bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent-brand)]/40 rounded-xl p-4 transition-all flex items-center gap-4 group cursor-pointer"
             >
               <div className="text-3xl font-black text-[var(--color-accent-gold)]/30 group-hover:text-[var(--color-accent-gold)] transition-colors w-16 text-center font-outfit">
                 {hymn.number}
@@ -97,7 +153,7 @@ export default function Hymns() {
                   <h3 className="text-lg font-bold text-[var(--color-text-primary)] truncate font-outfit">{hymn.englishTitle || hymn.yorubaTitle}</h3>
                 )}
                 {(language === 'Yoruba' || language === 'Both') && hymn.yorubaTitle && (
-                  <h3 className="text-md font-medium text-[var(--color-text-secondary)] truncate font-outfit">{hymn.yorubaTitle}</h3>
+                  <h3 className="text-md font-medium text-[var(--color-text-secondary)] truncate font-outfit"><span lang="yo">{hymn.yorubaTitle}</span></h3>
                 )}
                 <p className="text-sm text-[var(--color-text-secondary)]/70 truncate mt-1">
                   {hymn.verses?.[0]?.englishLines?.[0] || hymn.englishLyrics?.split('\n')[0] || hymn.verses?.[0]?.yorubaLines?.[0] || '...'}

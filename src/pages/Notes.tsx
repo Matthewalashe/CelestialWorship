@@ -1,24 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Search, Plus, Pencil, Trash2, X } from 'lucide-react';
 import { useNotes, useSavedPassages } from '../hooks/useNotes';
-import { Note, NoteTag, NOTE_TAG_COLORS, NOTE_TAG_LABELS, SavedPassage } from '../types/notes';
-
-// Simple Icons as SVGs for brevity
-const SearchIcon = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-);
-const PlusIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-);
-const EditIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-);
-const TrashIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-);
-const CloseIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-);
+import { usePageTitle } from '../hooks/usePageTitle';
+import { Note, NoteTag, NOTE_TAG_COLORS, NOTE_TAG_LABELS, SavedPassage, PassageCategory, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS } from '../types/notes';
 
 function formatRelativeTime(dateString: string) {
   const date = new Date(dateString);
@@ -33,12 +18,14 @@ function formatRelativeTime(dateString: string) {
 }
 
 export default function Notes() {
+  usePageTitle('notes');
   const [activeTab, setActiveTab] = useState<'notes' | 'passages'>('notes');
   const { notes, loading: notesLoading, createNote, updateNote, deleteNote, searchNotes } = useNotes();
   const { passages, loading: passagesLoading, deletePassage, updateAnnotation } = useSavedPassages();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<NoteTag | 'all'>('all');
+  const [passageFilter, setPassageFilter] = useState<PassageCategory | 'all'>('all');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
@@ -118,12 +105,16 @@ export default function Notes() {
 
   const passagesByBook = useMemo(() => {
     const grouped: Record<string, SavedPassage[]> = {};
-    passages.forEach(p => {
+    const filteredPassages = passageFilter === 'all' 
+      ? passages 
+      : passages.filter(p => p.category === passageFilter);
+      
+    filteredPassages.forEach(p => {
       if (!grouped[p.book]) grouped[p.book] = [];
       grouped[p.book].push(p);
     });
     return grouped;
-  }, [passages]);
+  }, [passages, passageFilter]);
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] pb-24 animate-fade-in">
@@ -139,7 +130,7 @@ export default function Notes() {
             onClick={() => setActiveTab('notes')}
             className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
               activeTab === 'notes' 
-                ? 'bg-[var(--color-accent-teal)] text-white shadow-lg' 
+                ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' 
                 : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card-hover)]'
             }`}
           >
@@ -163,14 +154,14 @@ export default function Notes() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--color-text-muted)]">
-                  <SearchIcon />
+                  <Search size={20} />
                 </div>
                 <input
                   type="text"
                   placeholder="Search notes..."
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-3 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all placeholder:text-[var(--color-text-muted)]"
+                  className="w-full pl-10 pr-4 py-3 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] focus:ring-1 focus:ring-[var(--color-accent-brand)] transition-all placeholder:text-[var(--color-text-muted)]"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -205,16 +196,16 @@ export default function Notes() {
               <div className="text-center py-12 text-[var(--color-text-muted)]">Loading notes...</div>
             ) : filteredNotes.length === 0 ? (
               <div className="text-center py-20 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)]">
-                <div className="text-[var(--color-accent-teal)] opacity-50 mb-4 flex justify-center">
+                <div className="text-[var(--color-accent-brand)] opacity-50 mb-4 flex justify-center">
                   <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </div>
                 <h3 className="text-2xl font-[Outfit] font-semibold mb-2">No notes found</h3>
                 <p className="text-[var(--color-text-secondary)] mb-6">Capture your thoughts, sermons, and prayers.</p>
                 <button
                   onClick={() => openNoteModal()}
-                  className="px-6 py-3 bg-[var(--color-accent-teal)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
+                  className="px-6 py-3 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
                 >
-                  <PlusIcon /> Create your first note
+                  <Plus size={24} /> Create your first note
                 </button>
               </div>
             ) : (
@@ -224,11 +215,11 @@ export default function Notes() {
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="font-[Outfit] text-xl font-bold line-clamp-1">{note.title}</h3>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openNoteModal(note)} className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent-teal)] hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors">
-                          <EditIcon />
+                        <button onClick={() => openNoteModal(note)} className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)] hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors">
+                          <Pencil size={16} />
                         </button>
                         <button onClick={() => deleteNote(note.id)} className="p-1.5 text-[var(--color-text-muted)] hover:text-red-500 hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors">
-                          <TrashIcon />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </div>
@@ -259,10 +250,10 @@ export default function Notes() {
             {/* FAB for new note */}
             <button
               onClick={() => openNoteModal()}
-              className="fixed bottom-24 right-6 w-14 h-14 bg-[var(--color-accent-teal)] text-white rounded-full shadow-[0_8px_30px_rgb(20,184,166,0.3)] flex items-center justify-center hover:scale-105 transition-transform z-10"
+              className="fixed bottom-24 right-6 w-14 h-14 bg-[var(--color-accent-brand)] text-white rounded-full shadow-[0_8px_30px_rgb(20,184,166,0.3)] flex items-center justify-center hover:scale-105 transition-transform z-10"
               aria-label="Create new note"
             >
-              <PlusIcon />
+              <Plus size={24} />
             </button>
           </div>
         )}
@@ -284,8 +275,24 @@ export default function Notes() {
                 </Link>
               </div>
             ) : (
-              <div className="space-y-8">
-                {Object.entries(passagesByBook).map(([book, bookPassages]) => (
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+                  <button
+                    onClick={() => setPassageFilter('all')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${passageFilter === 'all' ? 'text-[var(--color-bg-primary)]' : 'text-[var(--color-text-secondary)]'}`}
+                    style={{ backgroundColor: passageFilter === 'all' ? 'var(--color-accent-brand)' : 'var(--color-bg-card)' }}
+                  >All</button>
+                  {(Object.entries(PASSAGE_CATEGORY_LABELS) as [PassageCategory, string][]).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => setPassageFilter(key as PassageCategory)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${passageFilter === key ? 'text-white' : 'text-[var(--color-text-secondary)]'}`}
+                      style={{ backgroundColor: passageFilter === key ? PASSAGE_CATEGORY_COLORS[key as PassageCategory] : 'var(--color-bg-card)' }}
+                    >{label}</button>
+                  ))}
+                </div>
+                <div className="space-y-8">
+                  {Object.entries(passagesByBook).map(([book, bookPassages]) => (
                   <div key={book} className="space-y-4">
                     <h2 className="text-xl font-[Outfit] font-bold text-[var(--color-text-primary)] border-b border-[var(--color-border)] pb-2">{book}</h2>
                     <div className="grid grid-cols-1 gap-4">
@@ -299,6 +306,12 @@ export default function Notes() {
                               {passage.book} {passage.chapter}:{passage.verseStart}{passage.verseStart !== passage.verseEnd ? `-${passage.verseEnd}` : ''}
                               <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                             </Link>
+                            {passage.category && (
+                              <span 
+                                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
+                                style={{ backgroundColor: PASSAGE_CATEGORY_COLORS[passage.category] }}
+                              >{PASSAGE_CATEGORY_LABELS[passage.category]}</span>
+                            )}
                             <div className="flex gap-2">
                               <button 
                                 onClick={() => openAnnotationModal(passage)}
@@ -310,7 +323,7 @@ export default function Notes() {
                                 onClick={() => deletePassage(passage.id)}
                                 className="p-1.5 text-[var(--color-text-muted)] hover:text-red-500 bg-[var(--color-bg-secondary)] rounded-lg transition-colors"
                               >
-                                <TrashIcon />
+                                <Trash2 size={16} />
                               </button>
                             </div>
                           </div>
@@ -320,7 +333,7 @@ export default function Notes() {
                           </p>
                           
                           {passage.annotation && (
-                            <div className="mt-4 p-4 bg-[var(--color-bg-secondary)] rounded-xl border-l-2 border-[var(--color-accent-teal)]">
+                            <div className="mt-4 p-4 bg-[var(--color-bg-secondary)] rounded-xl border-l-2 border-[var(--color-accent-brand)]">
                               <p className="text-[var(--color-text-secondary)] italic text-sm">
                                 {passage.annotation}
                               </p>
@@ -336,6 +349,7 @@ export default function Notes() {
                   </div>
                 ))}
               </div>
+              </div>
             )}
           </div>
         )}
@@ -349,7 +363,7 @@ export default function Notes() {
             <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
               <h2 className="text-xl font-[Outfit] font-bold">{editingNote ? 'Edit Note' : 'New Note'}</h2>
               <button onClick={closeNoteModal} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors">
-                <CloseIcon />
+                <X size={24} />
               </button>
             </div>
             
@@ -410,7 +424,7 @@ export default function Notes() {
                 <button 
                   onClick={saveNote}
                   disabled={!noteTitle.trim()}
-                  className="px-6 py-2 bg-[var(--color-accent-teal)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save Note
                 </button>
@@ -427,7 +441,7 @@ export default function Notes() {
             <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
               <h2 className="text-lg font-[Outfit] font-bold">Add Note to Passage</h2>
               <button onClick={() => setIsAnnotationModalOpen(false)} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors">
-                <CloseIcon />
+                <X size={24} />
               </button>
             </div>
             
