@@ -32,6 +32,12 @@ export function recordHymnUsage(hymnNumbers: number[]): void {
   }
 }
 
+/**
+ * Extract selectable hymn slots from a service.
+ * - Fixed hymns (e.g. #674, #731) are constant ceremonial songs — excluded from selection.
+ * - Duplicate categories are deduplicated (keep first occurrence).
+ * - Capped at 7 selectable slots per CCC liturgy (max 7 service hymns).
+ */
 export function extractHymnSlots(service: ServiceOrder): {
   stepNumber: number;
   slotName: string;
@@ -47,50 +53,70 @@ export function extractHymnSlots(service: ServiceOrder): {
       slot: step.hymnSlot!,
     }));
 
-  // Deduplicate by category — keep only the first occurrence of each category.
-  // Fixed hymn numbers are always kept (they're unique by definition).
+  // Fixed hymns are constant ceremonial songs — not user-selectable
+  const selectableSlots = rawSlots.filter(({ slot }) => !slot.fixedHymnNumber);
+
+  // Deduplicate by category — keep only the first occurrence of each category
   const seenCategories = new Set<string>();
-  return rawSlots.filter(({ slot }) => {
-    if (slot.fixedHymnNumber) return true; // Always keep fixed hymns
+  const deduped = selectableSlots.filter(({ slot }) => {
     if (!slot.category) return true;
     if (seenCategories.has(slot.category)) return false;
     seenCategories.add(slot.category);
     return true;
   });
+
+  // Cap at 7 selectable slots per CCC liturgy rules
+  return deduped.slice(0, 7);
 }
 
 /** Keywords extracted from common Bible themes for matching hymns to lessons */
 const SCRIPTURE_THEME_KEYWORDS: Record<string, HymnCategory[]> = {
-  // Words found in hymn lyrics that map to categories
+  // === ENGLISH KEYWORDS ===
   'forgive': ['forgiveness_of_sins'],
   'sin': ['forgiveness_of_sins'],
   'mercy': ['mercy_or_blessing', 'forgiveness_of_sins'],
   'pardon': ['forgiveness_of_sins'],
   'repent': ['forgiveness_of_sins'],
+  'transgression': ['forgiveness_of_sins'],
+  'iniquity': ['forgiveness_of_sins'],
+  'cleanse': ['forgiveness_of_sins', 'sanctification'],
   'holy spirit': ['holy_spirit_or_power'],
   'spirit': ['holy_spirit_or_power'],
   'power': ['holy_spirit_or_power'],
   'anoint': ['holy_spirit_or_power'],
   'fire': ['holy_spirit_or_power'],
+  'comforter': ['holy_spirit_or_power'],
+  'pentecost': ['holy_spirit_or_power'],
+  'tongues': ['holy_spirit_or_power'],
   'heal': ['healing'],
   'sick': ['healing'],
   'restore': ['healing'],
+  'physician': ['healing'],
+  'disease': ['healing'],
   'praise': ['praise_or_glory'],
   'glory': ['praise_or_glory', 'christ_the_king'],
   'hallelujah': ['praise_or_glory'],
   'worship': ['praise_or_glory'],
+  'magnify': ['praise_or_glory'],
+  'exalt': ['praise_or_glory'],
   'king': ['christ_the_king'],
   'throne': ['christ_the_king'],
   'reign': ['christ_the_king'],
   'majesty': ['christ_the_king'],
+  'crown': ['christ_the_king'],
+  'sovereign': ['christ_the_king'],
   'faith': ['faith_and_trust'],
   'trust': ['faith_and_trust'],
   'believe': ['faith_and_trust'],
   'hope': ['faith_and_trust'],
+  'courage': ['faith_and_trust'],
+  'strength': ['faith_and_trust'],
   'thank': ['thanksgiving'],
   'grateful': ['thanksgiving'],
   'bless': ['mercy_or_blessing', 'thanksgiving'],
   'grace': ['mercy_or_blessing'],
+  'favour': ['mercy_or_blessing'],
+  'compassion': ['mercy_or_blessing'],
   'light': ['lighting_of_candles'],
   'candle': ['lighting_of_candles'],
   'lamp': ['lighting_of_candles'],
@@ -98,27 +124,100 @@ const SCRIPTURE_THEME_KEYWORDS: Record<string, HymnCategory[]> = {
   'holy': ['sanctification'],
   'pure': ['sanctification'],
   'clean': ['sanctification', 'forgiveness_of_sins'],
+  'righteous': ['sanctification'],
   'preach': ['evangelism'],
   'gospel': ['evangelism'],
   'salvation': ['evangelism'],
   'save': ['evangelism'],
+  'witness': ['evangelism'],
+  'mission': ['evangelism'],
+  'proclaim': ['evangelism'],
+  'cross': ['evangelism', 'forgiveness_of_sins'],
+  'calvary': ['evangelism', 'forgiveness_of_sins'],
+  'redeem': ['evangelism', 'forgiveness_of_sins'],
+  'blood': ['forgiveness_of_sins'],
+  'lamb': ['forgiveness_of_sins', 'praise_or_glory'],
+  'shepherd': ['faith_and_trust'],
+  'refuge': ['faith_and_trust'],
+  'rock': ['faith_and_trust'],
+  'fortress': ['faith_and_trust'],
+
+  // === YORUBA KEYWORDS ===
+  'ẹṣẹ': ['forgiveness_of_sins'],
+  'ese': ['forgiveness_of_sins'],
+  'idariji': ['forgiveness_of_sins'],
+  'aanu': ['mercy_or_blessing', 'forgiveness_of_sins'],
+  'emi mimo': ['holy_spirit_or_power'],
+  'agbara': ['holy_spirit_or_power'],
+  'iwosan': ['healing'],
+  'aisan': ['healing'],
+  'iyin': ['praise_or_glory'],
+  'ogo': ['praise_or_glory'],
+  'oba': ['christ_the_king'],
+  'igbagbo': ['faith_and_trust'],
+  'ireti': ['faith_and_trust'],
+  'ope': ['thanksgiving'],
+  'idupe': ['thanksgiving'],
+  'ibukun': ['mercy_or_blessing'],
+  'oore': ['mercy_or_blessing'],
+  'mimo': ['sanctification'],
+  'ihinrere': ['evangelism'],
+  'igbala': ['evangelism'],
+  'ina': ['lighting_of_candles', 'holy_spirit_or_power'],
+  'imole': ['lighting_of_candles'],
+  'agutan': ['forgiveness_of_sins', 'praise_or_glory'],
+  'oluwa': ['praise_or_glory', 'faith_and_trust'],
+  'olorun': ['praise_or_glory'],
+  'olugbala': ['evangelism'],
+  'adura': ['holy_spirit_or_power'],
+  'ironupiwada': ['forgiveness_of_sins'],
 };
+
+/** Common stop words to exclude from text comparison */
+const STOP_WORDS = new Set([
+  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+  'of', 'with', 'by', 'is', 'was', 'are', 'were', 'be', 'been', 'being',
+  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+  'should', 'may', 'might', 'shall', 'can', 'it', 'its', 'this', 'that',
+  'these', 'those', 'i', 'me', 'my', 'we', 'our', 'you', 'your', 'he',
+  'him', 'his', 'she', 'her', 'they', 'them', 'their', 'who', 'whom',
+  'which', 'what', 'when', 'where', 'how', 'why', 'not', 'no', 'nor',
+  'so', 'if', 'then', 'than', 'too', 'very', 'just', 'also', 'all',
+  'from', 'into', 'up', 'out', 'as', 'about', 'each', 'unto', 'upon',
+  'ye', 'thee', 'thy', 'thou', 'hath', 'doth', 'art', 'o',
+  // Yoruba common words
+  'ni', 'ti', 'si', 'ati', 'ki', 'pe', 'fun', 'wa', 'mi', 're', 'lo',
+]);
+
+/** Extract significant words from text (skip stop words, min 3 chars) */
+function extractKeyWords(text: string): Set<string> {
+  return new Set(
+    text.toLowerCase()
+      .replace(/[^a-zA-ZàáèéẹìíòóọùúṣẸỌ\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length >= 3 && !STOP_WORDS.has(w))
+  );
+}
 
 /**
  * Score a hymn's relevance to today's Bible lessons.
- * Scans hymn lyrics for thematic keywords related to the lesson references.
+ * Uses three layers:
+ *   1. Direct book name match (+15 each)
+ *   2. Thematic keyword overlap (+5 per keyword, max +20)
+ *   3. Lesson text word match (+2 per shared word, max +30)
  */
 export function scoreLessonRelevance(
   hymn: Hymn,
-  lessonRefs: { book: string; chapter: number }[]
+  lessonRefs: { book: string; chapter: number }[],
+  lessonText: string = ''
 ): { score: number; reason: string } {
-  if (lessonRefs.length === 0) return { score: 0, reason: '' };
+  if (lessonRefs.length === 0 && !lessonText) return { score: 0, reason: '' };
   
-  const hymnText = `${hymn.englishLyrics || ''} ${hymn.yorubaLyrics || ''} ${hymn.englishTitle || ''}`.toLowerCase();
+  const hymnText = `${hymn.englishLyrics || ''} ${hymn.yorubaLyrics || ''} ${hymn.englishTitle || ''} ${hymn.yorubaTitle || ''}`.toLowerCase();
   let totalScore = 0;
   const reasons: string[] = [];
 
-  // Check for direct book name references in hymn text
+  // Layer 1: Direct book name references in hymn text
   for (const ref of lessonRefs) {
     const bookLower = ref.book.toLowerCase();
     if (hymnText.includes(bookLower)) {
@@ -127,11 +226,10 @@ export function scoreLessonRelevance(
     }
   }
 
-  // Check thematic keyword matches
+  // Layer 2: Thematic keyword matches (English + Yoruba)
   let keywordMatches = 0;
   for (const [keyword, _categories] of Object.entries(SCRIPTURE_THEME_KEYWORDS)) {
     if (hymnText.includes(keyword)) {
-      // Check if any of the hymn's categories match the keyword's expected categories
       const categoryOverlap = _categories.some(c => hymn.categories.includes(c));
       if (categoryOverlap) {
         keywordMatches++;
@@ -149,6 +247,27 @@ export function scoreLessonRelevance(
     }
   }
 
+  // Layer 3: Direct lesson text ↔ hymn lyrics word comparison
+  if (lessonText) {
+    const lessonWords = extractKeyWords(lessonText);
+    const hymnWords = extractKeyWords(hymnText);
+    let sharedWords = 0;
+    for (const word of lessonWords) {
+      if (hymnWords.has(word)) sharedWords++;
+    }
+    if (sharedWords > 0) {
+      const textScore = Math.min(30, sharedWords * 2);
+      totalScore += textScore;
+      if (sharedWords >= 8) {
+        reasons.push(`Very strong text match (${sharedWords} shared words with lesson)`);
+      } else if (sharedWords >= 4) {
+        reasons.push(`Good text match (${sharedWords} shared words with lesson)`);
+      } else {
+        reasons.push(`Text match (${sharedWords} words)`);
+      }
+    }
+  }
+
   return {
     score: totalScore,
     reason: reasons.join('; '),
@@ -159,7 +278,8 @@ export function getCandidateHymns(
   slot: HymnSlot,
   allHymns: Hymn[],
   maxResults: number = 10,
-  lessonRefs: { book: string; chapter: number }[] = []
+  lessonRefs: { book: string; chapter: number }[] = [],
+  lessonText: string = ''
 ): ScoredHymnSuggestion[] {
   const recentHymns = getRecentlyUsedHymns();
 
@@ -195,11 +315,11 @@ export function getCandidateHymns(
 
         const isRecentlyUsed = recentHymns.includes(hymn.number);
         if (isRecentlyUsed) {
-          score -= 30; // Penalize recently used
+          score -= 40; // Stronger recency penalty for variety
         }
 
-        // Lesson relevance boost
-        const lessonMatch = scoreLessonRelevance(hymn, lessonRefs);
+        // Lesson relevance boost (3 layers)
+        const lessonMatch = scoreLessonRelevance(hymn, lessonRefs, lessonText);
         if (lessonMatch.score > 0) {
           score += lessonMatch.score;
           reason = lessonMatch.reason + ' + ' + reason;
@@ -228,7 +348,8 @@ export function generateHymnPlan(
   service: ServiceOrder,
   allHymns: Hymn[],
   date?: string,
-  lessonRefs: { book: string; chapter: number }[] = []
+  lessonRefs: { book: string; chapter: number }[] = [],
+  lessonText: string = ''
 ) {
   const slots = extractHymnSlots(service);
 
@@ -239,7 +360,7 @@ export function generateHymnPlan(
       stepNumber,
       slotName,
       category: slot.category || null,
-      suggestions: getCandidateHymns(slot, allHymns, 10, lessonRefs),
+      suggestions: getCandidateHymns(slot, allHymns, 10, lessonRefs, lessonText),
     })),
   };
 }

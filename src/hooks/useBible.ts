@@ -14,7 +14,7 @@ const chapterCache = new Map<string, BibleChapterData>();
  * Books are stored at /data/bible/{lang}/{BookName}.json
  * Each file contains: { book, chapters: [{ chapter, verses: [{verse, text}] }] }
  */
-async function loadChapter(book: string, chapter: number, lang: BibleLanguage = 'en'): Promise<BibleChapterData | null> {
+export async function loadChapter(book: string, chapter: number, lang: BibleLanguage = 'en'): Promise<BibleChapterData | null> {
   const cacheKey = `${lang}:${book}:${chapter}`;
   if (chapterCache.has(cacheKey)) {
     return chapterCache.get(cacheKey)!;

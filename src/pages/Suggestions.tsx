@@ -1,8 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
 import { useHymns } from '../hooks/useHymns';
 import { useTodaysLessons } from '../hooks/useLessons';
+import { loadChapter } from '../hooks/useBible';
 import { extractHymnSlots, getCandidateHymns, ScoredHymnSuggestion, recordHymnUsage } from '../utils/hymnMatcher';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ServiceOrder, Hymn, HymnCategory } from '../types';
@@ -62,20 +63,40 @@ export default function Suggestions() {
 
   const todayServiceTypes = useMemo(() => getServiceTypesForDate(new Date()), []);
 
-  const handleSelectService = (service: ServiceOrder) => {
+  // Helper to fetch lesson text from Bible data files
+  const fetchLessonText = useCallback(async (): Promise<{ refs: { book: string; chapter: number }[]; text: string }> => {
+    const refs: { book: string; chapter: number }[] = [];
+    const textParts: string[] = [];
+
+    for (const lesson of todaysLessons) {
+      if (lesson.firstLesson) {
+        refs.push({ book: lesson.firstLesson.book, chapter: lesson.firstLesson.chapter });
+        try {
+          const ch = await loadChapter(lesson.firstLesson.book, lesson.firstLesson.chapter, 'en');
+          if (ch) textParts.push(Object.values(ch.verses).join(' '));
+        } catch {}
+      }
+      if (lesson.secondLesson) {
+        refs.push({ book: lesson.secondLesson.book, chapter: lesson.secondLesson.chapter });
+        try {
+          const ch = await loadChapter(lesson.secondLesson.book, lesson.secondLesson.chapter, 'en');
+          if (ch) textParts.push(Object.values(ch.verses).join(' '));
+        } catch {}
+      }
+    }
+
+    return { refs, text: textParts.join(' ') };
+  }, [todaysLessons]);
+
+  const handleSelectService = async (service: ServiceOrder) => {
     setSelectedServiceId(service.id);
 
-    // Extract lesson book/chapter for relevance scoring
-    const lessonRefs = todaysLessons.flatMap(l => {
-      const refs: { book: string; chapter: number }[] = [];
-      if (l.firstLesson) refs.push({ book: l.firstLesson.book, chapter: l.firstLesson.chapter });
-      if (l.secondLesson) refs.push({ book: l.secondLesson.book, chapter: l.secondLesson.chapter });
-      return refs;
-    });
+    // Fetch actual lesson text for deep matching
+    const { refs: lessonRefs, text: lessonText } = await fetchLessonText();
 
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs);
+      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs, lessonText);
       return {
         stepNumber,
         slotName,
@@ -91,22 +112,17 @@ export default function Suggestions() {
     setExtraSlots([]);
   };
 
-  const loadPastPlan = (plan: SavedPlan) => {
+  const loadPastPlan = async (plan: SavedPlan) => {
     const service = services.find(s => s.id === plan.serviceId);
     if (!service) return;
 
-    // Extract lesson book/chapter for relevance scoring
-    const lessonRefs = todaysLessons.flatMap(l => {
-      const refs: { book: string; chapter: number }[] = [];
-      if (l.firstLesson) refs.push({ book: l.firstLesson.book, chapter: l.firstLesson.chapter });
-      if (l.secondLesson) refs.push({ book: l.secondLesson.book, chapter: l.secondLesson.chapter });
-      return refs;
-    });
+    // Fetch actual lesson text for deep matching
+    const { refs: lessonRefs, text: lessonText } = await fetchLessonText();
 
     setSelectedServiceId(service.id);
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs);
+      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs, lessonText);
       const planSlot = plan.slots.find(ps => ps.stepNumber === stepNumber);
       let selectedHymn = null;
       if (planSlot?.hymnNumber) {
