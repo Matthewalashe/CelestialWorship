@@ -11,7 +11,8 @@ import { referenceToPath } from '../utils/parseReference';
 import { parseStepContent, getStepAccentColor, type ContentSegment } from '../utils/contentParser';
 import type { Hymn, HymnCategory } from '../types';
 import { CATEGORY_LABELS } from '../types';
-import { Bird, Music, BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Bird, Music, BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, ChevronDown, MonitorSmartphone } from 'lucide-react';
+import { useWakeLock } from '../hooks/useWakeLock';
 
 const STORAGE_KEY = 'cw-devotion-state';
 
@@ -98,6 +99,7 @@ export default function Devotion() {
   const { hymns } = useHymns();
   const { lessons: todaysLessons } = useTodaysLessons();
   const { readerMode, setReaderMode, cycleReaderMode, isReaderActive } = useReaderMode();
+  const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
   const [loadingTimeout, setLoadingTimeout] = useState(false);
 
@@ -376,10 +378,24 @@ export default function Devotion() {
     <div className="max-w-xl mx-auto px-4 py-6 pb-24 min-h-screen flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-[var(--color-text-muted)]">{selectedService?.displayName}</span>
-        <button onClick={cycleReaderMode} className="px-3 py-1.5 rounded-lg text-xs font-medium"
-          style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
-          <BookOpen size={16} className="inline mr-1" /> Reader
-        </button>
+        <div className="flex gap-2">
+          {wakeLockSupported && (
+            <button
+              onClick={toggleWakeLock}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${wakeLockActive ? 'text-[var(--color-accent-gold)]' : ''}`}
+              style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
+              aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
+              aria-pressed={wakeLockActive}
+            >
+              <MonitorSmartphone size={16} className="inline mr-1" />
+              {wakeLockActive ? 'Screen On' : 'Keep On'}
+            </button>
+          )}
+          <button onClick={cycleReaderMode} className="px-3 py-1.5 rounded-lg text-xs font-medium"
+            style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
+            <BookOpen size={16} className="inline mr-1" /> Reader
+          </button>
+        </div>
       </div>
 
       <div className="mb-6">

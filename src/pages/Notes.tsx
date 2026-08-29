@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Plus, Pencil, Trash2, X } from 'lucide-react';
-import { useNotes, useSavedPassages } from '../hooks/useNotes';
+import { Search, Plus, Pencil, Trash2, X, Heart, Check } from 'lucide-react';
+import { useNotes, useSavedPassages, usePrayers } from '../hooks/useNotes';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { Note, NoteTag, NOTE_TAG_COLORS, NOTE_TAG_LABELS, SavedPassage, PassageCategory, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS } from '../types/notes';
+import { Note, NoteTag, NOTE_TAG_COLORS, NOTE_TAG_LABELS, SavedPassage, PassageCategory, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS, PrayerRequest } from '../types/notes';
 
 function formatRelativeTime(dateString: string) {
   const date = new Date(dateString);
@@ -19,9 +19,15 @@ function formatRelativeTime(dateString: string) {
 
 export default function Notes() {
   usePageTitle('notes');
-  const [activeTab, setActiveTab] = useState<'notes' | 'passages'>('notes');
+  const [activeTab, setActiveTab] = useState<'notes' | 'passages' | 'prayers'>('notes');
   const { notes, loading: notesLoading, createNote, updateNote, deleteNote, searchNotes } = useNotes();
   const { passages, loading: passagesLoading, deletePassage, updateAnnotation } = useSavedPassages();
+  const { prayers, loading: prayersLoading, createPrayer, toggleAnswered, deletePrayer } = usePrayers();
+
+  const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
+  const [prayerTitle, setPrayerTitle] = useState('');
+  const [prayerDescription, setPrayerDescription] = useState('');
+  const [prayerFilter, setPrayerFilter] = useState<'all' | 'active' | 'answered'>('all');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<NoteTag | 'all'>('all');
@@ -145,6 +151,16 @@ export default function Notes() {
             }`}
           >
             Saved Passages
+          </button>
+          <button
+            onClick={() => setActiveTab('prayers')}
+            className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
+              activeTab === 'prayers' 
+                ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' 
+                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card-hover)]'
+            }`}
+          >
+            Prayers
           </button>
         </div>
 
@@ -349,6 +365,115 @@ export default function Notes() {
                   </div>
                 ))}
               </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab Content: Prayers */}
+        {activeTab === 'prayers' && (
+          <div className="animate-slide-up">
+            <div className="flex gap-2 mb-6">
+              {(['all', 'active', 'answered'] as const).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setPrayerFilter(f)}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${prayerFilter === f ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]'}`}
+                >{f}</button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setIsPrayerModalOpen(true)}
+              className="w-full py-4 rounded-2xl text-sm font-semibold mb-6 flex items-center justify-center gap-2 border border-dashed border-[var(--color-accent-brand)] transition-colors hover:bg-[var(--color-bg-secondary)]"
+              style={{ color: 'var(--color-accent-brand)' }}
+            >
+              <Plus size={18} /> Add Prayer Request
+            </button>
+
+            {prayersLoading ? (
+              <div className="text-center py-12 text-[var(--color-text-muted)]">Loading prayers...</div>
+            ) : prayers.filter(p => prayerFilter === 'all' ? true : prayerFilter === 'answered' ? p.isAnswered : !p.isAnswered).length === 0 ? (
+              <div className="text-center py-20 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)]">
+                <Heart size={48} className="mx-auto mb-4" style={{ color: 'var(--color-accent-brand)', opacity: 0.5 }} />
+                <h3 className="text-2xl font-[Outfit] font-semibold mb-2">No {prayerFilter !== 'all' ? prayerFilter + ' ' : ''}prayer requests</h3>
+                <p className="text-[var(--color-text-secondary)] text-sm">Keep a journal of your prayers and God's answers.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {prayers
+                  .filter(p => prayerFilter === 'all' ? true : prayerFilter === 'answered' ? p.isAnswered : !p.isAnswered)
+                  .map(prayer => (
+                    <div key={prayer.id} className={`p-5 rounded-2xl border transition-all ${prayer.isAnswered ? 'opacity-70 border-[var(--color-border)] bg-[var(--color-bg-secondary)]' : 'border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-border-hover)]'}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 pr-4">
+                          <h3 className={`font-[Outfit] text-lg font-bold ${prayer.isAnswered ? 'line-through text-[var(--color-text-secondary)]' : 'text-[var(--color-text-primary)]'}`}>{prayer.title}</h3>
+                          {prayer.description && <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{prayer.description}</p>}
+                          <p className="text-xs mt-4" style={{ color: 'var(--color-text-muted)' }}>
+                            {prayer.isAnswered ? `Answered ${new Date(prayer.answeredAt!).toLocaleDateString()}` : `Added ${new Date(prayer.createdAt).toLocaleDateString()}`}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => toggleAnswered(prayer.id)}
+                            className={`p-2 rounded-lg transition-colors ${prayer.isAnswered ? 'text-emerald-500 bg-emerald-500/10' : 'text-[var(--color-text-muted)] hover:text-emerald-500 bg-[var(--color-bg-secondary)]'}`}
+                            aria-label={prayer.isAnswered ? 'Mark as unanswered' : 'Mark as answered'}
+                          >
+                            <Check size={20} />
+                          </button>
+                          <button
+                            onClick={() => deletePrayer(prayer.id)}
+                            className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 bg-[var(--color-bg-secondary)]"
+                            aria-label="Delete prayer"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+
+            {/* Prayer Modal */}
+            {isPrayerModalOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+                <div className="bg-[var(--color-bg-primary)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+                  <div className="p-4 flex items-center justify-between border-b border-[var(--color-border)]">
+                    <h3 className="text-lg font-[Outfit] font-bold text-[var(--color-text-primary)]">New Prayer Request</h3>
+                    <button onClick={() => { setIsPrayerModalOpen(false); setPrayerTitle(''); setPrayerDescription(''); }} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors text-[var(--color-text-muted)]" aria-label="Close"><X size={24} /></button>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <input
+                      type="text"
+                      placeholder="Prayer title..."
+                      value={prayerTitle}
+                      onChange={e => setPrayerTitle(e.target.value)}
+                      className="w-full p-4 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
+                      autoFocus
+                    />
+                    <textarea
+                      placeholder="Description (optional)..."
+                      value={prayerDescription}
+                      onChange={e => setPrayerDescription(e.target.value)}
+                      rows={4}
+                      className="w-full p-4 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] resize-none"
+                    />
+                  </div>
+                  <div className="p-4 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] flex justify-end">
+                    <button
+                      onClick={async () => {
+                        if (!prayerTitle.trim()) return;
+                        await createPrayer(prayerTitle.trim(), prayerDescription.trim());
+                        setPrayerTitle('');
+                        setPrayerDescription('');
+                        setIsPrayerModalOpen(false);
+                      }}
+                      disabled={!prayerTitle.trim()}
+                      className="px-6 py-3 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed w-full"
+                    >Save Prayer</button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

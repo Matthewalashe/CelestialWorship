@@ -7,7 +7,7 @@ import { extractHymnSlots, getCandidateHymns, ScoredHymnSuggestion, recordHymnUs
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ServiceOrder, Hymn, HymnCategory } from '../types';
 import { getServiceTypesForDate, formatDate } from '../utils/dateUtils';
-import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay } from 'lucide-react';
+import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay, X } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 interface SlotSelection {
@@ -44,6 +44,7 @@ export default function Suggestions() {
   const [showExport, setShowExport] = useState(false);
   const [manualSearches, setManualSearches] = useState<Record<number, string>>({});
   const [pastPlans, setPastPlans] = useState<SavedPlan[]>([]);
+  const [extraSlots, setExtraSlots] = useState<SlotSelection[]>([]);
 
   useEffect(() => {
     try {
@@ -64,9 +65,17 @@ export default function Suggestions() {
   const handleSelectService = (service: ServiceOrder) => {
     setSelectedServiceId(service.id);
 
+    // Extract lesson book/chapter for relevance scoring
+    const lessonRefs = todaysLessons.flatMap(l => {
+      const refs: { book: string; chapter: number }[] = [];
+      if (l.firstLesson) refs.push({ book: l.firstLesson.book, chapter: l.firstLesson.chapter });
+      if (l.secondLesson) refs.push({ book: l.secondLesson.book, chapter: l.secondLesson.chapter });
+      return refs;
+    });
+
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15);
+      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs);
       return {
         stepNumber,
         slotName,
@@ -79,16 +88,25 @@ export default function Suggestions() {
     setSlotSelections(selections);
     setExpandedSlot(null);
     setLockedSlots(new Set());
+    setExtraSlots([]);
   };
 
   const loadPastPlan = (plan: SavedPlan) => {
     const service = services.find(s => s.id === plan.serviceId);
     if (!service) return;
 
+    // Extract lesson book/chapter for relevance scoring
+    const lessonRefs = todaysLessons.flatMap(l => {
+      const refs: { book: string; chapter: number }[] = [];
+      if (l.firstLesson) refs.push({ book: l.firstLesson.book, chapter: l.firstLesson.chapter });
+      if (l.secondLesson) refs.push({ book: l.secondLesson.book, chapter: l.secondLesson.chapter });
+      return refs;
+    });
+
     setSelectedServiceId(service.id);
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15);
+      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs);
       const planSlot = plan.slots.find(ps => ps.stepNumber === stepNumber);
       let selectedHymn = null;
       if (planSlot?.hymnNumber) {
@@ -107,13 +125,43 @@ export default function Suggestions() {
     setSlotSelections(selections);
     setExpandedSlot(null);
     setLockedSlots(new Set(selections.map((_, i) => i)));
+    setExtraSlots([]);
+  };
+
+  const handleAddExtraSlot = () => {
+    const nextNum = slotSelections.length + extraSlots.length + 1;
+    setExtraSlots(prev => [...prev, {
+      stepNumber: nextNum,
+      slotName: `Extra Hymn ${extraSlots.length + 1}`,
+      category: null,
+      candidates: hymns.slice(0, 15).map(h => ({
+        hymnNumber: h.number,
+        hymn: h,
+        reason: 'Browse all hymns',
+        score: 50,
+        matchType: 'manual' as const,
+      })),
+      selectedHymn: null,
+    }]);
+  };
+
+  const handleRemoveExtraSlot = (index: number) => {
+    setExtraSlots(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSelectHymn = (slotIndex: number, hymn: Hymn) => {
     if (lockedSlots.has(slotIndex)) return;
-    setSlotSelections(prev =>
-      prev.map((s, i) => (i === slotIndex ? { ...s, selectedHymn: hymn } : s))
-    );
+    const isExtra = slotIndex >= slotSelections.length;
+    if (isExtra) {
+      const extraIdx = slotIndex - slotSelections.length;
+      setExtraSlots(prev =>
+        prev.map((s, i) => (i === extraIdx ? { ...s, selectedHymn: hymn } : s))
+      );
+    } else {
+      setSlotSelections(prev =>
+        prev.map((s, i) => (i === slotIndex ? { ...s, selectedHymn: hymn } : s))
+      );
+    }
     // Auto collapse after selection if not manual searching
     if (!manualSearches[slotIndex]) {
       setExpandedSlot(null);
@@ -133,7 +181,8 @@ export default function Suggestions() {
 
   const getFilteredCandidates = (slotIndex: number) => {
     const search = manualSearches[slotIndex] || '';
-    const slot = slotSelections[slotIndex];
+    const isExtra = slotIndex >= slotSelections.length;
+    const slot = isExtra ? extraSlots[slotIndex - slotSelections.length] : slotSelections[slotIndex];
     if (!search.trim()) return slot.candidates;
 
     const q = search.toLowerCase();
@@ -152,7 +201,7 @@ export default function Suggestions() {
   };
 
   const getDuplicateSlots = (hymnNumber: number, currentIndex: number) => {
-    return slotSelections
+    return [...slotSelections, ...extraSlots]
       .map((s, idx) => ({ step: s.stepNumber, isMatch: idx !== currentIndex && s.selectedHymn?.number === hymnNumber }))
       .filter(s => s.isMatch)
       .map(s => s.step);
@@ -164,7 +213,7 @@ export default function Suggestions() {
       `CCC Hymn Plan — ${selectedService.displayName}`,
       `Date: ${formatDate(new Date())}`,
       '',
-      ...slotSelections.map(s => {
+      ...[...slotSelections, ...extraSlots].map(s => {
         const hymn = s.selectedHymn;
         return `Step ${s.stepNumber}: ${s.slotName}\n  → Hymn #${hymn?.number || '?'} — ${hymn?.englishTitle || hymn?.yorubaTitle || 'None selected'}`;
       }),
@@ -179,7 +228,7 @@ export default function Suggestions() {
       date: new Date().toISOString(),
       serviceId: selectedService.id,
       serviceName: selectedService.displayName,
-      slots: slotSelections.map(s => ({
+      slots: [...slotSelections, ...extraSlots].map(s => ({
         stepNumber: s.stepNumber,
         slotName: s.slotName,
         hymnNumber: s.selectedHymn?.number || null,
@@ -192,7 +241,7 @@ export default function Suggestions() {
     localStorage.setItem('cw-hymn-plans', JSON.stringify(newPlans));
 
     // Record usage
-    const usedHymns = slotSelections.map(s => s.selectedHymn?.number).filter((n): n is number => n !== undefined);
+    const usedHymns = [...slotSelections, ...extraSlots].map(s => s.selectedHymn?.number).filter((n): n is number => n !== undefined);
     recordHymnUsage(usedHymns);
 
     alert('Plan saved to history!');
@@ -200,7 +249,7 @@ export default function Suggestions() {
 
   const sendToOperator = () => {
     if (!selectedService) return;
-    const items = slotSelections.map(s => ({
+    const items = [...slotSelections, ...extraSlots].map(s => ({
       type: 'hymn',
       hymnNumber: s.selectedHymn?.number || 0,
     })).filter(item => item.hymnNumber > 0);
@@ -222,8 +271,9 @@ export default function Suggestions() {
     );
   }
 
-  const filledCount = slotSelections.filter(s => s.selectedHymn).length;
-  const progressPercent = slotSelections.length > 0 ? (filledCount / slotSelections.length) * 100 : 0;
+  const allSlots = [...slotSelections, ...extraSlots];
+  const filledCount = allSlots.filter(s => s.selectedHymn).length;
+  const progressPercent = allSlots.length > 0 ? (filledCount / allSlots.length) * 100 : 0;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 pb-24">
@@ -337,13 +387,14 @@ export default function Suggestions() {
                   {selectedService?.displayName}
                 </h2>
                 <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                  {slotSelections.length} hymn slots • {filledCount} filled
+                  {slotSelections.length} hymn slots (per Order of Service) • {filledCount} filled
                 </p>
               </div>
               <button
                 onClick={() => {
                   setSelectedServiceId(null);
                   setSlotSelections([]);
+                  setExtraSlots([]);
                 }}
                 className="px-3 py-1.5 rounded-lg text-sm bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border)] transition-all"
               >
@@ -557,8 +608,94 @@ export default function Suggestions() {
             })}
           </div>
 
+          {/* Extra Hymn Slots */}
+          {extraSlots.length > 0 && (
+            <div className="mt-4 space-y-3">
+              <h3 className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-2">
+                Additional Hymns
+              </h3>
+              {extraSlots.map((slot, idx) => {
+                const globalIdx = slotSelections.length + idx;
+                const isExpanded = expandedSlot === globalIdx;
+                return (
+                  <div
+                    key={`extra-${idx}`}
+                    className={`bg-[var(--color-bg-card)] rounded-2xl border transition-all ${
+                      isExpanded
+                        ? 'border-[var(--color-accent-gold)] shadow-md'
+                        : 'border-dashed border-[var(--color-border)]'
+                    }`}
+                  >
+                    <div
+                      onClick={() => setExpandedSlot(isExpanded ? null : globalIdx)}
+                      className="w-full p-4 flex items-center justify-between cursor-pointer hover:bg-[var(--color-bg-card-hover)] rounded-2xl transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)] border border-dashed border-[var(--color-border)]">
+                          +
+                        </div>
+                        <span className="text-sm text-[var(--color-text-secondary)]">{slot.slotName}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {slot.selectedHymn && (
+                          <span className="text-sm font-semibold text-[var(--color-accent-gold)]">#{slot.selectedHymn.number}</span>
+                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleRemoveExtraSlot(idx); }}
+                          className="text-[var(--color-text-muted)] hover:text-red-400 p-1"
+                          aria-label="Remove extra slot"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    {isExpanded && (
+                      <div className="border-t border-[var(--color-border)] p-4 bg-[var(--color-bg-secondary)]/30 rounded-b-2xl">
+                        <input
+                          type="text"
+                          placeholder="Search by number, title, or lyrics..."
+                          value={manualSearches[globalIdx] || ''}
+                          onChange={e => setManualSearches(prev => ({ ...prev, [globalIdx]: e.target.value }))}
+                          className="w-full bg-[var(--color-bg-card)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] rounded-xl px-4 py-2.5 text-sm border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-accent-gold)] mb-3"
+                          autoFocus
+                        />
+                        <div className="space-y-2 max-h-72 overflow-y-auto">
+                          {getFilteredCandidates(globalIdx).map(suggestion => {
+                            const { hymn } = suggestion;
+                            const isSelected = slot.selectedHymn?.number === hymn.number;
+                            return (
+                              <button
+                                key={hymn.number}
+                                onClick={() => handleSelectHymn(globalIdx, hymn)}
+                                className={`w-full text-left p-3 rounded-xl transition-all ${
+                                  isSelected ? 'bg-[var(--color-accent-gold)]/10 border border-[var(--color-accent-gold)]/50' : 'bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-card-hover)] border border-[var(--color-border)]'
+                                }`}
+                              >
+                                <span className="text-[var(--color-accent-gold)] font-bold text-sm">#{hymn.number}</span>
+                                <span className="text-[var(--color-text-primary)] ml-2 text-sm">{hymn.englishTitle || hymn.yorubaTitle || 'Untitled'}</span>
+                                {isSelected && <Check size={16} className="inline ml-2 text-[var(--color-accent-gold)]" />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Add More button */}
+          <button
+            onClick={handleAddExtraSlot}
+            className="w-full mt-4 py-3 rounded-xl border-2 border-dashed border-[var(--color-border)] text-[var(--color-text-muted)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 hover:text-[var(--color-accent-gold)] transition-all"
+          >
+            + Add More Hymns
+          </button>
+
           {/* Action Bar */}
-          {slotSelections.length > 0 && (
+          {(slotSelections.length > 0 || extraSlots.length > 0) && (
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
               <button
                 onClick={() => {

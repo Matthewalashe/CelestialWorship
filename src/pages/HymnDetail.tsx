@@ -6,7 +6,8 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
-import { BookOpen, Moon, X, Tv, ClipboardCopy, Music2 } from 'lucide-react';
+import { useWakeLock } from '../hooks/useWakeLock';
+import { BookOpen, Moon, X, Tv, ClipboardCopy, Music2, MonitorSmartphone } from 'lucide-react';
 
 /** Detect if a verse is a chorus based on its number or line content */
 function isChorus(verse: any): boolean {
@@ -43,6 +44,7 @@ export default function HymnDetail() {
   usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${hymn.englishTitle || hymn.yorubaTitle}` : undefined);
   
   const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
+  const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
   const [activeTab, setActiveTab] = useState<'English' | 'Yoruba' | 'Side-by-Side'>('English');
   const [showSolfa, setShowSolfa] = useState(false);
@@ -105,6 +107,18 @@ export default function HymnDetail() {
         >
           {readerMode === 'off' ? <><BookOpen size={14} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={14} className="inline mr-1" /> Dim</> : <><X size={14} className="inline mr-1" /> Exit</>}
         </button>
+        {wakeLockSupported && (
+          <button
+            onClick={toggleWakeLock}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${wakeLockActive ? 'text-[var(--color-accent-gold)]' : ''}`}
+            style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
+            aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
+            aria-pressed={wakeLockActive}
+          >
+            <MonitorSmartphone size={16} className="inline mr-1" />
+            {wakeLockActive ? 'Screen On' : 'Keep On'}
+          </button>
+        )}
       </div>
 
       {/* Header */}

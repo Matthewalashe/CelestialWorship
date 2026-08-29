@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { openDB, IDBPDatabase } from 'idb';
-import { Note, NoteTag, SavedPassage, PassageCategory } from '../types/notes';
+import { Note, NoteTag, SavedPassage, PassageCategory, PrayerRequest } from '../types/notes';
 import { backupNoteToSupabase, deleteNoteFromSupabase } from './useNotesSync';
 
 const DB_NAME = 'celestialworship-notes';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise: Promise<IDBPDatabase<any>> | null = null;
 
@@ -20,6 +20,10 @@ function getDB() {
           const passagesStore = db.createObjectStore('savedPassages', { keyPath: 'id' });
           passagesStore.createIndex('savedAt', 'savedAt');
           passagesStore.createIndex('reference', ['book', 'chapter', 'verseStart', 'verseEnd']);
+        }
+        if (!db.objectStoreNames.contains('prayers')) {
+          const prayerStore = db.createObjectStore('prayers', { keyPath: 'id' });
+          prayerStore.createIndex('createdAt', 'createdAt');
         }
       },
     });
@@ -239,4 +243,75 @@ export function useSavedPassages() {
   };
 
   return { passages, loading, savePassage, updateAnnotation, deletePassage, isPassageSaved, refresh: fetchPassages };
+}
+
+export const prayersApi = {
+  async getPrayers(): Promise<PrayerRequest[]> {
+    const db = await getDB();
+    const prayers = await db.getAllFromIndex('prayers', 'createdAt');
+    return prayers.reverse();
+  },
+
+  async createPrayer(title: string, description: string): Promise<PrayerRequest> {
+    const db = await getDB();
+    const now = new Date().toISOString();
+    const prayer: PrayerRequest = {
+      id: crypto.randomUUID(),
+      title,
+      description,
+      isAnswered: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await db.put('prayers', prayer);
+    return prayer;
+  },
+
+  async toggleAnswered(id: string): Promise<PrayerRequest> {
+    const db = await getDB();
+    const tx = db.transaction('prayers', 'readwrite');
+    const prayer = await tx.store.get(id);
+    if (!prayer) throw new Error('Prayer not found');
+    prayer.isAnswered = !prayer.isAnswered;
+    prayer.answeredAt = prayer.isAnswered ? new Date().toISOString() : undefined;
+    prayer.updatedAt = new Date().toISOString();
+    await tx.store.put(prayer);
+    await tx.done;
+    return prayer;
+  },
+
+  async deletePrayer(id: string): Promise<void> {
+    const db = await getDB();
+    await db.delete('prayers', id);
+  },
+};
+
+export function usePrayers() {
+  const [prayers, setPrayers] = useState<PrayerRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    const data = await prayersApi.getPrayers();
+    setPrayers(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  return {
+    prayers,
+    loading,
+    createPrayer: async (title: string, description: string) => {
+      await prayersApi.createPrayer(title, description);
+      await refresh();
+    },
+    toggleAnswered: async (id: string) => {
+      await prayersApi.toggleAnswered(id);
+      await refresh();
+    },
+    deletePrayer: async (id: string) => {
+      await prayersApi.deletePrayer(id);
+      await refresh();
+    },
+  };
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2 } from 'lucide-react';
+import { BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2, MonitorSmartphone, Volume2, VolumeX } from 'lucide-react';
 import { useSwipe } from '../hooks/useSwipe';
 import { BIBLE_BOOKS } from '../data/bibleBooks';
 import { useDisplayController } from '../hooks/useLiveDisplay';
@@ -9,6 +9,7 @@ import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
+import { useWakeLock } from '../hooks/useWakeLock';
 
 interface BibleChapterData {
   book: string;
@@ -110,9 +111,11 @@ export default function BibleChapter() {
   const sideBySideParam = searchParams.get('sbs') === 'true';
 
   const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
+  const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
   const [currentLang, setCurrentLang] = useState<BibleLanguage>(langParam);
   const [sideBySide, setSideBySide] = useState(sideBySideParam);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const [data, setData] = useState<BibleChapterData | null>(null);
   const [dataSec, setDataSec] = useState<BibleChapterData | null>(null);
@@ -213,6 +216,28 @@ export default function BibleChapter() {
     setSavedToast('Verse link copied!');
     setTimeout(() => setSavedToast(null), 2000);
   }, [bookInfo, bookSlug, chapter, currentLang]);
+
+  const handleReadAloud = useCallback(() => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    if (!data?.verses) return;
+    const text = Object.values(data.verses).join('. ');
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = currentLang === 'yo' ? 'yo' : 'en-US';
+    utterance.rate = 0.9;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
+  }, [isSpeaking, data, currentLang]);
+
+  // Cleanup speech on unmount
+  useEffect(() => {
+    return () => { window.speechSynthesis.cancel(); };
+  }, []);
 
   // Load chapter data
   useEffect(() => {
@@ -353,6 +378,18 @@ export default function BibleChapter() {
           >
             {readerMode === 'off' ? <><BookOpen size={16} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={16} className="inline mr-1" /> Dim</> : <><X size={16} className="inline mr-1" /> Exit</>}
           </button>
+          {wakeLockSupported && (
+            <button
+              onClick={toggleWakeLock}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${wakeLockActive ? 'text-[var(--color-accent-gold)]' : ''}`}
+              style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
+              aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
+              aria-pressed={wakeLockActive}
+            >
+              <MonitorSmartphone size={16} className="inline mr-1" />
+              {wakeLockActive ? 'Screen On' : 'Keep On'}
+            </button>
+          )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {/* Language Toggles */}
@@ -380,6 +417,15 @@ export default function BibleChapter() {
 
           {/* Font size controls */}
           <div className="flex gap-1 ml-2">
+            <button
+              onClick={handleReadAloud}
+              className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'text-[var(--color-accent-brand)]' : 'text-[var(--color-text-secondary)]'}`}
+              style={{ backgroundColor: 'var(--color-bg-card)' }}
+              aria-label={isSpeaking ? 'Stop reading' : 'Read chapter aloud'}
+              title={isSpeaking ? 'Stop reading' : 'Read chapter aloud'}
+            >
+              {isSpeaking ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
             <button
               onClick={() => setFontSize(s => Math.max(14, s - 2))}
               className="w-8 h-8 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] flex items-center justify-center hover:bg-[var(--color-bg-card-hover)] transition-colors text-sm"

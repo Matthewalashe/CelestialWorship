@@ -52,3 +52,13 @@ export interface SavedPassage {
   category?: PassageCategory; // optional — existing passages won't have it
   savedAt: string; // ISO date string
 }
+
+export interface PrayerRequest {
+  id: string;
+  title: string;
+  description: string;
+  isAnswered: boolean;
+  answeredAt?: string; // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}

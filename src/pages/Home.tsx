@@ -4,8 +4,9 @@ import { useTodaysLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { useNotifications } from '../hooks/useNotifications';
-import { BookOpen, Music, ScrollText, Calendar, Scale, MonitorPlay, StickyNote, ListMusic, Bird, Bell, CircleCheck, Download, Zap, Star, Flame, Sunrise, ChevronRight } from 'lucide-react';
+import { BookOpen, Music, ScrollText, Calendar, Scale, MonitorPlay, StickyNote, ListMusic, Bird, Bell, CircleCheck, Download, Zap, Star, Flame, Sunrise, ChevronRight, Share2 } from 'lucide-react';
 import { CCCLogo, MemberInPrayer, MercyDayItems } from '../components/icons/celestial-icons';
+import { getVerseOfTheDay } from '../data/dailyVerses';
 
 /**
  * Compute Easter Sunday for a given year using the Anonymous Gregorian algorithm.
@@ -54,12 +55,14 @@ function getLiturgicalExclamation(date: Date): string {
 
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useMemo } from 'react';
 
 export default function Home() {
   usePageView('home');
   usePageTitle('home');
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
+  const verseOfDay = useMemo(() => getVerseOfTheDay(), []);
   
   const today = new Date();
   const todayFormatted = formatDate(today);
@@ -121,6 +124,29 @@ export default function Home() {
            style={{ color: 'var(--color-accent-brand)' }}>
           Celestial Worship Companion
         </p>
+
+        {/* Verse of the Day */}
+        <div className="mt-6 p-4 rounded-2xl relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--color-accent-gold)' }} />
+          <p className="text-xs uppercase tracking-wider mb-2" style={{ color: 'var(--color-accent-gold)' }}>Verse of the Day</p>
+          <Link to={verseOfDay.path}>
+            <p className="text-[var(--color-text-primary)] leading-relaxed italic">"{ verseOfDay.text }"</p>
+            <p className="text-sm font-semibold mt-2" style={{ color: 'var(--color-accent-brand)' }}>{verseOfDay.reference}</p>
+          </Link>
+          <button
+            onClick={async () => {
+              const shareText = `${verseOfDay.reference} — "${verseOfDay.text}"`;
+              if (navigator.share) {
+                try { await navigator.share({ title: verseOfDay.reference, text: shareText }); return; } catch {}
+              }
+              await navigator.clipboard.writeText(shareText);
+            }}
+            className="absolute top-4 right-4 p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)]"
+            aria-label="Share verse of the day"
+          >
+            <Share2 size={16} />
+          </button>
+        </div>
       </header>
 
       {/* Notification Prompt */}
