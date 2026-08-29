@@ -56,7 +56,7 @@ function SegmentRenderer({ segment, isReader }: { segment: ContentSegment; isRea
               {segment.title}
             </p>
           )}
-          <div className={`pl-4 ${isReader ? 'border-l border-current opacity-30' : 'border-l-2 border-[var(--color-accent-gold)]'}`}>
+          <div className={`pl-4 ${isReader ? 'opacity-30' : ''}`}>
             {segment.lines.map((line, i) => (
               <p key={i} className={`leading-relaxed italic ${isReader ? 'text-lg' : 'text-base'}`}>
                 {line}

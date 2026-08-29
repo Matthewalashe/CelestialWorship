@@ -35,7 +35,7 @@ const VerseItem = React.memo(function VerseItem({
       id={`verse-${verseNum}`}
       className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative ${
         isHighlighted
-          ? 'bg-[var(--color-accent-gold)]/15 border-l-2 border-[var(--color-accent-gold)]'
+          ? 'bg-[var(--color-accent-gold)]/15'
           : ''
       } ${sideBySide ? 'flex flex-col sm:flex-row gap-4' : ''}`}
     >

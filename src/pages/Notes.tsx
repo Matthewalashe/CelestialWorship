@@ -349,7 +349,7 @@ export default function Notes() {
                           </p>
                           
                           {passage.annotation && (
-                            <div className="mt-4 p-4 bg-[var(--color-bg-secondary)] rounded-xl border-l-2 border-[var(--color-accent-brand)]">
+                            <div className="mt-4 p-4 bg-[var(--color-bg-secondary)] rounded-xl">
                               <p className="text-[var(--color-text-secondary)] italic text-sm">
                                 {passage.annotation}
                               </p>
@@ -572,7 +572,7 @@ export default function Notes() {
             
             <div className="p-6">
               {editingPassage && (
-                <div className="mb-4 text-sm font-serif text-[var(--color-text-secondary)] p-3 bg-[var(--color-bg-secondary)] rounded-xl border-l-2 border-[var(--color-accent-gold)]">
+                <div className="mb-4 text-sm font-serif text-[var(--color-text-secondary)] p-3 bg-[var(--color-bg-secondary)] rounded-xl">
                   "{editingPassage.text}"
                 </div>
               )}

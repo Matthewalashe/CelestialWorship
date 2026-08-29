@@ -37,7 +37,7 @@ export function extractHymnSlots(service: ServiceOrder): {
   slotName: string;
   slot: HymnSlot;
 }[] {
-  return service.steps
+  const rawSlots = service.steps
     .filter(step => step.hymnSlot !== null)
     .map(step => ({
       stepNumber: step.stepNumber || 0,
@@ -46,6 +46,17 @@ export function extractHymnSlots(service: ServiceOrder): {
         : `Hymn ${step.hymnSlot?.fixedHymnNumber}`,
       slot: step.hymnSlot!,
     }));
+
+  // Deduplicate by category — keep only the first occurrence of each category.
+  // Fixed hymn numbers are always kept (they're unique by definition).
+  const seenCategories = new Set<string>();
+  return rawSlots.filter(({ slot }) => {
+    if (slot.fixedHymnNumber) return true; // Always keep fixed hymns
+    if (!slot.category) return true;
+    if (seenCategories.has(slot.category)) return false;
+    seenCategories.add(slot.category);
+    return true;
+  });
 }
 
 /** Keywords extracted from common Bible themes for matching hymns to lessons */

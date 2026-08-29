@@ -413,7 +413,7 @@ export default function Suggestions() {
           {/* Today's Readings Context */}
           {todaysLessons.length > 0 && (
             <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 mb-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-accent-brand)]"></div>
+
               <div className="text-xs uppercase font-semibold text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
                 <><BookOpen size={14} className="inline mr-1" /> Today's Readings</>
               </div>
@@ -540,10 +540,7 @@ export default function Suggestions() {
                                   : 'bg-[var(--color-bg-card)] hover:bg-[var(--color-bg-card-hover)] border border-[var(--color-border)]'
                               }`}
                             >
-                              {/* Score Indicator Bar */}
-                              {!manualSearches[idx] && (
-                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[var(--color-accent-gold)] to-[var(--color-accent-brand)] opacity-50" />
-                              )}
+
                               
                               <div className="pl-2">
                                 <div className="flex items-start justify-between">

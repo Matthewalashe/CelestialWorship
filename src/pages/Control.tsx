@@ -497,9 +497,9 @@ function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState,
                   return (
                     <div 
                       key={vNumStr} 
-                      className={`flex gap-4 p-4 rounded-xl border-l-4 transition-all hover:bg-[var(--color-bg-card)] ${
-                        isActiveOnDisplay ? 'border-[var(--color-accent-brand)] bg-[var(--color-accent-brand)]/10 shadow-sm' : 
-                        isSelected ? 'border-[var(--color-accent-gold)] bg-[var(--color-accent-gold)]/5' : 'border-transparent'
+                      className={`flex gap-4 p-4 rounded-xl transition-all hover:bg-[var(--color-bg-card)] ${
+                        isActiveOnDisplay ? 'bg-[var(--color-accent-brand)]/10 shadow-sm' : 
+                        isSelected ? 'bg-[var(--color-accent-gold)]/5' : ''
                       }`}
                     >
                       <div className="font-bold text-[var(--color-text-secondary)] min-w-[2rem] text-right pt-1">{vNumStr}</div>

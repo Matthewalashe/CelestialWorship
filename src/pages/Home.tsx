@@ -105,47 +105,49 @@ export default function Home() {
 
   return (
     <div className="px-4 py-6 pb-24 animate-fade-in">
-      {/* Hero Section */}
-      <header className="mb-8 relative">
-        <div className="absolute top-0 right-0 opacity-15 pointer-events-none">
-          <div className="w-28 h-28 rounded-full blur-[60px]"
-               style={{ backgroundColor: 'var(--color-accent-brand)' }} />
-        </div>
-        
-        <h1 className="text-3xl font-[Outfit] font-bold mb-1 tracking-tight"
-            style={{ color: 'var(--color-text-primary)' }}>
-          <span style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</span> {greeting}
-        </h1>
-        <p className="text-sm mb-3 font-medium"
-           style={{ color: 'var(--color-text-secondary)' }}>
-          {todayFormatted}
-        </p>
-        <p className="text-xs font-semibold tracking-widest uppercase"
-           style={{ color: 'var(--color-accent-brand)' }}>
-          Celestial Worship Companion
-        </p>
+      {/* Hero Card */}
+      <header className="mb-8">
+        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          {/* Greeting Bar */}
+          <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-[Outfit] font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+                <span style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</span> {greeting}
+              </h1>
+              <p className="text-xs mt-0.5 font-medium" style={{ color: 'var(--color-text-muted)' }}>
+                {todayFormatted}
+              </p>
+            </div>
+            <button
+              onClick={async () => {
+                const shareText = `${verseOfDay.reference} — "${verseOfDay.text}"`;
+                if (navigator.share) {
+                  try { await navigator.share({ title: verseOfDay.reference, text: shareText }); return; } catch {}
+                }
+                await navigator.clipboard.writeText(shareText);
+              }}
+              className="p-2 rounded-xl hover:bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)] transition-colors"
+              aria-label="Share verse of the day"
+            >
+              <Share2 size={18} />
+            </button>
+          </div>
 
-        {/* Verse of the Day */}
-        <div className="mt-6 p-4 rounded-2xl relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-          <div className="absolute top-0 left-0 w-1 h-full" style={{ backgroundColor: 'var(--color-accent-gold)' }} />
-          <p className="text-xs uppercase tracking-wider mb-2" style={{ color: 'var(--color-accent-gold)' }}>Verse of the Day</p>
-          <Link to={verseOfDay.path}>
-            <p className="text-[var(--color-text-primary)] leading-relaxed italic">"{ verseOfDay.text }"</p>
-            <p className="text-sm font-semibold mt-2" style={{ color: 'var(--color-accent-brand)' }}>{verseOfDay.reference}</p>
+          {/* Divider */}
+          <div className="mx-5 h-px" style={{ backgroundColor: 'var(--color-border)' }} />
+
+          {/* Verse of the Day */}
+          <Link to={verseOfDay.path} className="block px-5 pt-3 pb-5 group">
+            <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'var(--color-accent-gold)' }}>
+              Verse of the Day
+            </p>
+            <p className="text-[var(--color-text-primary)] leading-relaxed italic text-[15px] group-hover:text-[var(--color-accent-brand)] transition-colors">
+              "{verseOfDay.text}"
+            </p>
+            <p className="text-xs font-bold mt-2 tracking-wide" style={{ color: 'var(--color-accent-brand)' }}>
+              — {verseOfDay.reference}
+            </p>
           </Link>
-          <button
-            onClick={async () => {
-              const shareText = `${verseOfDay.reference} — "${verseOfDay.text}"`;
-              if (navigator.share) {
-                try { await navigator.share({ title: verseOfDay.reference, text: shareText }); return; } catch {}
-              }
-              await navigator.clipboard.writeText(shareText);
-            }}
-            className="absolute top-4 right-4 p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)]"
-            aria-label="Share verse of the day"
-          >
-            <Share2 size={16} />
-          </button>
         </div>
       </header>
 

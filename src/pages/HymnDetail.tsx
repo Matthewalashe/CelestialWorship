@@ -197,7 +197,7 @@ export default function HymnDetail() {
               key={idx} 
               className={`relative group rounded-2xl overflow-hidden transition-all ${
                 chorus 
-                  ? 'bg-[var(--color-accent-gold)]/5 border-l-4 border-[var(--color-accent-gold)]/40 pl-5 pr-5 py-5'
+                  ? 'bg-[var(--color-accent-gold)]/5 pl-5 pr-5 py-5'
                   : 'card p-5 md:p-6 bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50'
               }`}
             >
