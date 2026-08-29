@@ -16,12 +16,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
-        // Force SW update on every build by injecting build timestamp
-        additionalManifestEntries: [
-          { url: '/index.html', revision: Date.now().toString() }
-        ],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/data\//, /^\/assets\//],
+        navigateFallbackDenylist: [/^\/data\//],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
