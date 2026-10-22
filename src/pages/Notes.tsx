@@ -1,607 +1,607 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Plus, Pencil, Trash2, X, Heart, Check } from 'lucide-react';
-import { useNotes, useSavedPassages, usePrayers } from '../hooks/useNotes';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import {
+  Search, Plus, Trash2, X, Heart, Check, Pin, PinOff, BookOpen, Music, Download, Upload, Cloud, HandHeart, StickyNote,
+  Bookmark, Highlighter, FileText,
+} from 'lucide-react';
+import { useNotes, useSavedPassages, usePrayers, useAllHighlights, exportLibrary, importLibrary, librarySize } from '../hooks/useNotes';
+import { useDraft, listDrafts, discardDraft } from '../hooks/useDraft';
+import { useCloudBackup } from '../hooks/useCloudBackup';
+import { recordActivity } from '../hooks/useProgress';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { Note, NoteTag, NOTE_TAG_COLORS, NOTE_TAG_LABELS, SavedPassage, PassageCategory, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS, PrayerRequest } from '../types/notes';
+import { showToast } from '../components/Toast';
+import { errorMessage } from '../lib/backend';
+import {
+  NOTE_TAG_COLORS, NOTE_TAG_LABELS, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS, PRAYER_CATEGORY_LABELS, HIGHLIGHT_COLORS,
+  type Note, type NoteTag, type NoteLink, type PassageCategory, type PrayerCategory,
+} from '../types/notes';
 
-function formatRelativeTime(dateString: string) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
-  if (diffInSeconds < 60) return 'Just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} mins ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-  if (diffInSeconds < 172800) return 'Yesterday';
-  return date.toLocaleDateString();
+type Tab = 'notes' | 'saved' | 'highlights' | 'prayers' | 'drafts' | 'backup';
+
+const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: 'notes', label: 'Notes', icon: <StickyNote size={15} /> },
+  { id: 'saved', label: 'Saved', icon: <Bookmark size={15} /> },
+  { id: 'highlights', label: 'Highlights', icon: <Highlighter size={15} /> },
+  { id: 'prayers', label: 'Prayers', icon: <HandHeart size={15} /> },
+  { id: 'drafts', label: 'Drafts', icon: <FileText size={15} /> },
+  { id: 'backup', label: 'Backup', icon: <Cloud size={15} /> },
+];
+
+const slug = (book: string) => book.toLowerCase().replace(/\s+/g, '-');
+
+function linkLabel(link: NoteLink): string {
+  switch (link.kind) {
+    case 'bible': return `${link.book} ${link.chapter}:${link.verseStart}${link.verseEnd > link.verseStart ? `-${link.verseEnd}` : ''}`;
+    case 'hymn': return `Hymn ${link.number}`;
+    case 'service': return link.serviceId.replace(/_/g, ' ');
+    case 'lesson': return `Lessons for ${link.date}`;
+  }
 }
+
+function linkPath(link: NoteLink): string {
+  switch (link.kind) {
+    case 'bible': return `/bible/${slug(link.book)}/${link.chapter}?v=${link.verseStart}-${link.verseEnd}`;
+    case 'hymn': return `/hymns/${link.number}`;
+    case 'service': return `/services/${link.serviceId}`;
+    case 'lesson': return `/lessons/${link.date}`;
+  }
+}
+
+const formatWhen = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
+const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
+const inputStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
+
+// ── Note editor (autosaves a draft while typing) ─────────────
+
+interface NoteDraft { title: string; content: string; tags: NoteTag[] }
+
+function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLink; onClose: () => void }) {
+  const { createNote, updateNote } = useNotes();
+  const empty: NoteDraft = note ? { title: note.title, content: note.content, tags: note.tags } : { title: '', content: '', tags: [] };
+  const draftKey = note ? `note:${note.id}` : `note:new${link ? `:${linkLabel(link)}` : ''}`;
+  const draft = useDraft<NoteDraft>(draftKey, empty);
+  const effectiveLink = note?.link ?? link;
+  const { title, content, tags } = draft.value;
+
+  const save = async () => {
+    if (!title.trim() && !content.trim()) { onClose(); return; }
+    if (note) await updateNote(note.id, { title, content, tags });
+    else await createNote(title.trim() || (effectiveLink ? linkLabel(effectiveLink) : 'Untitled'), content, tags, effectiveLink);
+    draft.clear();
+    showToast('Note saved');
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+      <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-4 max-h-[92vh] overflow-y-auto"
+           style={{ backgroundColor: 'var(--color-bg-secondary)' }} onClick={e => e.stopPropagation()}
+           role="dialog" aria-label={note ? 'Edit note' : 'New note'}>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{note ? 'Edit note' : 'New note'}</h2>
+          <button onClick={onClose} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
+        </div>
+        {effectiveLink && (
+          <Link to={linkPath(effectiveLink)} className="inline-flex items-center gap-1 text-xs font-semibold mb-3 px-2 py-1 rounded-lg"
+                style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-accent-brand)' }}>
+            {effectiveLink.kind === 'hymn' ? <Music size={12} /> : <BookOpen size={12} />} {linkLabel(effectiveLink)}
+          </Link>
+        )}
+        <input value={title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="Title"
+               className={`${inputClass} mb-2 font-semibold`} style={inputStyle} />
+        <textarea value={content} onChange={e => draft.setValue({ content: e.target.value })} rows={9}
+                  placeholder="Write your thoughts, sermon points, or what God is saying to you…"
+                  className={`${inputClass} mb-3 resize-y leading-relaxed`} style={inputStyle} />
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(Object.keys(NOTE_TAG_LABELS) as NoteTag[]).map(tag => {
+            const on = tags.includes(tag);
+            return (
+              <button key={tag} onClick={() => draft.setValue({ tags: on ? tags.filter(t => t !== tag) : [...tags, tag] })}
+                      aria-pressed={on} className="px-3 py-1 rounded-full text-xs font-semibold border"
+                      style={on ? { backgroundColor: `${NOTE_TAG_COLORS[tag]}22`, borderColor: NOTE_TAG_COLORS[tag], color: NOTE_TAG_COLORS[tag] }
+                                : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+                {NOTE_TAG_LABELS[tag]}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+            {draft.savedAt ? 'Draft saved on this device' : ''}
+          </span>
+          <div className="flex gap-2">
+            {draft.hasDraft && !note && (
+              <button onClick={() => { draft.clear(); onClose(); }} className="px-4 py-2 rounded-xl text-sm"
+                      style={{ color: 'var(--color-text-secondary)' }}>Discard</button>
+            )}
+            <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Tabs ─────────────────────────────────────────────────────
+
+function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
+  openId: string | null; startNew: boolean; newLink: NoteLink | null; onEditorClosed: () => void;
+}) {
+  const { notes, loading, updateNote, deleteNote } = useNotes();
+  const [query, setQuery] = useState('');
+  const [tagFilter, setTagFilter] = useState<NoteTag | null>(null);
+  const [editing, setEditing] = useState<Note | null | 'new'>(startNew ? 'new' : null);
+
+  useEffect(() => {
+    if (openId) {
+      const n = notes.find(x => x.id === openId);
+      if (n) setEditing(n);
+    }
+  }, [openId, notes]);
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase();
+    return notes.filter(n =>
+      (!tagFilter || n.tags.includes(tagFilter)) &&
+      (!q || n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q)));
+  }, [notes, query, tagFilter]);
+
+  const close = () => { setEditing(null); onEditorClosed(); };
+
+  return (
+    <>
+      <div className="flex gap-2 mb-3">
+        <div className="relative flex-1">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
+          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search notes"
+                 className={`${inputClass} pl-9`} style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} />
+        </div>
+        <button onClick={() => setEditing('new')} className="btn-primary px-4 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
+          <Plus size={16} /> New
+        </button>
+      </div>
+      <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
+        {(Object.keys(NOTE_TAG_LABELS) as NoteTag[]).map(tag => (
+          <button key={tag} onClick={() => setTagFilter(tagFilter === tag ? null : tag)} aria-pressed={tagFilter === tag}
+                  className="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+                  style={tagFilter === tag
+                    ? { backgroundColor: `${NOTE_TAG_COLORS[tag]}22`, borderColor: NOTE_TAG_COLORS[tag], color: NOTE_TAG_COLORS[tag] }
+                    : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+            {NOTE_TAG_LABELS[tag]}
+          </button>
+        ))}
+      </div>
+
+      {loading ? null : filtered.length === 0 ? (
+        <Empty icon={<StickyNote size={28} />} text={notes.length ? 'No notes match.' : 'Write down sermon points, Bible study thoughts or anything on your heart. Tap a Bible verse and choose “Note” to attach a note to it.'} />
+      ) : (
+        <ul className="space-y-2">
+          {filtered.map(n => (
+            <li key={n.id} className="rounded-2xl border p-4" style={card}>
+              <div className="flex items-start gap-2">
+                <button onClick={() => setEditing(n)} className="flex-1 min-w-0 text-left">
+                  <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{n.title || 'Untitled'}</span>
+                  <span className="block text-sm line-clamp-2 mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{n.content}</span>
+                </button>
+                <button onClick={() => updateNote(n.id, { pinned: !n.pinned })} aria-label={n.pinned ? 'Unpin' : 'Pin'} className="p-1"
+                        style={{ color: n.pinned ? 'var(--color-accent-gold)' : 'var(--color-text-muted)' }}>
+                  {n.pinned ? <Pin size={16} fill="currentColor" /> : <PinOff size={16} />}
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+                <span>{formatWhen(n.updatedAt)}</span>
+                {n.link && <Link to={linkPath(n.link)} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{linkLabel(n.link)}</Link>}
+                {n.tags.map(t => <span key={t} style={{ color: NOTE_TAG_COLORS[t] }}>#{NOTE_TAG_LABELS[t]}</span>)}
+                <button onClick={async () => { if (confirm('Delete this note?')) { await deleteNote(n.id); showToast('Note deleted'); } }}
+                        className="ml-auto p-1" aria-label="Delete note"><Trash2 size={14} /></button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {editing && <NoteEditor note={editing === 'new' ? null : editing} link={editing === 'new' ? newLink ?? undefined : undefined} onClose={close} />}
+    </>
+  );
+}
+
+function SavedTab() {
+  const { passages, updatePassage, deletePassage } = useSavedPassages();
+  const [category, setCategory] = useState<PassageCategory | null>(null);
+  const [annotating, setAnnotating] = useState<string | null>(null);
+  const [annotation, setAnnotation] = useState('');
+  const shown = category ? passages.filter(p => p.category === category) : passages;
+
+  return (
+    <>
+      <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
+        {(Object.keys(PASSAGE_CATEGORY_LABELS) as PassageCategory[]).map(c => (
+          <button key={c} onClick={() => setCategory(category === c ? null : c)} aria-pressed={category === c}
+                  className="px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap"
+                  style={category === c
+                    ? { backgroundColor: `${PASSAGE_CATEGORY_COLORS[c]}22`, borderColor: PASSAGE_CATEGORY_COLORS[c], color: PASSAGE_CATEGORY_COLORS[c] }
+                    : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+            {PASSAGE_CATEGORY_LABELS[c]}
+          </button>
+        ))}
+      </div>
+      {shown.length === 0 ? (
+        <Empty icon={<Bookmark size={28} />} text="Tap verses in the Bible and choose “Save” to keep them here." />
+      ) : (
+        <ul className="space-y-2">
+          {shown.map(p => {
+            const ref = `${p.book} ${p.chapter}:${p.verseStart}${p.verseEnd > p.verseStart ? `-${p.verseEnd}` : ''}`;
+            return (
+              <li key={p.id} className="rounded-2xl border p-4" style={card}>
+                <Link to={`/bible/${slug(p.book)}/${p.chapter}?v=${p.verseStart}-${p.verseEnd}`} className="block">
+                  <span className="text-sm font-bold" style={{ color: 'var(--color-accent-brand)' }}>{ref}</span>
+                  <span className="block text-sm mt-1 italic leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>“{p.text}”</span>
+                </Link>
+                {annotating === p.id ? (
+                  <div className="mt-2">
+                    <textarea value={annotation} onChange={e => setAnnotation(e.target.value)} rows={3} className={inputClass} style={inputStyle}
+                              placeholder="What does this passage mean to you?" />
+                    <div className="flex justify-end gap-2 mt-2">
+                      <button onClick={() => setAnnotating(null)} className="text-sm px-3 py-1" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+                      <button onClick={async () => { await updatePassage(p.id, { annotation }); setAnnotating(null); }}
+                              className="btn-primary text-sm px-4 py-1.5 rounded-lg">Save</button>
+                    </div>
+                  </div>
+                ) : p.annotation ? (
+                  <p className="text-sm mt-2 p-2 rounded-lg" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}>{p.annotation}</p>
+                ) : null}
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <select value={p.category ?? ''} onChange={e => updatePassage(p.id, { category: (e.target.value || undefined) as PassageCategory | undefined })}
+                          className="text-xs rounded-lg px-2 py-1 border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label="Category">
+                    <option value="">No category</option>
+                    {(Object.keys(PASSAGE_CATEGORY_LABELS) as PassageCategory[]).map(c => <option key={c} value={c}>{PASSAGE_CATEGORY_LABELS[c]}</option>)}
+                  </select>
+                  <button onClick={() => { setAnnotating(p.id); setAnnotation(p.annotation); }} className="text-xs font-semibold"
+                          style={{ color: 'var(--color-accent-brand)' }}>{p.annotation ? 'Edit reflection' : 'Add reflection'}</button>
+                  <button onClick={() => deletePassage(p.id)} className="ml-auto p-1" aria-label="Remove" style={{ color: 'var(--color-text-muted)' }}>
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function HighlightsTab() {
+  const highlights = useAllHighlights();
+  // Group consecutive verses of the same chapter and colour
+  const groups = useMemo(() => {
+    const map = new Map<string, { book: string; chapter: number; color: keyof typeof HIGHLIGHT_COLORS; verses: number[]; at: string }>();
+    for (const h of highlights) {
+      const key = `${h.book}|${h.chapter}|${h.color}`;
+      const g = map.get(key);
+      if (g) g.verses.push(h.verse);
+      else map.set(key, { book: h.book, chapter: h.chapter, color: h.color, verses: [h.verse], at: h.createdAt });
+    }
+    return [...map.values()].map(g => ({ ...g, verses: g.verses.sort((a, b) => a - b) }));
+  }, [highlights]);
+
+  if (groups.length === 0) return <Empty icon={<Highlighter size={28} />} text="Tap verses in the Bible and choose “Highlight” to colour them." />;
+  return (
+    <ul className="space-y-2">
+      {groups.map(g => (
+        <li key={`${g.book}${g.chapter}${g.color}`}>
+          <Link to={`/bible/${slug(g.book)}/${g.chapter}?v=${g.verses[0]}-${g.verses[g.verses.length - 1]}`}
+                className="flex items-center gap-3 rounded-2xl border p-4" style={card}>
+            <span className="w-3 h-10 rounded-full shrink-0" style={{ backgroundColor: HIGHLIGHT_COLORS[g.color].swatch }} />
+            <span className="flex-1">
+              <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{g.book} {g.chapter}</span>
+              <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                Verse{g.verses.length > 1 ? 's' : ''} {g.verses.join(', ')} · {HIGHLIGHT_COLORS[g.color].label}
+              </span>
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+interface PrayerDraft { title: string; description: string; category: PrayerCategory | '' }
+
+function PrayersTab() {
+  const { prayers, createPrayer, toggleAnswered, markPrayed, deletePrayer } = usePrayers();
+  const draft = useDraft<PrayerDraft>('prayer:new', { title: '', description: '', category: '' });
+  const [adding, setAdding] = useState(false);
+  const [filter, setFilter] = useState<'open' | 'answered'>('open');
+  const [answering, setAnswering] = useState<string | null>(null);
+  const [testimony, setTestimony] = useState('');
+
+  const shown = prayers.filter(p => (filter === 'answered' ? p.isAnswered : !p.isAnswered));
+  const answeredCount = prayers.filter(p => p.isAnswered).length;
+
+  const add = async () => {
+    if (!draft.value.title.trim()) return;
+    await createPrayer(draft.value.title.trim(), draft.value.description, draft.value.category || undefined);
+    draft.clear();
+    setAdding(false);
+    recordActivity('prayer');
+    showToast('Added to your prayer journal');
+  };
+
+  return (
+    <>
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex rounded-xl p-0.5 border" style={card}>
+          {(['open', 'answered'] as const).map(f => (
+            <button key={f} onClick={() => setFilter(f)} aria-pressed={filter === f}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold"
+                    style={filter === f ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
+              {f === 'open' ? 'Praying for' : `Answered (${answeredCount})`}
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setAdding(a => !a)} className="ml-auto btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
+          <Plus size={16} /> Prayer
+        </button>
+      </div>
+      <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>
+        Your journal stays on this device. To ask the church to pray with you, use{' '}
+        <Link to="/prayer-requests" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Prayer requests</Link>.
+      </p>
+
+      {(adding || draft.hasDraft) && (
+        <div className="rounded-2xl border p-4 mb-4 space-y-2" style={card}>
+          <input value={draft.value.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="What are you praying for?"
+                 className={inputClass} style={inputStyle} />
+          <textarea value={draft.value.description} onChange={e => draft.setValue({ description: e.target.value })} rows={3}
+                    placeholder="Details (optional)" className={inputClass} style={inputStyle} />
+          <div className="flex gap-2">
+            <select value={draft.value.category} onChange={e => draft.setValue({ category: e.target.value as PrayerCategory | '' })}
+                    className="flex-1 rounded-xl px-3 py-2 text-sm border" style={inputStyle} aria-label="Category">
+              <option value="">Category</option>
+              {(Object.keys(PRAYER_CATEGORY_LABELS) as PrayerCategory[]).map(c => <option key={c} value={c}>{PRAYER_CATEGORY_LABELS[c]}</option>)}
+            </select>
+            <button onClick={() => { draft.clear(); setAdding(false); }} className="px-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+            <button onClick={add} className="btn-primary px-4 rounded-xl text-sm font-semibold">Save</button>
+          </div>
+        </div>
+      )}
+
+      {shown.length === 0 ? (
+        <Empty icon={<HandHeart size={28} />} text={filter === 'open' ? 'Keep a record of what you bring before God, and mark each one as answered.' : 'Answered prayers become your testimonies — they will appear here.'} />
+      ) : (
+        <ul className="space-y-2">
+          {shown.map(p => (
+            <li key={p.id} className="rounded-2xl border p-4" style={card}>
+              <div className="flex items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.title}</span>
+                  {p.description && <span className="block text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{p.description}</span>}
+                  {p.isAnswered && p.answeredNote && (
+                    <span className="block text-sm mt-2 p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 12%, transparent)', color: 'var(--color-text-primary)' }}>
+                      {p.answeredNote}
+                    </span>
+                  )}
+                </div>
+                {p.category && <span className="text-[10px] uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{PRAYER_CATEGORY_LABELS[p.category]}</span>}
+              </div>
+              {answering === p.id ? (
+                <div className="mt-2">
+                  <textarea value={testimony} onChange={e => setTestimony(e.target.value)} rows={2} className={inputClass} style={inputStyle}
+                            placeholder="How did God answer? (optional)" />
+                  <div className="flex justify-end gap-2 mt-2">
+                    <button onClick={() => setAnswering(null)} className="text-sm px-3" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+                    <button onClick={async () => { await toggleAnswered(p.id, testimony.trim() || undefined); setAnswering(null); showToast('Praise God! Marked as answered'); }}
+                            className="btn-primary text-sm px-4 py-1.5 rounded-lg">Mark answered</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap items-center gap-3 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                  <span>{p.isAnswered && p.answeredAt ? `Answered ${formatWhen(p.answeredAt)}` : `Since ${formatWhen(p.createdAt)}`}</span>
+                  {!p.isAnswered && (
+                    <button onClick={async () => { await markPrayed(p.id); recordActivity('prayer'); showToast('Amen'); }}
+                            className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
+                      <Heart size={13} /> I prayed{p.prayedCount ? ` · ${p.prayedCount}` : ''}
+                    </button>
+                  )}
+                  <button onClick={() => (p.isAnswered ? toggleAnswered(p.id) : (setAnswering(p.id), setTestimony('')))}
+                          className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-success)' }}>
+                    <Check size={13} /> {p.isAnswered ? 'Not answered yet' : 'Answered'}
+                  </button>
+                  <button onClick={() => { if (confirm('Delete this prayer?')) deletePrayer(p.id); }} className="ml-auto p-1" aria-label="Delete">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function DraftsTab() {
+  const [drafts, setDrafts] = useState(listDrafts);
+  const describe = (key: string) => {
+    if (key.startsWith('note:new')) return { label: 'New note', to: '/notes?new=1' };
+    if (key.startsWith('note:')) return { label: 'Edited note', to: `/notes?open=${key.slice(5)}` };
+    if (key.startsWith('prayer:')) return { label: 'Prayer', to: '/notes?tab=prayers' };
+    if (key.startsWith('prayer-request:')) return { label: 'Prayer request', to: '/prayer-requests' };
+    if (key.startsWith('article:')) return { label: 'Article', to: `/articles/write${key === 'article:new' ? '' : `?id=${key.slice(8)}`}` };
+    if (key.startsWith('event:')) return { label: 'Event submission', to: '/events?submit=1' };
+    if (key.startsWith('parish:')) return { label: 'Parish listing', to: '/directory?submit=1' };
+    return { label: key, to: '/' };
+  };
+  if (drafts.length === 0) return <Empty icon={<FileText size={28} />} text="Anything you start writing and don’t finish is kept here automatically." />;
+  return (
+    <ul className="space-y-2">
+      {drafts.map(d => {
+        const { label, to } = describe(d.key);
+        const v = d.value as Record<string, unknown>;
+        const preview = String(v.title || v.content || v.description || v.body || '').slice(0, 120);
+        return (
+          <li key={d.key} className="flex items-center gap-3 rounded-2xl border p-4" style={card}>
+            <Link to={to} className="flex-1 min-w-0">
+              <span className="block text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>{label}</span>
+              <span className="block text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{preview || 'Untitled'}</span>
+              {d.savedAt && <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{formatWhen(d.savedAt)}</span>}
+            </Link>
+            <button onClick={() => { discardDraft(d.key); setDrafts(listDrafts()); }} aria-label="Discard draft" className="p-1" style={{ color: 'var(--color-text-muted)' }}>
+              <Trash2 size={14} />
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function BackupTab() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [count, setCount] = useState<number | null>(null);
+  const cloud = useCloudBackup();
+
+  useEffect(() => { librarySize().then(setCount); cloud.fetchLastBackup(); }, [cloud.fetchLastBackup]);
+
+  const download = async () => {
+    const data = await exportLibrary();
+    const blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `celestialworship-backup-${data.exportedAt.slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    showToast('Backup file downloaded');
+  };
+
+  const upload = async (file: File) => {
+    try {
+      const result = await importLibrary(JSON.parse(await file.text()));
+      showToast(`Restored: ${result.added} new, ${result.updated} updated`);
+      setCount(await librarySize());
+    } catch (e) {
+      showToast(errorMessage(e));
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl border p-4" style={card}>
+        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>On this device</h3>
+        <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
+          {count === null ? '…' : `${count} item${count === 1 ? '' : 's'}`} — notes, saved passages, highlights and prayers.
+          They stay private on this phone or computer.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button onClick={download} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
+            <Download size={15} /> Download backup file
+          </button>
+          <button onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1"
+                  style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+            <Upload size={15} /> Restore from file
+          </button>
+          <input ref={fileRef} type="file" accept="application/json,.json" className="hidden"
+                 onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border p-4" style={card}>
+        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>Your account</h3>
+        {cloud.signedIn ? (
+          <>
+            <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
+              Keep a copy in your account to move to a new phone. Only you can read it.
+              {cloud.lastBackup && <> Last backup: {formatWhen(cloud.lastBackup)}.</>}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button disabled={cloud.busy} onClick={async () => { try { await cloud.backUp(); showToast('Backed up to your account'); } catch (e) { showToast(errorMessage(e)); } }}
+                      className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-60">
+                <Cloud size={15} /> Back up now
+              </button>
+              <button disabled={cloud.busy} onClick={async () => { try { const r = await cloud.restore(); showToast(`Restored: ${r.added} new, ${r.updated} updated`); setCount(await librarySize()); } catch (e) { showToast(errorMessage(e)); } }}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold border disabled:opacity-60"
+                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+                Restore from account
+              </button>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+            <Link to="/signin?returnTo=/notes?tab=backup" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link>{' '}
+            to back up your library to your account and restore it on another device.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Empty({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="text-center py-12 px-6" style={{ color: 'var(--color-text-muted)' }}>
+      <div className="inline-flex mb-3 opacity-60">{icon}</div>
+      <p className="text-sm max-w-sm mx-auto">{text}</p>
+    </div>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────
 
 export default function Notes() {
   usePageTitle('notes');
-  const [activeTab, setActiveTab] = useState<'notes' | 'passages' | 'prayers'>('notes');
-  const { notes, loading: notesLoading, createNote, updateNote, deleteNote, searchNotes } = useNotes();
-  const { passages, loading: passagesLoading, deletePassage, updateAnnotation } = useSavedPassages();
-  const { prayers, loading: prayersLoading, createPrayer, toggleAnswered, deletePrayer } = usePrayers();
+  const [params, setParams] = useSearchParams();
+  const tab = (TABS.some(t => t.id === params.get('tab')) ? params.get('tab') : 'notes') as Tab;
 
-  const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
-  const [prayerTitle, setPrayerTitle] = useState('');
-  const [prayerDescription, setPrayerDescription] = useState('');
-  const [prayerFilter, setPrayerFilter] = useState<'all' | 'active' | 'answered'>('all');
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTag, setSelectedTag] = useState<NoteTag | 'all'>('all');
-  const [passageFilter, setPassageFilter] = useState<PassageCategory | 'all'>('all');
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState('');
-  const [noteTags, setNoteTags] = useState<NoteTag[]>([]);
-
-  // Annotation Modal State
-  const [isAnnotationModalOpen, setIsAnnotationModalOpen] = useState(false);
-  const [editingPassage, setEditingPassage] = useState<SavedPassage | null>(null);
-  const [passageAnnotation, setPassageAnnotation] = useState('');
-
-  const filteredNotes = useMemo(() => {
-    let filtered = notes;
-    if (selectedTag !== 'all') {
-      filtered = filtered.filter(n => n.tags.includes(selectedTag));
+  // Deep links: /notes?new=1&book=John&chapter=3&from=16&to=16  or  /notes?new=1&hymn=5  or /notes?open=<id>
+  const newLink = useMemo<NoteLink | null>(() => {
+    if (params.get('new') !== '1') return null;
+    if (params.get('book')) {
+      return {
+        kind: 'bible', book: params.get('book')!, chapter: Number(params.get('chapter')) || 1,
+        verseStart: Number(params.get('from')) || 1, verseEnd: Number(params.get('to') || params.get('from')) || 1,
+      };
     }
-    return filtered;
-  }, [notes, selectedTag]);
+    if (params.get('hymn')) return { kind: 'hymn', number: Number(params.get('hymn')) };
+    if (params.get('service')) return { kind: 'service', serviceId: params.get('service')! };
+    return null;
+  }, [params]);
+  const wantsNew = params.get('new') === '1';
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    searchNotes(query);
+  const setTab = (t: Tab) => setParams(t === 'notes' ? {} : { tab: t }, { replace: true });
+  const clearDeepLink = () => {
+    if (params.has('new') || params.has('open')) setParams(tab === 'notes' ? {} : { tab }, { replace: true });
   };
-
-  const openNoteModal = (note?: Note) => {
-    if (note) {
-      setEditingNote(note);
-      setNoteTitle(note.title);
-      setNoteContent(note.content);
-      setNoteTags(note.tags);
-    } else {
-      setEditingNote(null);
-      setNoteTitle('');
-      setNoteContent('');
-      setNoteTags([]);
-    }
-    setIsModalOpen(true);
-  };
-
-  const closeNoteModal = () => {
-    setIsModalOpen(false);
-    setEditingNote(null);
-  };
-
-  const saveNote = async () => {
-    if (!noteTitle.trim()) return;
-    if (editingNote) {
-      await updateNote(editingNote.id, { title: noteTitle, content: noteContent, tags: noteTags });
-    } else {
-      await createNote(noteTitle, noteContent, noteTags);
-    }
-    closeNoteModal();
-  };
-
-  const toggleTag = (tag: NoteTag) => {
-    if (noteTags.includes(tag)) {
-      setNoteTags(noteTags.filter(t => t !== tag));
-    } else {
-      setNoteTags([...noteTags, tag]);
-    }
-  };
-
-  const openAnnotationModal = (passage: SavedPassage) => {
-    setEditingPassage(passage);
-    setPassageAnnotation(passage.annotation || '');
-    setIsAnnotationModalOpen(true);
-  };
-
-  const saveAnnotation = async () => {
-    if (editingPassage) {
-      await updateAnnotation(editingPassage.id, passageAnnotation);
-    }
-    setIsAnnotationModalOpen(false);
-  };
-
-  const passagesByBook = useMemo(() => {
-    const grouped: Record<string, SavedPassage[]> = {};
-    const filteredPassages = passageFilter === 'all' 
-      ? passages 
-      : passages.filter(p => p.category === passageFilter);
-      
-    filteredPassages.forEach(p => {
-      if (!grouped[p.book]) grouped[p.book] = [];
-      grouped[p.book].push(p);
-    });
-    return grouped;
-  }, [passages, passageFilter]);
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] pb-24 animate-fade-in">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-[Outfit] font-bold">My Journal</h1>
-        </div>
+    <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
+      <h1 className="text-2xl font-bold font-[Outfit] mb-1" style={{ color: 'var(--color-text-primary)' }}>My Library</h1>
+      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>Notes, saved verses, highlights and your prayer journal</p>
 
-        {/* Tabs */}
-        <div className="flex space-x-2 mb-8 bg-[var(--color-bg-secondary)] p-1 rounded-xl w-fit">
-          <button
-            onClick={() => setActiveTab('notes')}
-            className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-              activeTab === 'notes' 
-                ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' 
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card-hover)]'
-            }`}
-          >
-            My Notes
+      <div className="flex gap-1 overflow-x-auto hide-scrollbar mb-5 -mx-1 px-1" role="tablist">
+        {TABS.map(t => (
+          <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}
+                  className="px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap inline-flex items-center gap-1.5"
+                  style={tab === t.id
+                    ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
+                    : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
+            {t.icon}{t.label}
           </button>
-          <button
-            onClick={() => setActiveTab('passages')}
-            className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-              activeTab === 'passages' 
-                ? 'bg-[var(--color-accent-gold)] text-white shadow-lg' 
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card-hover)]'
-            }`}
-          >
-            Saved Passages
-          </button>
-          <button
-            onClick={() => setActiveTab('prayers')}
-            className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 ${
-              activeTab === 'prayers' 
-                ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' 
-                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-card-hover)]'
-            }`}
-          >
-            Prayers
-          </button>
-        </div>
-
-        {/* Tab Content: Notes */}
-        {activeTab === 'notes' && (
-          <div className="animate-slide-up">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--color-text-muted)]">
-                  <Search size={20} />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search notes..."
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  className="w-full pl-10 pr-4 py-3 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] focus:ring-1 focus:ring-[var(--color-accent-brand)] transition-all placeholder:text-[var(--color-text-muted)]"
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedTag('all')}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedTag === 'all' 
-                      ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-primary)]' 
-                      : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]'
-                  }`}
-                >
-                  All
-                </button>
-                {(Object.entries(NOTE_TAG_LABELS) as [NoteTag, string][]).map(([tag, label]) => (
-                  <button
-                    key={tag}
-                    onClick={() => setSelectedTag(tag)}
-                    style={{
-                      backgroundColor: selectedTag === tag ? NOTE_TAG_COLORS[tag] : 'var(--color-bg-card)',
-                      color: selectedTag === tag ? '#fff' : 'var(--color-text-secondary)',
-                      borderColor: selectedTag === tag ? NOTE_TAG_COLORS[tag] : 'var(--color-border)',
-                    }}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors hover:opacity-80`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {notesLoading ? (
-              <div className="text-center py-12 text-[var(--color-text-muted)]">Loading notes...</div>
-            ) : filteredNotes.length === 0 ? (
-              <div className="text-center py-20 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)]">
-                <div className="text-[var(--color-accent-brand)] opacity-50 mb-4 flex justify-center">
-                  <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                </div>
-                <h3 className="text-2xl font-[Outfit] font-semibold mb-2">No notes found</h3>
-                <p className="text-[var(--color-text-secondary)] mb-6">Capture your thoughts, sermons, and prayers.</p>
-                <button
-                  onClick={() => openNoteModal()}
-                  className="px-6 py-3 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2"
-                >
-                  <Plus size={24} /> Create your first note
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredNotes.map(note => (
-                  <div key={note.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 hover:border-[var(--color-border-hover)] transition-all group flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-[Outfit] text-xl font-bold line-clamp-1">{note.title}</h3>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openNoteModal(note)} className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)] hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors">
-                          <Pencil size={16} />
-                        </button>
-                        <button onClick={() => deleteNote(note.id)} className="p-1.5 text-[var(--color-text-muted)] hover:text-red-500 hover:bg-[var(--color-bg-secondary)] rounded-lg transition-colors">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-[var(--color-text-secondary)] text-sm line-clamp-3 mb-4 flex-1">
-                      {note.content || <span className="italic opacity-50">No content...</span>}
-                    </p>
-                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-[var(--color-border)]">
-                      <div className="flex flex-wrap gap-1.5">
-                        {note.tags.map(tag => (
-                          <span 
-                            key={tag}
-                            style={{ backgroundColor: `${NOTE_TAG_COLORS[tag]}20`, color: NOTE_TAG_COLORS[tag] }} 
-                            className="px-2 py-0.5 rounded text-xs font-medium"
-                          >
-                            {NOTE_TAG_LABELS[tag]}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-xs text-[var(--color-text-muted)]">
-                        {formatRelativeTime(note.updatedAt)}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* FAB for new note */}
-            <button
-              onClick={() => openNoteModal()}
-              className="fixed bottom-24 right-6 w-14 h-14 bg-[var(--color-accent-brand)] text-white rounded-full shadow-[0_8px_30px_rgb(20,184,166,0.3)] flex items-center justify-center hover:scale-105 transition-transform z-10"
-              aria-label="Create new note"
-            >
-              <Plus size={24} />
-            </button>
-          </div>
-        )}
-
-        {/* Tab Content: Saved Passages */}
-        {activeTab === 'passages' && (
-          <div className="animate-slide-up">
-            {passagesLoading ? (
-              <div className="text-center py-12 text-[var(--color-text-muted)]">Loading passages...</div>
-            ) : passages.length === 0 ? (
-              <div className="text-center py-20 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)]">
-                <div className="text-[var(--color-accent-gold)] opacity-50 mb-4 flex justify-center">
-                  <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                </div>
-                <h3 className="text-2xl font-[Outfit] font-semibold mb-2">No saved passages</h3>
-                <p className="text-[var(--color-text-secondary)] mb-6">Open the Bible and save your favorite verses to see them here.</p>
-                <Link to="/bible" className="px-6 py-3 bg-[var(--color-accent-gold)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity inline-flex items-center gap-2">
-                  Open Bible
-                </Link>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-                  <button
-                    onClick={() => setPassageFilter('all')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${passageFilter === 'all' ? 'text-[var(--color-bg-primary)]' : 'text-[var(--color-text-secondary)]'}`}
-                    style={{ backgroundColor: passageFilter === 'all' ? 'var(--color-accent-brand)' : 'var(--color-bg-card)' }}
-                  >All</button>
-                  {(Object.entries(PASSAGE_CATEGORY_LABELS) as [PassageCategory, string][]).map(([key, label]) => (
-                    <button
-                      key={key}
-                      onClick={() => setPassageFilter(key as PassageCategory)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${passageFilter === key ? 'text-white' : 'text-[var(--color-text-secondary)]'}`}
-                      style={{ backgroundColor: passageFilter === key ? PASSAGE_CATEGORY_COLORS[key as PassageCategory] : 'var(--color-bg-card)' }}
-                    >{label}</button>
-                  ))}
-                </div>
-                <div className="space-y-8">
-                  {Object.entries(passagesByBook).map(([book, bookPassages]) => (
-                  <div key={book} className="space-y-4">
-                    <h2 className="text-xl font-[Outfit] font-bold text-[var(--color-text-primary)] border-b border-[var(--color-border)] pb-2">{book}</h2>
-                    <div className="grid grid-cols-1 gap-4">
-                      {bookPassages.map(passage => (
-                        <div key={passage.id} className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl p-5 hover:border-[var(--color-border-hover)] transition-all">
-                          <div className="flex justify-between items-start mb-3">
-                            <Link 
-                              to={`/bible/${passage.book.toLowerCase().replace(/\s+/g, '')}/${passage.chapter}`}
-                              className="text-lg font-bold text-[var(--color-accent-gold)] hover:underline flex items-center gap-1"
-                            >
-                              {passage.book} {passage.chapter}:{passage.verseStart}{passage.verseStart !== passage.verseEnd ? `-${passage.verseEnd}` : ''}
-                              <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                            </Link>
-                            {passage.category && (
-                              <span 
-                                className="ml-2 px-1.5 py-0.5 rounded text-[10px] font-bold text-white"
-                                style={{ backgroundColor: PASSAGE_CATEGORY_COLORS[passage.category] }}
-                              >{PASSAGE_CATEGORY_LABELS[passage.category]}</span>
-                            )}
-                            <div className="flex gap-2">
-                              <button 
-                                onClick={() => openAnnotationModal(passage)}
-                                className="text-xs px-3 py-1.5 bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-lg transition-colors font-medium"
-                              >
-                                {passage.annotation ? 'Edit Note' : 'Add Note'}
-                              </button>
-                              <button 
-                                onClick={() => deletePassage(passage.id)}
-                                className="p-1.5 text-[var(--color-text-muted)] hover:text-red-500 bg-[var(--color-bg-secondary)] rounded-lg transition-colors"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <p className="text-[var(--color-text-primary)] text-lg font-serif leading-relaxed mb-4">
-                            "{passage.text}"
-                          </p>
-                          
-                          {passage.annotation && (
-                            <div className="mt-4 p-4 bg-[var(--color-bg-secondary)] rounded-xl">
-                              <p className="text-[var(--color-text-secondary)] italic text-sm">
-                                {passage.annotation}
-                              </p>
-                            </div>
-                          )}
-                          
-                          <div className="mt-4 flex justify-end">
-                            <span className="text-xs text-[var(--color-text-muted)]">Saved {formatRelativeTime(passage.savedAt)}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Tab Content: Prayers */}
-        {activeTab === 'prayers' && (
-          <div className="animate-slide-up">
-            <div className="flex gap-2 mb-6">
-              {(['all', 'active', 'answered'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => setPrayerFilter(f)}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${prayerFilter === f ? 'bg-[var(--color-accent-brand)] text-white shadow-lg' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:border-[var(--color-border-hover)]'}`}
-                >{f}</button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setIsPrayerModalOpen(true)}
-              className="w-full py-4 rounded-2xl text-sm font-semibold mb-6 flex items-center justify-center gap-2 border border-dashed border-[var(--color-accent-brand)] transition-colors hover:bg-[var(--color-bg-secondary)]"
-              style={{ color: 'var(--color-accent-brand)' }}
-            >
-              <Plus size={18} /> Add Prayer Request
-            </button>
-
-            {prayersLoading ? (
-              <div className="text-center py-12 text-[var(--color-text-muted)]">Loading prayers...</div>
-            ) : prayers.filter(p => prayerFilter === 'all' ? true : prayerFilter === 'answered' ? p.isAnswered : !p.isAnswered).length === 0 ? (
-              <div className="text-center py-20 bg-[var(--color-bg-card)] rounded-2xl border border-[var(--color-border)]">
-                <Heart size={48} className="mx-auto mb-4" style={{ color: 'var(--color-accent-brand)', opacity: 0.5 }} />
-                <h3 className="text-2xl font-[Outfit] font-semibold mb-2">No {prayerFilter !== 'all' ? prayerFilter + ' ' : ''}prayer requests</h3>
-                <p className="text-[var(--color-text-secondary)] text-sm">Keep a journal of your prayers and God's answers.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {prayers
-                  .filter(p => prayerFilter === 'all' ? true : prayerFilter === 'answered' ? p.isAnswered : !p.isAnswered)
-                  .map(prayer => (
-                    <div key={prayer.id} className={`p-5 rounded-2xl border transition-all ${prayer.isAnswered ? 'opacity-70 border-[var(--color-border)] bg-[var(--color-bg-secondary)]' : 'border-[var(--color-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-border-hover)]'}`}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 pr-4">
-                          <h3 className={`font-[Outfit] text-lg font-bold ${prayer.isAnswered ? 'line-through text-[var(--color-text-secondary)]' : 'text-[var(--color-text-primary)]'}`}>{prayer.title}</h3>
-                          {prayer.description && <p className="text-sm mt-2 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{prayer.description}</p>}
-                          <p className="text-xs mt-4" style={{ color: 'var(--color-text-muted)' }}>
-                            {prayer.isAnswered ? `Answered ${new Date(prayer.answeredAt!).toLocaleDateString()}` : `Added ${new Date(prayer.createdAt).toLocaleDateString()}`}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => toggleAnswered(prayer.id)}
-                            className={`p-2 rounded-lg transition-colors ${prayer.isAnswered ? 'text-emerald-500 bg-emerald-500/10' : 'text-[var(--color-text-muted)] hover:text-emerald-500 bg-[var(--color-bg-secondary)]'}`}
-                            aria-label={prayer.isAnswered ? 'Mark as unanswered' : 'Mark as answered'}
-                          >
-                            <Check size={20} />
-                          </button>
-                          <button
-                            onClick={() => deletePrayer(prayer.id)}
-                            className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 bg-[var(--color-bg-secondary)]"
-                            aria-label="Delete prayer"
-                          >
-                            <Trash2 size={20} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            )}
-
-            {/* Prayer Modal */}
-            {isPrayerModalOpen && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-                <div className="bg-[var(--color-bg-primary)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-                  <div className="p-4 flex items-center justify-between border-b border-[var(--color-border)]">
-                    <h3 className="text-lg font-[Outfit] font-bold text-[var(--color-text-primary)]">New Prayer Request</h3>
-                    <button onClick={() => { setIsPrayerModalOpen(false); setPrayerTitle(''); setPrayerDescription(''); }} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors text-[var(--color-text-muted)]" aria-label="Close"><X size={24} /></button>
-                  </div>
-                  <div className="p-6 space-y-4">
-                    <input
-                      type="text"
-                      placeholder="Prayer title..."
-                      value={prayerTitle}
-                      onChange={e => setPrayerTitle(e.target.value)}
-                      className="w-full p-4 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
-                      autoFocus
-                    />
-                    <textarea
-                      placeholder="Description (optional)..."
-                      value={prayerDescription}
-                      onChange={e => setPrayerDescription(e.target.value)}
-                      rows={4}
-                      className="w-full p-4 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-brand)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] resize-none"
-                    />
-                  </div>
-                  <div className="p-4 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] flex justify-end">
-                    <button
-                      onClick={async () => {
-                        if (!prayerTitle.trim()) return;
-                        await createPrayer(prayerTitle.trim(), prayerDescription.trim());
-                        setPrayerTitle('');
-                        setPrayerDescription('');
-                        setIsPrayerModalOpen(false);
-                      }}
-                      disabled={!prayerTitle.trim()}
-                      className="px-6 py-3 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed w-full"
-                    >Save Prayer</button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
+        ))}
       </div>
 
-      {/* Note Create/Edit Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[var(--color-bg-primary)] w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
-              <h2 className="text-xl font-[Outfit] font-bold">{editingNote ? 'Edit Note' : 'New Note'}</h2>
-              <button onClick={closeNoteModal} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors">
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-5">
-              <input
-                type="text"
-                placeholder="Note Title"
-                value={noteTitle}
-                onChange={(e) => setNoteTitle(e.target.value)}
-                className="w-full bg-transparent text-3xl font-[Outfit] font-bold border-none focus:outline-none focus:ring-0 placeholder:text-[var(--color-text-muted)]"
-              />
-              
-              <div className="flex flex-wrap gap-2">
-                {(Object.entries(NOTE_TAG_LABELS) as [NoteTag, string][]).map(([tag, label]) => {
-                  const isSelected = noteTags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => toggleTag(tag)}
-                      style={{
-                        backgroundColor: isSelected ? NOTE_TAG_COLORS[tag] : 'var(--color-bg-secondary)',
-                        color: isSelected ? '#fff' : 'var(--color-text-secondary)',
-                      }}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-              
-              <textarea
-                placeholder="Start writing..."
-                value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
-                className="w-full flex-1 min-h-[300px] bg-transparent resize-none border-none focus:outline-none focus:ring-0 text-[var(--color-text-primary)] leading-relaxed placeholder:text-[var(--color-text-muted)]"
-              />
-            </div>
-            
-            <div className="p-4 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] flex justify-between items-center">
-              <div>
-                {editingNote && (
-                  <button 
-                    onClick={() => {
-                      deleteNote(editingNote.id);
-                      closeNoteModal();
-                    }}
-                    className="text-red-500 hover:bg-red-500/10 px-4 py-2 rounded-lg font-medium transition-colors"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-              <div className="flex gap-3">
-                <button onClick={closeNoteModal} className="px-5 py-2 font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
-                  Cancel
-                </button>
-                <button 
-                  onClick={saveNote}
-                  disabled={!noteTitle.trim()}
-                  className="px-6 py-2 bg-[var(--color-accent-brand)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Save Note
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {tab === 'notes' && (
+        <NotesTab key={wantsNew ? `new-${params.toString()}` : 'list'} openId={params.get('open')}
+                  startNew={wantsNew} newLink={newLink} onEditorClosed={clearDeepLink} />
       )}
-
-      {/* Annotation Modal */}
-      {isAnnotationModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[var(--color-bg-primary)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
-              <h2 className="text-lg font-[Outfit] font-bold">Add Note to Passage</h2>
-              <button onClick={() => setIsAnnotationModalOpen(false)} className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-full transition-colors">
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div className="p-6">
-              {editingPassage && (
-                <div className="mb-4 text-sm font-serif text-[var(--color-text-secondary)] p-3 bg-[var(--color-bg-secondary)] rounded-xl">
-                  "{editingPassage.text}"
-                </div>
-              )}
-              <textarea
-                placeholder="Write your thoughts on this verse..."
-                value={passageAnnotation}
-                onChange={(e) => setPassageAnnotation(e.target.value)}
-                className="w-full h-32 p-3 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl focus:outline-none focus:border-[var(--color-accent-gold)] resize-none"
-              />
-            </div>
-            
-            <div className="p-4 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] flex justify-end gap-3">
-              <button 
-                onClick={() => setIsAnnotationModalOpen(false)} 
-                className="px-5 py-2 font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={saveAnnotation}
-                className="px-6 py-2 bg-[var(--color-accent-gold)] text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {tab === 'saved' && <SavedTab />}
+      {tab === 'highlights' && <HighlightsTab />}
+      {tab === 'prayers' && <PrayersTab />}
+      {tab === 'drafts' && <DraftsTab />}
+      {tab === 'backup' && <BackupTab />}
     </div>
   );
 }

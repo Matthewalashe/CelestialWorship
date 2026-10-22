@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import logo from '../assets/logo.png';
 
 export default function SignIn() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(() => new URLSearchParams(window.location.search).get('mode') === 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -30,8 +30,12 @@ export default function SignIn() {
 
     try {
       if (isSignUp) {
-        await signUpWithEmail(email, password, displayName);
-        // Let the user effect redirect upon successful sign in/up
+        const needsConfirmation = await signUpWithEmail(email, password, displayName);
+        if (needsConfirmation) {
+          setAuthError(`Check ${email} for a confirmation link, then sign in.`);
+          setIsSignUp(false);
+        }
+        // Otherwise the user effect redirects once signed in
       } else {
         await signInWithEmail(email, password);
       }

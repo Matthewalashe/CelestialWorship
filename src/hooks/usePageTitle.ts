@@ -6,7 +6,7 @@ const PAGE_TITLES: Record<string, string> = {
   home: 'CelestialWorship — Celestial Church of Christ Hymnal, Bible & Devotion',
   bible: 'Bible — KJV in English & Yoruba | CelestialWorship',
   bible_chapter: '',  // Dynamic - set by component
-  hymns: 'CCC Hymns — 500+ Celestial Church Hymns | CelestialWorship',
+  hymns: 'CCC Hymns — 450+ Celestial Church Hymns | CelestialWorship',
   hymn_detail: '',  // Dynamic - set by component  
   services: 'Order of Service — CCC Liturgy | CelestialWorship',
   service_detail: '', // Dynamic

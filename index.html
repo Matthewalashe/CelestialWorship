@@ -6,7 +6,7 @@
     
     <!-- Primary Meta Tags -->
     <title>CelestialWorship — Celestial Church of Christ Hymnal, Bible, Liturgy & Devotion</title>
-    <meta name="description" content="Free digital worship companion for the Celestial Church of Christ (CCC). KJV Bible in English & Yoruba, 500+ CCC Hymns with solfa, Order of Service, Daily Devotion, Bible Lessons & more." />
+    <meta name="description" content="Free digital worship companion for the Celestial Church of Christ (CCC). KJV Bible in English & Yoruba, 450+ CCC Hymns with solfa, Order of Service, Daily Devotion, Bible Lessons & more." />
     <meta name="keywords" content="Celestial Church of Christ, CCC, CCC hymns, CCC hymnal, Celestial Church hymn book, Yoruba Bible, KJV Bible, Order of Service, CCC liturgy, CCC devotion, Celestial worship, CCC songs, church hymns, daily devotion, Bible lessons, CCC constitution" />
     <meta name="author" content="CelestialWorship" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
@@ -37,7 +37,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://celestialworship.vercel.app/" />
     <meta property="og:title" content="CelestialWorship — Celestial Church of Christ Hymnal, Bible & Devotion" />
-    <meta property="og:description" content="Free digital worship companion for the Celestial Church of Christ. KJV Bible in English & Yoruba, 500+ CCC Hymns, Order of Service, Daily Devotion & more." />
+    <meta property="og:description" content="Free digital worship companion for the Celestial Church of Christ. KJV Bible in English & Yoruba, 450+ CCC Hymns, Order of Service, Daily Devotion & more." />
     <meta property="og:image" content="https://celestialworship.vercel.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -61,7 +61,7 @@
       "name": "CelestialWorship",
       "alternateName": "CCC Worship App",
       "url": "https://celestialworship.vercel.app",
-      "description": "Free digital worship companion for the Celestial Church of Christ (CCC). Features KJV Bible in English and Yoruba, 500+ CCC hymns with solfa notation, full order of service, daily devotion guide, and Bible lessons.",
+      "description": "Free digital worship companion for the Celestial Church of Christ (CCC). Features KJV Bible in English and Yoruba, 450+ CCC hymns with solfa notation, full order of service, daily devotion guide, and Bible lessons.",
       "applicationCategory": "ReligiousApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires JavaScript. Works offline via Service Worker.",
@@ -89,7 +89,7 @@
       "screenshot": "https://celestialworship.vercel.app/og-image.png",
       "featureList": [
         "KJV Bible in English and Yoruba",
-        "500+ CCC Hymns with Solfa Notation",
+        "450+ CCC Hymns with Solfa Notation",
         "Full Order of Service / Liturgy",
         "Daily Private Devotion Guide",
         "Weekly Bible Lessons",
@@ -141,9 +141,9 @@
       "name": "Celestial Church of Christ Hymnal",
       "alternateName": "CCC Hymn Book",
       "url": "https://celestialworship.vercel.app/hymns",
-      "description": "Complete collection of 500+ Celestial Church of Christ hymns in English and Yoruba with solfa notation.",
+      "description": "Complete collection of 450+ Celestial Church of Christ hymns in English and Yoruba with Yoruba and English lyrics.",
       "inLanguage": ["en", "yo"],
-      "numTracks": 500,
+      "numTracks": 457,
       "isAccessibleForFree": true
     }
     </script>
@@ -165,12 +165,35 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Splash: shown instantly while the app loads; React replaces it on first render -->
+    <div id="root">
+      <div id="splash" aria-label="CelestialWorship is loading" role="status">
+        <img src="/logo.png" alt="" width="96" height="96" />
+        <p class="splash-name">CelestialWorship</p>
+        <p class="splash-tag">Celestial Church of Christ</p>
+        <span class="splash-dots"><i></i><i></i><i></i></span>
+      </div>
+    </div>
+    <style>
+      #splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: radial-gradient(circle at 70% 20%, rgba(212, 168, 67, 0.18), transparent 55%), #0A1628;
+        color: #F8FAFC; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      #splash img { border-radius: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); animation: splash-rise 0.6s ease-out both; }
+      #splash .splash-name { margin: 20px 0 0; font-size: 26px; font-weight: 700; letter-spacing: 0.02em; animation: splash-rise 0.6s 0.1s ease-out both; }
+      #splash .splash-tag { margin: 6px 0 0; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: #D4A843; animation: splash-rise 0.6s 0.2s ease-out both; }
+      #splash .splash-dots { display: flex; gap: 6px; margin-top: 32px; }
+      #splash .splash-dots i { width: 7px; height: 7px; border-radius: 50%; background: #D4A843; opacity: 0.3; animation: splash-dot 1.2s infinite; }
+      #splash .splash-dots i:nth-child(2) { animation-delay: 0.2s; }
+      #splash .splash-dots i:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes splash-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      @keyframes splash-dot { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { #splash * { animation: none !important; } }
+    </style>
     <noscript>
       <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
         <h1>CelestialWorship</h1>
         <p>Digital worship companion for the Celestial Church of Christ.</p>
-        <p>Features: KJV Bible (English & Yoruba), 500+ CCC Hymns, Order of Service, Daily Devotion, Bible Lessons.</p>
+        <p>Features: KJV Bible (English & Yoruba), 450+ CCC Hymns, Order of Service, Daily Devotion, Bible Lessons.</p>
         <p>Please enable JavaScript to use this application.</p>
         <nav>
           <a href="/bible">Bible</a> | 
