@@ -1,175 +1,166 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2, MonitorSmartphone, Volume2, VolumeX } from 'lucide-react';
+import {
+  BookOpen, Moon, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2, MonitorSmartphone, Volume2, VolumeX,
+  Copy, StickyNote, Image as ImageIcon, Columns2, Highlighter,
+} from 'lucide-react';
 import { useSwipe } from '../hooks/useSwipe';
 import { BIBLE_BOOKS } from '../data/bibleBooks';
+import { BIBLE_VERSIONS, getBibleVersion, companionVersion, DEFAULT_VERSION_ID } from '../data/bibleVersions';
 import { useDisplayController } from '../hooks/useLiveDisplay';
-import { useSavedPassages } from '../hooks/useNotes';
-import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
+import { useSavedPassages, useChapterHighlights, notesApi } from '../hooks/useNotes';
+import { useBible } from '../hooks/useBible';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { recordChapterOpened, recordChapterCompleted, useReadingProgress } from '../hooks/useProgress';
+import { HIGHLIGHT_COLORS, type HighlightColor, type Note } from '../types/notes';
+import { showToast } from '../components/Toast';
+import { shareCard } from '../utils/shareCard';
 
-interface BibleChapterData {
-  book: string;
-  chapter: number;
-  verses: Record<string, string>;
+const VERSION_KEY = 'cw-bible-version';
+const FONT_KEY = 'cw-bible-font';
+
+function storedNumber(key: string, fallback: number, min: number, max: number) {
+  try {
+    const n = Number(localStorage.getItem(key));
+    if (n >= min && n <= max) return n;
+  } catch {}
+  return fallback;
 }
 
-const VerseItem = React.memo(function VerseItem({ 
-  verseNum, text, textSec, isHighlighted, isSaved, isSelected, onSelect, onToggleSave, onSendToDisplay, onShare, sideBySide
+/** "3-5,7" style label for a set of verse numbers */
+function formatVerseList(verses: number[]): string {
+  const sorted = [...verses].sort((a, b) => a - b);
+  const parts: string[] = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+  for (const v of sorted.slice(1).concat(NaN)) {
+    if (v === prev + 1) { prev = v; continue; }
+    parts.push(start === prev ? `${start}` : `${start}-${prev}`);
+    start = v;
+    prev = v;
+  }
+  return parts.join(',');
+}
+
+const VerseItem = React.memo(function VerseItem({
+  verseNum, text, textSec, isHighlighted, isSelected, isSpeaking, highlight, hasNote, isSaved, onSelect, sideBySide,
 }: {
   verseNum: number;
   text: string;
   textSec?: string;
   isHighlighted: boolean;
-  isSaved: boolean;
   isSelected: boolean;
+  isSpeaking: boolean;
+  highlight?: HighlightColor;
+  hasNote: boolean;
+  isSaved: boolean;
   onSelect: (num: number) => void;
-  onToggleSave: (num: number, text: string) => void;
-  onSendToDisplay: (num: number, text: string) => void;
-  onShare: (num: number, text: string) => void;
   sideBySide: boolean;
 }) {
+  const background = isSelected
+    ? 'color-mix(in srgb, var(--color-accent-brand) 14%, transparent)'
+    : highlight
+      ? HIGHLIGHT_COLORS[highlight].background
+      : isHighlighted || isSpeaking
+        ? 'color-mix(in srgb, var(--color-accent-gold) 15%, transparent)'
+        : undefined;
+
+  const number = (
+    <span className="font-semibold mr-1.5 text-[0.65em] align-super select-none" style={{ color: 'var(--color-accent-gold)' }}>
+      {verseNum}
+      {isSaved && <Bookmark size={9} className="inline ml-0.5 -mt-0.5" fill="currentColor" />}
+      {hasNote && <StickyNote size={9} className="inline ml-0.5 -mt-0.5" />}
+    </span>
+  );
+
   return (
     <div
       id={`verse-${verseNum}`}
       onClick={() => onSelect(verseNum)}
-      className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative cursor-pointer ${
-        isSelected
-          ? 'bg-[var(--color-accent-brand)]/10 ring-1 ring-[var(--color-accent-brand)]/40'
-          : isHighlighted
-            ? 'bg-[var(--color-accent-gold)]/15'
-            : ''
-      } ${sideBySide ? 'flex flex-col sm:flex-row gap-4' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(verseNum); } }}
+      className={`rounded-lg px-2 py-1 -mx-2 cursor-pointer transition-colors ${isSelected ? 'ring-1 ring-[var(--color-accent-brand)]/40' : ''} ${sideBySide ? 'grid sm:grid-cols-2 gap-x-6 gap-y-1' : ''}`}
+      style={{ backgroundColor: background }}
     >
-      {sideBySide ? (
-        <>
-          <div className="flex-1 pr-4 relative">
-            <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
-              {verseNum}
-            </span>
-            <span className="text-[var(--color-text-primary)]">{text}</span>
-          </div>
-          {textSec && (
-            <div className="flex-1 pt-2 sm:pt-0 sm:border-l border-[var(--color-border)] sm:pl-4 relative">
-              <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super sm:hidden">
-                {verseNum}
-              </span>
-              <span className="text-[var(--color-text-secondary)]">{textSec}</span>
-            </div>
-          )}
-        </>
-      ) : (
-        <p className="pr-12">
-          <span className="text-[var(--color-accent-gold)] font-semibold mr-2 text-[0.7em] align-super">
-            {verseNum}
-          </span>
-          <span className="text-[var(--color-text-primary)]">{text}</span>
+      <p>{number}<span style={{ color: 'var(--color-text-primary)' }}>{text}</span></p>
+      {sideBySide && (
+        <p className="sm:border-l sm:pl-6 text-[0.95em]" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+          <span className="sm:hidden">{number}</span>
+          {textSec ?? <span className="italic opacity-60">—</span>}
         </p>
       )}
-      
-      {/* Action buttons - visible on hover (pointer devices) or when the verse is tapped (touch) */}
-      <span onClick={e => e.stopPropagation()} className={`inline-flex items-center gap-1 ${isSelected ? 'opacity-100' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-within:opacity-100 focus-within:pointer-events-auto'} transition-opacity absolute right-2 ${sideBySide ? 'top-1' : 'top-1/2 -translate-y-1/2 bg-[var(--color-bg-primary)] px-2 rounded-lg shadow-sm border border-[var(--color-border)]'}`}>
-        <button
-          onClick={() => onSendToDisplay(verseNum, text)}
-          className="text-[var(--color-accent-brand)] text-xs hover:scale-110 transition-transform p-1"
-          title="Send to display"
-          aria-label="Send to display"
-        >
-          <Tv size={18} />
-        </button>
-        <button
-          onClick={() => onToggleSave(verseNum, text)}
-          className={`text-xs hover:scale-110 transition-transform p-1 ${
-            isSaved ? 'text-[var(--color-accent-gold)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-accent-gold)]'
-          }`}
-          title={isSaved ? 'Remove from saved' : 'Save passage'}
-          aria-label={isSaved ? 'Remove bookmark' : 'Add bookmark'}
-        >
-          <Bookmark size={18} fill={isSaved ? "currentColor" : "none"} />
-        </button>
-        <button
-          onClick={() => onShare(verseNum, text)}
-          className="text-[var(--color-text-muted)] hover:text-[var(--color-accent-brand)] text-xs hover:scale-110 transition-transform p-1"
-          title="Share verse"
-          aria-label="Share verse link"
-        >
-          <Share2 size={16} />
-        </button>
-      </span>
     </div>
   );
 });
 
-
 export default function BibleChapter() {
   usePageView('bible_chapter');
   const { book: bookSlug, chapter: chapterStr } = useParams<{ book: string; chapter: string }>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { showBibleVerse } = useDisplayController();
-  const { passages, savePassage, deletePassage, refresh: refreshPassages } = useSavedPassages();
+  const { passages, savePassage, deletePassage } = useSavedPassages();
+  const { isCompleted } = useReadingProgress();
 
-  const langParam = (searchParams.get('lang') as BibleLanguage) || 'en';
-  const sideBySideParam = searchParams.get('sbs') === 'true';
+  // Version comes from the URL, then the last one used, then KJV
+  const versionId = searchParams.get('lang') || (() => {
+    try { return localStorage.getItem(VERSION_KEY) || DEFAULT_VERSION_ID; } catch { return DEFAULT_VERSION_ID; }
+  })();
+  const version = getBibleVersion(versionId);
+  const sideBySide = searchParams.get('sbs') === 'true';
+  const secondVersion = getBibleVersion(searchParams.get('with') || companionVersion(version).id);
 
   const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
   const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
-  const [currentLang, setCurrentLang] = useState<BibleLanguage>(langParam);
-  const [sideBySide, setSideBySide] = useState(sideBySideParam);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [fontSize, setFontSizeState] = useState(() => storedNumber(FONT_KEY, 18, 14, 30));
+  const [selected, setSelected] = useState<number[]>([]);
+  const [showColors, setShowColors] = useState(false);
+  const [speakingVerse, setSpeakingVerse] = useState<number | null>(null);
+  const [chapterNotes, setChapterNotes] = useState<Note[]>([]);
+  const [showNotes, setShowNotes] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
 
-  const [data, setData] = useState<BibleChapterData | null>(null);
-  const [dataSec, setDataSec] = useState<BibleChapterData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [fontSize, setFontSize] = useState(18);
-  const [savedToast, setSavedToast] = useState<string | null>(null);
-  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const setFontSize = (delta: number) => setFontSizeState(s => {
+    const next = Math.min(30, Math.max(14, s + delta));
+    try { localStorage.setItem(FONT_KEY, String(next)); } catch {}
+    return next;
+  });
 
-  const handleSelectVerse = useCallback((num: number) => {
-    setSelectedVerse(prev => (prev === num ? null : num));
-  }, []);
-
-  // Sync state with URL params
-  useEffect(() => {
-    setCurrentLang((searchParams.get('lang') as BibleLanguage) || 'en');
-    setSideBySide(searchParams.get('sbs') === 'true');
-  }, [searchParams]);
-
-  const updateUrl = (l: BibleLanguage, sbs: boolean) => {
+  const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams);
-    params.set('lang', l);
-    if (sbs) params.set('sbs', 'true');
-    else params.delete('sbs');
-    navigate(`?${params.toString()}`, { replace: true });
+    for (const [k, v] of Object.entries(updates)) {
+      if (v) params.set(k, v);
+      else params.delete(k);
+    }
+    setSearchParams(params, { replace: true });
   };
 
-  const handleLangToggle = (l: BibleLanguage) => {
-    updateUrl(l, sideBySide);
+  const chooseVersion = (id: string) => {
+    try { localStorage.setItem(VERSION_KEY, id); } catch {}
+    updateParams({ lang: id, with: secondVersion.id === id ? null : searchParams.get('with') });
   };
 
-  const handleSideBySideToggle = () => {
-    updateUrl(currentLang, !sideBySide);
-  };
-
-  // Resolve book name from slug
   const bookInfo = useMemo(() => {
     if (!bookSlug) return null;
     const slug = bookSlug.toLowerCase();
-    return BIBLE_BOOKS.find(
-      b => b.name.toLowerCase().replace(/\s+/g, '-') === slug
-    ) || null;
+    return BIBLE_BOOKS.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === slug) || null;
   }, [bookSlug]);
 
   const chapter = parseInt(chapterStr || '1', 10);
+  const validChapter = !!bookInfo && chapter >= 1 && chapter <= bookInfo.chapters;
 
-  usePageTitle('bible_chapter', bookInfo ? `${bookInfo.name} Chapter ${chapter} — KJV Bible` : undefined);
+  usePageTitle('bible_chapter', bookInfo ? `${bookInfo.name} ${chapter} (${version.abbreviation})` : undefined);
 
-  // Parse verse highlight range from ?v=1-5
+  const { data, loading, error } = useBible(validChapter ? bookInfo!.name : '', chapter, version.id);
+  const { data: dataSec } = useBible(validChapter && sideBySide ? bookInfo!.name : '', chapter, secondVersion.id);
+  const { highlights, setHighlight } = useChapterHighlights(bookInfo?.name, chapter);
+
   const highlightRange = useMemo(() => {
     const v = searchParams.get('v');
     if (!v) return null;
@@ -177,150 +168,79 @@ export default function BibleChapter() {
     return { start, end: end || start };
   }, [searchParams]);
 
-  // Check if a specific verse is saved
-  const isVerseSaved = useCallback((verseNum: number) => {
-    if (!bookInfo) return false;
-    return passages.some(
-      p => p.book === bookInfo.name && p.chapter === chapter && p.verseStart === verseNum && p.verseEnd === verseNum
-    );
-  }, [passages, bookInfo, chapter]);
-
-  // Get saved passage ID for a verse
-  const getSavedPassageId = useCallback((verseNum: number) => {
-    if (!bookInfo) return null;
-    const passage = passages.find(
-      p => p.book === bookInfo.name && p.chapter === chapter && p.verseStart === verseNum && p.verseEnd === verseNum
-    );
-    return passage?.id || null;
-  }, [passages, bookInfo, chapter]);
-
-  // Handle save/unsave verse
-  const handleToggleSave = async (verseNum: number, text: string) => {
-    if (!bookInfo) return;
-    const savedId = getSavedPassageId(verseNum);
-    if (savedId) {
-      await deletePassage(savedId);
-      refreshPassages();
-      setSavedToast('Passage removed');
-    } else {
-      await savePassage(bookInfo.name, chapter, verseNum, verseNum, text);
-      refreshPassages();
-      setSavedToast(`${bookInfo.name} ${chapter}:${verseNum} saved!`);
-    }
-    setTimeout(() => setSavedToast(null), 2000);
-  };
-
-  const handleShareVerse = useCallback(async (verseNum: number, text: string) => {
-    if (!bookInfo) return;
-    const url = `${window.location.origin}/bible/${bookSlug}/${chapter}?lang=${currentLang}&v=${verseNum}`;
-    const shareText = `${bookInfo.name} ${chapter}:${verseNum} — "${text}"`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `${bookInfo.name} ${chapter}:${verseNum}`, text: shareText, url });
-        return;
-      } catch {}
-    }
-    // Fallback: copy to clipboard
-    await navigator.clipboard.writeText(`${shareText}\n${url}`);
-    setSavedToast('Verse link copied!');
-    setTimeout(() => setSavedToast(null), 2000);
-  }, [bookInfo, bookSlug, chapter, currentLang]);
-
-  const handleReadAloud = useCallback(() => {
-    if (isSpeaking) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      return;
-    }
-    if (!data?.verses) return;
-    const text = Object.values(data.verses).join('. ');
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = currentLang === 'yo' ? 'yo' : 'en-US';
-    utterance.rate = 0.9;
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-    setIsSpeaking(true);
-  }, [isSpeaking, data, currentLang]);
-
-  // Cleanup speech on unmount
+  // Remember where the reader is, for "Continue reading"
   useEffect(() => {
-    return () => { window.speechSynthesis.cancel(); };
+    if (bookInfo && data) recordChapterOpened(bookInfo.name, chapter, version.id);
+  }, [bookInfo, chapter, version.id, data]);
+
+  // Reaching the end of the chapter marks it read
+  useEffect(() => {
+    const el = endRef.current;
+    if (!el || !bookInfo || !data) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) {
+        recordChapterCompleted(bookInfo.name, chapter);
+        observer.disconnect();
+      }
+    }, { threshold: 1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [bookInfo, chapter, data]);
+
+  // Notes attached to this chapter
+  const refreshNotes = useCallback(async () => {
+    if (!bookInfo) return;
+    setChapterNotes(await notesApi.getNotesFor({ kind: 'bible', book: bookInfo.name, chapter, verseStart: 1, verseEnd: 999 }));
+  }, [bookInfo, chapter]);
+  useEffect(() => { refreshNotes(); }, [refreshNotes]);
+  useEffect(() => {
+    const onChange = () => refreshNotes();
+    window.addEventListener('cw-library-changed', onChange);
+    return () => window.removeEventListener('cw-library-changed', onChange);
+  }, [refreshNotes]);
+
+  const versesWithNotes = useMemo(() => {
+    const set = new Set<number>();
+    for (const n of chapterNotes) {
+      if (n.link?.kind === 'bible') for (let v = n.link.verseStart; v <= n.link.verseEnd; v++) set.add(v);
+    }
+    return set;
+  }, [chapterNotes]);
+
+  const savedVerses = useMemo(() => {
+    const set = new Set<number>();
+    if (!bookInfo) return set;
+    for (const p of passages) {
+      if (p.book === bookInfo.name && p.chapter === chapter) for (let v = p.verseStart; v <= p.verseEnd; v++) set.add(v);
+    }
+    return set;
+  }, [passages, bookInfo, chapter]);
+
+  // Selection resets with the chapter
+  useEffect(() => { setSelected([]); setShowColors(false); }, [bookSlug, chapter, version.id]);
+
+  useEffect(() => {
+    if (highlightRange && data) {
+      const t = setTimeout(() => {
+        document.getElementById(`verse-${highlightRange.start}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+      return () => clearTimeout(t);
+    }
+  }, [highlightRange, data]);
+
+  const sortedVerses = useMemo(
+    () => (data ? Object.entries(data.verses).sort(([a], [b]) => parseInt(a) - parseInt(b)) : []),
+    [data],
+  );
+
+  const toggleSelect = useCallback((num: number) => {
+    setSelected(prev => (prev.includes(num) ? prev.filter(n => n !== num) : [...prev, num]));
   }, []);
 
-  // Load chapter data
-  useEffect(() => {
-    if (!bookInfo) {
-      setError('Book not found');
-      setLoading(false);
-      return;
-    }
+  const selectedSorted = [...selected].sort((a, b) => a - b);
+  const reference = bookInfo && selected.length ? `${bookInfo.name} ${chapter}:${formatVerseList(selected)}` : '';
+  const selectedText = selectedSorted.map(n => data?.verses[n]).filter(Boolean).join(' ');
 
-    setLoading(true);
-    setError(null);
-
-    const fileName = bookInfo.name.replace(/\s+/g, '');
-    
-    const fetchLang = (l: BibleLanguage) => 
-      fetch(`/data/bible/${l}/${fileName}.json`)
-        .then(r => {
-          if (!r.ok) throw new Error(`Chapter not found (${l})`);
-          return r.json();
-        })
-        .then(json => {
-          const ch = json.chapters?.find((c: any) => Number(c.chapter) === chapter);
-          if (!ch) {
-            throw new Error(`Chapter ${chapter} not found in ${bookInfo.name} (${l})`);
-          }
-          const verses: Record<string, string> = {};
-          if (Array.isArray(ch.verses)) {
-            for (const v of ch.verses) {
-              verses[String(v.verse)] = v.text;
-            }
-          }
-          return { book: bookInfo.name, chapter, verses };
-        });
-
-    if (sideBySide) {
-      Promise.all([
-        fetchLang(currentLang),
-        fetchLang(currentLang === 'en' ? 'yo' : 'en').catch(() => null)
-      ])
-      .then(([primary, secondary]) => {
-        setData(primary);
-        setDataSec(secondary);
-      })
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-    } else {
-      fetchLang(currentLang)
-        .then(primary => {
-          setData(primary);
-          setDataSec(null);
-        })
-        .catch(e => setError(e.message))
-        .finally(() => setLoading(false));
-    }
-  }, [bookInfo, chapter, currentLang, sideBySide]);
-
-  // Scroll to highlighted verse
-  useEffect(() => {
-    if (highlightRange && !loading) {
-      setTimeout(() => {
-        const el = document.getElementById(`verse-${highlightRange.start}`);
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
-    }
-  }, [highlightRange, loading]);
-
-  const sortedVerses = useMemo(() => {
-    if (!data) return [];
-    return Object.entries(data.verses)
-      .sort(([a], [b]) => parseInt(a) - parseInt(b));
-  }, [data]);
-
-  // Chapter links keep lang/sbs but drop the ?v= highlight, which belongs to the current chapter only
   const chapterPath = useCallback((ch: number) => {
     const params = new URLSearchParams(searchParams);
     params.delete('v');
@@ -328,223 +248,347 @@ export default function BibleChapter() {
     return `/bible/${bookSlug}/${ch}${qs ? `?${qs}` : ''}`;
   }, [searchParams, bookSlug]);
 
-  useEffect(() => { setSelectedVerse(null); }, [bookSlug, chapter]);
+  // ── Selection actions ──
+  const clearSelection = () => { setSelected([]); setShowColors(false); };
 
-  // Swipe navigation — swipe left for next chapter, right for previous
+  const applyHighlight = async (color: HighlightColor | null) => {
+    await setHighlight(selected, color);
+    showToast(color ? `Highlighted ${reference}` : 'Highlight removed');
+    clearSelection();
+  };
+
+  const toggleSave = async () => {
+    if (!bookInfo || !selected.length) return;
+    const start = selectedSorted[0];
+    const end = selectedSorted[selectedSorted.length - 1];
+    const existing = passages.find(p => p.book === bookInfo.name && p.chapter === chapter && p.verseStart === start && p.verseEnd === end);
+    if (existing) {
+      await deletePassage(existing.id);
+      showToast('Removed from saved passages');
+    } else {
+      await savePassage(bookInfo.name, chapter, start, end, selectedText);
+      showToast(`${reference} saved`);
+    }
+    clearSelection();
+  };
+
+  const addNote = () => {
+    if (!bookInfo) return;
+    const start = selectedSorted[0];
+    const end = selectedSorted[selectedSorted.length - 1];
+    navigate(`/notes?new=1&book=${encodeURIComponent(bookInfo.name)}&chapter=${chapter}&from=${start}&to=${end}`);
+  };
+
+  const shareUrl = () => `${window.location.origin}/bible/${bookSlug}/${chapter}?lang=${version.id}&v=${selectedSorted[0]}-${selectedSorted[selectedSorted.length - 1]}`;
+
+  const copySelection = async () => {
+    try {
+      await navigator.clipboard.writeText(`${selectedText}\n— ${reference} (${version.abbreviation})`);
+      showToast('Copied');
+    } catch {
+      showToast("Couldn't copy");
+    }
+    clearSelection();
+  };
+
+  const shareSelection = async () => {
+    const text = `“${selectedText}”\n— ${reference} (${version.abbreviation})`;
+    if (navigator.share) {
+      try { await navigator.share({ title: reference, text, url: shareUrl() }); clearSelection(); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}\n${shareUrl()}`);
+      showToast('Verse and link copied');
+    } catch {}
+    clearSelection();
+  };
+
+  const shareImage = async () => {
+    try {
+      const result = await shareCard({ text: selectedText, reference, footer: version.abbreviation });
+      if (result === 'downloaded') showToast('Image saved');
+    } catch {
+      showToast("Couldn't create the image");
+    }
+    clearSelection();
+  };
+
+  const sendToDisplay = () => {
+    showBibleVerse(`${reference} (${version.abbreviation})`, selectedText);
+    showToast('Sent to display');
+  };
+
+  // ── Read aloud, verse by verse so the current verse is shown ──
+  const stopSpeaking = useCallback(() => {
+    window.speechSynthesis?.cancel();
+    setSpeakingVerse(null);
+  }, []);
+
+  const readAloud = () => {
+    if (speakingVerse !== null) { stopSpeaking(); return; }
+    if (!('speechSynthesis' in window) || !sortedVerses.length) {
+      showToast('Read aloud isn’t supported on this device');
+      return;
+    }
+    const lang = version.language === 'yo' ? 'yo' : 'en';
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
+    if (lang === 'yo' && !voice) showToast('No Yorùbá voice on this device — it will sound English');
+    const startIndex = selected.length ? sortedVerses.findIndex(([n]) => Number(n) === selectedSorted[0]) : 0;
+    const speakFrom = (i: number) => {
+      if (i >= sortedVerses.length) { setSpeakingVerse(null); return; }
+      const [num, text] = sortedVerses[i];
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === 'yo' ? 'yo-NG' : 'en-GB';
+      if (voice) u.voice = voice;
+      u.rate = 0.92;
+      u.onstart = () => {
+        setSpeakingVerse(Number(num));
+        document.getElementById(`verse-${num}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      u.onend = () => speakFrom(i + 1);
+      u.onerror = () => setSpeakingVerse(null);
+      window.speechSynthesis.speak(u);
+    };
+    window.speechSynthesis.cancel();
+    speakFrom(Math.max(0, startIndex));
+    clearSelection();
+  };
+
+  useEffect(() => stopSpeaking, [stopSpeaking, bookSlug, chapter]);
+
   const swipeHandlers = useSwipe({
-    onSwipeLeft: () => {
-      if (bookInfo && chapter < bookInfo.chapters) {
-        navigate(chapterPath(chapter + 1));
-      }
-    },
-    onSwipeRight: () => {
-      if (chapter > 1) {
-        navigate(chapterPath(chapter - 1));
-      }
-    },
+    onSwipeLeft: () => { if (bookInfo && chapter < bookInfo.chapters) navigate(chapterPath(chapter + 1)); },
+    onSwipeRight: () => { if (chapter > 1) navigate(chapterPath(chapter - 1)); },
+    threshold: 80,
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-[var(--color-text-secondary)]">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error || !bookInfo) {
+  if (!bookInfo || !validChapter) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
-        <p className="text-red-400 mb-4">{error || 'Book not found'}</p>
-        <Link to="/bible" className="text-[var(--color-accent-gold)] hover:underline inline-flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Books
-        </Link>
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>That chapter doesn't exist.</p>
+        <Link to="/bible" className="btn-primary px-6 py-2 rounded-xl text-sm">Back to books</Link>
       </div>
     );
   }
 
-  return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`${sideBySide ? 'max-w-4xl' : 'max-w-2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`} {...swipeHandlers}>
-      {/* Saved Toast */}
-      {savedToast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up"
-             style={{
-               backgroundColor: 'var(--color-accent-gold)',
-               color: 'var(--color-text-on-accent)',
-               padding: '0.5rem 1rem',
-               borderRadius: '0.75rem',
-               fontSize: '0.875rem',
-               fontWeight: 600,
-               boxShadow: '0 8px 24px rgba(212, 168, 67, 0.3)',
-             }}>
-          {savedToast}
-        </div>
-      )}
+  const iconButton = 'h-9 min-w-9 px-2 rounded-lg inline-flex items-center justify-center gap-1 text-xs font-semibold transition-colors';
+  const cardStyle = { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' };
 
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div className="flex items-center gap-4">
-          <Link to={`/bible?lang=${currentLang}`} className="text-[var(--color-accent-gold)] text-sm hover:underline">
-            <ChevronLeft size={16} className="inline" /> Books
-          </Link>
-          <button
-            onClick={cycleReaderMode}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium"
-            style={{
-              backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
-              color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-              border: '1px solid var(--color-border)',
-            }}
-          >
-            {readerMode === 'off' ? <><BookOpen size={16} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={16} className="inline mr-1" /> Dim</> : <><X size={16} className="inline mr-1" /> Exit</>}
+  return (
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined}
+         className={`${sideBySide ? 'max-w-4xl' : 'max-w-2xl'} mx-auto px-4 py-5 ${selected.length ? 'pb-48' : 'pb-24'}`}
+         {...swipeHandlers}>
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <Link to={`/bible?lang=${version.id}`} className="text-sm inline-flex items-center gap-1" style={{ color: 'var(--color-accent-gold)' }}>
+          <ChevronLeft size={16} /> Books
+        </Link>
+        <div className="flex items-center gap-1.5">
+          <button onClick={readAloud} className={iconButton} style={{ ...cardStyle, color: speakingVerse !== null ? 'var(--color-accent-brand)' : cardStyle.color }}
+                  aria-label={speakingVerse !== null ? 'Stop reading' : 'Read aloud'} title={speakingVerse !== null ? 'Stop reading' : 'Read aloud'}>
+            {speakingVerse !== null ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+          <button onClick={() => setFontSize(-2)} className={iconButton} style={cardStyle} aria-label="Smaller text">A−</button>
+          <button onClick={() => setFontSize(2)} className={iconButton} style={cardStyle} aria-label="Larger text">A+</button>
+          <button onClick={() => updateParams({ sbs: sideBySide ? null : 'true' })} className={iconButton}
+                  style={{ ...cardStyle, color: sideBySide ? 'var(--color-accent-gold)' : cardStyle.color }}
+                  aria-pressed={sideBySide} aria-label="Side by side" title="Side by side">
+            <Columns2 size={16} />
+          </button>
+          <button onClick={cycleReaderMode} className={iconButton}
+                  style={isReaderActive ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-primary)' } : cardStyle}
+                  aria-label="Reading mode" title={readerMode === 'off' ? 'Paper reading mode' : readerMode === 'paper' ? 'Dim paper' : 'Exit reading mode'}>
+            {readerMode === 'off' ? <BookOpen size={16} /> : readerMode === 'paper' ? <Moon size={16} /> : <X size={16} />}
           </button>
           {wakeLockSupported && (
-            <button
-              onClick={toggleWakeLock}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${wakeLockActive ? 'text-[var(--color-accent-gold)]' : ''}`}
-              style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
-              aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
-              aria-pressed={wakeLockActive}
-            >
-              <MonitorSmartphone size={16} className="inline mr-1" />
-              {wakeLockActive ? 'Screen On' : 'Keep On'}
+            <button onClick={toggleWakeLock} className={iconButton}
+                    style={{ ...cardStyle, color: wakeLockActive ? 'var(--color-accent-gold)' : cardStyle.color }}
+                    aria-pressed={wakeLockActive} aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}>
+              <MonitorSmartphone size={16} />
             </button>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Language Toggles */}
-          <div className="flex rounded-lg overflow-hidden border border-[var(--color-border)]">
-            <button
-              onClick={() => handleLangToggle('en')}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'en' ? 'bg-[var(--color-accent-brand)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => handleLangToggle('yo')}
-              className={`px-3 py-1.5 text-xs font-semibold transition-colors ${currentLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-white' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
-            >
-              YO
-            </button>
-          </div>
+      </div>
 
-          <button
-            onClick={handleSideBySideToggle}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${sideBySide ? 'bg-[var(--color-accent-gold)] text-[#0A1628] border-[var(--color-accent-gold)]' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:text-[var(--color-text-primary)]'}`}
-          >
-            Side by Side
-          </button>
-
-          {/* Font size controls */}
-          <div className="flex gap-1 ml-2">
-            <button
-              onClick={handleReadAloud}
-              className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'text-[var(--color-accent-brand)]' : 'text-[var(--color-text-secondary)]'}`}
-              style={{ backgroundColor: 'var(--color-bg-card)' }}
-              aria-label={isSpeaking ? 'Stop reading' : 'Read chapter aloud'}
-              title={isSpeaking ? 'Stop reading' : 'Read chapter aloud'}
-            >
-              {isSpeaking ? <VolumeX size={18} /> : <Volume2 size={18} />}
-            </button>
-            <button
-              onClick={() => setFontSize(s => Math.max(14, s - 2))}
-              className="w-8 h-8 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] flex items-center justify-center hover:bg-[var(--color-bg-card-hover)] transition-colors text-sm"
-            >
-              A-
-            </button>
-            <button
-              onClick={() => setFontSize(s => Math.min(28, s + 2))}
-              className="w-8 h-8 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] flex items-center justify-center hover:bg-[var(--color-bg-card-hover)] transition-colors text-sm"
-            >
-              A+
-            </button>
-          </div>
+      {/* Title + versions */}
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+        <div>
+          <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
+            {bookInfo.name} {chapter}
+          </h1>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+            Chapter {chapter} of {bookInfo.chapters}{isCompleted(bookInfo.name, chapter) ? ' · Read ✓' : ''}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <select value={version.id} onChange={e => chooseVersion(e.target.value)} aria-label="Bible version"
+                  className="h-9 px-2 rounded-lg text-xs font-semibold border"
+                  style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
+            {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation} — {v.name}</option>)}
+          </select>
+          {sideBySide && (
+            <select value={secondVersion.id} onChange={e => updateParams({ with: e.target.value })} aria-label="Second version"
+                    className="h-9 px-2 rounded-lg text-xs font-semibold border"
+                    style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
+              {BIBLE_VERSIONS.filter(v => v.id !== version.id).map(v => <option key={v.id} value={v.id}>with {v.abbreviation}</option>)}
+            </select>
+          )}
         </div>
       </div>
 
-      {/* Book & Chapter title */}
-      <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)] mb-1">
-        {bookInfo.name}
-      </h1>
-      <div className="text-sm text-[var(--color-text-secondary)] mb-6">
-        Chapter {chapter} of {bookInfo.chapters}
-        {sideBySide && dataSec && (
-          <span className="ml-2 px-2 py-0.5 rounded text-[10px] bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
-            Showing {BIBLE_LANGUAGE_LABELS[currentLang]} & {BIBLE_LANGUAGE_LABELS[currentLang === 'en' ? 'yo' : 'en']}
-          </span>
-        )}
-      </div>
-
-      {/* Chapter navigation */}
-      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 hide-scrollbar">
+      {/* Chapter strip */}
+      <div className="flex items-center gap-1.5 mb-5 overflow-x-auto pb-2 hide-scrollbar">
         {Array.from({ length: bookInfo.chapters }, (_, i) => i + 1).map(ch => (
           <button
             key={ch}
             onClick={() => navigate(chapterPath(ch))}
-            className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-all flex-shrink-0 ${
-              ch === chapter
-                ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
-                : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-            }`}
+            className="min-w-[36px] h-9 rounded-lg text-sm font-medium flex-shrink-0 relative"
+            style={ch === chapter
+              ? { backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' }
+              : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}
+            aria-current={ch === chapter ? 'page' : undefined}
           >
             {ch}
+            {isCompleted(bookInfo.name, ch) && ch !== chapter && (
+              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} />
+            )}
           </button>
         ))}
       </div>
 
+      {version.preview && (
+        <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
+          This edition is digitised from a 1900 printing and is still being proofread. If a word looks wrong, compare with your printed Bibeli Mimọ.
+        </p>
+      )}
+
+      {chapterNotes.length > 0 && (
+        <div className="mb-4">
+          <button onClick={() => setShowNotes(s => !s)} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}>
+            <StickyNote size={14} /> {chapterNotes.length} note{chapterNotes.length > 1 ? 's' : ''} on this chapter
+          </button>
+          {showNotes && (
+            <ul className="mt-2 space-y-2">
+              {chapterNotes.map(n => (
+                <li key={n.id}>
+                  <Link to={`/notes?open=${n.id}`} className="block p-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+                    <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                      {n.link?.kind === 'bible' ? `v${n.link.verseStart}${n.link.verseEnd > n.link.verseStart ? `-${n.link.verseEnd}` : ''} · ` : ''}{n.title || 'Note'}
+                    </span>
+                    <span className="block line-clamp-2" style={{ color: 'var(--color-text-secondary)' }}>{n.content}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       {/* Verses */}
-      <div className={`space-y-3 leading-relaxed ${sideBySide ? 'flex flex-col' : ''}`} style={{ fontSize: `${fontSize}px` }}>
-        {sortedVerses.map(([verseNum, text]) => {
-          const num = parseInt(verseNum);
-          const isHighlighted =
-            highlightRange !== null &&
-            num >= highlightRange.start &&
-            num <= highlightRange.end;
-          const saved = isVerseSaved(num);
-          const secText = dataSec?.verses[verseNum];
+      {loading ? (
+        <div className="py-16 text-center animate-pulse" style={{ color: 'var(--color-text-secondary)' }}>Loading…</div>
+      ) : error || !data ? (
+        <div className="py-10 text-center">
+          <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{error || 'Couldn’t load this chapter.'}</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {version.preview && (
+              <button onClick={() => chooseVersion('yo')} className="btn-primary px-5 py-2 rounded-xl text-sm">Read in Yorùbá Òde-Òní</button>
+            )}
+            {version.id !== DEFAULT_VERSION_ID && (
+              <button onClick={() => chooseVersion(DEFAULT_VERSION_ID)} className="px-5 py-2 rounded-xl text-sm border"
+                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Read in KJV</button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {sideBySide && (
+            <div className="hidden sm:grid grid-cols-2 gap-x-6 text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
+              <span>{version.abbreviation}</span><span className="pl-6">{secondVersion.abbreviation}</span>
+            </div>
+          )}
+          <div className="space-y-2 leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
+            {sortedVerses.map(([verseNum, text]) => {
+              const num = parseInt(verseNum);
+              return (
+                <VerseItem
+                  key={verseNum}
+                  verseNum={num}
+                  text={text}
+                  textSec={dataSec?.verses[verseNum]}
+                  isHighlighted={!!highlightRange && num >= highlightRange.start && num <= highlightRange.end}
+                  isSelected={selected.includes(num)}
+                  isSpeaking={speakingVerse === num}
+                  highlight={highlights.get(num)}
+                  hasNote={versesWithNotes.has(num)}
+                  isSaved={savedVerses.has(num)}
+                  onSelect={toggleSelect}
+                  sideBySide={sideBySide}
+                />
+              );
+            })}
+          </div>
+          <div ref={endRef} className="h-1" />
+          <p className="mt-6 text-[11px] leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+            {data.copyright}
+            {sideBySide && dataSec && dataSec.copyright !== data.copyright && <><br />{dataSec.copyright}</>}
+          </p>
+        </>
+      )}
 
-          return (
-            <VerseItem
-              key={verseNum}
-              verseNum={num}
-              text={text}
-              textSec={secText}
-              isHighlighted={isHighlighted}
-              isSaved={saved}
-              isSelected={selectedVerse === num}
-              onSelect={handleSelectVerse}
-              onToggleSave={handleToggleSave}
-              onSendToDisplay={(v, t) => showBibleVerse(`${bookInfo.name} ${chapter}:${v}`, t)}
-              onShare={handleShareVerse}
-              sideBySide={sideBySide}
-            />
-          );
-        })}
-      </div>
-
-      {/* Chapter navigation buttons */}
-      <div className="flex justify-between mt-8 pt-4 border-t border-[var(--color-border)]">
+      {/* Chapter navigation */}
+      <div className="flex justify-between mt-8 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         {chapter > 1 ? (
-          <Link
-            to={chapterPath(chapter - 1)}
-            className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
-          >
-            <ChevronLeft size={16} className="inline" /> Chapter {chapter - 1}
+          <Link to={chapterPath(chapter - 1)} className="px-4 py-2 rounded-lg inline-flex items-center gap-1" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+            <ChevronLeft size={16} /> Chapter {chapter - 1}
           </Link>
-        ) : (
-          <div />
-        )}
+        ) : <div />}
         {chapter < bookInfo.chapters ? (
-          <Link
-            to={chapterPath(chapter + 1)}
-            className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
-          >
-            Chapter {chapter + 1} <ChevronRight size={16} className="inline" />
+          <Link to={chapterPath(chapter + 1)} className="px-4 py-2 rounded-lg inline-flex items-center gap-1" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+            Chapter {chapter + 1} <ChevronRight size={16} />
           </Link>
-        ) : (
-          <div />
-        )}
+        ) : <div />}
       </div>
+
+      {/* Selection action bar */}
+      {selected.length > 0 && (
+        <div className="fixed left-0 right-0 md:left-64 bottom-[68px] md:bottom-0 z-10 px-3 pb-3 animate-slide-up">
+          <div className="max-w-2xl mx-auto rounded-2xl border shadow-xl p-3"
+               style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{reference}</span>
+              <button onClick={clearSelection} className="p-1" aria-label="Clear selection" style={{ color: 'var(--color-text-muted)' }}><X size={18} /></button>
+            </div>
+            {showColors ? (
+              <div className="flex items-center gap-2">
+                {(Object.keys(HIGHLIGHT_COLORS) as HighlightColor[]).map(c => (
+                  <button key={c} onClick={() => applyHighlight(c)} aria-label={`Highlight ${HIGHLIGHT_COLORS[c].label}`}
+                          className="w-9 h-9 rounded-full border-2" style={{ backgroundColor: HIGHLIGHT_COLORS[c].swatch, borderColor: 'var(--color-bg-card)' }} />
+                ))}
+                <button onClick={() => applyHighlight(null)} className="ml-auto text-xs font-semibold px-3 h-9 rounded-lg" style={cardStyle}>Remove</button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-7 gap-1">
+                {[
+                  { label: 'Highlight', icon: <Highlighter size={18} />, onClick: () => setShowColors(true) },
+                  { label: 'Save', icon: <Bookmark size={18} />, onClick: toggleSave },
+                  { label: 'Note', icon: <StickyNote size={18} />, onClick: addNote },
+                  { label: 'Copy', icon: <Copy size={18} />, onClick: copySelection },
+                  { label: 'Share', icon: <Share2 size={18} />, onClick: shareSelection },
+                  { label: 'Image', icon: <ImageIcon size={18} />, onClick: shareImage },
+                  { label: 'Display', icon: <Tv size={18} />, onClick: sendToDisplay },
+                ].map(a => (
+                  <button key={a.label} onClick={a.onClick} className="flex flex-col items-center gap-1 py-1.5 rounded-lg text-[10px] font-semibold"
+                          style={{ color: 'var(--color-text-secondary)' }}>
+                    {a.icon}{a.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

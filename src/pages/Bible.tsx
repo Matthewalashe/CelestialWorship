@@ -1,30 +1,53 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { BookOpen, Search } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { BookOpen, Download, ChevronRight, Check } from 'lucide-react';
 import { BIBLE_BOOKS, OT_BOOKS, NT_BOOKS } from '../data/bibleBooks';
-import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
-import { useBibleAvailability } from '../hooks/useBible';
+import { BIBLE_VERSIONS, getBibleVersion, DEFAULT_VERSION_ID } from '../data/bibleVersions';
+import { downloadVersionForOffline } from '../hooks/useBible';
+import { useReadingProgress } from '../hooks/useProgress';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { sanitizeSearchInput } from '../utils/sanitize';
 import { parseReference } from '../utils/parseReference';
+import { showToast } from '../components/Toast';
+
+const VERSION_KEY = 'cw-bible-version';
+const OFFLINE_KEY = 'cw-bible-offline';
+
+const slugOf = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
 
 export default function Bible() {
   usePageView('bible');
   usePageTitle('bible');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { last, completedInBook } = useReadingProgress();
+
   const [search, setSearch] = useState('');
-  const [quickRefError, setQuickRefError] = useState<string | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [quickRef, setQuickRef] = useState('');
+  const [quickRefError, setQuickRefError] = useState<string | null>(null);
+  const [testament, setTestament] = useState<'all' | 'OT' | 'NT'>('all');
+  const [versionId, setVersionId] = useState<string>(() => {
+    const fromUrl = searchParams.get('lang');
+    if (fromUrl) return getBibleVersion(fromUrl).id;
+    try { return getBibleVersion(localStorage.getItem(VERSION_KEY)).id; } catch { return DEFAULT_VERSION_ID; }
+  });
+  const version = getBibleVersion(versionId);
+  const [download, setDownload] = useState<{ done: number; total: number } | null>(null);
+  const [offlineVersions, setOfflineVersions] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(OFFLINE_KEY) || '[]'); } catch { return []; }
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    const timer = setTimeout(() => setDebouncedSearch(search), 250);
     return () => clearTimeout(timer);
   }, [search]);
-  const [testament, setTestament] = useState<'all' | 'OT' | 'NT'>('all');
-  const [lang, setLang] = useState<BibleLanguage>(() => (searchParams.get('lang') === 'yo' ? 'yo' : 'en'));
-  const yorubaAvailable = useBibleAvailability('yo');
+
+  const chooseVersion = (id: string) => {
+    setVersionId(id);
+    try { localStorage.setItem(VERSION_KEY, id); } catch {}
+  };
 
   const filteredBooks = useMemo(() => {
     let books = testament === 'OT' ? OT_BOOKS : testament === 'NT' ? NT_BOOKS : BIBLE_BOOKS;
@@ -44,64 +67,134 @@ export default function Bible() {
       return;
     }
     setQuickRefError(null);
-    const slug = book.name.toLowerCase().replace(/\s+/g, '-');
     const verses = input.includes(':') ? `&v=${ref.verseStart}-${ref.verseEnd}` : '';
-    navigate(`/bible/${slug}/${ref.chapter}?lang=${lang}${verses}`);
+    navigate(`/bible/${slugOf(book.name)}/${ref.chapter}?lang=${versionId}${verses}`);
   };
+
+  const startDownload = async () => {
+    if (version.source.kind !== 'local') return;
+    setDownload({ done: 0, total: BIBLE_BOOKS.length });
+    const ok = await downloadVersionForOffline(version.id, BIBLE_BOOKS.map(b => b.name), (done, total) => setDownload({ done, total }));
+    setDownload(null);
+    if (ok > 0) {
+      const next = [...new Set([...offlineVersions, version.id])];
+      setOfflineVersions(next);
+      try { localStorage.setItem(OFFLINE_KEY, JSON.stringify(next)); } catch {}
+      showToast(ok === BIBLE_BOOKS.length ? `${version.abbreviation} saved for offline reading` : `${ok} books saved for offline reading`);
+    } else {
+      showToast('Download failed — check your connection');
+    }
+  };
+
+  const continueBook = last ? BIBLE_BOOKS.find(b => b.name === last.book) : null;
 
   return (
     <div className="px-4 py-6 max-w-4xl mx-auto pb-24 animate-fade-in">
-      <div className="mb-6">
-        <h1 className="text-2xl font-[Outfit] font-bold" style={{ color: 'var(--color-text-primary)' }}><BookOpen size={24} className="inline-block mr-2 align-text-bottom" /> Bible</h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>King James Version & Bibeli Mimo (Yoruba)</p>
+      <div className="mb-5">
+        <h1 className="text-2xl font-[Outfit] font-bold" style={{ color: 'var(--color-text-primary)' }}>
+          <BookOpen size={24} className="inline-block mr-2 align-text-bottom" /> Bible
+        </h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>King James Version, Bibeli Mimọ and more</p>
       </div>
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setLang('en')}
-          aria-pressed={lang === 'en'}
-          className={`px-4 py-2 rounded-xl text-sm transition-colors ${lang === 'en' ? 'bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]' : 'border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-accent-brand)]'}`}
+
+      {continueBook && last && (
+        <Link
+          to={`/bible/${slugOf(continueBook.name)}/${last.chapter}?lang=${last.versionId}`}
+          className="flex items-center justify-between p-4 mb-4 rounded-2xl"
+          style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-accent-brand)' }}
         >
-          {BIBLE_LANGUAGE_LABELS['en']}
-        </button>
-        <button
-          onClick={() => yorubaAvailable && setLang('yo')}
-          disabled={!yorubaAvailable}
-          aria-pressed={lang === 'yo'}
-          className={`px-4 py-2 rounded-xl text-sm transition-colors ${lang === 'yo' ? 'bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]' : 'border border-[var(--color-border)] text-[var(--color-text-secondary)]'} ${!yorubaAvailable ? 'opacity-50 cursor-not-allowed' : 'hover:border-[var(--color-accent-brand)]'}`}
-        >
-          {BIBLE_LANGUAGE_LABELS['yo']}{!yorubaAvailable ? ' — Coming soon' : ''}
-        </button>
-      </div>
-      {/* Quick Reference */}
-      <div className="card p-3 mb-4 flex gap-2" style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: '0.75rem' }}>
-        <input type="text" placeholder='Quick jump — e.g. "John 3" or "Gen 1"' className="flex-1 bg-transparent text-sm px-2 outline-none" style={{ color: 'var(--color-text-primary)' }} onKeyDown={(e) => { if (e.key === 'Enter') handleQuickRef(sanitizeSearchInput((e.target as HTMLInputElement).value)); }} />
-        <button className="px-4 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'var(--color-accent-gold)', color: '#0A1628', fontWeight: 600 }} onClick={(e) => { const input = (e.currentTarget.previousElementSibling as HTMLInputElement)?.value; if (input) handleQuickRef(sanitizeSearchInput(input)); }}>Go</button>
-      </div>
-      {quickRefError && (
-        <p className="text-xs -mt-2 mb-4 px-1" style={{ color: 'var(--color-warning)' }} role="alert">{quickRefError}</p>
+          <span>
+            <span className="block text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent-gold)' }}>Continue reading</span>
+            <span className="block font-semibold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>
+              {continueBook.name} {last.chapter} · {getBibleVersion(last.versionId).abbreviation}
+            </span>
+          </span>
+          <ChevronRight size={20} style={{ color: 'var(--color-accent-brand)' }} />
+        </Link>
       )}
+
+      {/* Version */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <select value={versionId} onChange={e => chooseVersion(e.target.value)} aria-label="Bible version"
+                className="flex-1 min-w-0 h-10 px-3 rounded-xl text-sm font-semibold border"
+                style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
+          {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation} — {v.name}{v.preview ? ' (preview)' : ''}</option>)}
+        </select>
+        {version.source.kind === 'local' && (
+          offlineVersions.includes(version.id) ? (
+            <span className="h-10 px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}>
+              <Check size={14} /> Offline
+            </span>
+          ) : (
+            <button onClick={startDownload} disabled={!!download}
+                    className="h-10 px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1 border disabled:opacity-60"
+                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+              <Download size={14} /> {download ? `${download.done}/${download.total}` : 'Download for offline'}
+            </button>
+          )
+        )}
+      </div>
+
+      {/* Quick reference */}
+      <form
+        className="p-2 mb-1 flex gap-2 rounded-xl border"
+        style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+        onSubmit={e => { e.preventDefault(); if (quickRef.trim()) handleQuickRef(sanitizeSearchInput(quickRef)); }}
+      >
+        <input type="text" value={quickRef} onChange={e => setQuickRef(e.target.value)} placeholder='Go to — e.g. "John 3:16" or "Ps 23"'
+               className="flex-1 bg-transparent text-sm px-2 outline-none" style={{ color: 'var(--color-text-primary)' }} aria-label="Go to a passage" />
+        <button type="submit" className="px-4 py-1.5 rounded-lg text-xs font-semibold"
+                style={{ backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' }}>Go</button>
+      </form>
+      {quickRefError
+        ? <p className="text-xs mb-3 px-1" style={{ color: 'var(--color-warning)' }} role="alert">{quickRefError}</p>
+        : <div className="mb-3" />}
+
       {/* Filters */}
       <div className="flex gap-2 mb-4">
-        <input type="text" value={search} onChange={e => setSearch(sanitizeSearchInput(e.target.value))} placeholder="Search books..." className="flex-1 rounded-xl px-4 py-2.5 text-sm" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', outline: 'none' }} />
-        <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
+        <input type="text" value={search} onChange={e => setSearch(sanitizeSearchInput(e.target.value))} placeholder="Find a book…"
+               className="flex-1 min-w-0 rounded-xl px-4 py-2.5 text-sm border"
+               style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)', outline: 'none' }} />
+        <div className="flex rounded-xl overflow-hidden border" style={{ borderColor: 'var(--color-border)' }} role="group" aria-label="Testament">
           {(['all', 'OT', 'NT'] as const).map(t => (
-            <button key={t} onClick={() => setTestament(t)} className={`px-3 py-2 text-xs font-semibold transition-colors ${testament === t ? 'bg-[var(--color-accent-brand)] text-white' : ''}`} style={testament !== t ? { color: 'var(--color-text-secondary)', backgroundColor: 'var(--color-bg-card)' } : {}}>{t === 'all' ? 'All' : t === 'OT' ? 'Old' : 'New'}</button>
+            <button key={t} onClick={() => setTestament(t)} aria-pressed={testament === t}
+                    className="px-3 py-2 text-xs font-semibold"
+                    style={testament === t
+                      ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
+                      : { color: 'var(--color-text-secondary)', backgroundColor: 'var(--color-bg-card)' }}>
+              {t === 'all' ? 'All' : t === 'OT' ? 'Old' : 'New'}
+            </button>
           ))}
         </div>
       </div>
-      {/* Books Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3" role="list">
-        {filteredBooks.map(book => (
-          <button key={book.name} role="listitem" onClick={() => navigate(`/bible/${book.name.toLowerCase().replace(/\s+/g, '-')}/1?lang=${lang}`)} className="p-3 text-left hover:scale-[1.02] transition-transform" style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: '0.75rem' }}>
-            <div className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{book.name}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{book.chapters} chapters</span>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 ${book.testament === 'OT' ? 'bg-blue-500/15 text-blue-400 rounded' : 'bg-emerald-500/15 text-emerald-400 rounded-full'}`}>{book.testament === 'OT' ? '◆ OT' : '● NT'}</span>
-            </div>
-          </button>
-        ))}
-      </div>
-      {filteredBooks.length === 0 && (<div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>No books found</div>)}
+
+      {/* Books */}
+      <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        {filteredBooks.map(book => {
+          const read = completedInBook(book.name);
+          return (
+            <li key={book.name}>
+              <Link to={`/bible/${slugOf(book.name)}/1?lang=${versionId}`}
+                    className="block p-3 rounded-xl border h-full"
+                    style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
+                <span className="block font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{book.name}</span>
+                <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                  {book.chapters} chapter{book.chapters > 1 ? 's' : ''} · {book.testament === 'OT' ? 'Old' : 'New'} Testament
+                </span>
+                {read > 0 && (
+                  <span className="block mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}
+                        aria-label={`${read} of ${book.chapters} chapters read`}>
+                    <span className="block h-full rounded-full" style={{ width: `${(read / book.chapters) * 100}%`, backgroundColor: 'var(--color-success)' }} />
+                  </span>
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      {filteredBooks.length === 0 && <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>No books found</div>}
+
+      <p className="mt-8 text-[11px] leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{version.copyright}</p>
     </div>
   );
 }
