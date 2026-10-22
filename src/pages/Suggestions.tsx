@@ -10,6 +10,7 @@ import type { ServiceOrder, Hymn, HymnCategory } from '../types';
 import { getServiceTypesForDate, formatDate } from '../utils/dateUtils';
 import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay, X } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { OPERATOR_QUEUE_KEY, type OperatorQueueItem } from '../hooks/useLiveDisplay';
 
 interface SlotSelection {
   stepNumber: number;
@@ -265,12 +266,11 @@ export default function Suggestions() {
 
   const sendToOperator = () => {
     if (!selectedService) return;
-    const items = [...slotSelections, ...extraSlots].map(s => ({
-      type: 'hymn',
-      hymnNumber: s.selectedHymn?.number || 0,
-    })).filter(item => item.hymnNumber > 0);
-    localStorage.setItem('cw-queue', JSON.stringify(items));
-    alert('Sent to Operator Queue!');
+    const items: OperatorQueueItem[] = [...slotSelections, ...extraSlots]
+      .filter(s => s.selectedHymn)
+      .map(s => ({ hymnNumber: s.selectedHymn!.number, slotName: s.slotName }));
+    localStorage.setItem(OPERATOR_QUEUE_KEY, JSON.stringify({ serviceName: selectedService.displayName, items }));
+    alert('Sent to the Operator queue. Open Operator → Hymns to project them in order.');
   };
 
   const deletePlan = (id: string) => {

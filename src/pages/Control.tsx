@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CCCLogo } from '../components/icons/celestial-icons';
-import { useDisplayController } from '../hooks/useLiveDisplay';
+import { useDisplayController, loadOperatorQueue, clearOperatorQueue } from '../hooks/useLiveDisplay';
 import { useHymnSearch } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
@@ -147,6 +147,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
   const { results: hymns = [] } = useHymnSearch(search, []);
   const [selectedHymn, setSelectedHymn] = useState<Hymn | null>(null);
   const [displayLang, setDisplayLang] = useState<'en' | 'yo'>('en');
+  const [queue, setQueue] = useState(loadOperatorQueue);
 
   const handleSelectHymn = (hymn: Hymn) => {
     setSelectedHymn(hymn);
@@ -170,12 +171,14 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
     });
   };
 
-  let hymnVerses: { index: number; en: string; yo: string }[] = [];
+  let hymnVerses: { index: number; label: string; en: string; yo: string }[] = [];
   if (selectedHymn) {
     // Use structured verses array
     if (selectedHymn.verses && selectedHymn.verses.length > 0) {
-      hymnVerses = selectedHymn.verses.map((v: any) => ({
-        index: v.number || (selectedHymn.verses!.indexOf(v) + 1),
+      // Position-based index: verse.number can be a label such as "cr" (chorus), which breaks Next/Prev
+      hymnVerses = selectedHymn.verses.map((v: any, i: number) => ({
+        index: i + 1,
+        label: /^(cr|ch|c|chorus)$/i.test(String(v.number ?? '')) ? 'Chorus' : `Verse ${v.number ?? i + 1}`,
         en: (v.english_lines || v.englishLines || []).join('\n'),
         yo: (v.yoruba_lines || v.yorubaLines || []).join('\n'),
       }));
@@ -185,6 +188,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
       const total = Math.max(enVerses.length, yoVerses.length);
       hymnVerses = Array.from({ length: total }).map((_, i) => ({
         index: i + 1,
+        label: `Verse ${i + 1}`,
         en: enVerses[i] || '',
         yo: yoVerses[i] || ''
       }));
@@ -237,7 +241,42 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
                 <div className="text-sm text-[var(--color-text-secondary)] line-clamp-1">{hymn.englishLyrics.split('\n')[0] || hymn.yorubaLyrics.split('\n')[0]}</div>
               </div>
             </button>
-          )) : (
+          )) : queue && queue.items.length > 0 ? (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm uppercase tracking-wider font-bold text-[var(--color-text-secondary)]">
+                  Queue · {queue.serviceName}
+                </h3>
+                <button
+                  onClick={() => { clearOperatorQueue(); setQueue(null); }}
+                  className="text-xs text-[var(--color-text-muted)] hover:text-red-400"
+                >
+                  Clear queue
+                </button>
+              </div>
+              <div className="space-y-2">
+                {queue.items.map((item, i) => {
+                  const hymn = hymns.find(h => h.number === item.hymnNumber);
+                  if (!hymn) return null;
+                  return (
+                    <button
+                      key={`${item.hymnNumber}-${i}`}
+                      onClick={() => handleSelectHymn(hymn)}
+                      className="w-full flex items-center gap-4 text-left bg-[var(--color-bg-card)] p-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent-gold)] transition-all"
+                    >
+                      <span className="w-12 h-12 rounded-lg bg-[var(--color-bg-secondary)] flex items-center justify-center font-bold text-xl text-[var(--color-accent-gold)] shrink-0">
+                        {hymn.number}
+                      </span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-xs text-[var(--color-text-muted)]">{item.slotName}</span>
+                        <span className="block font-bold truncate">{hymn.englishTitle || hymn.yorubaTitle}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
             <div className="flex items-center justify-center h-48 text-[var(--color-text-muted)] italic">
               Type to search for a hymn...
             </div>
@@ -324,7 +363,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
             >
               <div className="flex items-center justify-between w-full mb-3">
                 <span className={`text-xl font-bold px-3 py-1 rounded-md ${isActive ? 'bg-[var(--color-accent-gold)] text-[var(--color-bg-primary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] group-hover:bg-[var(--color-accent-gold)]/20 group-hover:text-[var(--color-accent-gold)]'}`}>
-                  Verse {verse.index}
+                  {verse.label}
                 </span>
                 {isActive && <span className="flex h-3 w-3 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-gold)] opacity-75"></span>

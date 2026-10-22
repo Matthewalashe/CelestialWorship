@@ -18,13 +18,15 @@ interface BibleChapterData {
 }
 
 const VerseItem = React.memo(function VerseItem({ 
-  verseNum, text, textSec, isHighlighted, isSaved, onToggleSave, onSendToDisplay, onShare, sideBySide
+  verseNum, text, textSec, isHighlighted, isSaved, isSelected, onSelect, onToggleSave, onSendToDisplay, onShare, sideBySide
 }: {
   verseNum: number;
   text: string;
   textSec?: string;
   isHighlighted: boolean;
   isSaved: boolean;
+  isSelected: boolean;
+  onSelect: (num: number) => void;
   onToggleSave: (num: number, text: string) => void;
   onSendToDisplay: (num: number, text: string) => void;
   onShare: (num: number, text: string) => void;
@@ -33,10 +35,13 @@ const VerseItem = React.memo(function VerseItem({
   return (
     <div
       id={`verse-${verseNum}`}
-      className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative ${
-        isHighlighted
-          ? 'bg-[var(--color-accent-gold)]/15'
-          : ''
+      onClick={() => onSelect(verseNum)}
+      className={`group transition-colors rounded-lg px-2 py-1 -mx-2 relative cursor-pointer ${
+        isSelected
+          ? 'bg-[var(--color-accent-brand)]/10 ring-1 ring-[var(--color-accent-brand)]/40'
+          : isHighlighted
+            ? 'bg-[var(--color-accent-gold)]/15'
+            : ''
       } ${sideBySide ? 'flex flex-col sm:flex-row gap-4' : ''}`}
     >
       {sideBySide ? (
@@ -65,8 +70,8 @@ const VerseItem = React.memo(function VerseItem({
         </p>
       )}
       
-      {/* Action buttons - visible on hover/focus */}
-      <span className={`inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity absolute right-2 ${sideBySide ? 'top-1' : 'top-1/2 -translate-y-1/2 bg-[var(--color-bg-primary)] px-2 rounded-lg shadow-sm border border-[var(--color-border)]'}`}>
+      {/* Action buttons - visible on hover (pointer devices) or when the verse is tapped (touch) */}
+      <span onClick={e => e.stopPropagation()} className={`inline-flex items-center gap-1 ${isSelected ? 'opacity-100' : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus-within:opacity-100 focus-within:pointer-events-auto'} transition-opacity absolute right-2 ${sideBySide ? 'top-1' : 'top-1/2 -translate-y-1/2 bg-[var(--color-bg-primary)] px-2 rounded-lg shadow-sm border border-[var(--color-border)]'}`}>
         <button
           onClick={() => onSendToDisplay(verseNum, text)}
           className="text-[var(--color-accent-brand)] text-xs hover:scale-110 transition-transform p-1"
@@ -123,6 +128,11 @@ export default function BibleChapter() {
   const [error, setError] = useState<string | null>(null);
   const [fontSize, setFontSize] = useState(18);
   const [savedToast, setSavedToast] = useState<string | null>(null);
+  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+
+  const handleSelectVerse = useCallback((num: number) => {
+    setSelectedVerse(prev => (prev === num ? null : num));
+  }, []);
 
   // Sync state with URL params
   useEffect(() => {
@@ -310,16 +320,26 @@ export default function BibleChapter() {
       .sort(([a], [b]) => parseInt(a) - parseInt(b));
   }, [data]);
 
+  // Chapter links keep lang/sbs but drop the ?v= highlight, which belongs to the current chapter only
+  const chapterPath = useCallback((ch: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.delete('v');
+    const qs = params.toString();
+    return `/bible/${bookSlug}/${ch}${qs ? `?${qs}` : ''}`;
+  }, [searchParams, bookSlug]);
+
+  useEffect(() => { setSelectedVerse(null); }, [bookSlug, chapter]);
+
   // Swipe navigation — swipe left for next chapter, right for previous
   const swipeHandlers = useSwipe({
     onSwipeLeft: () => {
       if (bookInfo && chapter < bookInfo.chapters) {
-        navigate(`/bible/${bookSlug}/${chapter + 1}?${searchParams.toString()}`);
+        navigate(chapterPath(chapter + 1));
       }
     },
     onSwipeRight: () => {
       if (chapter > 1) {
-        navigate(`/bible/${bookSlug}/${chapter - 1}?${searchParams.toString()}`);
+        navigate(chapterPath(chapter - 1));
       }
     },
   });
@@ -344,7 +364,7 @@ export default function BibleChapter() {
   }
 
   return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`max-w-${sideBySide ? '4xl' : '2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`} {...swipeHandlers}>
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className={`${sideBySide ? 'max-w-4xl' : 'max-w-2xl'} mx-auto px-4 py-6 pb-24 transition-all duration-300`} {...swipeHandlers}>
       {/* Saved Toast */}
       {savedToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up"
@@ -460,7 +480,7 @@ export default function BibleChapter() {
         {Array.from({ length: bookInfo.chapters }, (_, i) => i + 1).map(ch => (
           <button
             key={ch}
-            onClick={() => navigate(`/bible/${bookSlug}/${ch}?${searchParams.toString()}`)}
+            onClick={() => navigate(chapterPath(ch))}
             className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-all flex-shrink-0 ${
               ch === chapter
                 ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
@@ -491,6 +511,8 @@ export default function BibleChapter() {
               textSec={secText}
               isHighlighted={isHighlighted}
               isSaved={saved}
+              isSelected={selectedVerse === num}
+              onSelect={handleSelectVerse}
               onToggleSave={handleToggleSave}
               onSendToDisplay={(v, t) => showBibleVerse(`${bookInfo.name} ${chapter}:${v}`, t)}
               onShare={handleShareVerse}
@@ -504,7 +526,7 @@ export default function BibleChapter() {
       <div className="flex justify-between mt-8 pt-4 border-t border-[var(--color-border)]">
         {chapter > 1 ? (
           <Link
-            to={`/bible/${bookSlug}/${chapter - 1}?${searchParams.toString()}`}
+            to={chapterPath(chapter - 1)}
             className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
           >
             <ChevronLeft size={16} className="inline" /> Chapter {chapter - 1}
@@ -514,7 +536,7 @@ export default function BibleChapter() {
         )}
         {chapter < bookInfo.chapters ? (
           <Link
-            to={`/bible/${bookSlug}/${chapter + 1}?${searchParams.toString()}`}
+            to={chapterPath(chapter + 1)}
             className="px-4 py-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-card-hover)] transition-colors"
           >
             Chapter {chapter + 1} <ChevronRight size={16} className="inline" />

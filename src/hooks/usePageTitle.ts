@@ -11,7 +11,7 @@ const PAGE_TITLES: Record<string, string> = {
   services: 'Order of Service — CCC Liturgy | CelestialWorship',
   service_detail: '', // Dynamic
   devotion: 'Daily Devotion — Private Worship Guide | CelestialWorship',
-  lessons: 'Bible Lessons 2026 — Weekly Readings | CelestialWorship',
+  lessons: 'Bible Lessons — Weekly Readings | CelestialWorship',
   lesson_detail: '', // Dynamic
   constitution: 'CCC Constitution | CelestialWorship',
   notes: 'My Notes & Saved Passages | CelestialWorship',

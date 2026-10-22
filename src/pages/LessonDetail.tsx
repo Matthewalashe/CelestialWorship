@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLessonsByDate } from '../hooks/useLessons';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -136,7 +137,7 @@ export default function LessonDetail() {
   );
 }
 
-function getDayServices(day: string): { id: string; name: string; icon: JSX.Element }[] {
+function getDayServices(day: string): { id: string; name: string; icon: ReactElement }[] {
   switch (day?.toLowerCase()) {
     case 'sunday':
       return [

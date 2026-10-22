@@ -8,6 +8,7 @@ async function loadLessons(): Promise<BibleLesson[]> {
   if (lessonsCache) return lessonsCache;
   
   const response = await fetch('/data/lessons.json');
+  if (!response.ok) throw new Error(`Couldn't load lessons (HTTP ${response.status})`);
   const data: BibleLesson[] = await response.json();
   lessonsCache = data;
   return data;

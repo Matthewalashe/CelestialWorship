@@ -1,38 +1,44 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
  * Screen Wake Lock — prevents device screen from dimming during worship.
  * Uses the Screen Wake Lock API (supported in Chrome, Edge, Safari 16.4+).
  * Falls back gracefully on unsupported browsers.
+ *
+ * `isActive` reflects what the user asked for. The browser drops the lock whenever
+ * the page is hidden, so it is re-acquired when the page becomes visible again.
  */
 export function useWakeLock() {
   const [isActive, setIsActive] = useState(false);
-  const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
+  const lockRef = useRef<WakeLockSentinel | null>(null);
 
   const isSupported = typeof navigator !== 'undefined' && 'wakeLock' in navigator;
 
-  const request = useCallback(async () => {
-    if (!isSupported) return;
+  const acquire = useCallback(async () => {
+    if (!isSupported || lockRef.current) return;
     try {
       const lock = await navigator.wakeLock.request('screen');
       lock.addEventListener('release', () => {
-        setIsActive(false);
-        setWakeLock(null);
+        if (lockRef.current === lock) lockRef.current = null;
       });
-      setWakeLock(lock);
-      setIsActive(true);
+      lockRef.current = lock;
     } catch {
       // Permission denied or not available
     }
   }, [isSupported]);
 
+  const request = useCallback(async () => {
+    if (!isSupported) return;
+    setIsActive(true);
+    await acquire();
+  }, [isSupported, acquire]);
+
   const release = useCallback(async () => {
-    if (wakeLock) {
-      await wakeLock.release();
-      setWakeLock(null);
-      setIsActive(false);
-    }
-  }, [wakeLock]);
+    setIsActive(false);
+    const lock = lockRef.current;
+    lockRef.current = null;
+    await lock?.release().catch(() => {});
+  }, []);
 
   const toggle = useCallback(async () => {
     if (isActive) {
@@ -42,22 +48,20 @@ export function useWakeLock() {
     }
   }, [isActive, release, request]);
 
-  // Re-acquire on visibility change (browser re-releases on tab switch)
+  // Re-acquire on visibility change (browser releases the lock when the tab is hidden)
   useEffect(() => {
     if (!isActive || !isSupported) return;
     const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && isActive) {
-        request();
-      }
+      if (document.visibilityState === 'visible') acquire();
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => document.removeEventListener('visibilitychange', onVisibilityChange);
-  }, [isActive, isSupported, request]);
+  }, [isActive, isSupported, acquire]);
 
   // Cleanup on unmount
   useEffect(() => {
-    return () => { wakeLock?.release().catch(() => {}); };
-  }, [wakeLock]);
+    return () => { lockRef.current?.release().catch(() => {}); };
+  }, []);
 
   return { isActive, isSupported, toggle, request, release };
 }

@@ -16,11 +16,25 @@ const DAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export default function Lessons() {
   usePageTitle('lessons');
   const { lessons, loading } = useLessons();
-  const [year] = useState(2026);
-  const [month, setMonth] = useState(() => {
+  const [{ year, month }, setCursor] = useState(() => {
     const now = new Date();
-    return now.getFullYear() === 2026 ? now.getMonth() : 0;
+    return { year: now.getFullYear(), month: now.getMonth() };
   });
+
+  // Navigable range: every year that has lessons, plus the current year
+  const { minYear, maxYear } = useMemo(() => {
+    const years = lessons.map(l => Number(l.date.slice(0, 4))).filter(Boolean);
+    const current = new Date().getFullYear();
+    return {
+      minYear: Math.min(current, ...years),
+      maxYear: Math.max(current, ...years),
+    };
+  }, [lessons]);
+
+  const canGoPrev = year > minYear || month > 0;
+  const canGoNext = year < maxYear || month < 11;
+  const goPrev = () => setCursor(c => (c.month === 0 ? { year: c.year - 1, month: 11 } : { ...c, month: c.month - 1 }));
+  const goNext = () => setCursor(c => (c.month === 11 ? { year: c.year + 1, month: 0 } : { ...c, month: c.month + 1 }));
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
 
   const monthLessons = useMemo(() => {
@@ -54,7 +68,7 @@ export default function Lessons() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
-          <><Calendar size={24} className="inline-block mr-2 align-text-bottom" /> Bible Lessons 2026</>
+          <><Calendar size={24} className="inline-block mr-2 align-text-bottom" /> Bible Lessons</>
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Lectionary calendar for the Celestial Church of Christ
@@ -64,8 +78,8 @@ export default function Lessons() {
       {/* Month Navigation */}
       <div className="flex items-center justify-between mb-4">
         <button
-          onClick={() => setMonth(m => Math.max(0, m - 1))}
-          disabled={month === 0}
+          onClick={goPrev}
+          disabled={!canGoPrev}
           className="p-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] disabled:opacity-30 hover:bg-[var(--color-bg-card-hover)] transition-colors"
         >
           ← Prev
@@ -74,13 +88,19 @@ export default function Lessons() {
           {MONTHS[month]} {year}
         </h2>
         <button
-          onClick={() => setMonth(m => Math.min(11, m + 1))}
-          disabled={month === 11}
+          onClick={goNext}
+          disabled={!canGoNext}
           className="p-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] disabled:opacity-30 hover:bg-[var(--color-bg-card-hover)] transition-colors"
         >
           Next →
         </button>
       </div>
+
+      {monthLessons.length === 0 && (
+        <div className="mb-4 p-4 rounded-2xl text-sm bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
+          Lessons for {MONTHS[month]} {year} haven't been published yet. Check back soon.
+        </div>
+      )}
 
       {/* View Toggle */}
       <div className="flex gap-2 mb-4">

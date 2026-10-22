@@ -7,6 +7,7 @@ async function loadConstitution(): Promise<ConstitutionData> {
   if (constitutionCache) return constitutionCache;
 
   const response = await fetch('/data/constitution.json');
+  if (!response.ok) throw new Error(`Couldn't load constitution (HTTP ${response.status})`);
   const data: ConstitutionData = await response.json();
   constitutionCache = data;
   return data;

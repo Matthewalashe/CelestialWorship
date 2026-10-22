@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Search } from 'lucide-react';
 import { BIBLE_BOOKS, OT_BOOKS, NT_BOOKS } from '../data/bibleBooks';
 import { BibleLanguage, BIBLE_LANGUAGE_LABELS } from '../types';
@@ -7,12 +7,15 @@ import { useBibleAvailability } from '../hooks/useBible';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { sanitizeSearchInput } from '../utils/sanitize';
+import { parseReference } from '../utils/parseReference';
 
 export default function Bible() {
   usePageView('bible');
   usePageTitle('bible');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState('');
+  const [quickRefError, setQuickRefError] = useState<string | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   useEffect(() => {
@@ -20,7 +23,7 @@ export default function Bible() {
     return () => clearTimeout(timer);
   }, [search]);
   const [testament, setTestament] = useState<'all' | 'OT' | 'NT'>('all');
-  const [lang, setLang] = useState<BibleLanguage>('en');
+  const [lang, setLang] = useState<BibleLanguage>(() => (searchParams.get('lang') === 'yo' ? 'yo' : 'en'));
   const yorubaAvailable = useBibleAvailability('yo');
 
   const filteredBooks = useMemo(() => {
@@ -32,12 +35,18 @@ export default function Bible() {
     return books;
   }, [debouncedSearch, testament]);
 
+  // Accepts "John 3", "Gen 1", "1 Cor 13:4-7", "Psalm 23"
   const handleQuickRef = (input: string) => {
-    const match = input.trim().match(/^(.+?)\s+(\d+)$/);
-    if (match) {
-      const bookInput = match[1].toLowerCase().replace(/\s+/g, '-');
-      navigate(`/bible/${bookInput}/${match[2]}?lang=${lang}`);
+    const ref = parseReference(input);
+    const book = ref && BIBLE_BOOKS.find(b => b.name === ref.book);
+    if (!ref || !book || ref.chapter < 1 || ref.chapter > book.chapters) {
+      setQuickRefError(`Couldn't find "${input}". Try e.g. "John 3" or "Gen 1:1".`);
+      return;
     }
+    setQuickRefError(null);
+    const slug = book.name.toLowerCase().replace(/\s+/g, '-');
+    const verses = input.includes(':') ? `&v=${ref.verseStart}-${ref.verseEnd}` : '';
+    navigate(`/bible/${slug}/${ref.chapter}?lang=${lang}${verses}`);
   };
 
   return (
@@ -68,6 +77,9 @@ export default function Bible() {
         <input type="text" placeholder='Quick jump — e.g. "John 3" or "Gen 1"' className="flex-1 bg-transparent text-sm px-2 outline-none" style={{ color: 'var(--color-text-primary)' }} onKeyDown={(e) => { if (e.key === 'Enter') handleQuickRef(sanitizeSearchInput((e.target as HTMLInputElement).value)); }} />
         <button className="px-4 py-1.5 rounded-lg text-xs" style={{ backgroundColor: 'var(--color-accent-gold)', color: '#0A1628', fontWeight: 600 }} onClick={(e) => { const input = (e.currentTarget.previousElementSibling as HTMLInputElement)?.value; if (input) handleQuickRef(sanitizeSearchInput(input)); }}>Go</button>
       </div>
+      {quickRefError && (
+        <p className="text-xs -mt-2 mb-4 px-1" style={{ color: 'var(--color-warning)' }} role="alert">{quickRefError}</p>
+      )}
       {/* Filters */}
       <div className="flex gap-2 mb-4">
         <input type="text" value={search} onChange={e => setSearch(sanitizeSearchInput(e.target.value))} placeholder="Search books..." className="flex-1 rounded-xl px-4 py-2.5 text-sm" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', outline: 'none' }} />

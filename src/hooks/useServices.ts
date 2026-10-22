@@ -46,6 +46,7 @@ async function loadServices(): Promise<ServiceOrder[]> {
   if (servicesCache) return servicesCache;
   
   const response = await fetch('/data/services.json');
+  if (!response.ok) throw new Error(`Couldn't load services (HTTP ${response.status})`);
   const data: any[] = await response.json();
 
   const mapped: ServiceOrder[] = data.map(s => ({

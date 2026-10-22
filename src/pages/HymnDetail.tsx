@@ -54,7 +54,7 @@ export default function HymnDetail() {
 
   const verses = hymn.verses || [];
   const totalVerses = verses.length;
-  const solfa = hymn.solfaNotation || hymn.solfa_notation || null;
+  const solfa = hymn.solfaNotation || null;
 
   const handleShare = () => {
     const text = `Hymn ${hymn.number} - ${hymn.englishTitle || hymn.yorubaTitle}\n\n` + 
@@ -242,7 +242,7 @@ export default function HymnDetail() {
               </div>
 
               {/* Send to display button */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+              <div className="absolute top-3 right-3 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-within:opacity-100 transition-opacity z-[5]">
                 <button 
                   onClick={() => handleSendToDisplay(idx)}
                   className="bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer"
@@ -256,7 +256,7 @@ export default function HymnDetail() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[var(--color-bg-primary)]/80 backdrop-blur-xl border-t border-[var(--color-border)] z-50">
+      <div className="fixed bottom-[68px] md:bottom-0 left-0 md:left-64 right-0 p-3 md:p-4 bg-[var(--color-bg-primary)]/80 backdrop-blur-xl border-t border-[var(--color-border)] z-10">
         <div className="max-w-4xl mx-auto flex justify-end gap-3">
           <button 
             onClick={handleShare}

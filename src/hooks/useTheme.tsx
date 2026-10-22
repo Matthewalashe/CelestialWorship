@@ -24,7 +24,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('ccc-theme', theme);
   }, [theme]);
 
   useEffect(() => {
@@ -38,12 +37,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const toggleTheme = () => {
-    setThemeState(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
-
   const setTheme = (t: Theme) => {
     setThemeState(t);
+    try { localStorage.setItem('ccc-theme', t); } catch {}
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (

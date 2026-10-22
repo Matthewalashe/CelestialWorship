@@ -11,13 +11,13 @@ export function backupNoteToSupabase(note: any): void {
     tags: note.tags,
     created_at: note.createdAt || new Date().toISOString(),
     updated_at: note.updatedAt || new Date().toISOString()
-  }).then(() => {}).catch(() => {});
+  }).then(() => {}, () => {});
 }
 
 export function deleteNoteFromSupabase(id: string): void {
   const device_id = getDeviceId();
   supabase.from('user_notes').delete().match({ id, device_id })
-    .then(() => {}).catch(() => {});
+    .then(() => {}, () => {});
 }
 
 export function syncNotesToSupabase(notes: any[]): void {
@@ -34,5 +34,5 @@ export function syncNotesToSupabase(notes: any[]): void {
   }));
 
   supabase.from('user_notes').upsert(notesToSync)
-    .then(() => {}).catch(() => {});
+    .then(() => {}, () => {});
 }

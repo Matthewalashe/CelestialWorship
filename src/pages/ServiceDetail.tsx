@@ -4,6 +4,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { CATEGORY_LABELS } from '../types';
 import type { HymnSlot, ScriptureReference, HymnCategory } from '../types';
 import { parseStepContent, getStepAccentColor, type ContentSegment } from '../utils/contentParser';
+import { referenceToPath } from '../utils/parseReference';
 import { Music, BookOpen } from 'lucide-react';
 import { MemberInPrayer } from '../components/icons/celestial-icons';
 
@@ -24,8 +25,7 @@ function formatScriptureRef(ref: ScriptureReference): string {
 }
 
 function scriptureRefLink(ref: ScriptureReference): string {
-  const bookSlug = ref.book.toLowerCase().replace(/\s+/g, '-');
-  return `/bible/${bookSlug}/${ref.chapter}`;
+  return referenceToPath(ref);
 }
 
 export default function ServiceDetail() {

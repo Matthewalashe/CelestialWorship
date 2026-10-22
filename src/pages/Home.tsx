@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTodaysLessons } from '../hooks/useLessons';
+import { useTodaysLessons, useLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { useNotifications } from '../hooks/useNotifications';
@@ -68,6 +68,8 @@ export default function Home() {
   const todayFormatted = formatDate(today);
   const serviceTypes = getServiceTypesForDate(today);
   const { lessons: todayLessons } = useTodaysLessons();
+  const { lessons: allLessons } = useLessons();
+  const lessonDates = useMemo(() => new Set(allLessons.map(l => l.date)), [allLessons]);
   const upcomingServiceDays = getUpcomingServiceDays(today, 4);
   const exclamation = getLiturgicalExclamation(today);
 
@@ -300,7 +302,7 @@ export default function Home() {
             {[
               { label: 'Hymnal', icon: <Music size={24} />, path: '/hymns', desc: '486 hymns' },
               { label: 'Order of Service', icon: <ScrollText size={24} />, path: '/services', desc: '21 liturgies' },
-              { label: 'Bible Lessons', icon: <Calendar size={24} />, path: '/lessons', desc: '2026 calendar' },
+              { label: 'Bible Lessons', icon: <Calendar size={24} />, path: '/lessons', desc: 'Lectionary calendar' },
               { label: 'Constitution', icon: <Scale size={24} />, path: '/constitution', desc: 'Church rules' },
               { label: 'Live Display', icon: <MonitorPlay size={24} />, path: '/control', desc: 'Projector mode' },
               { label: 'My Notes', icon: <StickyNote size={24} />, path: '/notes', desc: 'Notes & passages' },
@@ -356,10 +358,12 @@ export default function Home() {
               if (date.toDateString() === today.toDateString()) return null;
               const dateTypes = getServiceTypesForDate(date);
               const isoDate = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+              // Days without published lessons go to that day's first service instead of an empty page
+              const target = lessonDates.has(isoDate) ? `/lessons/${isoDate}` : `/services/${dateTypes[0]}`;
               return (
                 <Link 
                   key={idx}
-                  to={`/lessons/${isoDate}`}
+                  to={target}
                   className="p-3 flex items-center justify-between rounded-2xl"
                   style={{ backgroundColor: 'var(--color-bg-card)' }}
                 >

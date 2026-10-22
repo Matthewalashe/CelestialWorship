@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
 import { useHymns } from '../hooks/useHymns';
 import { useTodaysLessons } from '../hooks/useLessons';
@@ -110,9 +110,27 @@ export default function Devotion() {
     }
   }, [servicesLoading]);
 
-  const savedState = useMemo(() => loadDevotionState(), []);
+  const [searchParams] = useSearchParams();
+  const requestedServiceId = searchParams.get('service');
+
+  // A saved session only applies if it matches the service being requested (if any)
+  const savedState = useMemo(() => {
+    const state = loadDevotionState();
+    if (state && requestedServiceId && state.selectedServiceId !== requestedServiceId) return null;
+    return state;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [currentStep, setCurrentStep] = useState(savedState?.isStarted ? savedState.currentStep : 0);
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(savedState?.selectedServiceId ?? null);
+  const [selectedServiceId, setSelectedServiceIdState] = useState<string | null>(
+    requestedServiceId ?? savedState?.selectedServiceId ?? null
+  );
+
+  // Switching service always starts from its first step
+  const setSelectedServiceId = (id: string) => {
+    if (id !== selectedServiceId) setCurrentStep(0);
+    setSelectedServiceIdState(id);
+    setShowResumePrompt(false);
+  };
   const [isStarted, setIsStarted] = useState(false); // always false initially
   const [showHymnPicker, setShowHymnPicker] = useState(false);
   const [pickerCategory, setPickerCategory] = useState<HymnCategory | null>(null);
@@ -158,6 +176,11 @@ export default function Devotion() {
   const goPrev = useCallback(() => setCurrentStep(s => Math.max(0, s - 1)), []);
   const goNext = useCallback(() => setCurrentStep(s => Math.min(steps.length - 1, s + 1)), [steps.length]);
   const swipeHandlers = useSwipe({ onSwipeLeft: goNext, onSwipeRight: goPrev });
+
+  // Guard against a resumed step index that is out of range for the selected service
+  useEffect(() => {
+    if (steps.length > 0 && currentStep >= steps.length) setCurrentStep(0);
+  }, [steps.length, currentStep]);
 
   if (servicesLoading) {
     return (
@@ -209,7 +232,7 @@ export default function Devotion() {
                 </button>
               );
             })}
-            <details className="mt-2">
+            <details className="mt-2" open={!!selectedServiceId && !todayServiceIds.includes(selectedServiceId)}>
               <summary className="text-sm text-[var(--color-text-muted)] cursor-pointer">Other services...</summary>
               <div className="space-y-2 mt-2">
                 {services.filter(s => !todayServiceIds.includes(s.id)).map(svc => (

@@ -26,7 +26,7 @@ export function trackEvent(event: string, properties?: Record<string, any>): voi
     properties,
     platform: getPlatform(),
     created_at: new Date().toISOString()
-  }).then(() => {}).catch(() => {}); // silent
+  }).then(() => {}, () => {}); // silent
 }
 
 export function usePageView(pageName: string): void {

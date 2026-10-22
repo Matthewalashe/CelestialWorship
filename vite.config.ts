@@ -15,10 +15,21 @@ export default defineConfig({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+        // Bible books (~13 MB) are cached as they are read, not all at install time
+        globIgnores: ['**/data/bible/**'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/data\//],
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/data/bible/'),
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'bible-books',
+              expiration: { maxEntries: 140 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',

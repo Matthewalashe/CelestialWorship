@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
-import { Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun } from 'lucide-react';
+import { Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun, LayoutGrid, X } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
 
@@ -26,9 +27,21 @@ const MoreItems: NavItem[] = [
   { path: '/control', label: 'Operator', icon: <MonitorPlay size={20} /> },
 ];
 
+// Mobile bottom bar keeps four core destinations; everything else lives in the "More" sheet
+const MobilePrimaryPaths = ['/', '/services', '/hymns', '/bible'];
+const MobileMoreItems: NavItem[] = [
+  ...NavItems.filter(item => !MobilePrimaryPaths.includes(item.path)),
+  ...MoreItems,
+];
+
 export default function Layout() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  useEffect(() => { setMoreOpen(false); }, [location.pathname]);
+
+  const isMoreActive = MobileMoreItems.some(item => location.pathname.startsWith(item.path));
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen"
@@ -148,13 +161,52 @@ export default function Layout() {
         </div>
       </main>
 
+      {/* Mobile "More" sheet */}
+      {moreOpen && (
+        <div className="md:hidden fixed inset-0 z-20 bg-black/50 animate-fade-in" onClick={() => setMoreOpen(false)}>
+          <div
+            role="dialog"
+            aria-label="More pages"
+            className="absolute left-0 right-0 bottom-[68px] rounded-t-2xl p-4 pb-5 animate-slide-up"
+            style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-muted)' }}>More</p>
+              <button onClick={() => setMoreOpen(false)} className="p-1" style={{ color: 'var(--color-text-muted)' }} aria-label="Close menu">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {MobileMoreItems.map(item => {
+                const isActive = location.pathname.startsWith(item.path);
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className="flex flex-col items-center justify-center gap-1 p-3 rounded-xl text-xs font-medium"
+                    style={{
+                      backgroundColor: isActive ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+                      color: isActive ? 'var(--color-text-on-accent)' : 'var(--color-text-primary)',
+                    }}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Bottom Nav */}
-      <nav aria-label="Main navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-20 flex items-center justify-around px-2 py-1 pb-safe"
+      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-30 flex items-center justify-around px-2 py-1 pb-safe"
            style={{ height: '68px' }}>
-        {NavItems.map((item) => {
-          const isActive = item.path === '/' 
-            ? location.pathname === '/' 
-            : location.pathname.startsWith(item.path);
+        {NavItems.filter(item => MobilePrimaryPaths.includes(item.path)).map((item) => {
+          const isActive = !moreOpen && (item.path === '/'
+            ? location.pathname === '/'
+            : location.pathname.startsWith(item.path));
           
           return (
             <NavLink
@@ -162,18 +214,28 @@ export default function Layout() {
               key={item.path}
               to={item.path}
               end={item.path === '/'}
-              className="flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-all duration-200"
+              className="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all duration-200"
+              style={{ color: isActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}
             >
               <span className={`mb-0.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>
                 {item.icon}
               </span>
-              <span className="text-[10px] font-medium"
-                    style={{ color: isActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}>
-                {item.label}
-              </span>
+              <span className="text-[10px] font-medium">{item.label}</span>
             </NavLink>
           );
         })}
+        <button
+          onClick={() => setMoreOpen(o => !o)}
+          className="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all duration-200"
+          style={{ color: moreOpen || isMoreActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}
+          aria-expanded={moreOpen}
+          aria-label="More pages"
+        >
+          <span className={`mb-0.5 transition-transform duration-200 ${moreOpen || isMoreActive ? 'scale-110' : ''}`}>
+            <LayoutGrid size={20} />
+          </span>
+          <span className="text-[10px] font-medium">More</span>
+        </button>
       </nav>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getServiceScheduleForDate, type ServiceScheduleItem } from '../utils/dateUtils';
+import { getServiceScheduleForDate, toISODate } from '../utils/dateUtils';
 
 const PREFS_KEY = 'cw-notification-prefs';
 const SCHEDULED_KEY = 'cw-scheduled-notifications';
@@ -17,6 +17,14 @@ interface ScheduledNotification {
   body: string;
   tag: string;
   icon: string;
+}
+
+/** Local time of the daily devotion reminder */
+const DEVOTION_REMINDER_HOUR = 7;
+
+function formatTime(hour: number, minute: number): string {
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
 }
 
 const defaultPrefs: NotificationPrefs = {
@@ -74,7 +82,7 @@ async function showNotification(title: string, body: string, tag: string, icon?:
 }
 
 /** Build notification schedule for today and tomorrow */
-function buildSchedule(): ScheduledNotification[] {
+function buildSchedule(prefs: NotificationPrefs): ScheduledNotification[] {
   const notifications: ScheduledNotification[] = [];
   const now = new Date();
 
@@ -84,8 +92,23 @@ function buildSchedule(): ScheduledNotification[] {
     date.setDate(date.getDate() + dayOffset);
     date.setHours(0, 0, 0, 0);
 
-    const services = getServiceScheduleForDate(date);
-    const dateStr = date.toISOString().split('T')[0];
+    const services = prefs.serviceReminders ? getServiceScheduleForDate(date) : [];
+    const dateStr = toISODate(date);
+
+    if (prefs.devotionReminders) {
+      const devotionTime = new Date(date);
+      devotionTime.setHours(DEVOTION_REMINDER_HOUR, 0, 0, 0);
+      if (devotionTime.getTime() > now.getTime()) {
+        notifications.push({
+          id: `devotion-${dateStr}`,
+          fireAt: devotionTime.getTime(),
+          title: 'Daily Devotion',
+          body: 'Good morning! Start your day with the Word of God.',
+          tag: `devotion-${dateStr}`,
+          icon: '/pwa-192x192.png',
+        });
+      }
+    }
 
     for (const service of services) {
       const serviceTime = new Date(date);
@@ -98,7 +121,7 @@ function buildSchedule(): ScheduledNotification[] {
           id: `${service.id}-30-${dateStr}`,
           fireAt: thirtyMinBefore.getTime(),
           title: `${service.icon} ${service.name} in 30 minutes`,
-          body: `Prepare your heart for worship. Service begins at ${service.hour}:${String(service.minute).padStart(2, '0')} ${service.hour < 12 ? 'AM' : 'PM'}.`,
+          body: `Prepare your heart for worship. Service begins at ${formatTime(service.hour, service.minute)}.`,
           tag: `service-30-${service.id}-${dateStr}`,
           icon: '/pwa-192x192.png',
         });
@@ -173,9 +196,9 @@ export function useNotifications() {
     timersRef.current.forEach(t => clearTimeout(t));
     timersRef.current = [];
 
-    if (permission !== 'granted' || !prefs.enabled || !prefs.serviceReminders) return;
+    if (permission !== 'granted' || !prefs.enabled) return;
 
-    const schedule = buildSchedule();
+    const schedule = buildSchedule(prefs);
     const alreadyFired = getScheduledNotifications();
     const alreadyFiredIds = new Set(alreadyFired.map(n => n.id));
     const now = Date.now();
@@ -211,21 +234,6 @@ export function useNotifications() {
     const twoDaysAgo = now - 2 * 24 * 60 * 60 * 1000;
     const cleaned = newFired.filter(n => n.fireAt > twoDaysAgo);
     saveScheduledNotifications(cleaned);
-
-    // Devotion reminder — fire once per session if enabled
-    if (prefs.devotionReminders) {
-      const devotionKey = `cw-devotion-reminder-${new Date().toISOString().split('T')[0]}`;
-      if (!sessionStorage.getItem(devotionKey)) {
-        const hour = new Date().getHours();
-        let msg: string;
-        if (hour < 12) msg = 'Good morning! Start your day with the Word of God.';
-        else if (hour < 17) msg = 'Take a moment for your afternoon devotion.';
-        else msg = 'End your day with evening devotion and prayer.';
-        
-        showNotification('Daily Devotion', msg, `devotion-${new Date().toISOString().split('T')[0]}`);
-        sessionStorage.setItem(devotionKey, 'true');
-      }
-    }
 
     return () => {
       timersRef.current.forEach(t => clearTimeout(t));

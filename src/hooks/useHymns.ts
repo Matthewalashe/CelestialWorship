@@ -8,6 +8,7 @@ async function loadHymns(): Promise<Hymn[]> {
   if (hymnsCache) return hymnsCache;
   
   const response = await fetch('/data/hymns.json');
+  if (!response.ok) throw new Error(`Couldn't load hymns (HTTP ${response.status})`);
   const raw: any[] = await response.json();
   
   // Map snake_case JSON fields to camelCase TypeScript interface

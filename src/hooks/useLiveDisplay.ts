@@ -3,6 +3,31 @@ import { DisplayState } from '../types';
 
 const CHANNEL_NAME = 'ccc-live-display';
 
+/** Hymn list handed from the Hymn Selector to the Operator page */
+export const OPERATOR_QUEUE_KEY = 'cw-queue';
+
+export interface OperatorQueueItem {
+  hymnNumber: number;
+  slotName: string;
+}
+
+export interface OperatorQueue {
+  serviceName: string;
+  items: OperatorQueueItem[];
+}
+
+export function loadOperatorQueue(): OperatorQueue | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(OPERATOR_QUEUE_KEY) || 'null');
+    if (parsed && Array.isArray(parsed.items)) return parsed;
+  } catch {}
+  return null;
+}
+
+export function clearOperatorQueue(): void {
+  try { localStorage.removeItem(OPERATOR_QUEUE_KEY); } catch {}
+}
+
 /**
  * Hook for the OPERATOR side — sends display commands.
  */
