@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CCCLogo } from '../components/icons/celestial-icons';
@@ -54,6 +55,9 @@ export default function Control() {
       {/* Top Persistent Controls */}
       <div className="flex justify-between items-center bg-[var(--color-bg-card)] p-4 border-b border-[var(--color-border)] shadow-sm shrink-0">
         <div className="flex items-center gap-6">
+          <Link to="/" className="text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] inline-flex items-center gap-1">
+            <ChevronLeft size={16} /> Exit
+          </Link>
           <div>
             <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-bold mb-1">Live Status</div>
             <div className="text-lg font-bold text-[var(--color-accent-gold)] flex items-center gap-2">

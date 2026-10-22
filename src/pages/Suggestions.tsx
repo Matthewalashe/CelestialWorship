@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
 import { useHymns } from '../hooks/useHymns';
 import { useLessons } from '../hooks/useLessons';
@@ -119,6 +119,16 @@ export default function Suggestions() {
     setLockedSlots(new Set());
     setExtraSlots([]);
   };
+
+  // "Plan hymns" from an Order of Service opens straight onto that service
+  const [searchParams] = useSearchParams();
+  const requestedService = searchParams.get('service');
+  useEffect(() => {
+    if (!requestedService || selectedServiceId || !hymns.length) return;
+    const svc = services.find(s => s.id === requestedService);
+    if (svc) handleSelectService(svc);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedService, services, hymns]);
 
   const loadPastPlan = async (plan: SavedPlan) => {
     const service = services.find(s => s.id === plan.serviceId);

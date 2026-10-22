@@ -3,33 +3,45 @@
  */
 
 /**
- * Get the CCC service type(s) for a given date.
- * - Sunday → Lord's Day (Morning + Evening)
- * - Wednesday → Seekers (9am) + Mercy Day (6pm)
- * - Friday → Power Day (6pm)
- * - Special days checked against the lessons calendar
+ * The regular services, mirroring the `day` and `time` fields of public/data/services.json
+ * (the Order of Service data). A test checks the two agree, so this is the one schedule used
+ * by Home, reminders, Devotion and the Hymn Selector.
  */
-export function getServiceTypesForDate(date: Date): string[] {
-  const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-  
-  switch (day) {
-    case 0: // Sunday
-      return ['lords_day_service', 'evening_service_lords_day'];
-    case 1: // Monday (6am morning service)
-      return ['morning_service'];
-    case 2: // Tuesday (6am morning service)
-      return ['morning_service'];
-    case 3: // Wednesday
-      return ['seekers_service', 'mercy_day_service'];
-    case 4: // Thursday (6am morning service)
-      return ['morning_service'];
-    case 5: // Friday
-      return ['power_day_service', 'prophets_prophetess_dreamers'];
-    case 6: // Saturday (6am morning service)
-      return ['morning_service'];
-    default:
-      return ['morning_service'];
+interface ScheduledService {
+  id: string;
+  name: string;
+  icon: string;
+  /** 0 = Sunday … 6 = Saturday; 'daily'; or 'first-thursday' of the month; or a fixed 'MM-DD' date */
+  when: number[] | 'daily' | 'first-thursday' | `${number}-${number}`;
+  hour: number;
+  minute: number;
+}
+
+export const SERVICE_SCHEDULE: ScheduledService[] = [
+  { id: 'morning_service', name: 'Morning Service', icon: '☀️', when: 'daily', hour: 6, minute: 0 },
+  { id: 'lords_day_service', name: "Lord's Day Service", icon: '✝️', when: [0], hour: 10, minute: 0 },
+  { id: 'evening_service_lords_day', name: 'Evening Service', icon: '🌅', when: [0], hour: 18, minute: 0 },
+  { id: 'seekers_service', name: 'Seekers Service', icon: '🕯️', when: [3], hour: 9, minute: 0 },
+  { id: 'mercy_day_service', name: 'Mercy Day Service', icon: '🙏', when: [3], hour: 18, minute: 0 },
+  { id: 'prophets_prophetess_dreamers', name: 'Prophets, Prophetesses & Dreamers', icon: '⭐', when: [5], hour: 12, minute: 0 },
+  { id: 'power_day_service', name: 'Power Day Service', icon: '⚡', when: [5], hour: 18, minute: 0 },
+  { id: 'new_moon', name: 'New Moon Service', icon: '🌑', when: 'first-thursday', hour: 22, minute: 0 },
+  { id: 'end_of_year', name: 'End of Year Service', icon: '🎆', when: '12-31', hour: 22, minute: 0 },
+];
+
+function occursOn(s: ScheduledService, date: Date): boolean {
+  if (s.when === 'daily') return true;
+  if (s.when === 'first-thursday') return date.getDay() === 4 && date.getDate() <= 7;
+  if (typeof s.when === 'string') {
+    const [m, d] = s.when.split('-').map(Number);
+    return date.getMonth() + 1 === m && date.getDate() === d;
   }
+  return s.when.includes(date.getDay());
+}
+
+/** Service ids held on a date, in time order */
+export function getServiceTypesForDate(date: Date): string[] {
+  return getServiceScheduleForDate(date).map(s => s.id);
 }
 
 /**
@@ -105,22 +117,15 @@ export function getWeekStart(date: Date): Date {
 }
 
 /**
- * Get the next N service days from a given date
+ * The next N days that have a service besides the daily morning service
  */
 export function getUpcomingServiceDays(from: Date, count: number): Date[] {
   const result: Date[] = [];
   const d = new Date(from);
-  // Only return days with special services (Sun=0, Wed=3, Fri=5)
-  const specialDays = new Set([0, 3, 5]);
-  
-  // Look ahead up to 30 days max to find enough special service days
-  for (let i = 0; i < 30 && result.length < count; i++) {
-    if (specialDays.has(d.getDay())) {
-      result.push(new Date(d));
-    }
+  for (let i = 0; i < 40 && result.length < count; i++) {
+    if (getServiceTypesForDate(d).some(id => id !== 'morning_service')) result.push(new Date(d));
     d.setDate(d.getDate() + 1);
   }
-  
   return result;
 }
 
@@ -133,27 +138,16 @@ export interface ServiceScheduleItem {
   minute: number;
 }
 
-/** Get all services with their scheduled times for a given date */
+/** Get all services with their scheduled times for a given date, in time order */
 export function getServiceScheduleForDate(date: Date): ServiceScheduleItem[] {
-  const day = date.getDay();
-  const schedule: ServiceScheduleItem[] = [];
+  return SERVICE_SCHEDULE
+    .filter(s => occursOn(s, date))
+    .map(({ id, name, icon, hour, minute }) => ({ id, name, icon, hour, minute }))
+    .sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute));
+}
 
-  // Every day has 6AM morning service
-  schedule.push({ id: 'morning_service', name: 'Morning Service', icon: '☀️', hour: 6, minute: 0 });
-
-  switch (day) {
-    case 0: // Sunday
-      schedule.push({ id: 'lords_day_service', name: "Lord's Day Service", icon: '✝️', hour: 10, minute: 0 });
-      schedule.push({ id: 'evening_service_lords_day', name: 'Evening Service', icon: '🌅', hour: 18, minute: 0 });
-      break;
-    case 3: // Wednesday
-      schedule.push({ id: 'seekers_service', name: 'Seekers Service', icon: '🕯️', hour: 9, minute: 0 });
-      schedule.push({ id: 'mercy_day_service', name: 'Mercy Day Service', icon: '🙏', hour: 18, minute: 0 });
-      break;
-    case 5: // Friday
-      schedule.push({ id: 'power_day_service', name: 'Power Day Service', icon: '⚡', hour: 18, minute: 0 });
-      break;
-  }
-
-  return schedule;
+/** "6:00 PM" */
+export function formatServiceTime(hour: number, minute: number): string {
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
 }

@@ -29,6 +29,8 @@ const STRINGS = {
   'nav.selector': { en: 'Hymn Selector', yo: 'Yíyan orin' },
   'nav.operator': { en: 'Operator', yo: 'Ìfihàn' },
   'nav.profile': { en: 'Profile', yo: 'Ìwé mi' },
+  'nav.live': { en: 'Live', yo: 'Ní tààrà' },
+  'nav.moderate': { en: 'Moderation', yo: 'Àbójútó' },
 
   'home.morning': { en: 'Good Morning', yo: 'Ẹ káàárọ̀' },
   'home.afternoon': { en: 'Good Afternoon', yo: 'Ẹ káàsán' },

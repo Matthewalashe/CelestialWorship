@@ -13,6 +13,10 @@ import type { Hymn, HymnCategory } from '../types';
 import { CATEGORY_LABELS } from '../types';
 import { Bird, Music, BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, ChevronDown, MonitorSmartphone } from 'lucide-react';
 import { useWakeLock } from '../hooks/useWakeLock';
+import { recordActivity, recordDevotionPosition, useStreak } from '../hooks/useProgress';
+import { getCandidateHymns } from '../utils/hymnMatcher';
+import { toISODate } from '../utils/dateUtils';
+import { PassageText } from '../components/PassageText';
 
 const STORAGE_KEY = 'cw-devotion-state';
 
@@ -163,14 +167,38 @@ export default function Devotion() {
   const currentStepData = steps[currentStep];
 
   const getHymnsForCategory = (category: HymnCategory): Hymn[] => {
-    return hymns.filter(h => h.categories.includes(category)).slice(0, 8);
+    const refs = todaysLessons.flatMap(l => [l.firstLesson, l.secondLesson]).filter(Boolean).map(r => ({ book: r!.book, chapter: r!.chapter }));
+    return getCandidateHymns({ category }, hymns, 8, { date: toISODate(new Date()), serviceId: selectedService?.id, lessonRefs: refs })
+      .map(c => c.hymn);
   };
+
+  const [completed, setCompleted] = useState(false);
+  const streak = useStreak();
 
   const handleExit = useCallback(() => {
     setIsStarted(false);
     setCurrentStep(0);
     clearDevotionState();
   }, []);
+
+  const handleComplete = useCallback(() => {
+    recordActivity('devotion');
+    clearDevotionState();
+    setIsStarted(false);
+    setCurrentStep(0);
+    setCompleted(true);
+  }, []);
+
+  // Keep the screen on while a devotion is running
+  useEffect(() => {
+    if (isStarted && wakeLockSupported && !wakeLockActive) toggleWakeLock();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isStarted]);
+
+  // Remember the position for "Continue" on Home
+  useEffect(() => {
+    if (isStarted && selectedService) recordDevotionPosition(selectedService.id, currentStep);
+  }, [isStarted, selectedService, currentStep]);
 
   // Touch/swipe navigation for reader mode (must be before early returns — Rules of Hooks)
   const goPrev = useCallback(() => setCurrentStep(s => Math.max(0, s - 1)), []);
@@ -196,6 +224,27 @@ export default function Devotion() {
               style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}
             >Tap to retry</button>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Completed ──
+  if (completed && !isStarted) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
+        <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+             style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)' }}>🕊️</div>
+        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Amen.</h1>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+          You have completed {selectedService?.displayName ?? 'your devotion'}. “The LORD bless thee, and keep thee.” — Numbers 6:24
+        </p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-gold)' }}>
+          🔥 {streak.current} day{streak.current === 1 ? '' : 's'} in a row{streak.best > streak.current ? ` · best ${streak.best}` : ''}
+        </p>
+        <div className="flex justify-center gap-2 pt-2">
+          <Link to="/notes?new=1" className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold">Write a reflection</Link>
+          <Link to="/" className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Home</Link>
         </div>
       </div>
     );
@@ -385,7 +434,7 @@ export default function Devotion() {
               Next ›
             </button>
           ) : (
-            <button onClick={handleExit} className="px-4 py-2 text-sm font-medium" style={{ color: fg }}>
+            <button onClick={handleComplete} className="px-4 py-2 text-sm font-medium" style={{ color: fg }}>
               Done ✓
             </button>
           )}
@@ -497,13 +546,8 @@ export default function Devotion() {
                 )}
               </div>
             )}
-            {currentStepData.scriptureRef && (
-              <Link to={referenceToPath(currentStepData.scriptureRef)} className="mt-4 flex items-center gap-2 p-3 rounded-xl"
-                style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
-                <span className="text-[var(--color-text-primary)] font-medium">{currentStepData.scriptureRef.raw}</span>
-                <span className="ml-auto text-[var(--color-accent-brand)]">Read →</span>
-              </Link>
-            )}
+            {(currentStepData.scriptureReferences?.length ? currentStepData.scriptureReferences : currentStepData.scriptureRef ? [currentStepData.scriptureRef] : [])
+              .map((ref, i) => <div key={i} className="mt-4"><PassageText reference={ref} defaultOpen /></div>)}
           </div>
         </div>
       )}
@@ -521,7 +565,7 @@ export default function Devotion() {
             Next ›
           </button>
         ) : (
-          <button onClick={handleExit} className="flex-1 py-3 rounded-xl font-semibold text-white bg-emerald-600">
+          <button onClick={handleComplete} className="flex-1 py-3 rounded-xl font-semibold text-white bg-emerald-600">
             ✓ Complete
           </button>
         )}

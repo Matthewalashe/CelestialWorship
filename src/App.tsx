@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton, PageSkeleton } from './components/SkeletonScreens';
+import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton } from './components/SkeletonScreens';
 import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -23,7 +23,23 @@ const Display = React.lazy(() => import('./pages/Display'));
 const Control = React.lazy(() => import('./pages/Control'));
 const Constitution = React.lazy(() => import('./pages/Constitution'));
 const Notes = React.lazy(() => import('./pages/Notes'));
-
+const SignIn = React.lazy(() => import('./pages/SignIn'));
+const Onboarding = React.lazy(() => import('./pages/Onboarding'));
+const Profile = React.lazy(() => import('./pages/Profile'));
+const OurChurch = React.lazy(() => import('./pages/OurChurch'));
+const PrayerRequests = React.lazy(() => import('./pages/PrayerRequests'));
+const Articles = React.lazy(() => import('./pages/Articles'));
+const ArticleDetail = React.lazy(() => import('./pages/ArticleDetail'));
+const ArticleEditor = React.lazy(() => import('./pages/ArticleEditor'));
+const Events = React.lazy(() => import('./pages/Events'));
+const Directory = React.lazy(() => import('./pages/Directory'));
+const ParishPage = React.lazy(() => import('./pages/ParishPage'));
+const ParishAdmin = React.lazy(() => import('./pages/ParishAdmin'));
+const Give = React.lazy(() => import('./pages/Give'));
+const Live = React.lazy(() => import('./pages/Live'));
+const Quiz = React.lazy(() => import('./pages/Quiz'));
+const Moderate = React.lazy(() => import('./pages/Moderate'));
+const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -42,12 +58,14 @@ function App() {
     <ErrorBoundary>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          {/* Standalone pages - no layout */}
+          {/* Full-screen pages - no app layout */}
           <Route path="/display" element={<Display />} />
-          
+          <Route path="/control" element={<Control />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/welcome" element={<Onboarding />} />
+
           {/* Main layout pages */}
           <Route element={<Layout />}>
-            {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:serviceId" element={<ServiceDetail />} />
@@ -58,12 +76,24 @@ function App() {
             <Route path="/bible" element={<Suspense fallback={<BibleSkeleton />}><Bible /></Suspense>} />
             <Route path="/bible/:book/:chapter" element={<Suspense fallback={<BibleSkeleton />}><BibleChapter /></Suspense>} />
             <Route path="/devotion" element={<Suspense fallback={<DevotionSkeleton />}><Devotion /></Suspense>} />
-
-            {/* Routes — auth guard removed for now, re-enable when domain is ready */}
             <Route path="/suggestions" element={<Suggestions />} />
-            <Route path="/control" element={<Control />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/constitution" element={<Constitution />} />
+            <Route path="/our-church" element={<OurChurch />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/prayer-requests" element={<PrayerRequests />} />
+            <Route path="/articles" element={<Articles />} />
+            <Route path="/articles/write" element={<ArticleEditor />} />
+            <Route path="/articles/:id" element={<ArticleDetail />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/directory" element={<Directory />} />
+            <Route path="/directory/:id" element={<ParishPage />} />
+            <Route path="/parish-admin" element={<ParishAdmin />} />
+            <Route path="/give" element={<Give />} />
+            <Route path="/live" element={<Live />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/moderate" element={<Moderate />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>

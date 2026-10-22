@@ -16,7 +16,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -63,9 +63,7 @@
           "The service conductor will render a prayer for forgiveness of sins and sanctification."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -103,9 +101,7 @@
           "Three member's prayer: 1. Thanksgiving and God's favour [Male] 2. Victory and protection [Female] 3. Power and blessing [Male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -241,7 +237,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -288,11 +284,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from our sins. 3. For I acknowledge our transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold I was sharpened in iniquity and in sin did my mothers conceived me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. O Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou delighted not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar….Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -314,9 +316,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -354,7 +354,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Genesis 15:1-5",
+            "book": "Genesis",
+            "chapter": 15,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -364,9 +372,7 @@
           "Three member's prayer a. Thanksgiving, Mercy and God favour [male] b. Power of victory, stumbling block in the ways of members to be removed by God [female] c. God's blessing in all ways [male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -392,7 +398,15 @@
         "type": "instruction",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Deuteronomy 28:1-14",
+            "book": "Deuteronomy",
+            "chapter": 28,
+            "verse_start": 1,
+            "verse_end": 14
+          }
+        ],
         "isHeader": false
       },
       {
@@ -416,7 +430,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 20",
+            "book": "Psalms",
+            "chapter": 20,
+            "verse_start": 1,
+            "verse_end": 9
+          }
+        ],
         "isHeader": false
       },
       {
@@ -596,7 +618,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -605,9 +627,7 @@
           "Short prayer for forgiveness of sins and sanctification at the Church entrance by the service conductor."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -681,11 +701,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only I have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold I was sharpened in iniquity and in sin did my mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar….Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -707,9 +733,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -735,7 +759,22 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 100",
+            "book": "Psalms",
+            "chapter": 100,
+            "verse_start": 1,
+            "verse_end": 5
+          },
+          {
+            "raw": "Psalm 136",
+            "book": "Psalms",
+            "chapter": 136,
+            "verse_start": 1,
+            "verse_end": 26
+          }
+        ],
         "isHeader": false
       },
       {
@@ -745,9 +784,7 @@
           "Prayer for Thanksgiving by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -813,7 +850,15 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalms 20:1-5",
+            "book": "Psalms",
+            "chapter": 20,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1069,7 +1114,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -1078,9 +1123,7 @@
           "Short prayer for forgiveness of sins and sanctification at the Church entrance by the service conductor."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1154,11 +1197,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from our iniquities and cleanse me from our sins. 3. For I acknowledge our transgressions and my sins are ever before me. 4. Against Thee, Thee only I have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1180,9 +1229,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1208,7 +1255,22 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 100",
+            "book": "Psalms",
+            "chapter": 100,
+            "verse_start": 1,
+            "verse_end": 5
+          },
+          {
+            "raw": "Psalm 136",
+            "book": "Psalms",
+            "chapter": 136,
+            "verse_start": 1,
+            "verse_end": 26
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1218,9 +1280,7 @@
           "Prayer for Thanksgiving by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1286,7 +1346,15 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalms 20:1-5",
+            "book": "Psalms",
+            "chapter": 20,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1542,7 +1610,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -1551,9 +1619,7 @@
           "Short prayer for forgiveness of sins and sanctification at the Church entrance by the service conductor."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1627,11 +1693,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge our transgressions and my sins are ever before me. 4. Against Thee, Thee only I have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold us with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1653,9 +1725,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1681,7 +1751,22 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 100",
+            "book": "Psalms",
+            "chapter": 100,
+            "verse_start": 1,
+            "verse_end": 5
+          },
+          {
+            "raw": "Psalm 136",
+            "book": "Psalms",
+            "chapter": 136,
+            "verse_start": 1,
+            "verse_end": 26
+          }
+        ],
         "isHeader": false
       },
       {
@@ -1691,9 +1776,7 @@
           "Prayer for Thanksgiving by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1717,9 +1800,7 @@
           "Three Members Prayer a. Thanksgiving and God' favour [male] b. Power, protection and victory [female] c. Blessing and Church progress [male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1759,7 +1840,15 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalms 20:1-5",
+            "book": "Psalms",
+            "chapter": 20,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2012,12 +2101,10 @@
           "ORDER OF SERVICE FOR PROPHETS, PROPHETESS, DREAMERS, VISIONERS AND SEEKERS OF SPIRITUAL POWER FRIDAY [12 NOON] Service takes place on the Mercy-land. Before the commencement of the service, the mercy land should be sanctifies with incense and holy water. Service must be conducted by the Shepherd-in-charge. Materials Needed: One bottle of water and a candle stick. Nothing should be added to the above mentioned items Service:"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -2052,11 +2139,17 @@
           "Eyiba [3ce] then Psalm 51 Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold I was sharpened in iniquity and in sin did my mothers conceive us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around us. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar….Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2078,9 +2171,7 @@
           "Prayer forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2118,9 +2209,7 @@
           "Three Members prayer a. Holy Spirit and Church progress b. Victory and protection for the whole world c. Blessing and God's Grace"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2146,9 +2235,7 @@
           "Silent Prayer: every member shall pray for spiritual power, peace, rebirth and accurate prophecy."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2186,9 +2273,7 @@
           "Bible Lesson [the lesson should be based on Holy Spirit and spiritual power]"
         ],
         "type": "scripture",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2394,7 +2479,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -2429,11 +2514,17 @@
           "Eyiba [3ce] Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did our mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar….Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2455,9 +2546,7 @@
           "Prayer: Forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2483,9 +2572,7 @@
           "Three member's prayer a. Thanksgiving [male] b. Power and Victory [female] c. Safe delivery and to be joyful."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2628,12 +2715,10 @@
           "ORDER OF SERVICE ON LORD'S DAY SUNDAY DEVOTIONAL SERVICE [10AM] Note: It is important that the house of God is sanctifies by seven members with seven sticks of candle, three sticks of candle position in male side, three sticks of candle in the female side and the seventh on the inner altar with enough incense and holy water. The seven elders should position themselves by the lighted candle stick. They should render seven Spiritual or Power songs before prayer of sanctification. Positioning of the seven lighted candle C C C C C C C After the sanctification, nobody is allow to gain access into the house of God after the crucifix has been placed at the entrance until service is about to commence. Order of procession into the house of God a. The incense man will lead the congregations b. Followed by the Choristers c. Followed by the female members starting with the youngest female d. Male members from the youngest to the elders. The Shepherd will be at the rear. Every member will close their palms as they file into the house of God with humility. Important Notice Every appointed officiating members beginning with the service conduct, incense bearer, etc. must sanctify themselves for three days before the service day. The service conductor must be within the Church premises before 10am. Service:"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "sanctification"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -2642,9 +2727,7 @@
           "Short prayer for forgiveness of sins and sanctification at the Church entrance by the service conductor."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2730,11 +2813,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from me iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold I was sharpened in iniquity and in sin did my mothers conceived me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2746,7 +2835,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2768,9 +2865,7 @@
           "Prayer by the service conductor for forgiveness of sins and sanctification."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2798,7 +2893,15 @@
           "category": "forgiveness_of_sins"
         },
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 118",
+            "book": "Psalms",
+            "chapter": 118,
+            "verse_start": 1,
+            "verse_end": 29
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2810,7 +2913,29 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 118",
+            "book": "Psalms",
+            "chapter": 118,
+            "verse_start": 1,
+            "verse_end": 29
+          },
+          {
+            "raw": "Psalm 136",
+            "book": "Psalms",
+            "chapter": 136,
+            "verse_start": 1,
+            "verse_end": 26
+          },
+          {
+            "raw": "Psalm 27",
+            "book": "Psalms",
+            "chapter": 27,
+            "verse_start": 1,
+            "verse_end": 14
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2832,9 +2957,7 @@
           "Prayer of thanksgiving by the service conductor [This prayer must be render by the service conductor himself]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2862,7 +2985,15 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 72",
+            "book": "Psalms",
+            "chapter": 72,
+            "verse_start": 1,
+            "verse_end": 20
+          }
+        ],
         "isHeader": false
       },
       {
@@ -2872,9 +3003,7 @@
           "Three member prayer: Important Notice: Prayers must be said as spelt out by the service conductor. Unnecessary repetition should be avoided. a. Prayers for spiritual power and Progress [male] b. Prayers for Victory and protection and all children [female] c. Prayers for blessing, God's favour and peace all over world [male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2914,7 +3043,15 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalms 20:1-9",
+            "book": "Psalms",
+            "chapter": 20,
+            "verse_start": 1,
+            "verse_end": 9
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3216,7 +3353,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -3277,11 +3414,17 @@
           "Eyiba [3ce] Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3303,9 +3446,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -3345,7 +3486,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 103",
+            "book": "Psalms",
+            "chapter": 103,
+            "verse_start": 1,
+            "verse_end": 22
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3355,9 +3504,7 @@
           "Prayer for thanksgiving by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -3589,7 +3736,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -3660,7 +3807,22 @@
         "type": "prayer",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          },
+          {
+            "raw": "Psalm 150",
+            "book": "Psalms",
+            "chapter": 150,
+            "verse_start": 1,
+            "verse_end": 6
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3718,11 +3880,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness O God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3734,7 +3902,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 128",
+            "book": "Psalms",
+            "chapter": 128,
+            "verse_start": 1,
+            "verse_end": 6
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3756,9 +3932,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -3798,7 +3972,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 113",
+            "book": "Psalms",
+            "chapter": 113,
+            "verse_start": 1,
+            "verse_end": 9
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3808,9 +3990,7 @@
           "Prayer for thanksgiving by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -3864,7 +4044,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Luke 2:21-39",
+            "book": "Luke",
+            "chapter": 2,
+            "verse_start": 21,
+            "verse_end": 39
+          }
+        ],
         "isHeader": false
       },
       {
@@ -3960,7 +4148,15 @@
         "type": "instruction",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Deuteronomy 28:1-14",
+            "book": "Deuteronomy",
+            "chapter": 28,
+            "verse_start": 1,
+            "verse_end": 14
+          }
+        ],
         "isHeader": false
       },
       {
@@ -4104,7 +4300,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -4187,11 +4383,17 @@
           "The service conductor must call out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 20. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 21. Wash me thoroughly from my iniquities and cleanse me from my sins. 22. For I acknowledge my transgressions and my sins are ever before me. 23. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 24. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 25. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 26. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 27. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 28. Hide thy face from my sins and blot out all my iniquities. 29. Create in me a clean heart o God and renew a right spirit within me. 30. Cast me not away from thy presence and take not thy Holy Spirit from me. 31. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 32. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 33. Deliver me from blood guiltiness O God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 34. Lord, open thou my lips and my mouths shall show forth thy praise. 35. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 36. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 37. Do good in thy pleasure unto me, build thou the walls of salvation around me. 38. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -4203,7 +4405,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -4345,9 +4555,7 @@
           "Prayer for forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -4387,7 +4595,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 118",
+            "book": "Psalms",
+            "chapter": 118,
+            "verse_start": 1,
+            "verse_end": 29
+          }
+        ],
         "isHeader": false
       },
       {
@@ -4757,9 +4973,7 @@
           "Prayer for thanksgiving"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -4783,9 +4997,7 @@
           "Three member's prayers A: Thanksgiving for his/her and for the family B: Prayer for long life, protection and peace C: Prayer for blessing, joy and progress."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5053,7 +5265,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -5206,11 +5418,24 @@
           "The service conductor must shout out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge our transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would i give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I shall dance and sing a song of praise around thy Holy altar…Amen Psalm 24 Jehovah Ramah [3c] 1. The earth is the Lord's and the fullness thereof the world and they that dwell therein. 2. For He hath founded it upon the seas and established it upon the floors. 3. Who shall ascend into the hill of the Lord? Or who shall stand in His is holy place? 4. He that hath clean hands and a pure hearth; who hath not lifted his soul to vanity, nor sworn deceitfully. 5. He shall receive the blessing from the Lord and righteousness from the God of his salvation. 6. We are the generation that seek Him that seek thy face, God of Celestial. 7. Lift up your heads o ye gates; and be lifted up O ye everlasting door; and the King of glory shall come in. 8. Who is this King of glory? The Lord strong and mighty, the Lord mighty in battle. 9. Lift up your head O ye gate; even lift them up O ye everlasting doors; and the King of glory Jehovah shall come in. 10. Who is this King of Glory: The Lord of hosts; Jesus Christ, He is the King of glory. Amen Gloria"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          },
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5220,9 +5445,7 @@
           "Prayer forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5246,9 +5469,7 @@
           "Marriage: 1. Handing over of the Bride to the groom's father and mother by the Bride's father and mother: The Bride's father and mother shall say these words before handing over the Bride ‘‘ In view of the mutual love between your son and our daughter and according to all relevant marriage rites performed in respect of our daughter………..[names], we hand over our daughter to you, as wife to your son with assurance of God' blessing on them'' [Amen] 2. Bridegroom's parents shall receive the Bride with thanks saying ‘‘we thank you for the love you have shown to us giving your daughter to our son……… [Names] as wife. We also have assurance of God's blessing on them [Amen] 3. The Bridegroom's parent shall hand over the Bride and the Groom to the representatives of the church members [a male and a female] with the following words: ‘‘Elders of the church, we hand over this Bridegroom and the Bride to you for proper care and to be guided from all worldly temptations and for Holy Wedlock of the couple with honest and sincere love and complete peace of mind to the end of their life's'' 4. The elders will then proceed to hand over the bride and groom to officiating minister with these words: ‘‘Our minister, we present this bride and groom to you for your blessing before the Lord'' 5. The officiating minister will hold the Bride's hand facing the congregation and make this pronouncement: ‘‘Behold our daughter whom we know before as a maiden but she is now ready to be joined to her husband. Is there anybody here present who is against this holy matrimony? If there be any present let such person signifies his or her hand. [This pronouncement will be made three times] If there is no opposition, then these two have become independent and an authority unto themselves without any obstacle or hindrance from man'' May God bless their union [Amen] 6. The Bridegroom will then proceed to hold the bride's left hand with his right while still facing the congregation, and recite after the officiating minister: I …………groom' name] take you………..[Bride's name] as my wedded wife, to have and to hold, to love and to cherish till death do us part, according to God's holy law, and to this I give you my truth. The Bride will likewise hold the groom on the right hand with her right hand and recite after the officiating minister: I …………bride's name] take you………..[groom's name] as my wedded wife, to have and to hold, to love and to cherish till death do us part, according to God's holy law, and to this I give you my truth. 7. The two rings which had been brought to the altar for sanctification shall be brought forward. 8. The groom shall then proceed to put the wedding ring on the bride's finger. He shall initially hold the ring while reciting the following words after the officiating minister: ‘‘with this ring I wed you, my body, I will honour you, and with my possession I will care for you in the name of Jesus Christ our Lord [Amen]. The Bride will do likewise and recite the same words as groom did. Through these proceedings, the Bestman and Chief Bridesmaid will stand behind the bride and the groom. When doing this, they shall face the Altar, after the this session, the bride and groom will go hand-in-hand to their wedding seats [sitting arrangement 1]"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "sanctification"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5332,9 +5553,7 @@
           "Administering the Holy Communion with song: I dwell in righteousness and Holy Spirit descend into our midst] 1. Officiating minister, other minister present 2. Bride and Bridegroom 3. Groom's parents, Bride's parents 4. Bestman, Chief Bride's maid and Bridal train 5. Elders of the church [male and female] 6. Interested guests"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5503,12 +5722,10 @@
           "ORDER OF SERVICE FOR LAYING FOUNDATION STONE Material requires: a. Seven sticks candle b. Incense c. Water d. Four big stones e. A bottle of perfume f. White basin What to do before the commencement of the service: a. One stone place near each of the four corners of the foundation pit b. Four candles to be lit at the each of the four corners of the foundation pit. c. The candles to be lit at the centre of the foundation site. d. Three candles to be lit round the water inside the white basin [water for sanctification] placed in front of the service conductor. f. Burning on incense. Service"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "sanctification"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -5529,11 +5746,24 @@
           "Eyiba [3ce] Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from my iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I 20. shall dance and sing a song of praise around thy Holy altar…Amen Jehovah Ramah [3ce] follows by Psalm 24 Psalm 24 1. The earth is the Lord's and the fullness thereof the world and they that dwell therein. 2. For He hath founded it upon the seas and established it upon the floors. 3. Who shall ascend into the hill of the Lord? Or who shall stand in His is holy place? 4. He that hath clean hands and a pure hearth; who hath not lifted his soul to vanity, nor sworn deceitfully. 5. He shall receive the blessing from the Lord and righteousness from the God of his salvation. 6. We are the generation that seek Him that seek thy face, God of Celestial. 7. Lift up your heads o ye gates; and be lifted up O ye everlasting door; and the King of glory shall come in. 8. Who is this King of glory? The Lord strong and mighty, the Lord mighty in battle. 9. Lift up your head O ye gate; even lift them up O ye everlasting doors; and the King of glory Jehovah shall come in. 10. Who is this King of Glory: The Lord of hosts; Jesus Christ, He is the King of glory. Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          },
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5555,9 +5785,7 @@
           "Prayer forgiveness of sins and sanctification of the land and building under construction."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5595,7 +5823,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "1 Chronicles 22:1-19",
+            "book": "1 Chronicles",
+            "chapter": 22,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5657,7 +5893,15 @@
           "fixedHymnNumber": 731
         },
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Zechariah 6:12-15",
+            "book": "Zechariah",
+            "chapter": 6,
+            "verse_start": 12,
+            "verse_end": 15
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5741,7 +5985,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -5824,11 +6068,17 @@
           "Eyiba [3ce] Psalm 51 [service conductor Psalm 51 1. Have mercy upon me, O God, according to thy loving kindness; according to the multitude of thy tender mercies blot out my transgressions. 2. Wash me thoroughly from our iniquities and cleanse me from my sins. 3. For I acknowledge my transgressions and my sins are ever before me. 4. Against Thee, Thee only have I sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold, I was sharpened in iniquity and in sin did my mothers conceive me. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make me to know wisdom. 7. Purge me with the blood of Jesus and I shall be clean. Wash me and I shall be whiter than snow. 8. Make me to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from my sins and blot out all my iniquities. 10. Create in me a clean heart o God and renew a right spirit within me. 11. Cast me not away from thy presence and take not thy Holy Spirit from me. 12. Restore unto me the joy of thy salvation and uphold me with thy free spirit. 13. Then I will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver me from blood guiltiness o God. Thou God of my salvation and my tongues shall sing aloud of thy righteousness, 15. Lord, open thou my lips and my mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would I give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto me, build thou the walls of salvation around me. 19. Then shall thou be pleased with my prayer and supplication. And now I 20. shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5850,9 +6100,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5890,9 +6138,7 @@
           "Prayer for Thanksgiving"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5906,7 +6152,22 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 121",
+            "book": "Psalms",
+            "chapter": 121,
+            "verse_start": 1,
+            "verse_end": 8
+          },
+          {
+            "raw": "Psalm 125",
+            "book": "Psalms",
+            "chapter": 125,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5942,7 +6203,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -5952,9 +6221,7 @@
           "Prayer for peace and comfort, presence of the Holy Spirit etc."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6052,7 +6319,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -6147,11 +6414,17 @@
           "Eyiba [3ce] Psalm 51 [service conductor Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we 20. shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6173,9 +6446,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6211,9 +6482,7 @@
           "Prayer for Thanksgiving"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6227,7 +6496,22 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 121",
+            "book": "Psalms",
+            "chapter": 121,
+            "verse_start": 1,
+            "verse_end": 8
+          },
+          {
+            "raw": "Psalm 125",
+            "book": "Psalms",
+            "chapter": 125,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6263,7 +6547,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6285,9 +6577,7 @@
           "Cutting of the ribbon with prayer for the presence of the Holy Spirit, sanctification, dedicated worshipers, victory, blessing and God's mercy etc, with burning of incense and sprinkling of sanctification water."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6373,11 +6663,17 @@
           "The service conductor must shout out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6399,9 +6695,7 @@
           "Prayer for forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6425,9 +6719,7 @@
           "Prayer for thanksgiving"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6451,9 +6743,7 @@
           "Three member's prayer 1. Power of sanctification, Holy Spirit and church progress [male] 2. Victory and upliftment [female] 3. Mercy of God and blessing [male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6561,9 +6851,7 @@
           "Thanksgiving"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6682,12 +6970,10 @@
           "ORDER OF SERVICE FOR BAPTISM Important Notice: 1. Participant must have completed one year as Celestial Church member before receiving the sacrament of Baptism 2. Shepherd should allow themselves to be pressurised into baptising a member that are not qualified. 3. Such member must be fully aware of the tenets of the church 4. Shepherd must have organised seminars for the new members on the word of God and the importance of Baptism. He must be able to identify fruits of the Holy Spirit in those to be baptised. 5. The Shepherd-in-charge must put into practise the teaching of the doctrines of the church 6. All Shepherds are warned against baptising a member that has not completed one year as a member of the church 7. Shepherd must be in spirit during the baptismal exercise 8. Before proceeding for baptism, the Shepherd must inspect the river or stream where baptismal exercise will take place. The stream or the river must not be too deep. 9. Only full time church worker from the rank of Assistant Evangelist upward are the only authorised ministers to carry out baptism of member 10. Female member must not put on transparent wears so as not to expose their body. Baptismal Exercise"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -6734,11 +7020,17 @@
           "Eyiba Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6748,9 +7040,7 @@
           "Prayer for forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6814,7 +7104,22 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Matthew 3:13-15",
+            "book": "Matthew",
+            "chapter": 3,
+            "verse_start": 13,
+            "verse_end": 15
+          },
+          {
+            "raw": "Acts 19:1-5",
+            "book": "Acts",
+            "chapter": 19,
+            "verse_start": 1,
+            "verse_end": 5
+          }
+        ],
         "isHeader": false
       },
       {
@@ -6983,9 +7288,7 @@
           "WASHING OF THE FEET AND HOLY COMMUNION SERVICE PASSION WEEK Note: Passion Week should be a week for sober reflection when all should wear the garment of repentance. All members [male and female] must obey the rules of sanctification. Dressing this time should be modest. Important Notice on Washing of the Feet: 1. All Shepherd, a senior member and two senior female members from each Parish all over the world to present at the washing of feet service which normally takes place on Saturday preceding the Passion Week at the International Headquarter. The service will be conducted by Pastor of Celestial Church of Christ worldwide at the mercy land. 2. All Heads/representatives in all International Headquarters of Celestial Church of Christ are to attend the service. 3. After the service, Shepherd/representatives to obtain sanctified water for use in their Parishes for washing of their members feet on Thursday [Good Friday Eve] 4. All Shepherds and International headquarters representatives are to attend Palm Sunday services which take place on the second day at International headquarter. The Rev. Pastor will administer the sacrament of Holy Communion to all. 5. After the service, Shepherds/representatives are to obtain Holy Communion items before leaving to their respective destination. 6. The sanctified water and Holy Communion items that was obtained from the International headquarter are to be used in their Parishes during Holy Communion service on Thursday [Good Friday Eve]. Lent: 1. Fasting and praying start from Monday the next day after Palm Sunday and end on Saturday. All Celestians are endeavour to pray and fast during this Holy week. 2. On Saturday Passion week, all Celestial members will congregate at the National headquarter Makoko Lagos by 8pm and by 10pm members will light a stick of candle each in procession to the cemetery singing, dancing and drumming for a special service to be conducted by the Rev. Pastor. Service of Washing of the Feet and Holy Communion:"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "sanctification"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7011,7 +7314,22 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Deuteronomy 5:1",
+            "book": "Deuteronomy",
+            "chapter": 5,
+            "verse_start": 1,
+            "verse_end": 1
+          },
+          {
+            "raw": "Psalm 130",
+            "book": "Psalms",
+            "chapter": 130,
+            "verse_start": 1,
+            "verse_end": 8
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7033,9 +7351,7 @@
           "Prayer for forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7181,11 +7497,17 @@
           "Eyiba [3ce] Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7207,9 +7529,7 @@
           "Three member's prayer a. Thanksgiving, God's mercy for all the members and Parishes [male] b. Victory over the power of darkness and for unity within the church [female c. God's Holy Spirit and blessing for all [male]"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7405,7 +7725,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -7428,9 +7748,7 @@
           "Prayer for forgiveness of sins, God's mercy for the deceased, the families and the church."
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7468,9 +7786,7 @@
           "Forgiveness of sins and God's mercy for the deceased [male]"
         ],
         "type": "instruction",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7510,7 +7826,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Ecclesiastes 3:1-9",
+            "book": "Ecclesiastes",
+            "chapter": 3,
+            "verse_start": 1,
+            "verse_end": 9
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7634,7 +7958,7 @@
         },
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -7645,7 +7969,15 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "John 11:25-26",
+            "book": "John",
+            "chapter": 11,
+            "verse_start": 25,
+            "verse_end": 26
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7657,7 +7989,15 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "John 14:1-3",
+            "book": "John",
+            "chapter": 14,
+            "verse_start": 1,
+            "verse_end": 3
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7669,7 +8009,15 @@
         "type": "hymn",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Job 19:27",
+            "book": "Job",
+            "chapter": 19,
+            "verse_start": 27,
+            "verse_end": 27
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7681,7 +8029,22 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "1 Timothy 6:7",
+            "book": "1 Timothy",
+            "chapter": 6,
+            "verse_start": 7,
+            "verse_end": 7
+          },
+          {
+            "raw": "Job 1:21",
+            "book": "Job",
+            "chapter": 1,
+            "verse_start": 21,
+            "verse_end": 21
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7705,9 +8068,7 @@
           "Prayer for forgiveness of sins and sanctification"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -7747,7 +8108,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 90",
+            "book": "Psalms",
+            "chapter": 90,
+            "verse_start": 1,
+            "verse_end": 17
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7785,7 +8154,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Revelation 14:6-13",
+            "book": "Revelation",
+            "chapter": 14,
+            "verse_start": 6,
+            "verse_end": 13
+          }
+        ],
         "isHeader": false
       },
       {
@@ -7929,7 +8306,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -8000,11 +8377,17 @@
           "Ringing of the bell three times x3 by the service conductor The congregation while bowing down their head recites these words of adoration: Holy! Holy!! Holy!! Is the Lord God of Hosts [3ce] Eyiba [3ce] Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -8016,7 +8399,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 24",
+            "book": "Psalms",
+            "chapter": 24,
+            "verse_start": 1,
+            "verse_end": 10
+          }
+        ],
         "isHeader": false
       },
       {
@@ -8026,9 +8417,7 @@
           "Prayer of mercy, sanctification and forgiveness of sins for the deceased and all present"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -8056,7 +8445,15 @@
           "category": "forgiveness_of_sins"
         },
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 90",
+            "book": "Psalms",
+            "chapter": 90,
+            "verse_start": 1,
+            "verse_end": 17
+          }
+        ],
         "isHeader": false
       },
       {
@@ -8066,9 +8463,7 @@
           "Prayer of thanksgiving on behalf of the children, family and relation of the deceased by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "thanksgiving"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -8122,7 +8517,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Ecclesiastes 3:1-9",
+            "book": "Ecclesiastes",
+            "chapter": 3,
+            "verse_start": 1,
+            "verse_end": 9
+          }
+        ],
         "isHeader": false
       },
       {
@@ -8426,7 +8829,7 @@
         "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
-        "isHeader": false
+        "isHeader": true
       },
       {
         "stepNumber": 2,
@@ -8519,11 +8922,17 @@
           "The service conductor must shout out Eyiba [3ce] and wait for the congregation to respond holy before he asks the congregation to repeat Psalm 51 after him. When reading the Psalm, service conduct should read it slowly and allow the congregations to finish repeating after him line by line before he continues with another line. Eyiba [3ce] Psalm 51 1. Have mercy upon us, o God, according to thy loving kindness; according to the multitude of thy tender mercies blot out our transgressions. 2. Wash us thoroughly from our iniquities and cleanse us from our sins. 3. For we acknowledge our transgressions and our sins are ever before us. 4. Against Thee, Thee only have sinned and done these evils in thy sight, that thou mightest be justified when thou speaketh and be clear when thou judgeth. 5. Behold we were sharpened in iniquity and in sin did our mothers conceived us. 6. Behold thou desireth truth in the inward parts and in the hidden parts. Thou shall make us to know wisdom. 7. Purge us with the blood of Jesus and we shall be clean. Wash us and we shall be whiter than snow. 8. Make us to hear the joy and gladness that the bones which thou have broken may rejoice. 9. Hide thy face from our sins and blot out all our iniquities. 10. Create in us a clean heart o God and renew a right spirit within us. 11. Cast us not away from thy presence and take not thy Holy Spirit from us. 12. Restore unto us the joy of thy salvation and uphold us with thy free spirit. 13. Then we will teach transgressor thy ways and sinners shall be converted unto thee. 14. Deliver us from blood guiltiness o God. Thou God of our salvation and our tongues shall sing aloud of thy righteousness, 15. Lord, open thou our lips and our mouths shall show forth thy praise. 16. For thou desireth not in sacrifice else would we give it. Thou desireth not in burnt offering. 17. The sacrifice acceptable to God is a broken spirit, broken and a contrite heart. O God, thou will not despise. 18. Do good in thy pleasure unto us, build thou the walls of salvation around us. 19. Then shall thou be pleased with our prayer and supplication. And now we shall dance and sing a song of praise around thy Holy altar…Amen"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "holy_spirit_or_power"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 51",
+            "book": "Psalms",
+            "chapter": 51,
+            "verse_start": 1,
+            "verse_end": 19
+          }
+        ],
         "isHeader": false
       },
       {
@@ -8545,9 +8954,7 @@
           "Prayer forgiveness of sins and sanctification by the service conductor"
         ],
         "type": "prayer",
-        "hymnSlot": {
-          "category": "forgiveness_of_sins"
-        },
+        "hymnSlot": null,
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -8585,7 +8992,15 @@
         "type": "scripture",
         "hymnSlot": null,
         "scriptureRef": null,
-        "scripture_references": [],
+        "scripture_references": [
+          {
+            "raw": "Psalm 118",
+            "book": "Psalms",
+            "chapter": 118,
+            "verse_start": 1,
+            "verse_end": 29
+          }
+        ],
         "isHeader": false
       },
       {
