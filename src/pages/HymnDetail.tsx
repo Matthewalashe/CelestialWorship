@@ -1,274 +1,429 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useHymn } from '../hooks/useHymns';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
+import type { Hymn, HymnVerse } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReaderMode } from '../hooks/useReaderMode';
 import { useWakeLock } from '../hooks/useWakeLock';
-import { BookOpen, Moon, X, Tv, ClipboardCopy, Music2, MonitorSmartphone } from 'lucide-react';
+import { useSwipe } from '../hooks/useSwipe';
+import { useFavoriteHymns, recordHymnView } from '../hooks/useFavorites';
+import { displayTitle, stanzaLabel, type HymnLanguage } from '../utils/hymnText';
+import { showToast } from '../components/Toast';
+import { BookOpen, Moon, X, Tv, Share2, Music2, MonitorSmartphone, Heart, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 
-/** Detect if a verse is a chorus based on its number or line content */
-function isChorus(verse: any): boolean {
-  const num = String(verse.number || '').toLowerCase();
-  if (num === 'cr' || num === 'chorus' || num === 'ch' || num === 'c') return true;
-  const firstEn = (verse.english_lines?.[0] || verse.englishLines?.[0] || '').toLowerCase();
-  const firstYo = (verse.yoruba_lines?.[0] || verse.yorubaLines?.[0] || '').toLowerCase();
-  if (firstEn.startsWith('chorus') || firstYo.startsWith('chorus') || firstYo.startsWith('ègbè')) return true;
-  return false;
+type LyricsView = 'yo' | 'both' | 'en';
+
+const VIEW_KEY = 'cw-hymn-view';
+const FONT_KEY = 'cw-hymn-font';
+const FONT_MIN = 16;
+const FONT_MAX = 30;
+
+function readStored<T extends string | number>(key: string, fallback: T, valid: (v: string) => boolean): T {
+  try {
+    const value = localStorage.getItem(key);
+    if (value !== null && valid(value)) return (typeof fallback === 'number' ? Number(value) : value) as T;
+  } catch {}
+  return fallback;
 }
 
-/** Get lines from a verse, handling both snake_case and camelCase */
-function getLines(verse: any, lang: 'en' | 'yo'): string[] {
-  if (lang === 'en') return verse.english_lines || verse.englishLines || [];
-  return verse.yoruba_lines || verse.yorubaLines || [];
+function store(key: string, value: string | number) {
+  try { localStorage.setItem(key, String(value)); } catch {}
 }
 
 /** Clean solfa notation — remove unnecessary spaces around colons */
 function cleanSolfa(solfa: string): string {
   return solfa
-    .replace(/\s*:\s*/g, ':')  // Remove spaces around colons
-    .replace(/:(\S)/g, ': $1') // Add single space after colon before next note
-    .replace(/:$/gm, '')       // Remove trailing colons on lines
+    .replace(/\s*:\s*/g, ':')
+    .replace(/:(\S)/g, ': $1')
+    .replace(/:$/gm, '')
     .trim();
+}
+
+/** Split a trailing "Amin"/"Amen" off the final line so it can be set on its own */
+function splitAmen(lines: string[]): { lines: string[]; amen: string | null } {
+  if (lines.length === 0) return { lines, amen: null };
+  const last = lines[lines.length - 1];
+  const match = last.match(/^(.*?)[\s,.;]*\b(Amin|Amen)\.?$/i);
+  if (!match) return { lines, amen: null };
+  const rest = match[1].trim();
+  return {
+    lines: rest ? [...lines.slice(0, -1), rest] : lines.slice(0, -1),
+    amen: match[2][0].toUpperCase() + match[2].slice(1).toLowerCase(),
+  };
+}
+
+function StanzaLines({ lines, lang, muted, chorus }: { lines: string[]; lang: HymnLanguage; muted?: boolean; chorus?: boolean }) {
+  return (
+    <div lang={lang} className="space-y-1">
+      {lines.map((line, i) => (
+        // Hanging indent: a line that wraps on a narrow screen continues indented
+        <p
+          key={i}
+          className={`pl-6 -indent-6 ${chorus ? 'italic' : ''}`}
+          style={{ color: muted ? 'var(--color-text-secondary)' : 'var(--color-text-primary)' }}
+        >
+          {line}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function Stanza({
+  verse, view, isLast, onDisplay,
+}: {
+  verse: HymnVerse;
+  view: LyricsView;
+  isLast: boolean;
+  onDisplay: () => void;
+}) {
+  const chorus = verse.kind === 'chorus';
+  const yo = isLast ? splitAmen(verse.yorubaLines) : { lines: verse.yorubaLines, amen: null };
+  const en = isLast ? splitAmen(verse.englishLines) : { lines: verse.englishLines, amen: null };
+  const showYo = view !== 'en' && yo.lines.length > 0;
+  const showEn = view !== 'yo' && en.lines.length > 0;
+  // A stanza missing in the chosen language falls back to the other one
+  const fallbackYo = view === 'en' && !showEn && yo.lines.length > 0;
+  const fallbackEn = view === 'yo' && !showYo && en.lines.length > 0;
+  const amen = (showYo || fallbackYo ? yo.amen : null) || (showEn || fallbackEn ? en.amen : null);
+
+  return (
+    <section
+      className="group relative grid grid-cols-[2.25rem_1fr] gap-x-2"
+      aria-label={stanzaLabel(verse)}
+    >
+      {/* Gutter: verse number, or a chorus marker */}
+      <div className="pt-[0.2em] text-right select-none">
+        {chorus ? (
+          <span className="text-[0.6em] font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent-gold)' }}>
+            {view === 'en' ? 'Cho.' : 'Ègbè'}
+          </span>
+        ) : (
+          <span className="font-[Outfit] font-bold text-[0.8em]" style={{ color: 'var(--color-accent-brand)' }}>
+            {verse.number}
+          </span>
+        )}
+      </div>
+
+      <div
+        className={chorus ? 'pl-4 border-l-2' : ''}
+        style={chorus ? { borderColor: 'color-mix(in srgb, var(--color-accent-gold) 50%, transparent)' } : undefined}
+      >
+        {verse.repeat ? (
+          <p className="text-[0.75em] italic" style={{ color: 'var(--color-text-muted)' }}>Repeat chorus</p>
+        ) : (
+          <div className={view === 'both' && showYo && showEn ? 'grid gap-3 md:grid-cols-2 md:gap-8' : ''}>
+            {(showYo || fallbackYo) && <StanzaLines lines={yo.lines} lang="yo" chorus={chorus} />}
+            {(showEn || fallbackEn) && (
+              <div className={view === 'both' && showYo ? 'text-[0.9em] md:text-[1em]' : ''}>
+                <StanzaLines lines={en.lines} lang="en" chorus={chorus} muted={view === 'both' && showYo} />
+              </div>
+            )}
+          </div>
+        )}
+        {amen && (
+          <p className="mt-2 pl-6 text-[0.8em] font-semibold tracking-[0.2em] uppercase" style={{ color: 'var(--color-accent-gold)' }}>
+            {amen}
+          </p>
+        )}
+      </div>
+
+      {/* Send this stanza to the projector (operators) */}
+      <button
+        onClick={onDisplay}
+        className="absolute -top-1 right-0 p-1.5 rounded-lg transition-opacity opacity-60 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus:opacity-100"
+        style={{ color: 'var(--color-text-muted)' }}
+        aria-label={`Show ${stanzaLabel(verse)} on the display`}
+        title="Show on display"
+      >
+        <Tv size={16} />
+      </button>
+    </section>
+  );
 }
 
 export default function HymnDetail() {
   usePageView('hymn_detail');
   const { number } = useParams();
   const navigate = useNavigate();
-  const { hymn, loading } = useHymn(Number(number));
+  const { hymn, prevNumber, nextNumber, loading } = useHymn(Number(number));
   const { showHymnVerse } = useDisplayController();
-  
-  usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${hymn.englishTitle || hymn.yorubaTitle}` : undefined);
-  
+  const { isFavorite, toggleFavorite } = useFavoriteHymns();
+
+  const [view, setViewState] = useState<LyricsView>(() =>
+    readStored<LyricsView>(VIEW_KEY, 'yo', v => v === 'yo' || v === 'en' || v === 'both'));
+  const [fontSize, setFontSizeState] = useState<number>(() =>
+    readStored<number>(FONT_KEY, 20, v => Number(v) >= FONT_MIN && Number(v) <= FONT_MAX));
+  const [showSolfa, setShowSolfa] = useState(false);
+
+  const setView = (v: LyricsView) => { setViewState(v); store(VIEW_KEY, v); };
+  const changeFont = (delta: number) => {
+    setFontSizeState(size => {
+      const next = Math.min(FONT_MAX, Math.max(FONT_MIN, size + delta));
+      store(FONT_KEY, next);
+      return next;
+    });
+  };
+
+  const titleLang: HymnLanguage = view === 'en' ? 'en' : 'yo';
+  usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${displayTitle(hymn, titleLang)}` : undefined);
+
   const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
   const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
-  const [activeTab, setActiveTab] = useState<'English' | 'Yoruba' | 'Side-by-Side'>('English');
-  const [showSolfa, setShowSolfa] = useState(false);
+  useEffect(() => {
+    if (hymn) recordHymnView(hymn.number);
+    setShowSolfa(false);
+  }, [hymn]);
+
+  const goTo = useCallback((n: number | null) => {
+    if (n !== null) navigate(`/hymns/${n}`, { replace: true });
+  }, [navigate]);
+
+  // Arrow keys move between hymns on desktop
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowLeft') goTo(prevNumber);
+      if (e.key === 'ArrowRight') goTo(nextNumber);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [goTo, prevNumber, nextNumber]);
+
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: () => goTo(nextNumber),
+    onSwipeRight: () => goTo(prevNumber),
+    threshold: 80,
+  });
 
   if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">Loading...</div>;
-  if (!hymn) return <div className="p-4 text-center text-red-400">Hymn not found</div>;
+  if (!hymn) {
+    return (
+      <div className="p-8 text-center">
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>Hymn {number} isn't in the hymnal.</p>
+        <Link to="/hymns" className="btn-primary px-6 py-2 rounded-xl text-sm">Browse hymns</Link>
+      </div>
+    );
+  }
 
-  const verses = hymn.verses || [];
-  const totalVerses = verses.length;
-  const solfa = hymn.solfaNotation || null;
+  const verses = hymn.verses;
+  const favorite = isFavorite(hymn.number);
+  const mainTitle = displayTitle(hymn, titleLang);
+  const otherTitle = displayTitle(hymn, titleLang === 'yo' ? 'en' : 'yo');
 
-  const handleShare = () => {
-    const text = `Hymn ${hymn.number} - ${hymn.englishTitle || hymn.yorubaTitle}\n\n` + 
-      verses.map((v: any) => {
-        const label = isChorus(v) ? 'Chorus' : `Verse ${v.number}`;
-        return `${label}\n${getLines(v, 'en').join('\n') || getLines(v, 'yo').join('\n')}`;
-      }).join('\n\n');
-    navigator.clipboard.writeText(text);
-    alert('Lyrics copied to clipboard!');
+  const shareText = (h: Hymn) => {
+    const lang: HymnLanguage = view === 'en' ? 'en' : 'yo';
+    const body = h.verses.map(v => {
+      const lines = lang === 'en' ? v.englishLines : v.yorubaLines;
+      return `${stanzaLabel(v, lang)}\n${lines.join('\n')}`;
+    }).join('\n\n');
+    return `CCC Hymn ${h.number} — ${displayTitle(h, lang)}\n\n${body}`;
+  };
+
+  const handleShare = async () => {
+    const text = shareText(hymn);
+    const url = `${window.location.origin}/hymns/${hymn.number}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: `CCC Hymn ${hymn.number}`, text, url }); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}\n\n${url}`);
+      showToast('Lyrics copied');
+    } catch {
+      showToast("Couldn't copy the lyrics");
+    }
   };
 
   const handleSendToDisplay = (verseIndex: number) => {
     const verse = verses[verseIndex];
     if (!verse) return;
-    
-    // Send only the selected language
-    let content: string;
-    if (activeTab === 'Yoruba') {
-      content = getLines(verse, 'yo').join('\n');
-    } else if (activeTab === 'Side-by-Side') {
-      const en = getLines(verse, 'en').join('\n');
-      const yo = getLines(verse, 'yo').join('\n');
-      content = en && yo ? `${en}\n\n${yo}` : en || yo;
-    } else {
-      content = getLines(verse, 'en').join('\n') || getLines(verse, 'yo').join('\n');
-    }
-
-    const title = hymn.englishTitle || hymn.yorubaTitle || `Hymn ${hymn.number}`;
-    showHymnVerse(title, content, hymn.number, verseIndex + 1, totalVerses);
+    const yo = verse.yorubaLines.join('\n');
+    const en = verse.englishLines.join('\n');
+    const content = view === 'yo' ? (yo || en) : view === 'en' ? (en || yo) : [yo, en].filter(Boolean).join('\n\n');
+    showHymnVerse(displayTitle(hymn, titleLang), content, hymn.number, verseIndex + 1, verses.length);
+    showToast(`${stanzaLabel(verse)} sent to display`);
   };
 
+  const iconButton = 'h-9 min-w-9 px-2 rounded-lg inline-flex items-center justify-center gap-1 text-xs font-medium transition-colors';
+
   return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className="p-4 max-w-4xl mx-auto pb-32">
-      {/* Header Bar */}
-      <div className="flex items-center justify-between mb-6">
-        <button 
-          onClick={() => navigate(-1)}
-          className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer inline-flex items-center gap-1"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back
-        </button>
+    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className="p-4 max-w-3xl mx-auto pb-36" {...swipeHandlers}>
+      {/* Toolbar */}
+      <div className="flex items-center justify-between gap-2 mb-6">
         <button
-          onClick={cycleReaderMode}
-          className="px-3 py-1.5 rounded-lg text-xs font-medium"
-          style={{
-            backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
-            color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-            border: '1px solid var(--color-border)',
-          }}
+          onClick={() => navigate(-1)}
+          className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors inline-flex items-center gap-1 text-sm"
         >
-          {readerMode === 'off' ? <><BookOpen size={14} className="inline mr-1" /> Reader</> : readerMode === 'paper' ? <><Moon size={14} className="inline mr-1" /> Dim</> : <><X size={14} className="inline mr-1" /> Exit</>}
+          <ChevronLeft size={18} /> Back
         </button>
-        {wakeLockSupported && (
+        <div className="flex items-center gap-1.5">
           <button
-            onClick={toggleWakeLock}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${wakeLockActive ? 'text-[var(--color-accent-gold)]' : ''}`}
-            style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
-            aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
-            aria-pressed={wakeLockActive}
+            onClick={() => toggleFavorite(hymn.number)}
+            className={iconButton}
+            style={{ backgroundColor: 'var(--color-bg-card)', color: favorite ? '#EF4444' : 'var(--color-text-secondary)' }}
+            aria-pressed={favorite}
+            aria-label={favorite ? 'Remove from favourites' : 'Add to favourites'}
           >
-            <MonitorSmartphone size={16} className="inline mr-1" />
-            {wakeLockActive ? 'Screen On' : 'Keep On'}
+            <Heart size={16} fill={favorite ? 'currentColor' : 'none'} />
           </button>
-        )}
+          <button onClick={() => changeFont(-2)} className={iconButton} style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }} aria-label="Smaller text">A−</button>
+          <button onClick={() => changeFont(2)} className={iconButton} style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }} aria-label="Larger text">A+</button>
+          <button
+            onClick={cycleReaderMode}
+            className={iconButton}
+            style={{
+              backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
+              color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
+            }}
+            aria-label="Reading mode"
+            title={readerMode === 'off' ? 'Paper reading mode' : readerMode === 'paper' ? 'Dim paper' : 'Exit reading mode'}
+          >
+            {readerMode === 'off' ? <BookOpen size={16} /> : readerMode === 'paper' ? <Moon size={16} /> : <X size={16} />}
+          </button>
+          {wakeLockSupported && (
+            <button
+              onClick={toggleWakeLock}
+              className={iconButton}
+              style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
+              aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
+              aria-pressed={wakeLockActive}
+              title={wakeLockActive ? 'Screen will stay on' : 'Keep screen on'}
+            >
+              <MonitorSmartphone size={16} />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-[var(--color-accent-gold)] to-[var(--color-accent-gold)]/60 text-[var(--color-bg-primary)] text-3xl font-black font-outfit mb-4 shadow-lg shadow-[var(--color-accent-gold)]/20">
+      {/* Heading */}
+      <header className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl text-2xl font-black font-[Outfit] mb-3"
+             style={{ backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' }}>
           {hymn.number}
         </div>
-        {hymn.englishTitle && <h2 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] font-outfit mb-1">{hymn.englishTitle}</h2>}
-        {hymn.yorubaTitle && <h3 className="text-lg font-medium text-[var(--color-text-secondary)] font-outfit italic" lang="yo">{hymn.yorubaTitle}</h3>}
-        
-        <div className="flex flex-wrap justify-center gap-2 mt-4">
-          {hymn.categories?.map((cat: string) => {
-            const color = (CATEGORY_COLORS as any)[cat] || '#94A3B8';
+        <h1 className="text-xl md:text-2xl font-bold font-[Outfit] leading-snug" style={{ color: 'var(--color-text-primary)' }}
+            lang={titleLang}>
+          {mainTitle}
+        </h1>
+        {view === 'both' && otherTitle !== mainTitle && (
+          <p className="text-sm mt-1 italic" style={{ color: 'var(--color-text-secondary)' }}>{otherTitle}</p>
+        )}
+        <div className="flex flex-wrap justify-center gap-2 mt-3">
+          {hymn.section && (
+            <Link
+              to={`/hymns?section=${hymn.section.id}`}
+              className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border"
+              style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}
+            >
+              {hymn.section.english}
+            </Link>
+          )}
+          {hymn.categories.map(cat => {
+            const color = CATEGORY_COLORS[cat] || '#94A3B8';
             return (
-              <span 
-                key={cat} 
+              <Link
+                key={cat}
+                to={`/hymns?category=${cat}`}
                 className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border"
                 style={{ color, borderColor: `${color}55`, backgroundColor: `${color}11` }}
               >
-                {((CATEGORY_LABELS as any)[cat] as string) || cat}
-              </span>
+                {CATEGORY_LABELS[cat] || cat}
+              </Link>
             );
           })}
         </div>
-      </div>
+      </header>
 
-      {/* Solfa Notation */}
-      {solfa && (
-        <div className="mb-8">
-          <button 
-            onClick={() => setShowSolfa(!showSolfa)}
-            className="w-full bg-[var(--color-bg-card)]/50 border border-[var(--color-border)] py-2.5 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent-brand)] hover:border-[var(--color-accent-brand)]/30 transition-colors cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Music2 size={18} />
-            {showSolfa ? 'Hide Solfa' : 'Show Solfa Notation'}
-          </button>
-          {showSolfa && (
-            <div className="p-5 bg-[var(--color-bg-card)] rounded-xl mt-2 border border-[var(--color-accent-brand)]/20 font-mono text-[13px] leading-relaxed text-[var(--color-accent-brand)] overflow-x-auto">
-              {cleanSolfa(solfa).split('\n').map((line: string, i: number) => (
-                <div key={i} className="min-h-[1.25rem]">{line}</div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Language Toggle */}
-      <div className="flex justify-center mb-8">
-        <div className="flex bg-[var(--color-bg-card)] rounded-xl p-1 border border-[var(--color-border)] shadow-sm">
-          {['English', 'Side-by-Side', 'Yoruba'].map(tab => (
+      {/* Language */}
+      <div className="flex justify-center mb-6">
+        <div className="flex rounded-xl p-1 border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+             role="group" aria-label="Lyrics language">
+          {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab as any)}
-              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer ${
-                activeTab === tab 
-                  ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow-md' 
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-              }`}
+              key={key}
+              onClick={() => setView(key)}
+              aria-pressed={view === key}
+              className="px-4 py-1.5 text-sm font-semibold rounded-lg transition-all"
+              style={view === key
+                ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
+                : { color: 'var(--color-text-secondary)' }}
             >
-              {tab}
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Verses / Stanzas */}
-      <div className="space-y-6">
-        {verses.map((verse: any, idx: number) => {
-          const chorus = isChorus(verse);
-          const enLines = getLines(verse, 'en');
-          const yoLines = getLines(verse, 'yo');
-          const stanzaLabel = chorus ? 'Chorus' : `${verse.number}`;
-
-          return (
-            <div 
-              key={idx} 
-              className={`relative group rounded-2xl overflow-hidden transition-all ${
-                chorus 
-                  ? 'bg-[var(--color-accent-gold)]/5 pl-5 pr-5 py-5'
-                  : 'card p-5 md:p-6 bg-[var(--color-bg-card)]/30 border border-[var(--color-border)]/50'
-              }`}
-            >
-              {/* Stanza label */}
-              <div className="flex items-center gap-3 mb-3">
-                <span className={`inline-flex items-center justify-center font-bold font-outfit rounded-lg text-sm ${
-                  chorus
-                    ? 'bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] px-3 py-1'
-                    : 'bg-[var(--color-accent-brand)]/10 text-[var(--color-accent-brand)] w-8 h-8'
-                }`}>
-                  {stanzaLabel}
-                </span>
-                {chorus && <span className="text-xs text-[var(--color-accent-gold)]/60 uppercase tracking-widest font-bold">Chorus</span>}
-              </div>
-
-              {/* Lyrics */}
-              <div className={`${activeTab === 'Side-by-Side' ? 'grid md:grid-cols-2 gap-6' : ''}`}>
-                {(activeTab === 'English' || activeTab === 'Side-by-Side') && enLines.length > 0 && (
-                  <div className="flex flex-col gap-0.5">
-                    {enLines.map((line: string, i: number) => (
-                      <p key={i} className={`text-lg md:text-xl leading-snug text-[var(--color-text-primary)] ${
-                        chorus ? 'italic text-[var(--color-accent-gold)]/90' : ''
-                      }`}>
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                )}
-                {(activeTab === 'Yoruba' || activeTab === 'Side-by-Side') && yoLines.length > 0 && (
-                  <div className={`flex flex-col gap-0.5 ${activeTab === 'Side-by-Side' ? 'md:border-l md:border-[var(--color-border)]/30 md:pl-6' : ''}`} lang="yo">
-                    {yoLines.map((line: string, i: number) => (
-                      <p key={i} className={`text-lg md:text-xl leading-snug ${
-                        chorus 
-                          ? 'italic text-[var(--color-accent-gold)]/90' 
-                          : 'text-[var(--color-text-primary)]'
-                      } ${activeTab !== 'Side-by-Side' ? '' : 'text-[var(--color-text-secondary)]'}`}>
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Send to display button */}
-              <div className="absolute top-3 right-3 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus-within:opacity-100 transition-opacity z-[5]">
-                <button 
-                  onClick={() => handleSendToDisplay(idx)}
-                  className="bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg hover:scale-105 transition-transform cursor-pointer"
-                >
-                  <><Tv size={14} className="inline mr-1" /> Display</>
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="fixed bottom-[68px] md:bottom-0 left-0 md:left-64 right-0 p-3 md:p-4 bg-[var(--color-bg-primary)]/80 backdrop-blur-xl border-t border-[var(--color-border)] z-10">
-        <div className="max-w-4xl mx-auto flex justify-end gap-3">
-          <button 
-            onClick={handleShare}
-            className="px-5 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text-primary)] font-bold hover:bg-[var(--color-bg-card)] transition-colors cursor-pointer text-sm"
+      {/* Solfa */}
+      {hymn.solfaNotation && (
+        <div className="mb-6">
+          <button
+            onClick={() => setShowSolfa(s => !s)}
+            className="w-full border py-2 rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+            aria-expanded={showSolfa}
           >
-            <><ClipboardCopy size={14} className="inline mr-1" /> Copy</>
+            <Music2 size={16} /> {showSolfa ? 'Hide solfa' : 'Show solfa'}
           </button>
-          <button 
-            onClick={() => handleSendToDisplay(0)}
-            className="px-5 py-3 rounded-xl bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] font-bold shadow-lg shadow-[var(--color-accent-brand)]/20 hover:shadow-[var(--color-accent-brand)]/40 transition-all flex items-center gap-2 cursor-pointer text-sm"
+          {showSolfa && (
+            <pre className="p-4 rounded-xl mt-2 border font-mono text-[13px] leading-relaxed overflow-x-auto"
+                 style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
+              {cleanSolfa(hymn.solfaNotation)}
+            </pre>
+          )}
+        </div>
+      )}
+
+      {hymn.needsVerseSplitReview && (
+        <p className="flex items-start gap-2 text-xs mb-6 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
+          <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+          The printed layout of this hymn was irregular, so its verses may not line up exactly between Yorùbá and English.
+        </p>
+      )}
+
+      {/* Lyrics */}
+      <article className="space-y-7 leading-[1.6]" style={{ fontSize: `${fontSize}px` }}>
+        {verses.map((verse, idx) => (
+          <Stanza
+            key={idx}
+            verse={verse}
+            view={view}
+            isLast={idx === verses.length - 1}
+            onDisplay={() => handleSendToDisplay(idx)}
+          />
+        ))}
+      </article>
+
+      {/* Bottom bar: previous / share / next */}
+      <div className="fixed bottom-[68px] md:bottom-0 left-0 md:left-64 right-0 px-4 py-2.5 backdrop-blur-xl border-t z-10"
+           style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg-primary) 85%, transparent)', borderColor: 'var(--color-border)' }}>
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
+          <button
+            onClick={() => goTo(prevNumber)}
+            disabled={prevNumber === null}
+            className="h-10 px-3 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-30"
+            style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}
           >
-            <><Tv size={14} className="inline mr-1" /> Send Verse 1</>
+            <ChevronLeft size={16} /> {prevNumber ?? ''}
+          </button>
+          <button
+            onClick={handleShare}
+            className="h-10 px-5 rounded-xl text-sm font-bold inline-flex items-center gap-2"
+            style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}
+          >
+            <Share2 size={16} /> Share
+          </button>
+          <button
+            onClick={() => goTo(nextNumber)}
+            disabled={nextNumber === null}
+            className="h-10 px-3 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-30"
+            style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}
+          >
+            {nextNumber ?? ''} <ChevronRight size={16} />
           </button>
         </div>
       </div>

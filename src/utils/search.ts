@@ -1,12 +1,43 @@
 import { Hymn, HymnCategory } from '../types';
 
 /**
+ * Lowercase and strip Yoruba tone marks/under-dots and apostrophes, so "kawa" finds "K’awa"
+ * and "ese" finds "ẹsẹ̀".
+ */
+export function normalizeForSearch(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[’‘'`´]/g, '')
+    .toLowerCase();
+}
+
+/**
  * Simple fuzzy search — matches if all query words appear somewhere in the target string.
  */
 function fuzzyMatch(query: string, target: string): boolean {
-  const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-  const lowerTarget = target.toLowerCase();
-  return words.every(word => lowerTarget.includes(word));
+  const words = normalizeForSearch(query).split(/\s+/).filter(Boolean);
+  const normalizedTarget = normalizeForSearch(target);
+  return words.every(word => normalizedTarget.includes(word));
+}
+
+const hymnSearchText = new WeakMap<Hymn, string>();
+
+/** Searchable text for a hymn, built once per hymn */
+function searchableHymn(h: Hymn): string {
+  let text = hymnSearchText.get(h);
+  if (text === undefined) {
+    text = normalizeForSearch([
+      String(h.number),
+      h.englishTitle || '',
+      h.yorubaTitle || '',
+      h.section ? `${h.section.english} ${h.section.yoruba}` : '',
+      h.englishLyrics || '',
+      h.yorubaLyrics || '',
+    ].join(' '));
+    hymnSearchText.set(h, text);
+  }
+  return text;
 }
 
 /**
@@ -24,15 +55,10 @@ export function searchHymns(hymns: Hymn[], query: string): Hymn[] {
     // Otherwise fall through to text search
   }
 
+  const words = normalizeForSearch(trimmed).split(/\s+/).filter(Boolean);
   return hymns.filter(h => {
-    const searchable = [
-      String(h.number),
-      h.englishTitle || '',
-      h.yorubaTitle || '',
-      h.englishLyrics || '',
-      h.yorubaLyrics || '',
-    ].join(' ');
-    return fuzzyMatch(trimmed, searchable);
+    const searchable = searchableHymn(h);
+    return words.every(word => searchable.includes(word));
   });
 }
 

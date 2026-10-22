@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { DisplayState } from '../types';
 
 const CHANNEL_NAME = 'ccc-live-display';
+const LAST_STATE_KEY = 'cw-display-last-state';
 
 /** Hymn list handed from the Hymn Selector to the Operator page */
 export const OPERATOR_QUEUE_KEY = 'cw-queue';
@@ -37,6 +38,8 @@ export function useDisplayController() {
   const sendToDisplay = useCallback(
     (state: DisplayState) => {
       channel.postMessage(state);
+      // Remembered so a display window opened (or refreshed) later shows what is live
+      try { localStorage.setItem(LAST_STATE_KEY, JSON.stringify(state)); } catch {}
     },
     [channel]
   );
@@ -103,9 +106,12 @@ export function useDisplayController() {
  * Hook for the DISPLAY side — receives and renders display commands.
  */
 export function useDisplayReceiver() {
-  const [displayState, setDisplayState] = useState<DisplayState>({
-    type: 'logo',
-    content: '',
+  const [displayState, setDisplayState] = useState<DisplayState>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(LAST_STATE_KEY) || 'null');
+      if (saved && typeof saved.type === 'string') return saved;
+    } catch {}
+    return { type: 'logo', content: '' };
   });
 
   useEffect(() => {

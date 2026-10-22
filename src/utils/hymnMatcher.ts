@@ -1,4 +1,21 @@
 import { Hymn, HymnCategory, ServiceOrder, HymnSlot } from '../types';
+import { normalizeForSearch } from './search';
+import { getLiturgicalSeason } from './liturgical';
+import { toISODate } from './dateUtils';
+
+/**
+ * Hymn Selector scoring.
+ *
+ * Each candidate gets an explainable score made of:
+ *   slot fit      +50  hymn is tagged with the slot's category (+5 if it is its main tag)
+ *   occasion      +25  hymn is in a hymnal section that suits this service or the season
+ *   themes        0–25 themes shared with the day's readings (forgiveness, healing, …)
+ *   echoes        0–20 distinctive words shared with the readings (TF-IDF, length-normalised)
+ *   recency       −60/−35/−12 used in the last 7 / 28 / 90 days
+ *   variety       0–4  stable per date, so the same date gives the same plan but weeks differ
+ *
+ * planHymns() fills every slot together so no hymn is used twice in one service.
+ */
 
 export interface ScoredHymnSuggestion {
   hymnNumber: number;
@@ -9,28 +26,71 @@ export interface ScoredHymnSuggestion {
   isRecentlyUsed?: boolean;
 }
 
-export function getRecentlyUsedHymns(): number[] {
-  try {
-    const data = localStorage.getItem('cw-recent-hymns');
-    if (data) {
-      return JSON.parse(data);
-    }
-  } catch (e) {
-    console.error('Failed to read recent hymns', e);
-  }
-  return [];
+export interface MatchContext {
+  /** Date the service will be held (YYYY-MM-DD) — drives season, recency and variety */
+  date?: string;
+  serviceId?: string;
+  lessonRefs?: { book: string; chapter: number }[];
+  /** Full text of the day's readings (English) */
+  lessonText?: string;
 }
 
-export function recordHymnUsage(hymnNumbers: number[]): void {
+// ── Usage history ────────────────────────────────────────────
+
+const USAGE_KEY = 'cw-recent-hymns';
+
+interface HymnUsage {
+  number: number;
+  date: string; // YYYY-MM-DD
+}
+
+export function getHymnUsage(): HymnUsage[] {
   try {
-    const recent = getRecentlyUsedHymns();
-    // Prepend new ones, keep unique, limit to let's say last 50
-    const updated = [...new Set([...hymnNumbers, ...recent])].slice(0, 50);
-    localStorage.setItem('cw-recent-hymns', JSON.stringify(updated));
-  } catch (e) {
-    console.error('Failed to save recent hymns', e);
+    const data = JSON.parse(localStorage.getItem(USAGE_KEY) || '[]');
+    if (!Array.isArray(data)) return [];
+    // Older versions stored bare numbers with no date: treat them as used two weeks ago
+    const legacyDate = toISODate(new Date(Date.now() - 14 * 86_400_000));
+    return data
+      .map((entry: unknown) =>
+        typeof entry === 'number' ? { number: entry, date: legacyDate } : (entry as HymnUsage))
+      .filter((u): u is HymnUsage => !!u && typeof u.number === 'number' && typeof u.date === 'string');
+  } catch {
+    return [];
   }
 }
+
+/** @deprecated kept for callers that only need numbers */
+export function getRecentlyUsedHymns(): number[] {
+  return getHymnUsage().map(u => u.number);
+}
+
+export function recordHymnUsage(hymnNumbers: number[], date: string = toISODate(new Date())): void {
+  try {
+    const others = getHymnUsage().filter(u => !(hymnNumbers.includes(u.number) && u.date === date));
+    const updated = [...hymnNumbers.map(number => ({ number, date })), ...others].slice(0, 300);
+    localStorage.setItem(USAGE_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save hymn usage', e);
+  }
+}
+
+function daysBetween(a: string, b: string): number {
+  return Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86_400_000);
+}
+
+/** Most recent use of each hymn before the given date, in days */
+function lastUsedDaysAgo(usage: HymnUsage[], date: string): Map<number, number> {
+  const result = new Map<number, number>();
+  for (const u of usage) {
+    const ago = daysBetween(u.date, date);
+    if (ago < 0) continue; // planned for a later date
+    const prev = result.get(u.number);
+    if (prev === undefined || ago < prev) result.set(u.number, ago);
+  }
+  return result;
+}
+
+// ── Slots ────────────────────────────────────────────────────
 
 /**
  * Extract selectable hymn slots from a service.
@@ -53,10 +113,8 @@ export function extractHymnSlots(service: ServiceOrder): {
       slot: step.hymnSlot!,
     }));
 
-  // Fixed hymns are constant ceremonial songs — not user-selectable
   const selectableSlots = rawSlots.filter(({ slot }) => !slot.fixedHymnNumber);
 
-  // Deduplicate by category — keep only the first occurrence of each category
   const seenCategories = new Set<string>();
   const deduped = selectableSlots.filter(({ slot }) => {
     if (!slot.category) return true;
@@ -65,283 +123,368 @@ export function extractHymnSlots(service: ServiceOrder): {
     return true;
   });
 
-  // Cap at 7 selectable slots per CCC liturgy rules
   return deduped.slice(0, 7);
 }
 
-/** Keywords extracted from common Bible themes for matching hymns to lessons */
-const SCRIPTURE_THEME_KEYWORDS: Record<string, HymnCategory[]> = {
-  // === ENGLISH KEYWORDS ===
-  'forgive': ['forgiveness_of_sins'],
-  'sin': ['forgiveness_of_sins'],
-  'mercy': ['mercy_or_blessing', 'forgiveness_of_sins'],
-  'pardon': ['forgiveness_of_sins'],
-  'repent': ['forgiveness_of_sins'],
-  'transgression': ['forgiveness_of_sins'],
-  'iniquity': ['forgiveness_of_sins'],
-  'cleanse': ['forgiveness_of_sins', 'sanctification'],
-  'holy spirit': ['holy_spirit_or_power'],
-  'spirit': ['holy_spirit_or_power'],
-  'power': ['holy_spirit_or_power'],
-  'anoint': ['holy_spirit_or_power'],
-  'fire': ['holy_spirit_or_power'],
-  'comforter': ['holy_spirit_or_power'],
-  'pentecost': ['holy_spirit_or_power'],
-  'tongues': ['holy_spirit_or_power'],
-  'heal': ['healing'],
-  'sick': ['healing'],
-  'restore': ['healing'],
-  'physician': ['healing'],
-  'disease': ['healing'],
-  'praise': ['praise_or_glory'],
-  'glory': ['praise_or_glory', 'christ_the_king'],
-  'hallelujah': ['praise_or_glory'],
-  'worship': ['praise_or_glory'],
-  'magnify': ['praise_or_glory'],
-  'exalt': ['praise_or_glory'],
-  'king': ['christ_the_king'],
-  'throne': ['christ_the_king'],
-  'reign': ['christ_the_king'],
-  'majesty': ['christ_the_king'],
-  'crown': ['christ_the_king'],
-  'sovereign': ['christ_the_king'],
-  'faith': ['faith_and_trust'],
-  'trust': ['faith_and_trust'],
-  'believe': ['faith_and_trust'],
-  'hope': ['faith_and_trust'],
-  'courage': ['faith_and_trust'],
-  'strength': ['faith_and_trust'],
-  'thank': ['thanksgiving'],
-  'grateful': ['thanksgiving'],
-  'bless': ['mercy_or_blessing', 'thanksgiving'],
-  'grace': ['mercy_or_blessing'],
-  'favour': ['mercy_or_blessing'],
-  'compassion': ['mercy_or_blessing'],
-  'light': ['lighting_of_candles'],
-  'candle': ['lighting_of_candles'],
-  'lamp': ['lighting_of_candles'],
-  'sanctif': ['sanctification'],
-  'holy': ['sanctification'],
-  'pure': ['sanctification'],
-  'clean': ['sanctification', 'forgiveness_of_sins'],
-  'righteous': ['sanctification'],
-  'preach': ['evangelism'],
-  'gospel': ['evangelism'],
-  'salvation': ['evangelism'],
-  'save': ['evangelism'],
-  'witness': ['evangelism'],
-  'mission': ['evangelism'],
-  'proclaim': ['evangelism'],
-  'cross': ['evangelism', 'forgiveness_of_sins'],
-  'calvary': ['evangelism', 'forgiveness_of_sins'],
-  'redeem': ['evangelism', 'forgiveness_of_sins'],
-  'blood': ['forgiveness_of_sins'],
-  'lamb': ['forgiveness_of_sins', 'praise_or_glory'],
-  'shepherd': ['faith_and_trust'],
-  'refuge': ['faith_and_trust'],
-  'rock': ['faith_and_trust'],
-  'fortress': ['faith_and_trust'],
+// ── Occasion ─────────────────────────────────────────────────
 
-  // === YORUBA KEYWORDS ===
-  'ẹṣẹ': ['forgiveness_of_sins'],
-  'ese': ['forgiveness_of_sins'],
-  'idariji': ['forgiveness_of_sins'],
-  'aanu': ['mercy_or_blessing', 'forgiveness_of_sins'],
-  'emi mimo': ['holy_spirit_or_power'],
-  'agbara': ['holy_spirit_or_power'],
-  'iwosan': ['healing'],
-  'aisan': ['healing'],
-  'iyin': ['praise_or_glory'],
-  'ogo': ['praise_or_glory'],
-  'oba': ['christ_the_king'],
-  'igbagbo': ['faith_and_trust'],
-  'ireti': ['faith_and_trust'],
-  'ope': ['thanksgiving'],
-  'idupe': ['thanksgiving'],
-  'ibukun': ['mercy_or_blessing'],
-  'oore': ['mercy_or_blessing'],
-  'mimo': ['sanctification'],
-  'ihinrere': ['evangelism'],
-  'igbala': ['evangelism'],
-  'ina': ['lighting_of_candles', 'holy_spirit_or_power'],
-  'imole': ['lighting_of_candles'],
-  'agutan': ['forgiveness_of_sins', 'praise_or_glory'],
-  'oluwa': ['praise_or_glory', 'faith_and_trust'],
-  'olorun': ['praise_or_glory'],
-  'olugbala': ['evangelism'],
-  'adura': ['holy_spirit_or_power'],
-  'ironupiwada': ['forgiveness_of_sins'],
+/** Hymnal sections that suit each service, most fitting first */
+const SERVICE_SECTIONS: Record<string, string[]> = {
+  burial: ['burial', 'heavenly_call', 'promise'],
+  christian_wake: ['burial', 'heavenly_call', 'faith'],
+  remembrance: ['burial', 'heavenly_call', 'promise'],
+  holy_matrimony: ['wedding', 'blessing', 'divine_love'],
+  baptism: ['baptism', 'sanctification'],
+  baby_christening: ['children', 'blessing', 'thanksgiving'],
+  birthday: ['thanksgiving', 'blessing', 'joy'],
+  washing_feet_communion: ['holy_communion', 'sanctification', 'passion_week'],
+  church_dedication: ['house_dedication', 'glory', 'praise'],
+  private_house_dedication: ['house_dedication', 'blessing', 'protection_journey'],
+  laying_foundation_stone: ['house_dedication', 'gods_work', 'blessing'],
+  end_of_year: ['thanksgiving', 'promise', 'praise_worship'],
+  new_moon: ['blessing', 'promise', 'protection_journey'],
+  pregnant_women: ['blessing', 'protection_journey', 'healing'],
+  mercy_day_service: ['seeking_favour', 'prayer', 'passion_week'],
+  power_day_service: ['spiritual_power', 'holy_spirit', 'victory'],
+  prophets_prophetess_dreamers: ['revelation', 'holy_spirit', 'spiritual_power'],
+  seekers_service: ['seeking_favour', 'prayer', 'faith'],
+  morning_service: ['prayer', 'praise', 'protection_journey'],
 };
 
-/** Common stop words to exclude from text comparison */
-const STOP_WORDS = new Set([
-  'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-  'of', 'with', 'by', 'is', 'was', 'are', 'were', 'be', 'been', 'being',
-  'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
-  'should', 'may', 'might', 'shall', 'can', 'it', 'its', 'this', 'that',
-  'these', 'those', 'i', 'me', 'my', 'we', 'our', 'you', 'your', 'he',
-  'him', 'his', 'she', 'her', 'they', 'them', 'their', 'who', 'whom',
-  'which', 'what', 'when', 'where', 'how', 'why', 'not', 'no', 'nor',
-  'so', 'if', 'then', 'than', 'too', 'very', 'just', 'also', 'all',
-  'from', 'into', 'up', 'out', 'as', 'about', 'each', 'unto', 'upon',
-  'ye', 'thee', 'thy', 'thou', 'hath', 'doth', 'art', 'o',
-  // Yoruba common words
-  'ni', 'ti', 'si', 'ati', 'ki', 'pe', 'fun', 'wa', 'mi', 're', 'lo',
-]);
-
-/** Extract significant words from text (skip stop words, min 3 chars) */
-function extractKeyWords(text: string): Set<string> {
-  return new Set(
-    text.toLowerCase()
-      .replace(/[^a-zA-ZàáèéẹìíòóọùúṣẸỌ\s]/g, ' ')
-      .split(/\s+/)
-      .filter(w => w.length >= 3 && !STOP_WORDS.has(w))
-  );
+function occasionSections(ctx: MatchContext): { sections: string[]; label: string } {
+  const service = ctx.serviceId ? SERVICE_SECTIONS[ctx.serviceId] ?? [] : [];
+  const season = ctx.date ? getLiturgicalSeason(new Date(`${ctx.date}T12:00:00`)) : null;
+  return {
+    sections: [...(season?.sections ?? []), ...service],
+    label: season?.label ?? '',
+  };
 }
 
-/**
- * Score a hymn's relevance to today's Bible lessons.
- * Uses three layers:
- *   1. Direct book name match (+15 each)
- *   2. Thematic keyword overlap (+5 per keyword, max +20)
- *   3. Lesson text word match (+2 per shared word, max +30)
- */
-export function scoreLessonRelevance(
+// ── Text analysis ────────────────────────────────────────────
+
+const STOP_WORDS = new Set([
+  'the', 'and', 'but', 'for', 'with', 'was', 'are', 'were', 'been', 'being',
+  'have', 'has', 'had', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'shall',
+  'can', 'its', 'this', 'that', 'these', 'those', 'our', 'you', 'your', 'him', 'his', 'her', 'they',
+  'them', 'their', 'who', 'whom', 'which', 'what', 'when', 'where', 'how', 'why', 'not', 'nor',
+  'than', 'too', 'very', 'just', 'also', 'all', 'from', 'into', 'out', 'about', 'each', 'unto',
+  'upon', 'thee', 'thy', 'thou', 'hath', 'doth', 'art', 'thine', 'shalt', 'wilt', 'saith', 'said',
+  'came', 'come', 'went', 'let', 'say', 'one', 'now', 'then', 'there', 'here', 'every', 'any',
+  'amen', 'amin', 'chorus',
+  // Words in nearly every hymn carry no signal
+  'lord', 'god', 'jesus', 'christ', 'father', 'heaven', 'holy',
+  // Yoruba function words
+  'ati', 'fun', 'awa', 'emi', 'iwo', 'won', 'yio', 'nwon', 'gbogbo', 'oluwa', 'olorun', 'jesu',
+]);
+
+/** Light English stemmer: enough to match "forgiveth"/"forgiven"/"forgive" */
+function stem(word: string): string {
+  if (word.length <= 4) return word;
+  return word.replace(/(eth|est|ing|ed|es|s|en)$/, '');
+}
+
+function tokenize(text: string): string[] {
+  return normalizeForSearch(text)
+    .split(/[^a-z]+/)
+    .filter(w => w.length >= 3 && !STOP_WORDS.has(w))
+    .map(stem);
+}
+
+/** Theme keywords (stemmed, whole words). Multi-word phrases are matched on the joined tokens. */
+const THEME_KEYWORDS: Record<HymnCategory, string[]> = {
+  forgiveness_of_sins: ['forgiv', 'sin', 'sinner', 'pardon', 'repent', 'transgression', 'iniquit', 'blood', 'cleans',
+    'idariji', 'ironupiwada', 'elese'],
+  mercy_or_blessing: ['merc', 'bless', 'grace', 'favour', 'favor', 'compassion', 'aanu', 'ibukun', 'oore'],
+  holy_spirit_or_power: ['spirit', 'power', 'anoint', 'fire', 'comforter', 'pentecost', 'tongue', 'agbara', 'emi mimo'],
+  healing: ['heal', 'sick', 'physician', 'disease', 'infirmit', 'leper', 'blind', 'iwosan', 'aisan'],
+  praise_or_glory: ['prais', 'glory', 'glorif', 'hallelujah', 'worship', 'magnif', 'exalt', 'rejoic', 'sing', 'iyin', 'ogo'],
+  christ_the_king: ['king', 'throne', 'reign', 'majest', 'crown', 'kingdom', 'sovereign', 'oba', 'ijoba'],
+  faith_and_trust: ['faith', 'trust', 'believ', 'hope', 'courage', 'strength', 'shepherd', 'refuge', 'rock', 'fortress',
+    'fear', 'igbagbo', 'ireti'],
+  thanksgiving: ['thank', 'grateful', 'harvest', 'ope', 'idupe'],
+  lighting_of_candles: ['light', 'candle', 'lamp', 'shine', 'imole', 'fitila'],
+  sanctification: ['sanctif', 'pure', 'clean', 'righteous', 'consecrat', 'mimo'],
+  evangelism: ['preach', 'gospel', 'salvation', 'saviour', 'witness', 'proclaim', 'nation', 'redeem', 'cross',
+    'ihinrere', 'igbala', 'olugbala'],
+  processional_or_opening: [],
+  recessional_or_closing: [],
+};
+
+/** Weight of each theme in a token list, scaled so the strongest theme is 1 */
+function themeProfile(tokens: string[]): Map<HymnCategory, number> {
+  const joined = ` ${tokens.join(' ')} `;
+  const tokenSet = new Set(tokens);
+  const counts = new Map<HymnCategory, number>();
+  for (const [category, keywords] of Object.entries(THEME_KEYWORDS) as [HymnCategory, string[]][]) {
+    let hits = 0;
+    for (const kw of keywords) {
+      if (kw.includes(' ')) {
+        if (joined.includes(` ${kw} `)) hits++;
+      } else if (tokenSet.has(kw)) {
+        hits++;
+      }
+    }
+    if (hits) counts.set(category, hits);
+  }
+  const max = Math.max(0, ...counts.values());
+  if (!max) return counts;
+  for (const [k, v] of counts) counts.set(k, v / max);
+  return counts;
+}
+
+interface HymnProfile {
+  tokens: Set<string>;
+  length: number;
+  themes: Map<HymnCategory, number>;
+}
+
+interface Corpus {
+  profiles: Map<number, HymnProfile>;
+  idf: Map<string, number>;
+}
+
+const corpusCache = new WeakMap<Hymn[], Corpus>();
+
+function getCorpus(hymns: Hymn[]): Corpus {
+  let corpus = corpusCache.get(hymns);
+  if (corpus) return corpus;
+
+  const profiles = new Map<number, HymnProfile>();
+  const df = new Map<string, number>();
+  for (const h of hymns) {
+    const tokens = tokenize(`${h.englishLyrics} ${h.yorubaLyrics}`);
+    const set = new Set(tokens);
+    profiles.set(h.number, { tokens: set, length: tokens.length, themes: themeProfile(tokens) });
+    for (const t of set) df.set(t, (df.get(t) ?? 0) + 1);
+  }
+  const n = hymns.length || 1;
+  const idf = new Map<string, number>();
+  for (const [t, count] of df) idf.set(t, Math.log(n / count));
+  corpus = { profiles, idf };
+  corpusCache.set(hymns, corpus);
+  return corpus;
+}
+
+interface LessonProfile {
+  tf: Map<string, number>;
+  themes: Map<HymnCategory, number>;
+}
+
+const lessonCache = new Map<string, LessonProfile>();
+
+function getLessonProfile(text: string): LessonProfile | null {
+  if (!text.trim()) return null;
+  const cached = lessonCache.get(text);
+  if (cached) return cached;
+  const tokens = tokenize(text);
+  const tf = new Map<string, number>();
+  for (const t of tokens) tf.set(t, (tf.get(t) ?? 0) + 1);
+  const profile = { tf, themes: themeProfile(tokens) };
+  if (lessonCache.size > 20) lessonCache.clear();
+  lessonCache.set(text, profile);
+  return profile;
+}
+
+const CATEGORY_SHORT: Record<HymnCategory, string> = {
+  forgiveness_of_sins: 'forgiveness',
+  mercy_or_blessing: 'mercy',
+  holy_spirit_or_power: 'the Holy Spirit',
+  healing: 'healing',
+  praise_or_glory: 'praise',
+  christ_the_king: 'Christ the King',
+  faith_and_trust: 'faith',
+  thanksgiving: 'thanksgiving',
+  lighting_of_candles: 'light',
+  sanctification: 'holiness',
+  evangelism: 'salvation',
+  processional_or_opening: 'opening',
+  recessional_or_closing: 'closing',
+};
+
+/** Small stable number in [0, 1) from a string — gives week-to-week variety without randomness */
+function stableJitter(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1000) / 1000;
+}
+
+// ── Scoring ──────────────────────────────────────────────────
+
+interface ScoreParts {
+  score: number;
+  reasons: string[];
+  isRecentlyUsed: boolean;
+}
+
+function scoreHymn(
   hymn: Hymn,
-  lessonRefs: { book: string; chapter: number }[],
-  lessonText: string = ''
-): { score: number; reason: string } {
-  if (lessonRefs.length === 0 && !lessonText) return { score: 0, reason: '' };
-  
-  const hymnText = `${hymn.englishLyrics || ''} ${hymn.yorubaLyrics || ''} ${hymn.englishTitle || ''} ${hymn.yorubaTitle || ''}`.toLowerCase();
-  let totalScore = 0;
+  slot: HymnSlot,
+  ctx: MatchContext,
+  corpus: Corpus,
+  lesson: LessonProfile | null,
+  occasion: { sections: string[]; label: string },
+  lastUsed: Map<number, number>,
+): ScoreParts | null {
   const reasons: string[] = [];
+  let score = 0;
 
-  // Layer 1: Direct book name references in hymn text
-  for (const ref of lessonRefs) {
-    const bookLower = ref.book.toLowerCase();
-    if (hymnText.includes(bookLower)) {
-      totalScore += 15;
-      reasons.push(`References ${ref.book}`);
-    }
+  // Slot fit
+  const fitsSlot = !!slot.category && hymn.categories.includes(slot.category);
+  if (fitsSlot) {
+    score += 50;
+    if (hymn.categories[0] === slot.category) score += 5;
+    reasons.push(`Fits ${categoryToSlotName(slot.category!)}`);
   }
 
-  // Layer 2: Thematic keyword matches (English + Yoruba)
-  let keywordMatches = 0;
-  for (const [keyword, _categories] of Object.entries(SCRIPTURE_THEME_KEYWORDS)) {
-    if (hymnText.includes(keyword)) {
-      const categoryOverlap = _categories.some(c => hymn.categories.includes(c));
-      if (categoryOverlap) {
-        keywordMatches++;
+  // Occasion / season
+  const sectionRank = hymn.section ? occasion.sections.indexOf(hymn.section.id) : -1;
+  if (sectionRank >= 0) {
+    score += sectionRank === 0 ? 25 : 18;
+    reasons.push(occasion.label && sectionRank < 2 ? `${hymn.section!.english} hymn for ${occasion.label}` : `${hymn.section!.english} hymn`);
+  }
+
+  // A hymn must fit the slot, or be a strong occasion hymn, to be offered at all
+  if (!fitsSlot && sectionRank !== 0) return null;
+
+  const profile = corpus.profiles.get(hymn.number);
+  if (lesson && profile) {
+    // Shared themes
+    let themeScore = 0;
+    const shared: HymnCategory[] = [];
+    for (const [category, weight] of lesson.themes) {
+      const hymnWeight = profile.themes.get(category);
+      if (hymnWeight) {
+        themeScore += Math.min(weight, hymnWeight);
+        if (weight >= 0.5) shared.push(category);
+      }
+    }
+    if (themeScore > 0) {
+      score += Math.min(25, Math.round(themeScore * 12));
+      if (shared.length) reasons.push(`Shares the readings' theme of ${shared.slice(0, 2).map(c => CATEGORY_SHORT[c]).join(' and ')}`);
+    }
+
+    // Distinctive shared words, weighted by rarity across the hymnal
+    let echo = 0;
+    const echoWords: string[] = [];
+    for (const word of profile.tokens) {
+      const tf = lesson.tf.get(word);
+      const idf = corpus.idf.get(word) ?? 0;
+      if (tf && idf > 1.6) {
+        echo += idf * Math.min(tf, 3);
+        echoWords.push(word);
+      }
+    }
+    if (echo > 0) {
+      const normalised = echo / Math.sqrt(Math.max(profile.length, 20));
+      const echoScore = Math.min(20, Math.round(normalised * 6));
+      if (echoScore >= 3) {
+        score += echoScore;
+        reasons.push(`Echoes the readings (${echoWords.slice(0, 3).join(', ')})`);
       }
     }
   }
-  
-  if (keywordMatches > 0) {
-    const keywordScore = Math.min(20, keywordMatches * 5);
-    totalScore += keywordScore;
-    if (keywordMatches >= 3) {
-      reasons.push('Strong thematic match to today\'s readings');
-    } else {
-      reasons.push('Thematic match to today\'s readings');
-    }
+
+  // Recency
+  const ago = lastUsed.get(hymn.number);
+  const isRecentlyUsed = ago !== undefined && ago <= 28;
+  if (ago !== undefined) {
+    if (ago <= 7) score -= 60;
+    else if (ago <= 28) score -= 35;
+    else if (ago <= 90) score -= 12;
+    if (ago <= 90) reasons.push(ago === 0 ? 'Already planned for this day' : `Used ${ago} day${ago === 1 ? '' : 's'} ago`);
   }
 
-  // Layer 3: Direct lesson text ↔ hymn lyrics word comparison
-  if (lessonText) {
-    const lessonWords = extractKeyWords(lessonText);
-    const hymnWords = extractKeyWords(hymnText);
-    let sharedWords = 0;
-    for (const word of lessonWords) {
-      if (hymnWords.has(word)) sharedWords++;
-    }
-    if (sharedWords > 0) {
-      const textScore = Math.min(30, sharedWords * 2);
-      totalScore += textScore;
-      if (sharedWords >= 8) {
-        reasons.push(`Very strong text match (${sharedWords} shared words with lesson)`);
-      } else if (sharedWords >= 4) {
-        reasons.push(`Good text match (${sharedWords} shared words with lesson)`);
-      } else {
-        reasons.push(`Text match (${sharedWords} words)`);
-      }
-    }
-  }
+  // Small, stable variety so the same hymns don't top every week
+  score += stableJitter(`${ctx.date}|${ctx.serviceId}|${slot.category}|${hymn.number}`) * 4;
 
-  return {
-    score: totalScore,
-    reason: reasons.join('; '),
-  };
+  return { score, reasons, isRecentlyUsed };
 }
 
 export function getCandidateHymns(
   slot: HymnSlot,
   allHymns: Hymn[],
   maxResults: number = 10,
-  lessonRefs: { book: string; chapter: number }[] = [],
+  lessonRefsOrContext: { book: string; chapter: number }[] | MatchContext = [],
   lessonText: string = ''
 ): ScoredHymnSuggestion[] {
-  const recentHymns = getRecentlyUsedHymns();
+  // Accept the old (refs, text) signature as well as a MatchContext
+  const ctx: MatchContext = Array.isArray(lessonRefsOrContext)
+    ? { lessonRefs: lessonRefsOrContext, lessonText }
+    : lessonRefsOrContext;
+  const date = ctx.date ?? toISODate(new Date());
+  const lastUsed = lastUsedDaysAgo(getHymnUsage(), date);
 
   if (slot.fixedHymnNumber) {
     const hymn = allHymns.find(h => h.number === slot.fixedHymnNumber);
-    if (hymn) {
-      return [{
-        hymnNumber: hymn.number,
-        hymn,
-        reason: 'Specified in the Order of Service',
-        score: 100,
-        matchType: 'exact',
-        isRecentlyUsed: recentHymns.includes(hymn.number),
-      }];
-    }
-    return [];
+    return hymn
+      ? [{ hymnNumber: hymn.number, hymn, reason: 'Specified in the Order of Service', score: 100, matchType: 'exact',
+           isRecentlyUsed: (lastUsed.get(hymn.number) ?? 999) <= 28 }]
+      : [];
   }
+  if (!slot.category) return [];
 
-  if (slot.category) {
-    const matches: ScoredHymnSuggestion[] = [];
+  const corpus = getCorpus(allHymns);
+  const lesson = getLessonProfile(ctx.lessonText ?? '');
+  const occasion = occasionSections({ ...ctx, date });
 
-    allHymns.forEach(hymn => {
-      if (hymn.categories.includes(slot.category!)) {
-        let score = 80; // Base score for category match
-        let reason = `Matches ${categoryToSlotName(slot.category!)}`;
-
-        // Multi-category bonus
-        const extraCategories = hymn.categories.length - 1;
-        if (extraCategories > 0) {
-          score += Math.min(15, extraCategories * 5);
-          reason = `Strong match: ${categoryToSlotName(slot.category!)} + ${extraCategories} other tags`;
-        }
-
-        const isRecentlyUsed = recentHymns.includes(hymn.number);
-        if (isRecentlyUsed) {
-          score -= 40; // Stronger recency penalty for variety
-        }
-
-        // Lesson relevance boost (3 layers)
-        const lessonMatch = scoreLessonRelevance(hymn, lessonRefs, lessonText);
-        if (lessonMatch.score > 0) {
-          score += lessonMatch.score;
-          reason = lessonMatch.reason + ' + ' + reason;
-        }
-
-        matches.push({
-          hymnNumber: hymn.number,
-          hymn,
-          reason,
-          score,
-          matchType: 'category',
-          isRecentlyUsed,
-        });
-      }
+  const scored: ScoredHymnSuggestion[] = [];
+  for (const hymn of allHymns) {
+    const parts = scoreHymn(hymn, slot, { ...ctx, date }, corpus, lesson, occasion, lastUsed);
+    if (!parts) continue;
+    scored.push({
+      hymnNumber: hymn.number,
+      hymn,
+      reason: parts.reasons.join(' · '),
+      score: Math.round(parts.score),
+      matchType: hymn.categories.includes(slot.category) ? 'category' : 'related',
+      isRecentlyUsed: parts.isRecentlyUsed,
     });
-
-    return matches
-      .sort((a, b) => b.score - a.score)
-      .slice(0, maxResults);
   }
 
-  return [];
+  return scored.sort((a, b) => b.score - a.score).slice(0, maxResults);
+}
+
+export interface PlannedSlot {
+  stepNumber: number;
+  slotName: string;
+  slot: HymnSlot;
+  candidates: ScoredHymnSuggestion[];
+  selected: ScoredHymnSuggestion | null;
+}
+
+/**
+ * Suggest a hymn for every slot of a service without repeating a hymn.
+ * Slots with the fewest good options choose first, so a scarce category
+ * isn't left empty because a broader slot took its only hymn.
+ */
+export function planHymns(service: ServiceOrder, allHymns: Hymn[], ctx: MatchContext, perSlot = 15): PlannedSlot[] {
+  const slots = extractHymnSlots(service).map(s => ({
+    ...s,
+    candidates: getCandidateHymns(s.slot, allHymns, perSlot + 10, { ...ctx, serviceId: service.id }),
+  }));
+
+  const order = slots
+    .map((s, i) => ({ i, strong: s.candidates.filter(c => c.score >= 45).length }))
+    .sort((a, b) => a.strong - b.strong);
+
+  const used = new Set<number>();
+  const chosen = new Map<number, ScoredHymnSuggestion | null>();
+  for (const { i } of order) {
+    const pick = slots[i].candidates.find(c => !used.has(c.hymnNumber)) ?? null;
+    if (pick) used.add(pick.hymnNumber);
+    chosen.set(i, pick);
+  }
+
+  return slots.map((s, i) => ({
+    stepNumber: s.stepNumber,
+    slotName: s.slotName,
+    slot: s.slot,
+    candidates: s.candidates.slice(0, perSlot),
+    selected: chosen.get(i) ?? null,
+  }));
 }
 
 export function generateHymnPlan(
@@ -351,16 +494,15 @@ export function generateHymnPlan(
   lessonRefs: { book: string; chapter: number }[] = [],
   lessonText: string = ''
 ) {
-  const slots = extractHymnSlots(service);
-
+  const plan = planHymns(service, allHymns, { date, lessonRefs, lessonText }, 10);
   return {
     serviceType: service.id,
-    date: date || new Date().toISOString().split('T')[0],
-    slots: slots.map(({ stepNumber, slotName, slot }) => ({
+    date: date || toISODate(new Date()),
+    slots: plan.map(({ stepNumber, slotName, slot, candidates }) => ({
       stepNumber,
       slotName,
       category: slot.category || null,
-      suggestions: getCandidateHymns(slot, allHymns, 10, lessonRefs, lessonText),
+      suggestions: candidates,
     })),
   };
 }

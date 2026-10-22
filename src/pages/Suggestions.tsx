@@ -2,12 +2,16 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
 import { useHymns } from '../hooks/useHymns';
-import { useTodaysLessons } from '../hooks/useLessons';
+import { useLessons } from '../hooks/useLessons';
 import { loadChapter } from '../hooks/useBible';
-import { extractHymnSlots, getCandidateHymns, ScoredHymnSuggestion, recordHymnUsage } from '../utils/hymnMatcher';
+import { extractHymnSlots, getCandidateHymns, planHymns, ScoredHymnSuggestion, recordHymnUsage } from '../utils/hymnMatcher';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ServiceOrder, Hymn, HymnCategory } from '../types';
-import { getServiceTypesForDate, formatDate } from '../utils/dateUtils';
+import { getServiceTypesForDate, formatDate, toISODate, fromISODate } from '../utils/dateUtils';
+import { getLiturgicalSeason } from '../utils/liturgical';
+import { displayTitle } from '../utils/hymnText';
+import { normalizeForSearch } from '../utils/search';
+import { showToast } from '../components/Toast';
 import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay, X } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { OPERATOR_QUEUE_KEY, type OperatorQueueItem } from '../hooks/useLiveDisplay';
@@ -37,7 +41,13 @@ export default function Suggestions() {
   usePageTitle('suggestions');
   const { services, loading: servicesLoading } = useServices();
   const { hymns, loading: hymnsLoading } = useHymns();
-  const { lessons: todaysLessons } = useTodaysLessons();
+  const { lessons: allLessons } = useLessons();
+
+  // Plans are for a specific service date: its readings, season and hymn history apply
+  const [planDate, setPlanDate] = useState(() => toISODate(new Date()));
+  const planDay = useMemo(() => fromISODate(planDate), [planDate]);
+  const todaysLessons = useMemo(() => allLessons.filter(l => l.date === planDate), [allLessons, planDate]);
+  const season = useMemo(() => getLiturgicalSeason(planDay), [planDay]);
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [slotSelections, setSlotSelections] = useState<SlotSelection[]>([]);
@@ -62,7 +72,7 @@ export default function Suggestions() {
     [services, selectedServiceId]
   );
 
-  const todayServiceTypes = useMemo(() => getServiceTypesForDate(new Date()), []);
+  const todayServiceTypes = useMemo(() => getServiceTypesForDate(planDay), [planDay]);
 
   // Helper to fetch lesson text from Bible data files
   const fetchLessonText = useCallback(async (): Promise<{ refs: { book: string; chapter: number }[]; text: string }> => {
@@ -95,17 +105,14 @@ export default function Suggestions() {
     // Fetch actual lesson text for deep matching
     const { refs: lessonRefs, text: lessonText } = await fetchLessonText();
 
-    const slots = extractHymnSlots(service);
-    const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs, lessonText);
-      return {
-        stepNumber,
-        slotName,
-        category: slot.category || null,
-        candidates,
-        selectedHymn: candidates.length > 0 ? candidates[0].hymn : null,
-      };
-    });
+    const plan = planHymns(service, hymns, { date: planDate, lessonRefs, lessonText });
+    const selections: SlotSelection[] = plan.map(({ stepNumber, slotName, slot, candidates, selected }) => ({
+      stepNumber,
+      slotName,
+      category: slot.category || null,
+      candidates,
+      selectedHymn: selected?.hymn ?? null,
+    }));
 
     setSlotSelections(selections);
     setExpandedSlot(null);
@@ -123,7 +130,7 @@ export default function Suggestions() {
     setSelectedServiceId(service.id);
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15, lessonRefs, lessonText);
+      const candidates = getCandidateHymns(slot, hymns, 15, { date: planDate, serviceId: service.id, lessonRefs, lessonText });
       const planSlot = plan.slots.find(ps => ps.stepNumber === stepNumber);
       let selectedHymn = null;
       if (planSlot?.hymnNumber) {
@@ -202,11 +209,10 @@ export default function Suggestions() {
     const slot = isExtra ? extraSlots[slotIndex - slotSelections.length] : slotSelections[slotIndex];
     if (!search.trim()) return slot.candidates;
 
-    const q = search.toLowerCase();
-    const allMatches = hymns.filter(h => {
-      const searchable = `${h.number} ${h.englishTitle || ''} ${h.yorubaTitle || ''} ${h.englishLyrics} ${h.yorubaLyrics}`.toLowerCase();
-      return searchable.includes(q);
-    });
+    const q = normalizeForSearch(search.trim());
+    const allMatches = /^\d+$/.test(q)
+      ? hymns.filter(h => String(h.number).startsWith(q))
+      : hymns.filter(h => normalizeForSearch(`${h.englishTitle || ''} ${h.yorubaTitle || ''} ${h.englishLyrics} ${h.yorubaLyrics}`).includes(q));
 
     return allMatches.slice(0, 15).map(h => ({
       hymnNumber: h.number,
@@ -228,11 +234,11 @@ export default function Suggestions() {
     if (!selectedService) return '';
     const lines = [
       `CCC Hymn Plan — ${selectedService.displayName}`,
-      `Date: ${formatDate(new Date())}`,
+      `Date: ${formatDate(planDay)}`,
       '',
       ...[...slotSelections, ...extraSlots].map(s => {
         const hymn = s.selectedHymn;
-        return `Step ${s.stepNumber}: ${s.slotName}\n  → Hymn #${hymn?.number || '?'} — ${hymn?.englishTitle || hymn?.yorubaTitle || 'None selected'}`;
+        return `Step ${s.stepNumber}: ${s.slotName}\n  → Hymn #${hymn?.number || '?'} — ${hymn ? displayTitle(hymn, 'yo') : 'None selected'}`;
       }),
     ];
     return lines.join('\n');
@@ -242,26 +248,26 @@ export default function Suggestions() {
     if (!selectedService) return;
     const plan: SavedPlan = {
       id: Date.now().toString(),
-      date: new Date().toISOString(),
+      date: planDate,
       serviceId: selectedService.id,
       serviceName: selectedService.displayName,
       slots: [...slotSelections, ...extraSlots].map(s => ({
         stepNumber: s.stepNumber,
         slotName: s.slotName,
         hymnNumber: s.selectedHymn?.number || null,
-        hymnTitle: s.selectedHymn ? (s.selectedHymn.englishTitle || s.selectedHymn.yorubaTitle) : null,
+        hymnTitle: s.selectedHymn ? displayTitle(s.selectedHymn, 'yo') : null,
       })),
     };
-    
+
     const newPlans = [plan, ...pastPlans].slice(0, 10);
     setPastPlans(newPlans);
     localStorage.setItem('cw-hymn-plans', JSON.stringify(newPlans));
 
     // Record usage
     const usedHymns = [...slotSelections, ...extraSlots].map(s => s.selectedHymn?.number).filter((n): n is number => n !== undefined);
-    recordHymnUsage(usedHymns);
+    recordHymnUsage(usedHymns, planDate);
 
-    alert('Plan saved to history!');
+    showToast('Plan saved');
   };
 
   const sendToOperator = () => {
@@ -270,7 +276,7 @@ export default function Suggestions() {
       .filter(s => s.selectedHymn)
       .map(s => ({ hymnNumber: s.selectedHymn!.number, slotName: s.slotName }));
     localStorage.setItem(OPERATOR_QUEUE_KEY, JSON.stringify({ serviceName: selectedService.displayName, items }));
-    alert('Sent to the Operator queue. Open Operator → Hymns to project them in order.');
+    showToast('Sent to the Operator queue — open Operator → Hymns');
   };
 
   const deletePlan = (id: string) => {
@@ -299,15 +305,32 @@ export default function Suggestions() {
           <><Music size={24} className="inline-block mr-2 align-text-bottom" /> Hymn Selector</>
         </h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Plan hymns for your service. AI-matched suggestions you can accept, swap, or override.
+          Plan hymns for a service. Suggestions follow the Order of Service, the day's readings, the season and what was sung recently — accept, swap or override any of them.
         </p>
       </div>
 
       {/* Service Selector */}
       {!selectedServiceId ? (
         <div>
+          <div className="flex flex-wrap items-end gap-3 mb-5 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+            <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+              Service date
+              <input
+                type="date"
+                value={planDate}
+                onChange={e => e.target.value && setPlanDate(e.target.value)}
+                className="px-3 py-2 rounded-lg text-sm normal-case tracking-normal bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] border border-[var(--color-border)]"
+              />
+            </label>
+            <div className="text-xs text-[var(--color-text-secondary)] pb-2">
+              {formatDate(planDay)}
+              {season.label && <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] font-semibold">{season.label}</span>}
+              {todaysLessons.length === 0 && <span className="block mt-1 text-[var(--color-text-muted)]">No readings published for this date — suggestions use the service and season only.</span>}
+            </div>
+          </div>
+
           <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
-            Today's Services
+            Services on {planDay.toLocaleDateString('en-GB', { weekday: 'long' })}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
             {services.filter(s => todayServiceTypes.includes(s.id)).map(svc => {
@@ -320,7 +343,7 @@ export default function Suggestions() {
                   className="text-left p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-gold)] shadow-[0_0_15px_rgba(212,168,67,0.15)] hover:shadow-[0_0_20px_rgba(212,168,67,0.3)] transition-all group relative"
                 >
                   <span className="absolute top-3 right-3 text-[10px] uppercase font-bold text-[var(--color-accent-gold)] bg-[var(--color-accent-gold)]/10 px-2 py-0.5 rounded-full">
-                    Today
+                    {planDate === toISODate(new Date()) ? 'Today' : planDay.toLocaleDateString('en-GB', { weekday: 'short' })}
                   </span>
                   <div className="font-medium text-[var(--color-text-primary)] font-[Outfit] group-hover:text-[var(--color-accent-gold)] transition-colors pr-12">
                     {svc.displayName}
@@ -419,7 +442,7 @@ export default function Suggestions() {
             </div>
             {/* Progress Bar */}
             <div className="w-full h-1.5 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-[var(--color-accent-gold)] transition-all duration-500 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
@@ -431,7 +454,7 @@ export default function Suggestions() {
             <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 mb-6 relative overflow-hidden">
 
               <div className="text-xs uppercase font-semibold text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
-                <><BookOpen size={14} className="inline mr-1" /> Today's Readings</>
+                <><BookOpen size={14} className="inline mr-1" /> Readings for {formatDate(planDay)}</>
               </div>
               <div className="space-y-1">
                 {todaysLessons.map((l, i) => (
@@ -450,25 +473,25 @@ export default function Suggestions() {
             {slotSelections.map((slot, idx) => {
               const isLocked = lockedSlots.has(idx);
               const isExpanded = expandedSlot === idx;
-              
+
               return (
                 <div
                   key={idx}
                   className={`bg-[var(--color-bg-card)] rounded-2xl border transition-all ${
-                    isExpanded 
-                      ? 'border-[var(--color-accent-gold)] shadow-md' 
+                    isExpanded
+                      ? 'border-[var(--color-accent-gold)] shadow-md'
                       : 'border-[var(--color-border)] hover:border-[var(--color-border-hover)]'
                   }`}
                 >
                   {/* Slot header */}
-                  <div 
+                  <div
                     onClick={() => !isLocked && setExpandedSlot(isExpanded ? null : idx)}
                     className={`w-full p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${!isLocked ? 'cursor-pointer hover:bg-[var(--color-bg-card-hover)]' : ''} rounded-2xl transition-colors`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${
-                        slot.selectedHymn 
-                          ? 'bg-[var(--color-accent-gold)] text-[#0A1628]' 
+                        slot.selectedHymn
+                          ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
                           : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)]'
                       }`}>
                         {slot.stepNumber}
@@ -500,7 +523,7 @@ export default function Suggestions() {
                             Hymn {slot.selectedHymn.number}
                           </div>
                           <div className="text-xs text-[var(--color-text-secondary)] line-clamp-1 max-w-[200px]">
-                            {slot.selectedHymn.englishTitle || slot.selectedHymn.yorubaTitle}
+                            {displayTitle(slot.selectedHymn, 'yo')}
                           </div>
                         </div>
                       ) : (
@@ -508,7 +531,7 @@ export default function Suggestions() {
                           Select a hymn...
                         </div>
                       )}
-                      
+
                       <div className="flex items-center gap-2 border-l border-[var(--color-border)] pl-4">
                         <button
                           onClick={(e) => toggleLock(e, idx)}
@@ -545,7 +568,7 @@ export default function Suggestions() {
                           const isRecentlyUsed = 'isRecentlyUsed' in suggestion ? suggestion.isRecentlyUsed : false;
                           const isSelected = slot.selectedHymn?.number === hymn.number;
                           const duplicates = getDuplicateSlots(hymn.number, idx);
-                          
+
                           return (
                             <button
                               key={hymn.number}
@@ -557,7 +580,7 @@ export default function Suggestions() {
                               }`}
                             >
 
-                              
+
                               <div className="pl-2">
                                 <div className="flex items-start justify-between">
                                   <div>
@@ -565,18 +588,18 @@ export default function Suggestions() {
                                       #{hymn.number}
                                     </span>
                                     <span className="text-[var(--color-text-primary)] ml-2 text-sm font-medium">
-                                      {hymn.englishTitle || hymn.yorubaTitle || 'Untitled'}
+                                      {displayTitle(hymn, 'yo')}
                                     </span>
                                   </div>
                                   {isSelected && (
                                     <span className="text-[var(--color-accent-gold)] text-lg"><Check size={18} className="inline-block" /></span>
                                   )}
                                 </div>
-                                
+
                                 <p className="text-xs text-[var(--color-text-muted)] mt-1 line-clamp-1 italic">
                                   {(hymn.englishLyrics || hymn.yorubaLyrics || '').substring(0, 80)}...
                                 </p>
-                                
+
                                 <div className="flex flex-wrap items-center gap-2 mt-2">
                                   <span className="text-[10px] text-[var(--color-text-secondary)] bg-[var(--color-bg-secondary)] px-2 py-0.5 rounded-full border border-[var(--color-border)]">
                                     {reason}
@@ -685,7 +708,7 @@ export default function Suggestions() {
                                 }`}
                               >
                                 <span className="text-[var(--color-accent-gold)] font-bold text-sm">#{hymn.number}</span>
-                                <span className="text-[var(--color-text-primary)] ml-2 text-sm">{hymn.englishTitle || hymn.yorubaTitle || 'Untitled'}</span>
+                                <span className="text-[var(--color-text-primary)] ml-2 text-sm">{displayTitle(hymn, 'yo')}</span>
                                 {isSelected && <Check size={16} className="inline ml-2 text-[var(--color-accent-gold)]" />}
                               </button>
                             );
@@ -720,7 +743,7 @@ export default function Suggestions() {
               >
                 {showExport ? <><Check size={14} className="inline mr-1" /> Copied</> : <><ClipboardCopy size={14} className="inline mr-1" /> Copy Text</>}
               </button>
-              
+
               <button
                 onClick={() => window.print()}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 transition-all"
@@ -734,7 +757,7 @@ export default function Suggestions() {
               >
                 <><Save size={14} className="inline mr-1" /> Save Plan</>
               </button>
-              
+
               <button
                 onClick={sendToOperator}
                 className="py-2.5 rounded-xl bg-gradient-to-r from-[var(--color-accent-gold)] to-[#E8C36A] text-[#0A1628] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"

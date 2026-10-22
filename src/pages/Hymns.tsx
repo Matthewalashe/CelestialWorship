@@ -1,23 +1,40 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Heart, Search, X } from 'lucide-react';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useHymnSearch } from '../hooks/useHymns';
+import { useFavoriteHymns } from '../hooks/useFavorites';
 import { CATEGORY_LABELS, CATEGORY_COLORS, HymnCategory } from '../types';
+import type { Hymn } from '../types';
 import { sanitizeSearchInput } from '../utils/sanitize';
+import { normalizeForSearch } from '../utils/search';
+import { displayTitle, type HymnLanguage } from '../utils/hymnText';
 
-type HymnListLanguage = 'Both' | 'English' | 'Yoruba';
+type LyricsView = 'yo' | 'both' | 'en';
+// Shared with the hymn page so both remember the same choice
+const VIEW_KEY = 'cw-hymn-view';
+
+function readView(): LyricsView {
+  try {
+    const v = localStorage.getItem(VIEW_KEY);
+    if (v === 'yo' || v === 'en' || v === 'both') return v;
+  } catch {}
+  return 'yo';
+}
 
 export default function Hymns() {
   usePageView('hymns');
   usePageTitle('hymns');
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { favorites } = useFavoriteHymns();
 
-  // Search, category and letter filters live in the URL so they survive "Back" from a hymn
+  // Search and filters live in the URL so they survive "Back" from a hymn
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') ?? '');
   const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
   const letter = searchParams.get('letter') ?? '';
+  const sectionId = searchParams.get('section') ?? '';
+  const favoritesOnly = searchParams.get('fav') === '1';
   const selectedCategories = useMemo(
     () => (searchParams.get('category') ?? '').split(',').filter((c): c is HymnCategory => c in CATEGORY_LABELS),
     [searchParams]
@@ -36,32 +53,42 @@ export default function Hymns() {
     const timer = setTimeout(() => {
       setDebouncedTerm(searchTerm);
       if ((searchParams.get('q') ?? '') !== searchTerm) updateParams({ q: searchTerm || null });
-    }, 300);
+    }, 250);
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm]);
 
-  const [language, setLanguageState] = useState<HymnListLanguage>(() => {
-    try {
-      const stored = localStorage.getItem('cw-hymn-list-lang');
-      if (stored === 'English' || stored === 'Yoruba' || stored === 'Both') return stored;
-    } catch {}
-    return 'Both';
-  });
-  const setLanguage = (lang: HymnListLanguage) => {
-    setLanguageState(lang);
-    try { localStorage.setItem('cw-hymn-list-lang', lang); } catch {}
+  const [view, setViewState] = useState<LyricsView>(readView);
+  const setView = (v: LyricsView) => {
+    setViewState(v);
+    try { localStorage.setItem(VIEW_KEY, v); } catch {}
   };
+  const titleLang: HymnLanguage = view === 'en' ? 'en' : 'yo';
 
-  const { results: searchResults = [], loading, total } = useHymnSearch(debouncedTerm, selectedCategories);
+  const { results: searchResults = [], loading, total, hymns: allHymns } = useHymnSearch(debouncedTerm, selectedCategories);
 
-  // Letter filter matches the start of either title, ignoring Yoruba tone marks (e.g. Ẹ -> E)
+  // Sections of the printed hymnal, in hymnal order
+  const sections = useMemo(() => {
+    const seen = new Map<string, { id: string; label: string; count: number }>();
+    for (const h of allHymns) {
+      if (!h.section) continue;
+      const entry = seen.get(h.section.id);
+      if (entry) entry.count++;
+      else seen.set(h.section.id, { id: h.section.id, label: h.section.english, count: 1 });
+    }
+    return [...seen.values()];
+  }, [allHymns]);
+
   const hymns = useMemo(() => {
-    if (!letter) return searchResults;
-    const startsWith = (title: string | null) =>
-      !!title && title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toUpperCase().startsWith(letter);
-    return searchResults.filter(h => startsWith(h.englishTitle) || startsWith(h.yorubaTitle));
-  }, [searchResults, letter]);
+    let list: Hymn[] = searchResults;
+    if (sectionId) list = list.filter(h => h.section?.id === sectionId);
+    if (favoritesOnly) list = list.filter(h => favorites.includes(h.number));
+    if (letter) {
+      // Matches the start of the title shown (first line for untitled hymns), ignoring tone marks
+      list = list.filter(h => normalizeForSearch(displayTitle(h, titleLang)).toUpperCase().startsWith(letter));
+    }
+    return list;
+  }, [searchResults, sectionId, favoritesOnly, favorites, letter, titleLang]);
 
   // Number shortcuts scroll to the first hymn at or after that number (numbering has gaps)
   const maxNumber = useMemo(() => hymns.reduce((max, h) => Math.max(max, h.number), 0), [hymns]);
@@ -72,7 +99,7 @@ export default function Hymns() {
   }, [maxNumber]);
   const jumpToNumber = (n: number) => {
     const target = hymns.find(h => h.number >= n);
-    if (target) document.getElementById(`hymn-row-${target.number}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (target) document.getElementById(`hymn-row-${target.number}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   const toggleCategory = (cat: HymnCategory) => {
@@ -82,158 +109,189 @@ export default function Hymns() {
     updateParams({ category: next.join(',') || null });
   };
 
-  const isUnfiltered = !searchTerm && !letter && selectedCategories.length === 0;
+  const hasFilters = !!(searchTerm || letter || sectionId || favoritesOnly || selectedCategories.length);
+  const clearAll = () => {
+    setSearchTerm('');
+    setDebouncedTerm('');
+    updateParams({ q: null, letter: null, category: null, section: null, fav: null });
+  };
+
+  const chip = 'whitespace-nowrap px-3 h-8 rounded-full text-xs font-semibold transition-all border inline-flex items-center gap-1';
 
   return (
-    <div className="p-4 max-w-5xl mx-auto pb-24 flex flex-col h-screen">
-      <div className="shrink-0 mb-6">
-        <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6 font-outfit">Hymnal</h1>
+    <div className="px-4 pt-4 pb-24 max-w-4xl mx-auto">
+      <div className="flex items-end justify-between mb-4">
+        <h1 className="text-3xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Hymnal</h1>
+        <div className="flex rounded-lg p-0.5 border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
+             role="group" aria-label="Title language">
+          {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setView(key)}
+              aria-pressed={view === key}
+              className="px-2.5 py-1 text-xs font-semibold rounded-md transition-colors"
+              style={view === key
+                ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
+                : { color: 'var(--color-text-secondary)' }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        <div className="relative mb-4">
+      {/* Search stays visible while scrolling */}
+      <div className="sticky top-0 md:top-0 z-[5] -mx-4 px-4 pt-1 pb-3" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+        <div className="relative">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
           <input
-            type="text"
-            placeholder="Search by number, title, or lyrics..."
+            type="search"
+            inputMode="search"
+            placeholder="Number, title or words from the hymn…"
             value={searchTerm}
             onChange={e => setSearchTerm(sanitizeSearchInput(e.target.value))}
-            className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl py-4 px-5 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent-brand)] transition-colors placeholder:text-[var(--color-text-secondary)] text-lg shadow-lg"
+            className="w-full rounded-xl py-3.5 pl-11 pr-10 text-base border focus:outline-none transition-colors"
+            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
+            aria-label="Search hymns"
           />
-        </div>
-
-        <div className="flex overflow-x-auto pb-2 gap-2 hide-scrollbar">
-          {(Object.keys(CATEGORY_LABELS) as HymnCategory[]).map((key) => {
-            const isSelected = selectedCategories.includes(key);
-            const color = CATEGORY_COLORS[key] || '#94A3B8';
-            return (
-              <button
-                key={key}
-                onClick={() => toggleCategory(key)}
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all border cursor-pointer ${
-                  isSelected
-                    ? 'bg-opacity-20 border-opacity-50 text-white'
-                    : 'bg-transparent border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-gray-500'
-                }`}
-                style={isSelected ? { backgroundColor: `${color}33`, borderColor: color, color } : {}}
-              >
-                {CATEGORY_LABELS[key]}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* A-Z Quick Jump */}
-        <div className="flex flex-wrap gap-1 mt-3">
-          {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(l => (
-            <button
-              key={l}
-              onClick={() => updateParams({ letter: letter === l ? null : l })}
-              className="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-colors"
-              style={{
-                backgroundColor: letter === l ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
-                color: letter === l ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
-                border: '1px solid var(--color-border)',
-              }}
-              aria-label={`Filter hymns starting with ${l}`}
-              aria-pressed={letter === l}
-            >
-              {l}
+          {searchTerm && (
+            <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1" aria-label="Clear search"
+                    style={{ color: 'var(--color-text-muted)' }}>
+              <X size={16} />
             </button>
-          ))}
-          <button
-            onClick={() => { setSearchTerm(''); setDebouncedTerm(''); updateParams({ q: null, letter: null, category: null }); }}
-            className="px-3 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-colors"
-            style={{
-              backgroundColor: isUnfiltered ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
-              color: isUnfiltered ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
-              border: '1px solid var(--color-border)',
-            }}
-            aria-label="Show all hymns"
-          >
-            All
-          </button>
-        </div>
-
-        {/* Quick number jump */}
-        <div className="flex flex-wrap gap-1 mt-2">
-          {numberJumps.map(n => (
-            <button
-              key={n}
-              onClick={() => jumpToNumber(n)}
-              className="px-2 h-7 rounded text-[10px] font-semibold transition-colors"
-              style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}
-              aria-label={`Jump to hymn ${n}`}
-            >
-              {n}+
-            </button>
-          ))}
-        </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <p className="text-sm text-[var(--color-text-secondary)]">
-            Showing {hymns.length} of {total} hymn{total !== 1 ? 's' : ''}
-          </p>
-          <div className="flex bg-[var(--color-bg-card)] rounded-lg p-1 border border-[var(--color-border)]">
-            {['English', 'Both', 'Yoruba'].map(lang => (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang as HymnListLanguage)}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
-                  language === lang
-                    ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)]'
-                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-                }`}
-              >
-                {lang}
-              </button>
-            ))}
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 pb-20 pr-2 custom-scrollbar">
-        {loading ? (
-          <div className="text-center py-10 text-[var(--color-text-secondary)]">Searching hymns...</div>
-        ) : hymns.length === 0 ? (
-          <div className="text-center py-10 text-[var(--color-text-secondary)]">No hymns found matching your criteria.</div>
-        ) : (
-          hymns.map((hymn) => (
+      {/* Filters */}
+      <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+        <button
+          onClick={() => updateParams({ fav: favoritesOnly ? null : '1' })}
+          aria-pressed={favoritesOnly}
+          className={chip}
+          style={favoritesOnly
+            ? { backgroundColor: '#EF444422', borderColor: '#EF4444', color: '#EF4444' }
+            : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+        >
+          <Heart size={12} fill={favoritesOnly ? 'currentColor' : 'none'} /> Favourites{favorites.length ? ` (${favorites.length})` : ''}
+        </button>
+        <select
+          value={sectionId}
+          onChange={e => updateParams({ section: e.target.value || null })}
+          className={`${chip} pr-2 cursor-pointer`}
+          style={{
+            backgroundColor: sectionId ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+            color: sectionId ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
+            borderColor: 'var(--color-border)',
+          }}
+          aria-label="Hymnal section"
+        >
+          <option value="">All sections</option>
+          {sections.map(s => (
+            <option key={s.id} value={s.id}>{s.label} ({s.count})</option>
+          ))}
+        </select>
+        {(Object.keys(CATEGORY_LABELS) as HymnCategory[]).map(key => {
+          const isSelected = selectedCategories.includes(key);
+          const color = CATEGORY_COLORS[key] || '#94A3B8';
+          return (
             <button
-              key={hymn.number}
-              id={`hymn-row-${hymn.number}`}
-              onClick={() => navigate(`/hymns/${hymn.number}`)}
-              className="w-full text-left bg-[var(--color-bg-card)]/60 hover:bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent-brand)]/40 rounded-xl p-4 transition-all flex items-center gap-4 group cursor-pointer"
+              key={key}
+              onClick={() => toggleCategory(key)}
+              aria-pressed={isSelected}
+              className={chip}
+              style={isSelected
+                ? { backgroundColor: `${color}22`, borderColor: color, color }
+                : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             >
-              <div className="text-3xl font-black text-[var(--color-accent-gold)]/30 group-hover:text-[var(--color-accent-gold)] transition-colors w-16 text-center font-outfit">
-                {hymn.number}
-              </div>
-              <div className="flex-1 min-w-0">
-                {(language !== 'Yoruba' || !hymn.yorubaTitle) && (
-                  <h3 className="text-lg font-bold text-[var(--color-text-primary)] truncate font-outfit">{hymn.englishTitle || hymn.yorubaTitle}</h3>
-                )}
-                {(language === 'Yoruba' || (language === 'Both' && hymn.englishTitle)) && hymn.yorubaTitle && (
-                  <h3 className="text-md font-medium text-[var(--color-text-secondary)] truncate font-outfit"><span lang="yo">{hymn.yorubaTitle}</span></h3>
-                )}
-                <p className="text-sm text-[var(--color-text-secondary)]/70 truncate mt-1">
-                  {hymn.verses?.[0]?.englishLines?.[0] || hymn.englishLyrics?.split('\n')[0] || hymn.verses?.[0]?.yorubaLines?.[0] || '...'}
-                </p>
-              </div>
-              <div className="flex flex-col gap-1 items-end shrink-0">
-                {hymn.categories?.slice(0, 2).map((cat) => {
-                  const color = CATEGORY_COLORS[cat] || '#94A3B8';
-                  return (
-                    <span
-                      key={cat}
-                      className="text-[10px] uppercase font-bold px-2 py-0.5 rounded border"
-                      style={{ color, borderColor: `${color}55`, backgroundColor: `${color}11` }}
-                    >
-                      {CATEGORY_LABELS[cat] || cat}
-                    </span>
-                  );
-                })}
-              </div>
+              {CATEGORY_LABELS[key]}
             </button>
-          ))
+          );
+        })}
+      </div>
+
+      {/* A–Z and number shortcuts */}
+      <div className="flex gap-1 mt-2 overflow-x-auto hide-scrollbar pb-1">
+        {Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ').map(l => (
+          <button
+            key={l}
+            onClick={() => updateParams({ letter: letter === l ? null : l })}
+            className="w-8 h-8 shrink-0 rounded-lg text-xs font-bold flex items-center justify-center transition-colors border"
+            style={{
+              backgroundColor: letter === l ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
+              color: letter === l ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
+              borderColor: 'var(--color-border)',
+            }}
+            aria-label={`Hymns starting with ${l}`}
+            aria-pressed={letter === l}
+          >
+            {l}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-1 mt-2">
+        {numberJumps.map(n => (
+          <button
+            key={n}
+            onClick={() => jumpToNumber(n)}
+            className="px-2.5 h-7 rounded-md text-[11px] font-semibold border"
+            style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)', borderColor: 'var(--color-border)' }}
+            aria-label={`Jump to hymn ${n}`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex justify-between items-center mt-4 mb-2">
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          {hymns.length === total ? `${total} hymns` : `${hymns.length} of ${total} hymns`}
+        </p>
+        {hasFilters && (
+          <button onClick={clearAll} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
+            Clear filters
+          </button>
         )}
       </div>
+
+      {loading ? (
+        <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>Loading hymns…</div>
+      ) : hymns.length === 0 ? (
+        <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
+          {favoritesOnly && favorites.length === 0
+            ? 'No favourites yet — tap the heart on a hymn to save it here.'
+            : 'No hymns match.'}
+        </div>
+      ) : (
+        <ul className="divide-y rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+          {hymns.map(hymn => {
+            const primary = displayTitle(hymn, titleLang);
+            const secondary = view === 'both' ? displayTitle(hymn, 'en') : null;
+            const category = hymn.categories[0];
+            return (
+              <li key={hymn.number} id={`hymn-row-${hymn.number}`} style={{ borderColor: 'var(--color-border)' }}>
+                <Link to={`/hymns/${hymn.number}`} className="flex items-center gap-3 px-3 py-3 hover:bg-[var(--color-bg-card-hover)] transition-colors">
+                  <span className="w-12 shrink-0 text-center text-xl font-black font-[Outfit]" style={{ color: 'var(--color-accent-gold)' }}>
+                    {hymn.number}
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }} lang={titleLang}>
+                      {primary}
+                    </span>
+                    {secondary && secondary !== primary && (
+                      <span className="block text-sm truncate" style={{ color: 'var(--color-text-secondary)' }} lang="en">{secondary}</span>
+                    )}
+                    <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
+                      {[hymn.section?.english, category ? CATEGORY_LABELS[category] : null].filter(Boolean).join(' · ')}
+                    </span>
+                  </span>
+                  {favorites.includes(hymn.number) && <Heart size={14} className="shrink-0" fill="#EF4444" color="#EF4444" />}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

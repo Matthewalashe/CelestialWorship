@@ -5,6 +5,7 @@ import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton, PageSkeleton } from './
 import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { ToastHost } from './components/Toast';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -67,6 +68,7 @@ function App() {
         </Routes>
       </Suspense>
       <OfflineIndicator />
+      <ToastHost />
       <SpeedInsights />
     </ErrorBoundary>
   );

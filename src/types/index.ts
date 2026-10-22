@@ -50,11 +50,24 @@ export const CATEGORY_COLORS: Record<HymnCategory, string> = {
   christ_the_king: '#D4A843',          // Gold
 };
 
-// ---------- Hymn Verse (structured) ----------
+// ---------- Hymn Stanza (structured) ----------
+export type HymnStanzaKind = 'verse' | 'chorus';
+
 export interface HymnVerse {
-  number: number;
+  kind: HymnStanzaKind;
+  /** Verse number as printed in the hymnal; null for a chorus */
+  number: number | null;
   englishLines: string[];
   yorubaLines: string[];
+  /** True when the hymnal only says "Chorus" here and the text is the repeated chorus */
+  repeat?: boolean;
+}
+
+/** Section of the printed hymnal, e.g. Easter, Burial & Remembrance */
+export interface HymnSection {
+  id: string;
+  english: string;
+  yoruba: string;
 }
 
 // ---------- Hymn ----------
@@ -62,6 +75,7 @@ export interface Hymn {
   number: number;
   yorubaTitle: string | null;
   englishTitle: string | null;
+  section: HymnSection | null;
   yorubaLyrics: string;
   englishLyrics: string;
   solfaNotation: string | null;

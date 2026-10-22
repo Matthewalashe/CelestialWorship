@@ -6,6 +6,7 @@ import { useHymnSearch } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
 import { DisplayState, Hymn } from '../types';
+import { buildSlides, displayTitle } from '../utils/hymnText';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -35,6 +36,18 @@ export default function Control() {
 
   const handleShowLogo = () => updateDisplay({ type: 'logo', content: '' });
   const handleClearDisplay = () => updateDisplay({ type: 'blank', content: '' });
+
+  // B = black screen, L = logo, from anywhere on the operator page
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === 'b' || e.key === 'B') handleClearDisplay();
+      if (e.key === 'l' || e.key === 'L') handleShowLogo();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   return (
     <div className="flex flex-col h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] font-inter overflow-hidden">
@@ -146,7 +159,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
   const [search, setSearch] = useState('');
   const { results: hymns = [] } = useHymnSearch(search, []);
   const [selectedHymn, setSelectedHymn] = useState<Hymn | null>(null);
-  const [displayLang, setDisplayLang] = useState<'en' | 'yo'>('en');
+  const [displayLang, setDisplayLang] = useState<'en' | 'yo' | 'both'>('yo');
   const [queue, setQueue] = useState(loadOperatorQueue);
 
   const handleSelectHymn = (hymn: Hymn) => {
@@ -154,62 +167,55 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
     setSearch('');
   };
 
-  const handleDisplayVerse = (verseIndex: number, enContent: string, yoContent: string) => {
-    if (!selectedHymn) return;
-    const totalVerses = selectedHymn.verses?.length || 1;
+  const [repeatChorus, setRepeatChorus] = useState(true);
 
-    // Send only the selected language
-    const content = displayLang === 'yo' ? (yoContent || enContent) : (enContent || yoContent);
+  // Stanzas in sung order: a chorus printed once is repeated after every verse
+  const slides = useMemo(
+    () => (selectedHymn ? buildSlides(selectedHymn, repeatChorus) : []),
+    [selectedHymn, repeatChorus]
+  );
 
+  // Position of the slide on screen (1-based), only when this hymn is live
+  const activePosition = displayState.type === 'hymn' && displayState.hymnNumber === selectedHymn?.number
+    ? displayState.verseIndex ?? -1
+    : -1;
+
+  const showSlide = (position: number) => {
+    const slide = slides[position - 1];
+    if (!selectedHymn || !slide) return;
+    const yo = slide.verse.yorubaLines.join('\n');
+    const en = slide.verse.englishLines.join('\n');
+    const content = displayLang === 'yo' ? (yo || en) : displayLang === 'en' ? (en || yo) : [yo, en].filter(Boolean).join('\n\n');
     updateDisplay({
       type: 'hymn',
       hymnNumber: selectedHymn.number,
-      title: selectedHymn.englishTitle || selectedHymn.yorubaTitle || `Hymn ${selectedHymn.number}`,
+      title: `${displayTitle(selectedHymn, displayLang === 'en' ? 'en' : 'yo')} · ${slide.label}`,
       content,
-      verseIndex: verseIndex,
-      totalVerses: totalVerses
+      verseIndex: position,
+      totalVerses: slides.length,
     });
   };
 
-  let hymnVerses: { index: number; label: string; en: string; yo: string }[] = [];
-  if (selectedHymn) {
-    // Use structured verses array
-    if (selectedHymn.verses && selectedHymn.verses.length > 0) {
-      // Position-based index: verse.number can be a label such as "cr" (chorus), which breaks Next/Prev
-      hymnVerses = selectedHymn.verses.map((v: any, i: number) => ({
-        index: i + 1,
-        label: /^(cr|ch|c|chorus)$/i.test(String(v.number ?? '')) ? 'Chorus' : `Verse ${v.number ?? i + 1}`,
-        en: (v.english_lines || v.englishLines || []).join('\n'),
-        yo: (v.yoruba_lines || v.yorubaLines || []).join('\n'),
-      }));
-    } else {
-      const enVerses = selectedHymn.englishLyrics ? selectedHymn.englishLyrics.split(/\n\n+/) : [];
-      const yoVerses = selectedHymn.yorubaLyrics ? selectedHymn.yorubaLyrics.split(/\n\n+/) : [];
-      const total = Math.max(enVerses.length, yoVerses.length);
-      hymnVerses = Array.from({ length: total }).map((_, i) => ({
-        index: i + 1,
-        label: `Verse ${i + 1}`,
-        en: enVerses[i] || '',
-        yo: yoVerses[i] || ''
-      }));
-    }
-  }
-
-  const activeVerseIndex = displayState.type === 'hymn' && displayState.hymnNumber === selectedHymn?.number ? displayState.verseIndex : -1;
-
   const handleNextVerse = () => {
-    if (activeVerseIndex && activeVerseIndex < hymnVerses.length) {
-      const next = hymnVerses[activeVerseIndex];
-      handleDisplayVerse(next.index, next.en, next.yo);
-    }
+    if (activePosition < 1) showSlide(1);
+    else if (activePosition < slides.length) showSlide(activePosition + 1);
   };
 
   const handlePrevVerse = () => {
-    if (activeVerseIndex && activeVerseIndex > 1) {
-      const prev = hymnVerses[activeVerseIndex - 2];
-      handleDisplayVerse(prev.index, prev.en, prev.yo);
-    }
+    if (activePosition > 1) showSlide(activePosition - 1);
   };
+
+  // Keyboard: → / Space / PageDown = next, ← / PageUp = previous (clickers send PageUp/PageDown)
+  useEffect(() => {
+    if (!selectedHymn) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); handleNextVerse(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); handlePrevVerse(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   if (!selectedHymn) {
     return (
@@ -237,8 +243,8 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
                 {hymn.number}
               </div>
               <div className="flex-1">
-                <div className="text-lg font-bold group-hover:text-[var(--color-accent-gold)] transition-colors">{hymn.englishTitle || hymn.yorubaTitle}</div>
-                <div className="text-sm text-[var(--color-text-secondary)] line-clamp-1">{hymn.englishLyrics.split('\n')[0] || hymn.yorubaLyrics.split('\n')[0]}</div>
+                <div className="text-lg font-bold group-hover:text-[var(--color-accent-gold)] transition-colors">{displayTitle(hymn, "yo")}</div>
+                <div className="text-sm text-[var(--color-text-secondary)] line-clamp-1">{displayTitle(hymn, 'en')}</div>
               </div>
             </button>
           )) : queue && queue.items.length > 0 ? (
@@ -269,7 +275,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
                       </span>
                       <span className="flex-1 min-w-0">
                         <span className="block text-xs text-[var(--color-text-muted)]">{item.slotName}</span>
-                        <span className="block font-bold truncate">{hymn.englishTitle || hymn.yorubaTitle}</span>
+                        <span className="block font-bold truncate">{displayTitle(hymn, "yo")}</span>
                       </span>
                     </button>
                   );
@@ -294,7 +300,7 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
             <span className="bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] px-3 py-1 rounded-md font-bold text-sm">HYMN {selectedHymn.number}</span>
             <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">{selectedHymn.categories.join(', ').replace(/_/g, ' ')}</span>
           </div>
-          <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-text-primary)]">{selectedHymn.englishTitle || selectedHymn.yorubaTitle}</h2>
+          <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-text-primary)]">{displayTitle(selectedHymn, displayLang === 'en' ? 'en' : 'yo')}</h2>
         </div>
         <button 
           onClick={() => setSelectedHymn(null)}
@@ -311,14 +317,14 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
           <div className="flex gap-2">
             <button 
               onClick={handlePrevVerse}
-              disabled={!activeVerseIndex || activeVerseIndex <= 1}
+              disabled={activePosition <= 1}
               className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
             >
               <ChevronLeft size={16} className="inline" /> Prev
             </button>
             <button 
               onClick={handleNextVerse}
-              disabled={!activeVerseIndex || activeVerseIndex >= hymnVerses.length}
+              disabled={activePosition >= slides.length}
               className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
             >
               Next <ChevronRight size={16} className="inline" />
@@ -328,33 +334,39 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
         <div className="flex items-center gap-2">
           <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">Display Language:</span>
           <div className="flex bg-[var(--color-bg-card)] rounded-lg p-0.5 border border-[var(--color-border)]">
-            <button
-              onClick={() => setDisplayLang('en')}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                displayLang === 'en' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setDisplayLang('yo')}
-              className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                displayLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
-              }`}
-            >
-              Yorùbá
-            </button>
+            {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
+              <button
+                key={key}
+                onClick={() => setDisplayLang(key)}
+                aria-pressed={displayLang === key}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
+                  displayLang === key ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
+          <label className="flex items-center gap-2 text-xs ml-auto" style={{ color: 'var(--color-text-secondary)' }}>
+            <input type="checkbox" checked={repeatChorus} onChange={e => setRepeatChorus(e.target.checked)} />
+            Repeat chorus after each verse
+          </label>
         </div>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+          Keys: → / Space next · ← previous · B black screen · L logo
+        </p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pb-8 pr-2">
-        {hymnVerses.map((verse) => {
-          const isActive = activeVerseIndex === verse.index;
+        {slides.map((slide, i) => {
+          const position = i + 1;
+          const isActive = activePosition === position;
+          const preview = (displayLang === 'en' ? slide.verse.englishLines : slide.verse.yorubaLines).join('\n')
+            || slide.verse.englishLines.join('\n') || slide.verse.yorubaLines.join('\n');
           return (
             <button
-              key={verse.index}
-              onClick={() => handleDisplayVerse(verse.index, verse.en, verse.yo)}
+              key={position}
+              onClick={() => showSlide(position)}
               className={`flex flex-col text-left p-5 rounded-2xl border-2 transition-all group relative overflow-hidden ${
                 isActive 
                   ? 'bg-[var(--color-accent-gold)]/10 border-[var(--color-accent-gold)] shadow-[0_0_20px_rgba(212,168,67,0.15)] ring-1 ring-[var(--color-accent-gold)]' 
@@ -363,15 +375,15 @@ function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState,
             >
               <div className="flex items-center justify-between w-full mb-3">
                 <span className={`text-xl font-bold px-3 py-1 rounded-md ${isActive ? 'bg-[var(--color-accent-gold)] text-[var(--color-bg-primary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] group-hover:bg-[var(--color-accent-gold)]/20 group-hover:text-[var(--color-accent-gold)]'}`}>
-                  {verse.label}
+                  {slide.label}
                 </span>
                 {isActive && <span className="flex h-3 w-3 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-gold)] opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-[var(--color-accent-gold)]"></span>
                 </span>}
               </div>
-              <div className={`text-sm line-clamp-4 ${isActive ? 'text-[var(--color-text-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}>
-                {verse.en}
+              <div className={`text-sm line-clamp-4 whitespace-pre-line ${isActive ? 'text-[var(--color-text-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}>
+                {preview}
               </div>
             </button>
           );

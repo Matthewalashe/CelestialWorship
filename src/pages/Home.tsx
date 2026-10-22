@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTodaysLessons, useLessons } from '../hooks/useLessons';
 import { getServiceTypesForDate, formatDate, getUpcomingServiceDays, getDayName } from '../utils/dateUtils';
@@ -7,55 +7,10 @@ import { useNotifications } from '../hooks/useNotifications';
 import { BookOpen, Music, ScrollText, Calendar, Scale, MonitorPlay, StickyNote, ListMusic, Bird, Bell, CircleCheck, Download, Zap, Star, Flame, Sunrise, ChevronRight, Share2 } from 'lucide-react';
 import { CCCLogo, MemberInPrayer, MercyDayItems } from '../components/icons/celestial-icons';
 import { getVerseOfTheDay } from '../data/dailyVerses';
-
-/**
- * Compute Easter Sunday for a given year using the Anonymous Gregorian algorithm.
- */
-function getEasterDate(year: number): Date {
-  const a = year % 19;
-  const b = Math.floor(year / 100);
-  const c = year % 100;
-  const d = Math.floor(b / 4);
-  const e = b % 4;
-  const f = Math.floor((b + 8) / 25);
-  const g = Math.floor((b - f + 1) / 3);
-  const h = (19 * a + b - d - g + 15) % 30;
-  const i = Math.floor(c / 4);
-  const k = c % 4;
-  const l = (32 + 2 * e + 2 * i - h - k) % 7;
-  const m = Math.floor((a + 11 * h + 22 * l) / 451);
-  const month = Math.floor((h + l - 7 * m + 114) / 31); // 3 = March, 4 = April
-  const day = ((h + l - 7 * m + 114) % 31) + 1;
-  return new Date(year, month - 1, day);
-}
-
-function getLiturgicalExclamation(date: Date): string {
-  const year = date.getFullYear();
-  const easter = getEasterDate(year);
-
-  // Palm Sunday = Easter − 7 days
-  const palmSunday = new Date(easter);
-  palmSunday.setDate(easter.getDate() - 7);
-
-  // Easter week = Easter Sunday through the following Saturday (7 days)
-  const easterWeekEnd = new Date(easter);
-  easterWeekEnd.setDate(easter.getDate() + 6);
-
-  // Compare dates (ignore time)
-  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const palm = new Date(palmSunday.getFullYear(), palmSunday.getMonth(), palmSunday.getDate());
-  const eStart = new Date(easter.getFullYear(), easter.getMonth(), easter.getDate());
-  const eEnd = new Date(easterWeekEnd.getFullYear(), easterWeekEnd.getMonth(), easterWeekEnd.getDate());
-
-  if (d.getTime() === palm.getTime()) return 'Hossanah';
-  // Easter week Mon–Sat only (Easter Sunday itself stays Halleluyah)
-  if (d > eStart && d <= eEnd) return 'Hallelujah';
-  return 'Halleluyah';
-}
+import { getLiturgicalExclamation } from '../utils/liturgical';
 
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useMemo } from 'react';
 
 export default function Home() {
   usePageView('home');
