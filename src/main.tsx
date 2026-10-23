@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './hooks/useTheme'
 import { AuthProvider } from './hooks/useAuth'
 import { ReaderProvider } from './hooks/useReader'
+import { MusicProvider } from './hooks/useMusic'
 import ScrollToTop from './components/ScrollToTop'
 import App from './App'
 import './index.css'
@@ -18,8 +19,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <ThemeProvider>
         <AuthProvider>
           <ReaderProvider>
-            <ScrollToTop />
-            <App />
+            <MusicProvider>
+              <ScrollToTop />
+              <App />
+            </MusicProvider>
           </ReaderProvider>
         </AuthProvider>
       </ThemeProvider>

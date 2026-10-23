@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, Clock, LogOut, Church, Gavel, Save, Settings, User as UserIcon } from 'lucide-react';
+import { ShieldCheck, Clock, LogOut, Church, Gavel, Save, Settings } from 'lucide-react';
 import { useProfile, MEMBER_TYPES, CHURCH_TITLE_SUGGESTIONS, MINISTRY_SUGGESTIONS, type MemberType, type MemberProfile } from '../hooks/useProfile';
 import { useAuth } from '../hooks/useAuth';
 import { useParishes } from '../hooks/useParishes';
@@ -10,6 +10,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
 import { AppSettings } from '../components/AppSettings';
+import { ProfileMedia } from '../components/ProfileMedia';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -61,11 +62,8 @@ export default function Profile() {
 
   return (
     <div className="px-4 py-6 max-w-xl mx-auto pb-24 space-y-5">
+      <ProfileMedia />
       <header className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold"
-             style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}>
-          {profile.displayName ? profile.displayName.trim()[0]?.toUpperCase() : <UserIcon size={24} />}
-        </div>
         <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold font-[Outfit] truncate" style={{ color: 'var(--color-text-primary)' }}>
             {[profile.churchTitle, profile.displayName].filter(Boolean).join(' ') || 'Your profile'}

@@ -109,6 +109,30 @@ export const PLACES: BiblePlace[] = [
   p('rome', 'Rome', 'Rome', 'Italy', 41.8925, 12.4853, 'The capital of Italy, where Paul lived two years under guard and wrote letters.', 'Acts 28:16-31; Romans 1:7', { map: 'world' }),
   p('melita', 'Melita', 'Malta', 'Malta', 35.9500, 14.4100, 'St Paul’s Bay recalls the shipwreck.', 'Acts 28:1-10', { map: 'world' }),
   p('paphos', 'Paphos (Cyprus)', 'Paphos', 'Cyprus', 34.7550, 32.4067, 'Ruins and St Paul’s Pillar, where the proconsul believed.', 'Acts 13:6-12', { map: 'world' }),
+  // ── The journeys of Paul and the churches he wrote to ──
+  p('seleucia', 'Seleucia', 'Çevlik, near Samandağ', 'Turkey', 36.1233, 35.9222, 'The silted harbour of Antioch, with a great rock-cut water tunnel. Paul and Barnabas sailed from here.', 'Acts 13:4', { map: 'world' }),
+  p('salamis', 'Salamis', 'near Famagusta', 'Cyprus (north)', 35.1847, 33.9006, 'Wide Roman ruins by the sea; Barnabas, a Cypriot, is remembered at a monastery nearby.', 'Acts 13:5', { map: 'world' }),
+  p('perga', 'Perga in Pamphylia', 'Aksu, near Antalya', 'Turkey', 36.9614, 30.8539, 'Ruins with a long colonnaded street. Here John Mark left Paul and Barnabas.', 'Acts 13:13; 14:25', { map: 'world' }),
+  p('attalia', 'Attalia', 'Antalya', 'Turkey', 36.8847, 30.7040, 'A large resort city on the Mediterranean; its old harbour is still in use.', 'Acts 14:25-26', { map: 'world' }),
+  p('pisidian-antioch', 'Antioch in Pisidia', 'near Yalvaç', 'Turkey', 38.3058, 31.1894, 'Hilltop ruins where Paul preached in the synagogue and turned to the Gentiles.', 'Acts 13:14-52', { map: 'world' }),
+  p('iconium', 'Iconium', 'Konya', 'Turkey', 37.8714, 32.4846, 'A large city on the Anatolian plateau.', 'Acts 14:1-6', { map: 'world' }),
+  p('lystra', 'Lystra', 'near Hatunsaray', 'Turkey', 37.5783, 32.4522, 'An unexcavated mound. A lame man was healed, and Paul was stoned. Timothy came from here.', 'Acts 14:8-20; 16:1', { map: 'world' }),
+  p('derbe', 'Derbe', 'Kerti Höyük, near Karaman', 'Turkey', 37.3833, 33.5167, 'A ruin mound; Paul made many disciples here before turning back.', 'Acts 14:20-21', { map: 'world', traditional: true }),
+  p('troas', 'Troas', 'Alexandria Troas (ruins), near Dalyan', 'Turkey', 39.7522, 26.1589, 'Ruins on the Aegean. Paul saw the vision of the man of Macedonia, and Eutychus fell from a window.', 'Acts 16:8-10; 20:6-12', { map: 'world' }),
+  p('neapolis', 'Neapolis', 'Kavala', 'Greece', 40.9369, 24.4122, 'A harbour town, Paul’s first landing in Europe.', 'Acts 16:11', { map: 'world' }),
+  p('thessalonica', 'Thessalonica', 'Thessaloniki', 'Greece', 40.6401, 22.9444, 'Greece’s second city; the Roman forum and the Arch of Galerius remain.', 'Acts 17:1-9; 1 Thessalonians 1:1', { map: 'world' }),
+  p('berea', 'Berea', 'Veria', 'Greece', 40.5236, 22.2025, 'A town in Macedonia whose Jews “searched the scriptures daily”; a monument marks Paul’s preaching.', 'Acts 17:10-12', { map: 'world' }),
+  p('cenchreae', 'Cenchrea', 'Kechries', 'Greece', 37.8844, 22.9925, 'Sunken harbour ruins of Corinth. Phebe served the church here.', 'Acts 18:18; Romans 16:1', { map: 'world' }),
+  p('miletus', 'Miletus', 'near Balat', 'Turkey', 37.5303, 27.2783, 'Ruins with a great theatre, once a harbour. Paul said farewell to the Ephesian elders here.', 'Acts 20:15-38', { map: 'world' }),
+  p('myra', 'Myra in Lycia', 'Demre', 'Turkey', 36.2589, 29.9850, 'Rock-cut tombs and the church of St Nicholas. Paul changed ships here on the way to Rome.', 'Acts 27:5-6', { map: 'world' }),
+  p('fair-havens', 'The Fair Havens', 'Kali Limenes', 'Greece (Crete)', 34.9300, 24.8100, 'A small bay on the south coast of Crete.', 'Acts 27:8', { map: 'world' }),
+  p('syracuse', 'Syracuse', 'Syracuse', 'Italy (Sicily)', 37.0755, 15.2866, 'A city in Sicily; Paul stayed three days.', 'Acts 28:12', { map: 'world' }),
+  p('rhegium', 'Rhegium', 'Reggio Calabria', 'Italy', 38.1113, 15.6473, 'A city at the toe of Italy.', 'Acts 28:13', { map: 'world' }),
+  p('puteoli', 'Puteoli', 'Pozzuoli, near Naples', 'Italy', 40.8228, 14.1222, 'A port town; brethren met Paul here and he stayed seven days.', 'Acts 28:13-14', { map: 'world' }),
+  p('galatia', 'Galatia', 'central Turkey (around Ankara)', 'Turkey', 39.9334, 32.8597, 'A Roman province, not a city: Paul wrote “unto the churches of Galatia”, such as Iconium, Lystra and Derbe.', 'Galatians 1:2', { map: 'world' }),
+  p('colossae', 'Colosse', 'unexcavated mound near Honaz', 'Turkey', 37.7883, 29.2569, 'A mound in the Lycus valley. Philemon and Epaphras belonged to this church.', 'Colossians 1:2; Philemon 1:2', { map: 'world' }),
+  p('laodicea', 'Laodicea', 'near Denizli', 'Turkey', 37.8358, 29.1075, 'Large restored ruins. Paul mentions a letter to it; Revelation calls it lukewarm.', 'Colossians 4:16; Revelation 3:14-22', { map: 'world' }),
+  p('crete', 'Crete', 'Gortyn, Crete', 'Greece', 35.0614, 24.9472, 'Ruins of the Roman capital of Crete, where Titus was left to ordain elders.', 'Titus 1:5', { map: 'world' }),
   p('ararat', 'The mountains of Ararat', 'Mount Ararat (Ağrı Dağı)', 'Turkey', 39.7019, 44.2983, 'A snow-capped volcano near the borders of Turkey, Armenia and Iran.', 'Genesis 8:4', { map: 'world', traditional: true }),
   p('thebes', 'No (Thebes)', 'Luxor', 'Egypt', 25.6872, 32.6396, 'The temples of Karnak and Luxor on the Nile.', 'Jeremiah 46:25; Nahum 3:8', { map: 'world' }),
   p('cyrene', 'Cyrene', 'Shahat', 'Libya', 32.8250, 21.8581, 'Greek ruins in Libya. Simon of Cyrene carried Jesus’ cross.', 'Mark 15:21; Acts 2:10', { map: 'world' }),
@@ -145,6 +169,61 @@ export const JESUS_JOURNEY: JourneyStop[] = [
   { placeId: 'emmaus', prompt: 'On the road to which village did the risen Jesus walk with two disciples?', ref: 'Luke 24:13-35' },
   { placeId: 'tabgha', prompt: 'Where did the risen Jesus cook breakfast and tell Peter, “Feed my sheep”?', ref: 'John 21:1-17' },
   { placeId: 'olives', prompt: 'From where did Jesus ascend into heaven?', ref: 'Acts 1:9-12; Luke 24:50-51' },
+];
+
+// ── The journeys of Paul, in order (Acts 9–28) ────────────────
+
+export interface PaulStop extends JourneyStop { journey: 'conversion' | 'first' | 'second' | 'third' | 'rome' }
+
+export const PAUL_JOURNEY: PaulStop[] = [
+  { journey: 'conversion', placeId: 'damascus', prompt: 'On the road to which city did Saul see the light and hear Jesus?', ref: 'Acts 9:1-19' },
+  { journey: 'conversion', placeId: 'tarsus', prompt: 'To which city, his birthplace, was Saul sent away for safety?', ref: 'Acts 9:30; 22:3' },
+  { journey: 'conversion', placeId: 'antioch', prompt: 'Where did Barnabas bring Saul to teach, and the disciples were first called Christians?', ref: 'Acts 11:25-26' },
+  { journey: 'first', placeId: 'salamis', prompt: 'First journey: in which city of Cyprus did they first preach?', ref: 'Acts 13:4-5' },
+  { journey: 'first', placeId: 'paphos', prompt: 'Where was Elymas the sorcerer struck blind and the deputy believed?', ref: 'Acts 13:6-12' },
+  { journey: 'first', placeId: 'pisidian-antioch', prompt: 'Where did Paul say, “lo, we turn to the Gentiles”?', ref: 'Acts 13:14-46' },
+  { journey: 'first', placeId: 'iconium', prompt: 'From which city did they flee when an assault was made to stone them?', ref: 'Acts 14:1-6' },
+  { journey: 'first', placeId: 'lystra', prompt: 'Where did the people call Barnabas Jupiter and Paul Mercurius?', ref: 'Acts 14:8-19' },
+  { journey: 'first', placeId: 'derbe', prompt: 'Which was the farthest city of the first journey?', ref: 'Acts 14:20-21' },
+  { journey: 'second', placeId: 'troas', prompt: 'Second journey: where did Paul see the vision, “Come over into Macedonia”?', ref: 'Acts 16:8-10' },
+  { journey: 'second', placeId: 'philippi', prompt: 'Where was Lydia baptised, and the jailer believed after the earthquake?', ref: 'Acts 16:12-34' },
+  { journey: 'second', placeId: 'thessalonica', prompt: 'Where did Jason’s house shelter Paul, and a church begin that he later wrote to twice?', ref: 'Acts 17:1-9' },
+  { journey: 'second', placeId: 'berea', prompt: 'Whose people “received the word with all readiness of mind”?', ref: 'Acts 17:10-12' },
+  { journey: 'second', placeId: 'athens', prompt: 'Where did Paul preach about the altar “TO THE UNKNOWN GOD”?', ref: 'Acts 17:16-34' },
+  { journey: 'second', placeId: 'corinth', prompt: 'Where did Paul make tents with Aquila and Priscilla for eighteen months?', ref: 'Acts 18:1-11' },
+  { journey: 'third', placeId: 'ephesus', prompt: 'Third journey: where did Paul teach for two years, until the riot for Diana?', ref: 'Acts 19:1-41' },
+  { journey: 'third', placeId: 'miletus', prompt: 'Where did Paul say farewell to the elders of Ephesus on the shore?', ref: 'Acts 20:17-38' },
+  { journey: 'third', placeId: 'jerusalem', prompt: 'Where was Paul arrested in the Temple?', ref: 'Acts 21:27-33' },
+  { journey: 'rome', placeId: 'caesarea', prompt: 'Where was Paul kept two years, and appealed unto Caesar?', ref: 'Acts 24:27; 25:11' },
+  { journey: 'rome', placeId: 'myra', prompt: 'At which port of Lycia did they change to a ship of Alexandria?', ref: 'Acts 27:5-6' },
+  { journey: 'rome', placeId: 'fair-havens', prompt: 'At which bay of Crete did Paul warn them not to sail on?', ref: 'Acts 27:8-10' },
+  { journey: 'rome', placeId: 'melita', prompt: 'On which island were they shipwrecked, and a viper fastened on Paul’s hand?', ref: 'Acts 28:1-6' },
+  { journey: 'rome', placeId: 'puteoli', prompt: 'At which Italian port did brethren meet Paul?', ref: 'Acts 28:13-14' },
+  { journey: 'rome', placeId: 'rome', prompt: 'Where did Paul live two years in his own hired house, preaching the kingdom of God?', ref: 'Acts 28:30-31' },
+];
+
+export const PAUL_JOURNEY_NAMES: Record<PaulStop['journey'], string> = {
+  conversion: 'Conversion', first: 'First journey', second: 'Second journey', third: 'Third journey', rome: 'Voyage to Rome',
+};
+
+// ── The churches and people Paul wrote to ─────────────────────
+
+export interface PaulLetter { letter: string; to: string; placeId: string; from: string; when: string; ref: string }
+
+export const PAUL_LETTERS: PaulLetter[] = [
+  { letter: 'Romans', to: 'all that be in Rome, beloved of God', placeId: 'rome', from: 'Corinth', when: 'about AD 57', ref: 'Romans 1:7' },
+  { letter: '1 Corinthians', to: 'the church of God which is at Corinth', placeId: 'corinth', from: 'Ephesus', when: 'about AD 55', ref: '1 Corinthians 1:2' },
+  { letter: '2 Corinthians', to: 'the church of God which is at Corinth, with all the saints in Achaia', placeId: 'corinth', from: 'Macedonia', when: 'about AD 56', ref: '2 Corinthians 1:1' },
+  { letter: 'Galatians', to: 'the churches of Galatia', placeId: 'galatia', from: 'Antioch or Ephesus (uncertain)', when: 'about AD 49–55', ref: 'Galatians 1:2' },
+  { letter: 'Ephesians', to: 'the saints which are at Ephesus', placeId: 'ephesus', from: 'prison, probably Rome', when: 'about AD 60–62', ref: 'Ephesians 1:1' },
+  { letter: 'Philippians', to: 'all the saints in Christ Jesus which are at Philippi', placeId: 'philippi', from: 'prison, probably Rome', when: 'about AD 61', ref: 'Philippians 1:1' },
+  { letter: 'Colossians', to: 'the saints and faithful brethren in Christ which are at Colosse', placeId: 'colossae', from: 'prison, probably Rome', when: 'about AD 60–62', ref: 'Colossians 1:2' },
+  { letter: '1 Thessalonians', to: 'the church of the Thessalonians', placeId: 'thessalonica', from: 'Corinth', when: 'about AD 50–51, among the first letters', ref: '1 Thessalonians 1:1' },
+  { letter: '2 Thessalonians', to: 'the church of the Thessalonians', placeId: 'thessalonica', from: 'Corinth', when: 'about AD 51', ref: '2 Thessalonians 1:1' },
+  { letter: '1 Timothy', to: 'Timothy, left at Ephesus', placeId: 'ephesus', from: 'Macedonia', when: 'about AD 62–64', ref: '1 Timothy 1:2-3' },
+  { letter: '2 Timothy', to: 'Timothy, probably still at Ephesus', placeId: 'ephesus', from: 'prison in Rome, Paul’s last letter', when: 'about AD 64–67', ref: '2 Timothy 1:2; 4:6' },
+  { letter: 'Titus', to: 'Titus, left in Crete', placeId: 'crete', from: 'Macedonia or Nicopolis', when: 'about AD 63', ref: 'Titus 1:4-5' },
+  { letter: 'Philemon', to: 'Philemon, and the church in his house at Colosse', placeId: 'colossae', from: 'prison, probably Rome', when: 'about AD 60–62', ref: 'Philemon 1:1-2' },
 ];
 
 // ── Regions in the time of Jesus (approximate) ────────────────

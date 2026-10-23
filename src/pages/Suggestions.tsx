@@ -506,7 +506,7 @@ export default function Suggestions() {
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-bold ${
                         slot.selectedHymn
-                          ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
+                          ? 'bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)]'
                           : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)]'
                       }`}>
                         {slot.stepNumber}
@@ -779,7 +779,7 @@ export default function Suggestions() {
 
               <button
                 onClick={sendToOperator}
-                className="py-2.5 rounded-xl bg-gradient-to-r from-[var(--color-accent-gold)] to-[#E8C36A] text-[#0A1628] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
+                className="py-2.5 rounded-xl bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
               >
                 <><MonitorPlay size={14} className="inline mr-1" /> Send to Operator</>
               </button>

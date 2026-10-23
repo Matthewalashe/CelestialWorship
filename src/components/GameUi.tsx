@@ -100,10 +100,10 @@ export function BadgeShelf({ earned }: { earned: string[] }) {
       {BADGES.map(b => {
         const has = earned.includes(b.id);
         return (
-          <li key={b.id} className="rounded-xl p-2 text-center border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', opacity: has ? 1 : 0.45 }}
+          <li key={b.id} className="rounded-xl p-2 text-center border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: has ? 'var(--color-accent-gold)' : 'var(--color-border)' }}
               title={b.description}>
-            <span className="text-2xl block" aria-hidden style={{ filter: has ? undefined : 'grayscale(1)' }}>{b.icon}</span>
-            <span className="block text-[11px] font-semibold leading-tight mt-1" style={{ color: 'var(--color-text-primary)' }}>{b.title}</span>
+            <span className="text-2xl block" aria-hidden style={{ filter: has ? undefined : 'grayscale(1)', opacity: has ? 1 : 0.4 }}>{b.icon}</span>
+            <span className="block text-[11px] font-semibold leading-tight mt-1" style={{ color: has ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>{b.title}</span>
             <span className="sr-only">{has ? 'Earned' : 'Not yet earned'}: {b.description}</span>
           </li>
         );

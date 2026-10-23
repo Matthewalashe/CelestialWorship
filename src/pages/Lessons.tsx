@@ -108,7 +108,7 @@ export default function Lessons() {
           onClick={() => setView('calendar')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             view === 'calendar'
-              ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
+              ? 'bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)]'
               : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]'
           }`}
         >
@@ -118,7 +118,7 @@ export default function Lessons() {
           onClick={() => setView('list')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             view === 'list'
-              ? 'bg-[var(--color-accent-gold)] text-[#0A1628]'
+              ? 'bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)]'
               : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]'
           }`}
         >
@@ -155,10 +155,14 @@ export default function Lessons() {
                 <Link
                   key={iso}
                   to={dayLessons ? `/lessons/${iso}` : '#'}
+                  // Days without lessons are not links
+                  tabIndex={dayLessons ? undefined : -1}
+                  aria-disabled={dayLessons ? undefined : true}
+                  onClick={dayLessons ? undefined : e => e.preventDefault()}
                   className={`aspect-square rounded-lg flex flex-col items-center justify-center text-sm transition-all relative ${
                     dayLessons
                       ? 'bg-[var(--color-bg-secondary)] hover:bg-[var(--color-accent-gold)]/20 cursor-pointer'
-                      : 'opacity-40 cursor-default'
+                      : 'cursor-default pointer-events-none'
                   } ${isToday ? 'ring-2 ring-[var(--color-accent-gold)]' : ''}`}
                 >
                   <span className={`font-medium ${dayLessons ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-muted)]'}`}>

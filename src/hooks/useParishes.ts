@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 import { useAuth } from './useAuth';
 import { raise, BackendError } from '../lib/backend';
+import type { LiveChannels } from '../lib/live';
 
 export interface ServiceTime { service: string; day?: string; time: string }
 
@@ -41,6 +42,12 @@ export interface Parish {
   live_title?: string | null;
   live_now?: boolean;
   live_updated_at?: string | null;
+  /** Where the parish streams (see lib/live.ts) */
+  live_channels?: LiveChannels | null;
+  /** On the Partner plan: gifts, support and livestreaming */
+  partner?: boolean;
+  logo_url?: string | null;
+  cover_url?: string | null;
   /** Seed entries (headquarters) shipped with the app */
   seed?: boolean;
 }

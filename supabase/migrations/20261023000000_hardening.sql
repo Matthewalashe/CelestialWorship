@@ -157,3 +157,13 @@ alter table public.parishes add constraint parishes_https_links check (
 );
 alter table public.events drop constraint if exists events_https_image;
 alter table public.events add constraint events_https_image check (public.is_https_url(image_url));
+
+-- ─────────────────────────────────────────────────────────────
+-- Articles are written by verified shepherds (of a parish or independent) only
+-- ─────────────────────────────────────────────────────────────
+drop policy if exists "articles: write own" on public.articles;
+create policy "articles: write own" on public.articles for insert
+  with check (auth.uid() = author_id and public.is_trusted_author(auth.uid()));
+drop policy if exists "articles: edit own" on public.articles;
+create policy "articles: edit own" on public.articles for update
+  using ((auth.uid() = author_id and public.is_trusted_author(auth.uid())) or public.is_moderator());

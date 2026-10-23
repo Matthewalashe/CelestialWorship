@@ -14,6 +14,7 @@ import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReader } from '../hooks/useReader';
 import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
+import { MusicButton, NowPlaying } from '../components/Music';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { recordChapterOpened, recordChapterCompleted, useReadingProgress } from '../hooks/useProgress';
 import { HIGHLIGHT_COLORS, type HighlightColor, type Note } from '../types/notes';
@@ -334,6 +335,7 @@ export default function BibleChapter() {
       };
       u.onend = () => speakFrom(i + 1);
       u.onerror = () => setSpeakingVerse(null);
+      window.dispatchEvent(new Event('cw-speech-start')); // pauses background music
       window.speechSynthesis.speak(u);
     };
     window.speechSynthesis.cancel();
@@ -379,9 +381,12 @@ export default function BibleChapter() {
                   aria-pressed={sideBySide} aria-label="Side by side" title="Side by side">
             <Columns2 size={16} />
           </button>
+          <MusicButton />
           <ReaderButtons wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }} />
         </div>
       </div>
+
+      <NowPlaying />
 
       {/* Title + versions */}
       <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
@@ -530,6 +535,7 @@ export default function BibleChapter() {
           prev={chapter > 1 ? { label: `Chapter ${chapter - 1}`, go: () => navigate(chapterPath(chapter - 1)) } : undefined}
           next={chapter < bookInfo.chapters ? { label: `Chapter ${chapter + 1}`, go: () => navigate(chapterPath(chapter + 1)) } : undefined}
           wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }}
+          actions={<MusicButton />}
         >
           <p>
             {sortedVerses.map(([verseNum, text]) => (

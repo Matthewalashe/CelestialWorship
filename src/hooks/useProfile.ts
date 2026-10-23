@@ -49,6 +49,9 @@ export interface MemberProfile {
   preferredLanguage: 'en' | 'yo' | 'fr';
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   onboardedAt: string | null;
+  /** Profile photo and banner (set through lib/media.ts) */
+  avatarUrl: string | null;
+  bannerUrl: string | null;
 }
 
 const KEY = 'cw-profile';
@@ -56,7 +59,7 @@ const CHANGE_EVENT = 'cw-profile-changed';
 
 export const EMPTY_PROFILE: MemberProfile = {
   displayName: '', memberType: 'laity', churchTitle: '', ministry: '', parishId: null, parishName: '', country: '',
-  stateRegion: '', phone: '', phonePublic: false, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified',
+  stateRegion: '', phone: '', phonePublic: false, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified', avatarUrl: null, bannerUrl: null,
   onboardedAt: null,
 };
 
@@ -110,6 +113,8 @@ function fromRow(row: any, local: MemberProfile): MemberProfile {
     preferredLanguage: row.preferred_language ?? local.preferredLanguage,
     verificationStatus: row.verification_status ?? local.verificationStatus,
     onboardedAt: row.onboarded_at ?? local.onboardedAt,
+    avatarUrl: row.avatar_url ?? null,
+    bannerUrl: row.banner_url ?? null,
   };
 }
 

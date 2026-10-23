@@ -20,7 +20,7 @@ export interface PayoutAccount {
   updated_at: string;
 }
 
-async function invoke<T>(name: string, body?: unknown, method: 'GET' | 'POST' = 'POST'): Promise<T> {
+export async function invoke<T>(name: string, body?: unknown, method: 'GET' | 'POST' = 'POST'): Promise<T> {
   const { data, error } = await supabase.functions.invoke(name, { body: body as Record<string, unknown>, method });
   if (error) {
     // The function's own error message, when it returned one

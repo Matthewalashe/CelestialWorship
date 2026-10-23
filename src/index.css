@@ -23,23 +23,23 @@
   --color-accent-brand: #2539C7;
   --color-accent-brand-light: #4B61DB;
   --color-accent-brand-dark: #1C2DA0;
-  --color-accent-gold: #96760F;
+  --color-accent-gold: #7A5F0A;  /* 4.5:1 on white (WCAG AA) */
   --color-accent-gold-light: #B8922F;
   --color-accent-blue: #1E4FAF;
   --color-accent-blue-light: #3B6FD4;
 
   --color-text-primary: #1E293B;
   --color-text-secondary: #475569;
-  --color-text-muted: #94A3B8;
+  --color-text-muted: #5F6B7D;  /* 4.9:1 on the page background */
   --color-text-on-accent: #FFFFFF;
 
   --color-border: #E2E8F0;
   --color-border-hover: #CBD5E1;
   --color-shadow: rgba(0, 0, 0, 0.08);
 
-  --color-success: #059669;
+  --color-success: #047857;
   --color-error: #DC2626;
-  --color-warning: #D97706;
+  --color-warning: #B45309;
 }
 
 /* ---------- Dark Theme ---------- */
@@ -51,7 +51,7 @@
   --color-bg-nav: rgba(11, 17, 32, 0.88);
   --color-bg-glass: rgba(26, 37, 56, 0.7);
 
-  --color-accent-brand: #6B7FF0;
+  --color-accent-brand: #8D9DF5;
   --color-accent-brand-light: #8D9DF5;
   --color-accent-brand-dark: #4B61DB;
   --color-accent-gold: #D4A843;
@@ -61,7 +61,7 @@
 
   --color-text-primary: #F1F5F9;
   --color-text-secondary: #94A3B8;
-  --color-text-muted: #64748B;
+  --color-text-muted: #8A99AE;  /* 4.5:1 on cards */
   --color-text-on-accent: #0B1120;
 
   --color-border: #2A3A52;
@@ -396,3 +396,8 @@
     max-width: 100% !important;
   }
 }
+
+/* ---------- Articles: long-form reading (pages/ArticleDetail.tsx) ---------- */
+.article-body > div { line-height: inherit; }
+.article-body p { margin: 0 0 1.15em; }
+.article-body blockquote { font-style: italic; }

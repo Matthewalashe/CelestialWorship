@@ -11,7 +11,10 @@ import {
   type AppointmentSlot, type Appointment,
 } from '../lib/parishAdmin';
 import { SignInPrompt } from '../components/CommunityStates';
-import { LiveEmbed, isLiveNow } from '../components/LiveEmbed';
+import { LivePlayer, isLiveNow } from '../components/LiveEmbed';
+import { FollowButton } from '../components/FollowButton';
+import { ParishGallery } from '../components/ParishMedia';
+import { listLivestreams, bestEmbed, isStreamLive, PLATFORMS, type Livestream, type LivePlatform } from '../lib/live';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
 import { safeHref } from '../utils/safeUrl';
@@ -167,6 +170,12 @@ export default function ParishPage() {
         <ChevronLeft size={16} /> Parishes
       </Link>
 
+      {(parish.cover_url || parish.logo_url) && (
+        <div className="relative w-full aspect-[8/3] rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
+          {parish.cover_url && <img src={parish.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+          {parish.logo_url && <img src={parish.logo_url} alt="" className="absolute left-3 bottom-3 w-16 h-16 rounded-xl object-cover border-2 border-white" />}
+        </div>
+      )}
       <header>
         <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{parish.name}</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
@@ -174,6 +183,7 @@ export default function ParishPage() {
         </p>
         {parish.shepherd_name && <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Shepherd: {parish.shepherd_name}</p>}
         <div className="flex flex-wrap gap-2 mt-3">
+          <FollowButton parishId={parish.id} name={parish.name} />
           <button onClick={async () => { await save({ parishId: parish.id, parishName: parish.name, country: parish.country, stateRegion: parish.state_region ?? '' }); showToast('Set as your parish'); }}
                   disabled={isMine} className="px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5 disabled:opacity-100"
                   style={isMine ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}>
@@ -188,7 +198,8 @@ export default function ParishPage() {
         </div>
       </header>
 
-      {safeHref(parish.live_url) && <LiveEmbed url={parish.live_url!} title={parish.live_title} live={isLiveNow(parish.live_now, parish.live_updated_at)} />}
+      <ParishLive parishId={parish.id} parish={parish} />
+      <ParishGallery parishId={parish.id} />
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         {parish.address && (
@@ -271,5 +282,39 @@ export default function ParishPage() {
         </section>
       )}
     </div>
+  );
+}
+
+/** The parish's broadcast now, its next one, and where it streams */
+function ParishLive({ parishId, parish }: { parishId: string; parish: import('../hooks/useParishes').Parish }) {
+  const [streams, setStreams] = useState<Livestream[]>([]);
+  useEffect(() => { listLivestreams({ parishId, limit: 10 }).then(r => setStreams(r ?? [])).catch(() => {}); }, [parishId]);
+  const live = streams.find(isStreamLive);
+  const next = streams.filter(s => s.status === 'scheduled' && s.scheduled_at && new Date(s.scheduled_at) > new Date())
+    .sort((a, b) => a.scheduled_at!.localeCompare(b.scheduled_at!))[0];
+  const channels = Object.entries(parish.live_channels ?? {}).filter(([k, v]) => k !== 'youtube_channel_id' && safeHref(v as string)) as [LivePlatform, string][];
+  const legacyLive = !live && safeHref(parish.live_url) && isLiveNow(parish.live_now, parish.live_updated_at);
+  if (!live && !next && !channels.length && !legacyLive) return null;
+  return (
+    <section className="space-y-3">
+      {live && (
+        <Link to={`/live/${live.id}`} className="block"><LivePlayer embed={bestEmbed(live, parish.live_channels)} destinations={live.destinations} title={live.title} live /></Link>
+      )}
+      {legacyLive && <LivePlayer embed={bestEmbed({ destinations: [{ platform: 'other', url: parish.live_url! }] }, parish.live_channels)} destinations={[{ platform: 'other', url: parish.live_url! }]} title={parish.live_title || 'Live'} live />}
+      {next && (
+        <Link to={`/live/${next.id}`} className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          <span className="flex-1 min-w-0 truncate" style={{ color: 'var(--color-text-primary)' }}><b>Next live:</b> {next.title}</span>
+          <span className="text-xs shrink-0" style={{ color: 'var(--color-text-muted)' }}>{new Date(next.scheduled_at!).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</span>
+        </Link>
+      )}
+      {channels.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {channels.map(([k, url]) => (
+            <a key={k} href={url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full border"
+               style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{PLATFORMS[k]?.label ?? k}</a>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

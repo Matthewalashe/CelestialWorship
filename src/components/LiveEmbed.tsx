@@ -1,19 +1,6 @@
 import { ExternalLink, Radio } from 'lucide-react';
+import { PLATFORMS, type Destination } from '../lib/live';
 import { safeHref } from '../utils/safeUrl';
-
-/** YouTube video/live IDs from the URL shapes people paste */
-export function youTubeId(url: string): string | null {
-  try {
-    const u = new URL(url);
-    if (u.hostname === 'youtu.be') return u.pathname.slice(1) || null;
-    if (u.hostname.endsWith('youtube.com')) {
-      if (u.searchParams.get('v')) return u.searchParams.get('v');
-      const m = u.pathname.match(/^\/(?:live|embed|shorts)\/([\w-]{6,})/);
-      if (m) return m[1];
-    }
-  } catch {}
-  return null;
-}
 
 /** A "live" flag older than this is treated as stale (someone forgot to switch it off) */
 const LIVE_STALE_MS = 6 * 3_600_000;
@@ -23,30 +10,36 @@ export function isLiveNow(liveNow?: boolean, updatedAt?: string | null): boolean
   return !updatedAt || Date.now() - new Date(updatedAt).getTime() < LIVE_STALE_MS;
 }
 
-export function LiveEmbed({ url, title, live }: { url: string; title?: string | null; live: boolean }) {
-  const id = youTubeId(url);
-  if (!safeHref(url)) return null;
+/**
+ * The player for a broadcast: plays inside the app where the platform allows it (YouTube, Facebook),
+ * and lists every platform it is on so people can watch where they like.
+ */
+export function LivePlayer({ embed, destinations, title, live }: { embed: string | null; destinations: Destination[]; title: string; live: boolean }) {
+  const links = destinations.filter(d => safeHref(d.url));
   return (
-    <div className="rounded-2xl overflow-hidden border" style={{ borderColor: live ? '#EF4444' : 'var(--color-border)' }}>
-      {id ? (
-        <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
-          <iframe
-            className="absolute inset-0 w-full h-full"
-            src={`https://www.youtube-nocookie.com/embed/${id}?rel=0`}
-            title={title || 'Livestream'}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-          />
+    <div className="rounded-2xl overflow-hidden border" style={{ borderColor: live ? '#EF4444' : 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+      {embed && (
+        <div className="relative w-full bg-black" style={{ paddingTop: '56.25%' }}>
+          <iframe className="absolute inset-0 w-full h-full" src={embed} title={title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin" />
         </div>
-      ) : null}
-      <a href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-3 text-sm font-semibold"
-         style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+      )}
+      <div className="px-4 py-3 flex items-center gap-2">
         {live ? <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: '#EF4444' }}><Radio size={14} /> LIVE</span>
               : <Radio size={14} style={{ color: 'var(--color-text-muted)' }} />}
-        <span className="flex-1 truncate">{title || (live ? 'Watch now' : 'Livestream channel')}</span>
-        <ExternalLink size={14} style={{ color: 'var(--color-text-muted)' }} />
-      </a>
+        <span className="flex-1 truncate text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{title}</span>
+      </div>
+      {links.length > 0 && (
+        <div className="px-4 pb-3 flex flex-wrap gap-2">
+          {links.map(d => (
+            <a key={d.url} href={d.url} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold px-3 py-1.5 rounded-full border inline-flex items-center gap-1"
+               style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+              {PLATFORMS[d.platform]?.label ?? 'Watch'} <ExternalLink size={11} />
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

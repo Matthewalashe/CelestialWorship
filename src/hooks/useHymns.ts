@@ -5,7 +5,7 @@ import { searchHymns, filterByCategory } from '../utils/search';
 // Cache the in-flight promise so pages mounting together share one fetch
 let hymnsPromise: Promise<Hymn[]> | null = null;
 
-function loadHymns(): Promise<Hymn[]> {
+export function loadHymns(): Promise<Hymn[]> {
   if (!hymnsPromise) {
     hymnsPromise = fetchHymns().catch(err => {
       hymnsPromise = null; // allow a retry after a failure

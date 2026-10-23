@@ -186,7 +186,7 @@ export default function ServiceDetail() {
                        color: isHymn || isScripture || isPrayer ? 'var(--color-text-on-accent)' : 'var(--color-accent-brand)',
                        border: isHymn || isScripture || isPrayer ? 'none' : '2px solid var(--color-border)',
                      }}
-                     aria-label={`Step ${idx + 1}${step.type !== 'instruction' ? `, ${step.type}` : ''}`}>
+                     role="img" aria-label={`Step ${idx + 1}${step.type !== 'instruction' ? `, ${step.type}` : ''}`}>
                   {isHymn ? <Music size={14} /> : isScripture ? <BookOpen size={14} /> : isPrayer ? <MemberInPrayer size={14} /> : idx + 1}
                 </div>
                 {idx < steps.length - 1 && <div className="w-px flex-1 my-1" style={{ backgroundColor: 'var(--color-border)' }} />}

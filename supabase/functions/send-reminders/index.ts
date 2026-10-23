@@ -4,6 +4,7 @@
 import webpush from 'npm:web-push@3.6.7';
 import { json, adminClient } from '../_shared/common.ts';
 import { SERVICE_SCHEDULE, localParts, occursOn } from '../_shared/schedule.ts';
+import { pushToParishAudience } from '../_shared/push.ts';
 
 const WINDOW = 5; // minutes between runs
 
@@ -65,6 +66,19 @@ Deno.serve(async req => {
         }
       }
     }
+  }
+
+  // Broadcasts starting in about 15 minutes: tell the parish's members and followers
+  const soon = new Date(now.getTime() + 15 * 60_000);
+  const { data: upcoming } = await admin.from('livestreams').select('id, parish_id, title, scheduled_at')
+    .eq('status', 'scheduled').gte('scheduled_at', new Date(soon.getTime() - WINDOW * 60_000).toISOString()).lt('scheduled_at', soon.toISOString());
+  for (const stream of upcoming ?? []) {
+    const { data: hasPlan } = await admin.rpc('parish_has_plan', { pid: stream.parish_id });
+    if (!hasPlan) continue;
+    const { data: parish } = await admin.from('parishes').select('name').eq('id', stream.parish_id).single();
+    sent += await pushToParishAudience(admin, stream.parish_id, {
+      key: `live-soon-${stream.id}`, title: `${parish?.name ?? 'Live'} in 15 minutes`, body: stream.title, url: `/live/${stream.id}`,
+    });
   }
 
   // Keep the log small

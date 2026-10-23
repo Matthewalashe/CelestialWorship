@@ -116,8 +116,30 @@ with sync_playwright() as p:
     def menu(pg):
         pg.goto(BASE + '/', wait_until='networkidle')
         pg.get_by_role('button', name='Menu').click()
-        pg.get_by_role('link', name='Quizzes & maps').click()
+        pg.get_by_role('link', name='Events').click()
+        expect(pg).to_have_url(BASE + '/events')
+        # Learn is a tab, and quizzes are inside it
+        pg.get_by_role('link', name='Learn').last.click()
+        pg.get_by_role('link', name='Quizzes').first.click()
         expect(pg).to_have_url(BASE + '/quiz')
+
+    def stories(pg):
+        pg.goto(BASE + '/stories', wait_until='networkidle')
+        pg.get_by_role('link', name='Story 21 David and the Giant').click()
+        expect(pg.get_by_role('heading', name='David and the Giant')).to_be_visible()
+        expect(pg.get_by_text('Talk about it')).to_be_visible()
+        pg.get_by_role('link', name='Best Friends: David and Jonathan').click()
+        expect(pg).to_have_url(BASE + '/stories/bs-22')
+        pg.goto(BASE + '/stories', wait_until='networkidle')
+        expect(pg.get_by_label('Read').first).to_be_visible()  # read stories are ticked
+
+    def music(pg):
+        pg.goto(BASE + '/bible/john/1', wait_until='networkidle')
+        pg.get_by_role('button', name='Turn music on').click()
+        expect(pg.get_by_role('button', name='Turn music off')).to_be_visible()
+        pg.goto(BASE + '/hymns', wait_until='networkidle')   # leaving the Bible stops it
+        pg.goto(BASE + '/bible/john/1', wait_until='networkidle')
+        expect(pg.get_by_role('button', name='Turn music on')).to_be_visible()
 
     def devotion(pg):
         pg.goto(BASE + '/devotion?service=morning_service', wait_until='networkidle')
@@ -142,7 +164,7 @@ with sync_playwright() as p:
 
     for name, fn in [('onboarding', onboarding), ('highlight and save verse', highlight_and_save), ('note on a verse', note_on_verse),
                      ('prayer journal', prayer_journal), ('hymn favourite', hymn_favourite), ('hymn search without tone marks', hymn_search),
-                     ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('devotion completion and streak', devotion), ('library backup export', export_backup)]:
+                     ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('children’s stories', stories), ('music on and off', music), ('devotion completion and streak', devotion), ('library backup export', export_backup)]:
         check(name, fn, page)
 
     browser.close()

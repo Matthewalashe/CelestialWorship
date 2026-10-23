@@ -60,8 +60,8 @@ export function Markdown({ source }: { source: string }) {
     const heading = line.match(/^(#{1,3})\s+(.*)$/);
     if (heading) {
       const level = heading[1].length;
-      const cls = level === 1 ? 'text-2xl' : level === 2 ? 'text-xl' : 'text-lg';
-      blocks.push(<p key={key++} role="heading" aria-level={level + 1} className={`${cls} font-bold font-[Outfit] mt-6 mb-2`} style={{ color: 'var(--color-text-primary)' }}>{inline(heading[2], `h${key}`)}</p>);
+      const cls = level === 1 ? 'text-[1.45em]' : level === 2 ? 'text-[1.25em]' : 'text-[1.1em]';
+      blocks.push(<p key={key++} role="heading" aria-level={level + 1} className={`${cls} font-bold mt-6 mb-2 leading-snug`} style={{ color: 'var(--color-text-primary)' }}>{inline(heading[2], `h${key}`)}</p>);
       i++;
       continue;
     }

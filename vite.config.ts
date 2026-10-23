@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.png', 'og-image.png'],
+      includeAssets: ['favicon.svg', 'logo.png'],
       workbox: {
         skipWaiting: true,
         clientsClaim: true,
@@ -17,8 +17,9 @@ export default defineConfig({
         // Push notification handlers (see public/push-handler.js)
         importScripts: ['/push-handler.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
-        // Bible books (~13 MB) are cached as they are read, not all at install time
-        globIgnores: ['**/data/bible/**'],
+        // Bible books (~13 MB) and story pages are cached as they are read, not at install time
+        // The sharing image and the map games' data aren't needed to start the app
+        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/data\//],
@@ -29,6 +30,16 @@ export default defineConfig({
             options: {
               cacheName: 'bible-books',
               expiration: { maxEntries: 140 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+          {
+            // Children's stories, their pictures and the Bible maps, kept once opened
+            urlPattern: ({ url }) => url.pathname.startsWith('/data/stories/') || url.pathname.startsWith('/data/maps/') || (url.pathname.startsWith('/stories/') && url.pathname.endsWith('.webp')),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'stories',
+              expiration: { maxEntries: 300, maxAgeSeconds: 90 * 24 * 60 * 60 },
               cacheableResponse: { statuses: [200] },
             },
           },

@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Map as MapIcon, ChevronRight, Footprints, Timer, Globe2, History, List, MapPin } from 'lucide-react';
+import { Map as MapIcon, ChevronRight, Footprints, Timer, Globe2, History, List, MapPin, Ship, Mail } from 'lucide-react';
 import { BibleMap, LayerToggle, type MapLayer, type MapPin as Pin } from '../components/BibleMap';
-import { PLACES, JESUS_JOURNEY, BIBLE_LANDS, placeById, distanceKm, distanceScore, type BiblePlace, type LonLat } from '../data/bibleLands';
+import { PLACES, JESUS_JOURNEY, PAUL_JOURNEY, PAUL_JOURNEY_NAMES, PAUL_LETTERS, BIBLE_LANDS, placeById, distanceKm, distanceScore, type BiblePlace, type LonLat } from '../data/bibleLands';
 import { seededShuffle } from '../utils/quiz';
 import { answerPoints, recordRound, type RoundOutcome } from '../utils/gamify';
 import { postWeekXp } from '../lib/leaderboard';
@@ -11,10 +11,12 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { parseReference, referenceToPath } from '../utils/parseReference';
 import { RoundSummary } from '../components/GameUi';
 
-type Game = 'journey' | 'thennow' | 'master' | 'lands';
+type Game = 'journey' | 'paul' | 'letters' | 'thennow' | 'master' | 'lands';
 
 const GAMES: { id: Game; title: string; description: string; icon: typeof MapIcon }[] = [
   { id: 'journey', title: 'Journey of Jesus', description: 'From Bethlehem to the Mount of Olives — put each moment of His life on the map.', icon: Footprints },
+  { id: 'paul', title: 'Journeys of Paul', description: 'From the Damascus road through Asia and Greece to Rome.', icon: Ship },
+  { id: 'letters', title: 'Paul’s letters', description: 'The churches he wrote to: where they were, and what they are today.', icon: Mail },
   { id: 'thennow', title: 'Then & Now', description: 'Bible names and what the places are called today.', icon: History },
   { id: 'master', title: 'Map Master', description: 'Sixty seconds: find as many Bible places as you can.', icon: Timer },
   { id: 'lands', title: 'Bible Lands Today', description: 'Egypt, Cush, Persia, Macedonia… which country is it now?', icon: Globe2 },
@@ -47,34 +49,48 @@ function finish(xp: number, correct: number, total: number, bestCombo: number): 
   return outcome;
 }
 
-// ── Journey of Jesus ─────────────────────────────────────────
+// ── Trace a journey: tap where each moment happened ─────────
 
-function Journey({ layer }: { layer: MapLayer }) {
+interface TraceStop { placeId: string; prompt: string; ref: string; tag?: string; extra?: string }
+
+function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePath, finishLabel }: {
+  layer: MapLayer;
+  stops: TraceStop[];
+  region: 'holyland' | 'world';
+  focusFor: (place: BiblePlace) => [number, number, number] | undefined;
+  /** Distance at which a guess scores nothing */
+  zeroAtFor: (place: BiblePlace) => number;
+  summary: { sub: string; share: (total: number) => string };
+  sharePath: string;
+  finishLabel: string;
+}) {
   const [i, setI] = useState(0);
   const [guess, setGuess] = useState<LonLat | null>(null);
   const [checked, setChecked] = useState(false);
   const [scores, setScores] = useState<number[]>([]);
   const [listMode, setListMode] = useState(false);
   const [outcome, setOutcome] = useState<RoundOutcome | null>(null);
-  const stop = JESUS_JOURNEY[i];
+  const stop = stops[i];
   const place = placeById(stop.placeId)!;
-  const options = useMemo(() => seededShuffle([place, ...seededShuffle(PLACES.filter(p => p.map === 'holyland' && p.id !== place.id), i * 7 + 3).slice(0, 3)], i), [place, i]);
+  const options = useMemo(() => {
+    const pool = PLACES.filter(p => p.id !== place.id && (region === 'world' ? p.map === 'world' : p.map === 'holyland'));
+    return seededShuffle([place, ...seededShuffle(pool, i * 7 + 3).slice(0, 3)], i);
+  }, [place, i, region]);
 
   const km = guess ? distanceKm({ lon: guess[0], lat: guess[1] }, place) : null;
-  const score = km === null ? 0 : place.id === 'egypt-flight' ? distanceScore(km, 250) : distanceScore(km);
-  const route = JESUS_JOURNEY.slice(0, checked ? i + 1 : i).map(s => { const p = placeById(s.placeId)!; return [p.lon, p.lat] as LonLat; });
+  const score = km === null ? 0 : distanceScore(km, zeroAtFor(place));
+  const total = scores.reduce((a, b) => a + b, 0);
+  const route = stops.slice(0, checked ? i + 1 : i).map(s => { const p = placeById(s.placeId)!; return [p.lon, p.lat] as LonLat; });
 
   const check = () => { if (!guess) return; setChecked(true); setScores(s => [...s, score]); };
   const next = () => {
-    if (i + 1 < JESUS_JOURNEY.length) { setI(i + 1); setGuess(null); setChecked(false); return; }
-    const total = scores.reduce((a, b) => a + b, 0);
+    if (i + 1 < stops.length) { setI(i + 1); setGuess(null); setChecked(false); return; }
     setOutcome(finish(Math.round(total / 8), scores.filter(s => s >= 50).length, scores.length, 0));
   };
 
   if (outcome) {
-    const total = scores.reduce((a, b) => a + b, 0);
-    return <RoundSummary outcome={outcome} headline={`${total} / ${JESUS_JOURNEY.length * 100}`} sub="You walked with Jesus from Bethlehem to the Mount of Olives."
-                         shareText={`I traced the Journey of Jesus on CelestialWorship: ${total} points.`} sharePath="/maps?game=journey"
+    return <RoundSummary outcome={outcome} headline={`${total} / ${stops.length * 100}`} sub={summary.sub}
+                         shareText={summary.share(total)} sharePath={sharePath}
                          onAgain={() => { setI(0); setGuess(null); setChecked(false); setScores([]); setOutcome(null); }} />;
   }
 
@@ -82,13 +98,12 @@ function Journey({ layer }: { layer: MapLayer }) {
     ...(guess ? [{ at: guess, kind: 'guess' as const }] : []),
     ...(checked ? [{ at: [place.lon, place.lat] as LonLat, kind: 'answer' as const, label: layer === 'now' ? place.today : place.name }] : []),
   ];
-  const focus: [number, number, number] | undefined = place.id === 'egypt-flight' ? undefined : [35.3, 32.2, 2.6];
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-        <span>Stop {i + 1} of {JESUS_JOURNEY.length}</span>
-        <span>{scores.reduce((a, b) => a + b, 0)} points</span>
+        <span>{stop.tag ? `${stop.tag} · ` : ''}{i + 1} of {stops.length}</span>
+        <span>{total} points</span>
       </div>
       <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{stop.prompt}</p>
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}><RefLink refs={stop.ref} /></p>
@@ -104,7 +119,8 @@ function Journey({ layer }: { layer: MapLayer }) {
           ))}
         </div>
       ) : (
-        <BibleMap region="holyland" layer={layer} pins={pins} route={route} focus={focus} onTap={checked ? undefined : setGuess} height="55vh" />
+        <BibleMap region={region} layer={region === 'world' && layer === 'then' ? 'both' : layer} pins={pins} route={route}
+                  focus={focusFor(place)} onTap={checked ? undefined : setGuess} height="55vh" />
       )}
 
       <div className="flex items-center gap-2">
@@ -121,11 +137,44 @@ function Journey({ layer }: { layer: MapLayer }) {
           <p className="font-semibold" style={{ color: score >= 50 ? 'var(--color-success)' : 'var(--color-warning)' }}>
             {score >= 90 ? 'Right there!' : score >= 50 ? 'Close!' : 'Not quite.'} {km !== null && `${km < 1 ? '<1' : Math.round(km)} km away · +${score}`}
           </p>
+          {stop.extra && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{stop.extra}</p>}
           <PlaceFacts place={place} />
-          <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{i + 1 < JESUS_JOURNEY.length ? 'Next stop' : 'Finish the journey'}</button>
+          <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{i + 1 < stops.length ? 'Next' : finishLabel}</button>
         </div>
       )}
     </div>
+  );
+}
+
+/** The world map is wide; zoom to the part of it the stop is in */
+const worldFocus = (place: BiblePlace): [number, number, number] =>
+  place.lon < 20 ? [15, 39, 12] : place.lon < 30 ? [25, 38.5, 12] : [33, 36, 16];
+
+const LETTER_STOPS: TraceStop[] = PAUL_LETTERS.map(l => ({
+  placeId: l.placeId,
+  prompt: `${l.letter}: Paul wrote “unto ${l.to}”. Where was that?`,
+  ref: l.ref,
+  extra: `${l.letter} was written from ${l.from}, ${l.when}.`,
+}));
+
+/** Paul's letters: then and now, as a reference list */
+function PaulLetterList() {
+  return (
+    <details className="rounded-2xl border p-4" style={card}>
+      <summary className="font-semibold text-sm cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>The churches Paul wrote to — then and now</summary>
+      <ul className="mt-3 divide-y" style={{ borderColor: 'var(--color-border)' }}>
+        {PAUL_LETTERS.map(l => {
+          const pl = placeById(l.placeId)!;
+          return (
+            <li key={l.letter} className="py-2.5 text-sm" style={{ borderColor: 'var(--color-border)' }}>
+              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{l.letter} <span className="font-normal text-xs" style={{ color: 'var(--color-text-muted)' }}>· <RefLink refs={l.ref} /></span></p>
+              <p style={{ color: 'var(--color-text-secondary)' }}>To {l.to}. <b>{pl.name}</b> — today {pl.today}, {pl.country}.</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Written from {l.from}, {l.when}.</p>
+            </li>
+          );
+        })}
+      </ul>
+    </details>
   );
 }
 
@@ -418,7 +467,25 @@ export default function MapGames() {
         <LayerToggle layer={layer} onChange={changeLayer} />
       </div>
       <h1 className="text-xl font-bold font-[Outfit] flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}><meta.icon size={20} style={{ color: 'var(--color-accent-gold)' }} /> {meta.title}</h1>
-      {game === 'journey' && <Journey layer={layer} />}
+      {game === 'journey' && (
+        <TraceGame layer={layer} stops={JESUS_JOURNEY} region="holyland" finishLabel="Finish the journey" sharePath="/maps?game=journey"
+                   focusFor={p => (p.id === 'egypt-flight' ? undefined : [35.3, 32.2, 2.6])} zeroAtFor={p => (p.id === 'egypt-flight' ? 250 : 60)}
+                   summary={{ sub: 'You walked with Jesus from Bethlehem to the Mount of Olives.', share: t => `I traced the Journey of Jesus on CelestialWorship: ${t} points.` }} />
+      )}
+      {game === 'paul' && (
+        <TraceGame layer={layer} region="world" finishLabel="Finish at Rome" sharePath="/maps?game=paul"
+                   stops={PAUL_JOURNEY.map(s => ({ ...s, tag: PAUL_JOURNEY_NAMES[s.journey] }))}
+                   focusFor={worldFocus} zeroAtFor={() => 250}
+                   summary={{ sub: 'From the Damascus road to Rome — about 16,000 km.', share: t => `I followed the Journeys of Paul on CelestialWorship: ${t} points.` }} />
+      )}
+      {game === 'letters' && (
+        <>
+          <TraceGame layer={layer} region="world" finishLabel="See my score" sharePath="/maps?game=letters" stops={LETTER_STOPS}
+                     focusFor={worldFocus} zeroAtFor={() => 250}
+                     summary={{ sub: 'Thirteen letters, from Rome to Colosse.', share: t => `I placed Paul’s letters on the map on CelestialWorship: ${t} points.` }} />
+          <PaulLetterList />
+        </>
+      )}
       {game === 'thennow' && <ThenNow layer={layer} />}
       {game === 'master' && <Master layer={layer} />}
       {game === 'lands' && <Lands layer={layer} />}

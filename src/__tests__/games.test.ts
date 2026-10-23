@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { answerPoints, comboMultiplier, levelFor, LEVELS, dailySeed, dailyShareText, recordDaily, recordRound, readGame, weekStart } from '../utils/gamify';
-import { PLACES, JESUS_JOURNEY, BIBLE_LANDS, NT_REGIONS, placeById, distanceKm, distanceScore } from '../data/bibleLands';
+import { PLACES, JESUS_JOURNEY, PAUL_JOURNEY, PAUL_LETTERS, BIBLE_LANDS, NT_REGIONS, placeById, distanceKm, distanceScore } from '../data/bibleLands';
 import { dailyQuestions } from '../pages/Quiz';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -70,7 +70,14 @@ describe('Bible lands data', () => {
     }
   });
   it('every journey stop and Bible land points to real data', () => {
-    for (const s of JESUS_JOURNEY) expect(placeById(s.placeId), s.placeId).toBeTruthy();
+    for (const s of [...JESUS_JOURNEY, ...PAUL_JOURNEY, ...PAUL_LETTERS]) expect(placeById(s.placeId), s.placeId).toBeTruthy();
+    // Paul's journey stays on the world map
+    for (const s of PAUL_JOURNEY) {
+      const pl = placeById(s.placeId)!;
+      const x = (pl.lon - world.projection.west) * world.projection.k * world.projection.cos;
+      expect(x >= 0 && x <= world.width, s.placeId).toBe(true);
+    }
+    expect(new Set(PAUL_LETTERS.map(l => l.letter)).size).toBe(13);
     const ids = new Set(world.countries.map((c: any) => c.id));
     for (const l of BIBLE_LANDS) for (const c of l.countries) expect(ids.has(c), `${l.name}: ${c}`).toBe(true);
   });

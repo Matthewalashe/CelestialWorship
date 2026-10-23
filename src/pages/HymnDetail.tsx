@@ -295,7 +295,8 @@ export default function HymnDetail() {
                 key={cat}
                 to={`/hymns?category=${cat}`}
                 className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border"
-                style={{ color, borderColor: `${color}55`, backgroundColor: `${color}11` }}
+                // Text stays readable; the category's colour marks the border
+                style={{ color: 'var(--color-text-secondary)', borderColor: color, backgroundColor: `${color}11` }}
               >
                 {CATEGORY_LABELS[cat] || cat}
               </Link>

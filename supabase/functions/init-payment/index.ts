@@ -18,6 +18,9 @@ Deno.serve(async req => {
 
     let subaccount: string | undefined;
     if (donation.parish_id) {
+      // Taking gifts is part of the Partner plan
+      const { data: canReceive } = await admin.rpc('parish_can_receive', { pid: donation.parish_id });
+      if (!canReceive) return json({ error: 'This parish is not taking online gifts at the moment' }, 409);
       const { data: payout } = await admin.from('payout_accounts').select('subaccount_code, status').eq('parish_id', donation.parish_id).maybeSingle();
       if (!payout || payout.status !== 'verified' || !payout.subaccount_code) {
         return json({ error: 'This parish has not set up online giving yet' }, 409);
@@ -37,7 +40,7 @@ Deno.serve(async req => {
         // The parish bears the gateway fee only if the platform chooses so
         bearer: Deno.env.get('PAYSTACK_FEE_BEARER') ?? 'account',
         callback_url: `${appUrl}/give?reference=${encodeURIComponent(donation.provider_reference)}`,
-        metadata: { donation_id: donation.id, parish_id: donation.parish_id, purpose: donation.purpose },
+        metadata: { donation_id: donation.id, parish_id: donation.parish_id, purpose: donation.purpose, source_kind: donation.source_kind, source_id: donation.source_id },
       }),
     });
 

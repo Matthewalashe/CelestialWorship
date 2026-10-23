@@ -104,7 +104,7 @@ export default function OurChurch() {
           {SOURCES.map(s => (
             <li key={s.label} className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
               {s.url ? (
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline">
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline py-1.5">
                   {s.label} <ExternalLink size={11} />
                 </a>
               ) : s.label}

@@ -125,6 +125,8 @@ export interface Article {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  /** The author's parish or ministry that receives support for this article */
+  support_parish_id?: string | null;
 }
 
 export interface ArticleInput {
@@ -135,10 +137,11 @@ export interface ArticleInput {
   language: string;
   reference: ArticleReference | null;
   tags: string[];
+  support_parish_id?: string | null;
 }
 
-export async function listArticles(opts: { kind?: ArticleKind; reference?: ArticleReference; mine?: boolean; search?: string } = {}): Promise<Article[]> {
-  let q = supabase.from('articles').select('*').limit(100);
+export async function listArticles(opts: { kind?: ArticleKind; reference?: ArticleReference; mine?: boolean; search?: string; author?: string; limit?: number } = {}): Promise<Article[]> {
+  let q = supabase.from('articles').select('*').limit(opts.limit ?? 100);
   if (opts.mine) {
     const user = await requireUser();
     q = q.eq('author_id', user.id).order('updated_at', { ascending: false });
@@ -146,6 +149,7 @@ export async function listArticles(opts: { kind?: ArticleKind; reference?: Artic
     q = q.eq('status', 'published').order('published_at', { ascending: false });
   }
   if (opts.kind) q = q.eq('kind', opts.kind);
+  if (opts.author) q = q.eq('author_id', opts.author);
   if (opts.reference) {
     // Match commentaries on the same passage / hymn / lesson
     const r = opts.reference;
@@ -157,6 +161,28 @@ export async function listArticles(opts: { kind?: ArticleKind; reference?: Artic
   const { data, error } = await q;
   raise(error, 'Loading articles');
   return (data ?? []) as Article[];
+}
+
+/** An article's author as the public sees them */
+export interface ArticleAuthor { id: string; name: string; memberType: string; verified: boolean; parishName: string | null; avatarUrl: string | null }
+
+export async function getAuthor(id: string): Promise<ArticleAuthor | null> {
+  const { data, error } = await supabase.from('public_profiles')
+    .select('id, display_name, church_title, member_type, verification_status, parish_id, avatar_url').eq('id', id).maybeSingle();
+  if (error || !data) return null;
+  let parishName: string | null = null;
+  if (data.parish_id) {
+    const { data: parish } = await supabase.from('parish_directory').select('name').eq('id', data.parish_id).maybeSingle();
+    parishName = parish?.name ?? null;
+  }
+  return {
+    id: data.id,
+    name: [data.church_title, data.display_name].filter(Boolean).join(' ') || 'A shepherd',
+    memberType: data.member_type,
+    verified: data.verification_status === 'verified',
+    parishName,
+    avatarUrl: data.avatar_url ?? null,
+  };
 }
 
 export async function getArticle(id: string): Promise<Article | null> {
@@ -272,11 +298,11 @@ export async function submitEvent(input: Omit<ChurchEvent, 'id' | 'status' | 'su
 
 // ── Donations ────────────────────────────────────────────────
 
-export type DonationPurpose = 'tithe' | 'offering' | 'thanksgiving' | 'building' | 'harvest' | 'welfare' | 'mission' | 'pledge' | 'other';
+export type DonationPurpose = 'tithe' | 'offering' | 'thanksgiving' | 'building' | 'harvest' | 'welfare' | 'mission' | 'pledge' | 'support' | 'other';
 
 export const DONATION_PURPOSES: Record<DonationPurpose, string> = {
   tithe: 'Tithe', offering: 'Offering', thanksgiving: 'Thanksgiving', building: 'Building fund', harvest: 'Harvest',
-  welfare: 'Welfare', mission: 'Mission & evangelism', pledge: 'Pledge', other: 'Other',
+  welfare: 'Welfare', mission: 'Mission & evangelism', pledge: 'Pledge', support: 'Support a shepherd’s ministry', other: 'Other',
 };
 
 export interface Donation {
@@ -296,6 +322,8 @@ export interface Donation {
 export async function createDonation(input: {
   parishId: string | null; purpose: DonationPurpose; amountMinor: number; currency: string; note: string;
   donorEmail: string; donorName: string; isAnonymous: boolean; pledgeDue?: string;
+  /** What the gift responds to: an article or a broadcast */
+  source?: { kind: 'article' | 'livestream'; id: string };
 }): Promise<Donation> {
   const { data: { user } } = await supabase.auth.getUser();
   const reference = `CW-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}`.toUpperCase();
@@ -312,6 +340,8 @@ export async function createDonation(input: {
     provider_reference: reference,
     status: input.pledgeDue ? 'pledged' : 'initiated',
     pledge_due: input.pledgeDue ?? null,
+    source_kind: input.source?.kind ?? null,
+    source_id: input.source?.id ?? null,
   }).select('*').single();
   raise(error, 'Recording your gift');
   return data as Donation;

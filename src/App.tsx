@@ -7,9 +7,16 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { ToastHost } from './components/Toast';
 import { DialogHost } from './components/Dialog';
+import { useIsDesktop } from './hooks/useMediaQuery';
+
+/** On a computer the app opens in Studio; on a phone, at Today */
+function Start() {
+  return useIsDesktop() ? <Studio /> : <Home />;
+}
 
 // Lazy loading pages
 const Home = React.lazy(() => import('./pages/Home'));
+const Studio = React.lazy(() => import('./pages/Studio'));
 const Services = React.lazy(() => import('./pages/Services'));
 const ServiceDetail = React.lazy(() => import('./pages/ServiceDetail'));
 const Hymns = React.lazy(() => import('./pages/Hymns'));
@@ -38,7 +45,11 @@ const ParishPage = React.lazy(() => import('./pages/ParishPage'));
 const ParishAdmin = React.lazy(() => import('./pages/ParishAdmin'));
 const Give = React.lazy(() => import('./pages/Give'));
 const Live = React.lazy(() => import('./pages/Live'));
+const LiveStream = React.lazy(() => import('./pages/LiveStream'));
 const Quiz = React.lazy(() => import('./pages/Quiz'));
+const Learn = React.lazy(() => import('./pages/Learn'));
+const Stories = React.lazy(() => import('./pages/Stories'));
+const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
 const Moderate = React.lazy(() => import('./pages/Moderate'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
@@ -68,7 +79,9 @@ function App() {
 
           {/* Main layout pages */}
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Start />} />
+            <Route path="/today" element={<Home />} />
+            <Route path="/studio" element={<Studio />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:serviceId" element={<ServiceDetail />} />
             <Route path="/hymns" element={<Suspense fallback={<HymnsSkeleton />}><Hymns /></Suspense>} />
@@ -93,6 +106,10 @@ function App() {
             <Route path="/parish-admin" element={<ParishAdmin />} />
             <Route path="/give" element={<Give />} />
             <Route path="/live" element={<Live />} />
+            <Route path="/live/:id" element={<LiveStream />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/stories" element={<Stories />} />
+            <Route path="/stories/:id" element={<StoryDetail />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/maps" element={<MapGames />} />
             <Route path="/moderate" element={<Moderate />} />

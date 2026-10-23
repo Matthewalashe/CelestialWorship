@@ -6,6 +6,7 @@ import { useTodaysLessons } from '../hooks/useLessons';
 import { useReader } from '../hooks/useReader';
 import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
 import { Sheet } from '../components/Dialog';
+import { MusicButton, NowPlaying } from '../components/Music';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useSwipe } from '../hooks/useSwipe';
 import { getServiceTypesForDate, formatDate } from '../utils/dateUtils';
@@ -260,7 +261,7 @@ export default function Devotion() {
                       <span className="text-[var(--color-text-primary)] font-medium">{svc.displayName}</span>
                       <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[var(--color-accent-brand)]/15 text-[var(--color-accent-brand)]">Today</span>
                     </div>
-                    <span className="text-xs text-[var(--color-text-muted)]">{svc.steps.filter(s => !s.isHeader).length} steps</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">{svc.steps.filter(s => !s.isHeader).length} steps</span>
                   </div>
                 </button>
               );
@@ -334,10 +335,12 @@ export default function Devotion() {
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-[var(--color-text-muted)]">{selectedService?.displayName}</span>
         <div className="flex gap-1.5">
+          <MusicButton />
           <ReaderButtons wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }} />
         </div>
       </div>
 
+      <NowPlaying />
       <div className="mb-6">
         <div className="flex items-center justify-between text-sm text-[var(--color-text-muted)] mb-2">
           <span className="capitalize text-xs">{stepType}</span>
@@ -457,6 +460,7 @@ export default function Devotion() {
           prev={currentStep > 0 ? { label: 'Previous step', go: goPrev } : undefined}
           next={currentStep < steps.length - 1 ? { label: 'Next step', go: goNext } : { label: 'Complete', go: handleComplete }}
           wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }}
+          actions={<MusicButton />}
         >
           {segments.map((segment, i) => <SegmentRenderer key={i} segment={segment} />)}
           {currentStepData.hymnSlot?.fixedHymnNumber && (

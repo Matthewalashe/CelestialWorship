@@ -122,8 +122,10 @@ export function ReaderButtons({ wakeLock }: { wakeLock?: WakeLockControl }) {
 
 // ── The full-screen page ─────────────────────────────────────
 
-export function ReaderFrame({ title, place, children, prev, next, wakeLock, onLeave, pageKey }: {
+export function ReaderFrame({ title, place, children, prev, next, wakeLock, onLeave, pageKey, actions }: {
   title: string;
+  /** Extra controls in the top bar (e.g. music) */
+  actions?: ReactNode;
   /** Changes when the content changes (defaults to the title), to start again at the top */
   pageKey?: string | number;
   /** e.g. "Chapter 3 of 50", "Step 4 of 12" */
@@ -232,6 +234,7 @@ export function ReaderFrame({ title, place, children, prev, next, wakeLock, onLe
       <div className={`${bar} top-0 pt-[env(safe-area-inset-top)] h-14`} style={{ backgroundColor: pal.bg, borderBottom: `1px solid ${pal.rule}`, opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}>
         <button onClick={leave} className={barBtn} aria-label="Leave reading mode"><X size={20} /></button>
         <p className="flex-1 text-center text-sm truncate" style={{ fontFamily: SERIF }}>{title}</p>
+        {actions}
         <button onClick={() => setSettingsOpen(true)} className={barBtn} aria-label="Reading settings"><Type size={18} /></button>
       </div>
 

@@ -65,7 +65,10 @@ export default function Give() {
   }, [user, result]);
 
   const amountMinor = Math.round(Number(amount.replace(/[^\d.]/g, '')) * 100);
-  const valid = amountMinor >= 10_000 && parishId && /\S+@\S+\.\S+/.test(email); // at least ₦100
+  const valid = amountMinor >= 10_000 && parishId && canReceive !== false && /\S+@\S+\.\S+/.test(email); // at least ₦100
+  const sourceKind = params.get('source');
+  const source = (sourceKind === 'article' || sourceKind === 'livestream') && params.get('id')
+    ? { kind: sourceKind as 'article' | 'livestream', id: params.get('id')! } : undefined;
 
   const give = async () => {
     if (!valid) return;
@@ -74,7 +77,7 @@ export default function Give() {
       const donation = await createDonation({
         parishId, purpose, amountMinor, currency: 'NGN', note, donorEmail: email,
         donorName: [profile.churchTitle, profile.displayName].filter(Boolean).join(' '), isAnonymous: anonymous,
-        pledgeDue: pledge ? pledgeDue || undefined : undefined,
+        pledgeDue: pledge ? pledgeDue || undefined : undefined, source,
       });
       if (pledge) {
         showToast('Pledge recorded — you can redeem it from your giving history');
@@ -144,14 +147,14 @@ export default function Give() {
         </label>
         {parishId && canReceive === false && (
           <p className="text-xs p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}>
-            {parish?.name ?? 'This parish'} hasn’t set up online giving yet. {parish?.giving_details?.note ?? 'Please give in church, or ask the parish to set it up in the app.'}
+            {parish?.name ?? 'This parish'} isn’t taking online gifts at the moment. {parish?.giving_details?.note ?? 'Please give in church.'}
           </p>
         )}
 
         <div>
           <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>For</span>
           <div className="flex flex-wrap gap-2 mt-1">
-            {(Object.keys(DONATION_PURPOSES) as DonationPurpose[]).filter(p => p !== 'pledge').map(p => (
+            {(Object.keys(DONATION_PURPOSES) as DonationPurpose[]).filter(p => p !== 'pledge' && (p !== 'support' || purpose === 'support')).map(p => (
               <button key={p} onClick={() => setPurpose(p)} aria-pressed={purpose === p}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold border"
                       style={purpose === p ? { backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' }
@@ -186,7 +189,7 @@ export default function Give() {
         )}
         {pledge && <input type="date" value={pledgeDue} onChange={e => setPledgeDue(e.target.value)} className={inputClass} style={inputStyle} aria-label="Pledge due date" />}
 
-        <button onClick={give} disabled={busy || !valid || (!pledge && canReceive === false)}
+        <button onClick={give} disabled={busy || !valid}
                 className="btn-primary w-full py-3.5 rounded-xl text-base font-bold disabled:opacity-50 inline-flex items-center justify-center gap-2">
           <Lock size={16} /> {pledge ? 'Record pledge' : amountMinor > 0 ? `Give ${money(amountMinor, 'NGN')}` : 'Give'}
         </button>

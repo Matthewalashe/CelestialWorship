@@ -15,7 +15,8 @@ ROUTES = [
     '/lessons', '/devotion', '/devotion?service=morning_service', '/suggestions', '/notes', '/notes?tab=prayers',
     '/notes?tab=backup', '/constitution', '/our-church', '/profile', '/prayer-requests', '/articles', '/articles/write',
     '/events', '/directory', '/give', '/live', '/quiz', '/quiz?topic=doctrine', '/quiz?topic=hymns&mode=challenge', '/quiz?daily=1', '/maps',
-    '/maps?game=journey', '/maps?game=lands', '/moderate',
+    '/maps?game=journey', '/maps?game=lands', '/maps?game=paul', '/maps?game=letters', '/learn', '/stories', '/stories/bs-01',
+    '/stories/cl-nt-48', '/today', '/studio', '/moderate',
     '/parish-admin', '/control', '/display', '/signin', '/nonexistent-page',
 ]
 

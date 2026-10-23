@@ -3,8 +3,10 @@
 Every feature is built and reviewed against these. Each has a check that can fail a build or a review.
 
 ## 0. Liturgy and devotion first
-- **Five tabs, always the same:** Home, Service, Devotion, Hymns, Bible. Everything else lives in one
-  Menu, grouped Worship · Church · Learn · Me. Nothing important is more than two taps away.
+- **Six tabs, always the same:** Home, Service, Devotion, Hymnal, Bible, Learn. Everything else lives in
+  one Menu, grouped Worship · Church · Me. Nothing important is more than two taps away.
+- **Phones for worship, computers for the work behind it.** On a computer the app opens in Studio — the
+  order of service, the projector and the livestream for media teams, livestreamers and choirs.
 - **Quiet screens.** One primary action per screen; no element that repeats the navigation; secondary
   features (quizzes, map games, leaderboards) stay inside their own section and never on Home.
 - **Reading is a book.** Bible, hymns and devotion share one "Aa" menu and one reading mode: monochrome
@@ -39,6 +41,8 @@ Every feature is built and reviewed against these. Each has a check that can fai
 - **Money is verified with the provider** for the exact amount and currency before it is marked paid.
 - **Untrusted text is never HTML.** User content renders as text or through the safe Markdown renderer;
   user links must be `https:`.
+- **Paid features are enforced where the money is.** Gifts, reader support and livestreaming need the
+  Partner plan; the database and the payment functions check it, not the buttons.
 - **Abuse is bounded.** Posts and requests have length limits and rate limits; reports can hide content
   quickly; moderators have a queue.
 

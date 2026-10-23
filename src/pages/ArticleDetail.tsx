@@ -1,18 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Share2, Flag, MessageCircle, Heart, PenLine } from 'lucide-react';
+import { Share2, Flag, MessageCircle, PenLine } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import {
-  getArticle, listComments, addComment, reactionCounts, toggleAmen, reportContent, ARTICLE_KINDS,
-  type Article, type ArticleComment,
+  getArticle, getAuthor, listArticles, listComments, addComment, reactionCounts, toggleAmen, reportContent, ARTICLE_KINDS,
+  type Article, type ArticleComment, type ArticleAuthor,
 } from '../lib/community';
 import { Markdown } from '../utils/markdown';
-import { referenceLabel, ReferenceIcon } from './Articles';
+import { referenceLabel, ReferenceIcon, readingMinutes, ShepherdBadge, ArticleRow, SERIF_STACK } from '../components/ArticleParts';
+import { useReadingStyle } from '../components/Reader';
+import { Avatar } from '../components/ProfileMedia';
 import { ErrorState, type Loadable } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
 import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
+import { parishCanReceive } from '../lib/payments';
 import { referenceToPath } from '../utils/parseReference';
 
 function referencePath(a: Article): string | null {
@@ -26,10 +29,14 @@ function referencePath(a: Article): string | null {
 export default function ArticleDetail() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const readingStyle = useReadingStyle();
   const [state, setState] = useState<Loadable<Article | null>>({ status: 'loading' });
+  const [author, setAuthor] = useState<ArticleAuthor | null>(null);
+  const [more, setMore] = useState<Article[]>([]);
   const [comments, setComments] = useState<ArticleComment[]>([]);
   const [amen, setAmen] = useState({ amen: 0, mine: false });
   const [comment, setComment] = useState('');
+  const [canSupport, setCanSupport] = useState(false);
 
   const article = state.status === 'ready' ? state.data : null;
   usePageTitle('article', article?.title);
@@ -40,9 +47,13 @@ export default function ArticleDetail() {
     try {
       const a = await getArticle(id);
       setState({ status: 'ready', data: a });
-      if (a?.status === 'published') {
+      if (!a) return;
+      getAuthor(a.author_id).then(setAuthor).catch(() => {});
+      if (a.support_parish_id) parishCanReceive(a.support_parish_id).then(setCanSupport);
+      if (a.status === 'published') {
         setComments(await listComments(id).catch(() => []));
         setAmen(await reactionCounts(id));
+        listArticles({ author: a.author_id, limit: 4 }).then(list => setMore(list.filter(x => x.id !== a.id).slice(0, 3))).catch(() => {});
       }
     } catch (error) {
       setState({ status: 'error', error });
@@ -69,7 +80,7 @@ export default function ArticleDetail() {
   };
 
   const onAmen = async () => {
-    if (!user) { showToast('Sign in to respond'); return; }
+    if (!user) { showToast('Sign in to say Amen'); return; }
     const next = !amen.mine;
     setAmen(a => ({ amen: a.amen + (next ? 1 : -1), mine: next }));
     try { await toggleAmen(article.id, next); } catch (e) { showToast(errorMessage(e)); load(); }
@@ -94,88 +105,128 @@ export default function ArticleDetail() {
   };
 
   const refPath = referencePath(article);
+  const published = article.status === 'published';
+  const date = article.published_at ? new Date(article.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
+  const authorName = author?.name ?? article.author_name;
+  const actionBtn = 'h-9 px-3 rounded-full inline-flex items-center gap-1.5 text-sm';
+  const muted = { color: 'var(--color-text-muted)' };
+
+  const actions = (
+    <div className="flex items-center gap-1 py-2 border-y" style={{ borderColor: 'var(--color-border)' }}>
+      {published && (
+        <button onClick={onAmen} aria-pressed={amen.mine} className={actionBtn}
+                style={{ color: amen.mine ? 'var(--color-accent-brand)' : 'var(--color-text-secondary)', fontWeight: amen.mine ? 600 : 400 }}>
+          🙏 Amen{amen.amen ? ` · ${amen.amen}` : ''}
+        </button>
+      )}
+      {published && <a href="#responses" className={actionBtn} style={{ color: 'var(--color-text-secondary)' }}><MessageCircle size={16} /> {comments.length}</a>}
+      <button onClick={share} className={`${actionBtn} ml-auto`} aria-label="Share" style={{ color: 'var(--color-text-secondary)' }}><Share2 size={16} /></button>
+      {user?.id === article.author_id ? (
+        <Link to={`/articles/write?id=${article.id}`} className={actionBtn} style={{ color: 'var(--color-text-secondary)' }}><PenLine size={16} /> Edit</Link>
+      ) : user && published && (
+        <button onClick={report} className={actionBtn} aria-label="Report" style={muted}><Flag size={15} /></button>
+      )}
+    </div>
+  );
 
   return (
-    <article className="px-4 py-6 max-w-2xl mx-auto pb-24">
-      <Link to="/articles" className="text-sm inline-flex items-center gap-1 mb-5" style={{ color: 'var(--color-text-secondary)' }}>
-        <ChevronLeft size={16} /> Articles
-      </Link>
+    <article className="px-5 py-6 max-w-[680px] mx-auto pb-24">
+      <Link to="/articles" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>‹ Articles</Link>
 
-      {article.status !== 'published' && (
-        <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
+      {!published && (
+        <p className="text-xs mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
           Preview — this article is {article.status === 'submitted' ? 'waiting for review' : article.status}.
           {article.moderation_note && <> Moderator’s note: {article.moderation_note}</>}
         </p>
       )}
 
-      <p className="text-[11px] uppercase font-bold tracking-widest" style={{ color: 'var(--color-accent-gold)' }}>{ARTICLE_KINDS[article.kind]}</p>
-      <h1 className="text-3xl font-bold font-[Outfit] leading-tight mt-1" style={{ color: 'var(--color-text-primary)' }}>{article.title}</h1>
-      <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
-        {article.author_name}
-        {article.published_at && ` · ${new Date(article.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`}
-      </p>
-      {article.reference && refPath && (
-        <Link to={refPath} className="inline-flex items-center gap-1 text-xs font-semibold mt-3 px-2.5 py-1 rounded-lg"
-              style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-accent-brand)' }}>
-          <ReferenceIcon r={article.reference} /> {referenceLabel(article.reference)}
+      <h1 className="text-[2rem] sm:text-[2.6rem] font-bold leading-[1.15] mt-6" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{article.title}</h1>
+      {article.summary && <p className="text-xl mt-3 leading-snug" style={{ color: 'var(--color-text-muted)', fontFamily: SERIF_STACK }}>{article.summary}</p>}
+
+      {/* Byline */}
+      <div className="flex items-center gap-3 mt-6 mb-5">
+        <Link to={`/articles?author=${article.author_id}`} aria-hidden tabIndex={-1}>
+          <Avatar url={author?.avatarUrl} name={authorName} size={44} />
         </Link>
-      )}
-      {article.summary && <p className="text-lg mt-5 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{article.summary}</p>}
-
-      <div className="mt-6 text-[17px]"><Markdown source={article.body} /></div>
-
-      {article.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-6">
-          {article.tags.map(t => <span key={t} className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>#{t}</span>)}
-        </div>
-      )}
-
-      <div className="flex items-center gap-2 mt-8 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-        {article.status === 'published' && (
-          <button onClick={onAmen} aria-pressed={amen.mine} className="px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"
-                  style={amen.mine ? { backgroundColor: 'color-mix(in srgb, #EF4444 15%, transparent)', color: '#EF4444' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
-            <Heart size={15} fill={amen.mine ? 'currentColor' : 'none'} /> Amen · {amen.amen}
-          </button>
-        )}
-        <button onClick={share} className="px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
-          <Share2 size={15} /> Share
-        </button>
-        {user?.id === article.author_id ? (
-          <Link to={`/articles/write?id=${article.id}`} className="ml-auto text-sm font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}>
-            <PenLine size={15} /> Edit
+        <div className="min-w-0">
+          <Link to={`/articles?author=${article.author_id}`} className="font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}>
+            {authorName} {author && <ShepherdBadge verified={author.verified} />}
           </Link>
-        ) : user && (
-          <button onClick={report} className="ml-auto p-2" aria-label="Report" style={{ color: 'var(--color-text-muted)' }}><Flag size={15} /></button>
+          <p className="text-sm" style={muted}>
+            {[author?.parishName ?? (author?.memberType === 'independent_shepherd' ? 'Independent shepherd' : null), `${readingMinutes(article.body)} min read`, date].filter(Boolean).join(' · ')}
+          </p>
+        </div>
+      </div>
+
+      {actions}
+
+      <div className="mt-6 flex flex-wrap items-center gap-2 text-xs">
+        <span className="uppercase tracking-widest font-semibold" style={muted}>{ARTICLE_KINDS[article.kind]}</span>
+        {article.reference && refPath && (
+          <Link to={refPath} className="inline-flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full"
+                style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+            <ReferenceIcon r={article.reference} /> {referenceLabel(article.reference)}
+          </Link>
         )}
       </div>
 
-      {article.status === 'published' && (
-        <section className="mt-8">
-          <h2 className="font-semibold flex items-center gap-2 mb-3" style={{ color: 'var(--color-text-primary)' }}>
-            <MessageCircle size={18} /> Comments ({comments.length})
-          </h2>
-          <ul className="space-y-3 mb-4">
+      <div className="mt-6 article-body" style={{ ...readingStyle, color: 'var(--color-text-primary)' }}><Markdown source={article.body} /></div>
+
+      {article.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-8">
+          {article.tags.map(t => <span key={t} className="text-sm px-3 py-1 rounded-full" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>{t}</span>)}
+        </div>
+      )}
+
+      {published && canSupport && (
+        <div className="mt-10 rounded-2xl p-5 text-center" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+          <p className="font-semibold" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>Blessed by this teaching?</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Support {authorName}’s ministry.</p>
+          <Link to={`/give?parish=${article.support_parish_id}&purpose=support&source=article&id=${article.id}`}
+                className="btn-primary inline-block mt-3 px-6 py-2.5 rounded-full text-sm font-semibold">Support</Link>
+        </div>
+      )}
+
+      <div className="mt-8">{actions}</div>
+
+      {/* More from the author */}
+      {more.length > 0 && (
+        <section className="mt-10">
+          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>More from {authorName}</h2>
+          <ul className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
+            {more.map(a => <li key={a.id} style={{ borderColor: 'var(--color-border)' }}><ArticleRow a={a} /></li>)}
+          </ul>
+          <Link to={`/articles?author=${article.author_id}`} className="text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>See all</Link>
+        </section>
+      )}
+
+      {published && (
+        <section id="responses" className="mt-10">
+          <h2 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Responses ({comments.length})</h2>
+          {user ? (
+            <div className="mb-5">
+              <label className="sr-only" htmlFor="response">Your response</label>
+              <textarea id="response" value={comment} onChange={e => setComment(e.target.value)} rows={3} maxLength={2000} placeholder="What are your thoughts?"
+                        className="w-full rounded-xl px-3 py-2 text-sm border outline-none"
+                        style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }} />
+              <div className="flex justify-end mt-2">
+                <button onClick={postComment} disabled={!comment.trim()} className="btn-primary px-4 py-1.5 rounded-full text-sm font-semibold disabled:opacity-50">Respond</button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm mb-5" style={muted}>
+              <Link to={`/signin?returnTo=/articles/${article.id}`} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link> to respond.
+            </p>
+          )}
+          <ul className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
             {comments.map(c => (
-              <li key={c.id} className="rounded-xl p-3" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-                <p className="text-xs font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
-                  {c.author_name} · {new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                </p>
-                <p className="text-sm mt-1 whitespace-pre-line" style={{ color: 'var(--color-text-primary)' }}>{c.body}</p>
+              <li key={c.id} className="py-4" style={{ borderColor: 'var(--color-border)' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{c.author_name}</p>
+                <p className="text-xs" style={muted}>{new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                <p className="text-[15px] mt-2 whitespace-pre-line" style={{ color: 'var(--color-text-primary)' }}>{c.body}</p>
               </li>
             ))}
           </ul>
-          {user ? (
-            <div className="flex gap-2">
-              <textarea value={comment} onChange={e => setComment(e.target.value)} rows={2} maxLength={2000} placeholder="Add a comment"
-                        className="flex-1 rounded-xl px-3 py-2 text-sm border outline-none"
-                        style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }} />
-              <button onClick={postComment} disabled={!comment.trim()} className="btn-primary px-4 rounded-xl text-sm font-semibold disabled:opacity-50">Post</button>
-            </div>
-          ) : (
-            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-              <Link to={`/signin?returnTo=/articles/${article.id}`} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link> to comment.
-            </p>
-          )}
         </section>
       )}
     </article>

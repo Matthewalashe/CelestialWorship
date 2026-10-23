@@ -9,6 +9,12 @@ Allow: /services/
 Allow: /lessons/
 Allow: /devotion/
 Allow: /constitution/
+Allow: /stories/
+Allow: /articles/
+Allow: /live/
+Disallow: /studio
+Disallow: /parish-admin
+Disallow: /profile
 Disallow: /control
 Disallow: /display
 Disallow: /suggestions

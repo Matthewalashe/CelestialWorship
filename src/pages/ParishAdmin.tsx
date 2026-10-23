@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Settings, Users, CalendarDays, HandHeart, HandCoins, CalendarClock, Radio, Trash2, Plus, Check, X, Download } from 'lucide-react';
+import { Settings, Users, CalendarDays, HandHeart, HandCoins, CalendarClock, Radio, Trash2, Plus, Check, X, Download, Crown, Bell, Square, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import {
@@ -16,11 +16,20 @@ import { listBanks, getPayoutAccount, savePayoutAccount, type Bank, type PayoutA
 import { showToast } from '../components/Toast';
 import { confirmDialog, promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
-import { normalizeLinks } from '../utils/safeUrl';
+import { normalizeLinks, normalizeHttpsUrl } from '../utils/safeUrl';
+import {
+  PLATFORMS, listLivestreams, saveLivestream, setStreamStatus, notifyLive, saveChannels, youTubeChannelId, isStreamLive,
+  shareMessage, streamLink, type Livestream, type Destination, type LivePlatform, type LiveChannels,
+} from '../lib/live';
+import { PARTNER_FEATURES, listPlans, getSubscription, hasPlan, subscribe, manageSubscription, planPrice, type Plan, type Subscription } from '../lib/plan';
+import { ShareRow } from '../components/ShareRow';
+import { ParishMediaManager } from '../components/ParishMedia';
 
-type Tab = 'details' | 'live' | 'team' | 'events' | 'prayers' | 'giving' | 'appointments';
+type Tab = 'details' | 'plan' | 'media' | 'live' | 'team' | 'events' | 'prayers' | 'giving' | 'appointments';
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: 'details', label: 'Details', icon: <Settings size={15} /> },
+  { id: 'plan', label: 'Plan', icon: <Crown size={15} /> },
+  { id: 'media', label: 'Pictures', icon: <ImageIcon size={15} /> },
   { id: 'live', label: 'Livestream', icon: <Radio size={15} /> },
   { id: 'team', label: 'Team', icon: <Users size={15} /> },
   { id: 'events', label: 'Events', icon: <CalendarDays size={15} /> },
@@ -163,36 +172,290 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
 
 // ── Livestream ───────────────────────────────────────────────
 
-function LiveTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () => void }) {
-  const [url, setUrl] = useState(parish.live_url ?? '');
-  const [title, setTitle] = useState(parish.live_title ?? '');
-  const go = async (liveNow: boolean) => {
+/** Shown where a feature needs the Partner plan */
+function PlanGate({ feature, fullAdmin, onPlan }: { feature: string; fullAdmin: boolean; onPlan: () => void }) {
+  return (
+    <div className="rounded-2xl border p-4 space-y-2" style={card}>
+      <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}><Crown size={16} style={{ color: 'var(--color-accent-gold)' }} /> {feature} is part of the Partner plan</p>
+      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Gifts, support for your articles and livestreaming come with the plan. Reading, worship and prayer stay free for everyone.</p>
+      {fullAdmin
+        ? <button onClick={onPlan} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">See the plan</button>
+        : <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Ask your shepherd or parish administrator to subscribe.</p>}
+    </div>
+  );
+}
+
+const PLATFORM_KEYS = Object.keys(PLATFORMS) as LivePlatform[];
+
+function DestinationsEditor({ value, onChange }: { value: Destination[]; onChange: (d: Destination[]) => void }) {
+  const set = (i: number, d: Partial<Destination>) => onChange(value.map((x, j) => (j === i ? { ...x, ...d } : x)));
+  return (
+    <div className="space-y-2">
+      {value.map((d, i) => (
+        <div key={i} className="flex gap-2">
+          <select value={d.platform} onChange={e => set(i, { platform: e.target.value as LivePlatform })} aria-label="Platform" className="rounded-xl px-2 py-2 text-sm border w-32 shrink-0" style={inputStyle}>
+            {PLATFORM_KEYS.map(k => <option key={k} value={k}>{PLATFORMS[k].label}</option>)}
+          </select>
+          <input value={d.url} onChange={e => set(i, { url: e.target.value })} inputMode="url" placeholder={PLATFORMS[d.platform].hint} aria-label={`${PLATFORMS[d.platform].label} link`} className={inputClass} style={inputStyle} />
+          <button onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Remove" className="p-2 shrink-0" style={{ color: 'var(--color-text-muted)' }}><X size={16} /></button>
+        </div>
+      ))}
+      {value.length < 8 && (
+        <button onClick={() => onChange([...value, { platform: value.some(v => v.platform === 'youtube') ? 'facebook' : 'youtube', url: '' }])}
+                className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}><Plus size={14} /> Add a platform</button>
+      )}
+    </div>
+  );
+}
+
+function cleanDestinations(list: Destination[]): Destination[] {
+  return list.filter(d => d.url.trim()).map(d => {
+    const url = normalizeHttpsUrl(d.url);
+    if (!url) throw new Error(`${PLATFORMS[d.platform].label}: that isn’t a valid https:// link`);
+    return { platform: d.platform, url };
+  });
+}
+
+/** Destinations people already use, from the saved channels */
+function fromChannels(c: LiveChannels | null | undefined): Destination[] {
+  const out: Destination[] = [];
+  for (const k of ['youtube', 'facebook', 'instagram', 'tiktok', 'x', 'mixlr'] as const) if (c?.[k]) out.push({ platform: k, url: c[k]! });
+  return out.length ? out : [{ platform: 'youtube', url: '' }];
+}
+
+function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish; onSaved: () => void; fullAdmin: boolean; onPlan: () => void }) {
+  const [plan, setPlan] = useState<boolean | null>(null);
+  const [streams, setStreams] = useState<Livestream[]>([]);
+  const [form, setForm] = useState<{ id?: string; title: string; when: string; description: string; destinations: Destination[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(() => {
+    hasPlan(parish.id).then(setPlan);
+    listLivestreams({ parishId: parish.id, limit: 30 }).then(r => setStreams(r ?? [])).catch(e => showToast(errorMessage(e)));
+  }, [parish.id]);
+  useEffect(() => { load(); }, [load]);
+
+  if (plan === null) return <p className="text-center py-8 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+
+  const live = streams.find(isStreamLive);
+  const scheduled = streams.filter(s => s.status === 'scheduled').sort((a, b) => (a.scheduled_at ?? '').localeCompare(b.scheduled_at ?? ''));
+
+  const run = async (fn: () => Promise<void>) => { setBusy(true); try { await fn(); load(); onSaved(); } catch (e) { showToast(errorMessage(e)); } finally { setBusy(false); } };
+
+  const goLive = (s: Livestream) => run(async () => {
+    await setStreamStatus(s.id, 'live');
+    try { const sent = await notifyLive(s.id); showToast(`You’re live — ${sent} member${sent === 1 ? '' : 's'} alerted`); }
+    catch { showToast('You’re live. Alerts could not be sent.'); }
+  });
+
+  const submit = (startNow: boolean) => form && run(async () => {
+    const destinations = cleanDestinations(form.destinations);
+    const saved = await saveLivestream({
+      id: form.id, parish_id: parish.id, title: form.title.trim(), description: form.description.trim() || null,
+      scheduled_at: form.when ? new Date(form.when).toISOString() : startNow ? new Date().toISOString() : null,
+      destinations, status: 'scheduled',
+    });
+    setForm(null);
+    if (startNow) await goLive(saved);
+    else showToast('Scheduled — it shows on the Live page');
+  });
+
+  return (
+    <div className="space-y-4">
+      {!plan && <PlanGate feature="Livestreaming" fullAdmin={fullAdmin} onPlan={onPlan} />}
+
+      {plan && live && (
+        <div className="rounded-2xl border-2 p-4 space-y-3" style={{ ...card, borderColor: '#EF4444' }}>
+          <p className="text-xs font-bold flex items-center gap-1" style={{ color: '#EF4444' }}><Radio size={14} /> LIVE NOW</p>
+          <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{live.title}</p>
+          <div className="flex flex-wrap gap-2">
+            <button disabled={busy} onClick={() => run(() => setStreamStatus(live.id, 'ended'))} className="px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"
+                    style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}><Square size={14} /> End broadcast</button>
+            {!live.notified_at && (
+              <button disabled={busy} onClick={() => run(async () => { const n = await notifyLive(live.id); showToast(`${n} alerted`); })}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+                <Bell size={14} /> Alert members & followers
+              </button>
+            )}
+          </div>
+          <ShareRow text={shareMessage(parish.name, live)} url={streamLink(live.id)} />
+        </div>
+      )}
+
+      {plan && !form && !live && (
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={() => setForm({ title: '', when: '', description: '', destinations: fromChannels(parish.live_channels) })}
+                  className="py-3 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2" style={{ backgroundColor: '#EF4444', color: '#fff' }}>
+            <Radio size={16} /> Go live
+          </button>
+          <button onClick={() => setForm({ title: '', when: ' ', description: '', destinations: fromChannels(parish.live_channels) })}
+                  className="py-3 rounded-xl text-sm font-semibold border inline-flex items-center justify-center gap-2" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+            <CalendarClock size={16} /> Schedule
+          </button>
+        </div>
+      )}
+
+      {plan && form && (
+        <div className="rounded-2xl border p-4 space-y-3" style={card}>
+          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} maxLength={140} placeholder="e.g. Sunday service" className={inputClass} style={inputStyle} /></Field>
+          {form.when !== '' && (
+            <Field label="Starts"><input type="datetime-local" value={form.when.trim()} onChange={e => setForm({ ...form, when: e.target.value })} className={inputClass} style={inputStyle} /></Field>
+          )}
+          <Field label="Where it streams">
+            <DestinationsEditor value={form.destinations} onChange={destinations => setForm({ ...form, destinations })} />
+          </Field>
+          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+            Paste the link of this broadcast on each platform (YouTube and Facebook play inside the app). With a YouTube channel saved below, the channel’s live video plays even without a link.
+          </p>
+          <Field label="Description (optional)"><textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} maxLength={1000} className={inputClass} style={inputStyle} /></Field>
+          <div className="flex gap-2">
+            {form.when === '' ? (
+              <button disabled={busy || form.title.trim().length < 3} onClick={() => submit(true)} className="px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2 disabled:opacity-50"
+                      style={{ backgroundColor: '#EF4444', color: '#fff' }}><Radio size={16} /> Go live & alert</button>
+            ) : (
+              <button disabled={busy || form.title.trim().length < 3 || !form.when.trim()} onClick={() => submit(false)} className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">Schedule</button>
+            )}
+            <button onClick={() => setForm(null)} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {scheduled.length > 0 && (
+        <section>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>Scheduled</h3>
+          <ul className="space-y-2">
+            {scheduled.map(s => (
+              <li key={s.id} className="rounded-2xl border p-3 space-y-2" style={card}>
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{s.title}</p>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.scheduled_at ? new Date(s.scheduled_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : ''} · {s.destinations.map(d => PLATFORMS[d.platform]?.label).join(', ') || 'YouTube channel'}</p>
+                  </div>
+                  {plan && !live && <button disabled={busy} onClick={() => goLive(s)} className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Go live</button>}
+                  <button disabled={busy} onClick={async () => { if (await confirmDialog({ title: 'Cancel this broadcast?', confirmLabel: 'Cancel broadcast', danger: true })) run(() => setStreamStatus(s.id, 'cancelled')); }}
+                          aria-label="Cancel broadcast" className="p-1.5" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={15} /></button>
+                </div>
+                <ShareRow text={shareMessage(parish.name, s)} url={streamLink(s.id)} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <ChannelsCard parish={parish} onSaved={onSaved} />
+
+      <details className="rounded-2xl border p-4 text-sm" style={card}>
+        <summary className="font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>How to stream to several platforms at once</summary>
+        <ol className="list-decimal pl-5 mt-3 space-y-1.5" style={{ color: 'var(--color-text-secondary)' }}>
+          <li>Start the stream with the tool you use: YouTube Studio, Facebook Live Producer, or OBS on a computer.</li>
+          <li>To reach YouTube, Facebook, Instagram and TikTok together, send one stream to a multistreaming service (for example Restream or StreamYard), or add each platform’s stream key in OBS’s “Multiple RTMP outputs”.</li>
+          <li>Here, press <b>Go live</b>, paste the link from each platform and send the alert. Members and followers get a notification; the broadcast shows on the Live page and your parish page.</li>
+          <li>Share it to WhatsApp, Facebook, X and Telegram with the buttons — the link opens the broadcast in the app, with every platform listed.</li>
+          <li>Press <b>End broadcast</b> when you finish; it then appears under “Watch again”.</li>
+        </ol>
+        <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>Never paste a stream key here — keys stay in your streaming software.</p>
+      </details>
+    </div>
+  );
+}
+
+function ChannelsCard({ parish, onSaved }: { parish: PrivateParish; onSaved: () => void }) {
+  const [c, setC] = useState<LiveChannels & { youtube_input?: string }>({ ...(parish.live_channels ?? {}), youtube_input: parish.live_channels?.youtube_channel_id ?? parish.live_channels?.youtube ?? '' });
+  const save = async () => {
     try {
-      const { live_url } = normalizeLinks({ live_url: url }, { live_url: 'Livestream link' });
-      await updateParish(parish.id, { live_url, live_title: title.trim() || null, live_now: liveNow });
-      showToast(liveNow ? 'You are live — it shows on the Live page' : 'Saved');
+      const youtubeInput = (c.youtube_input ?? '').trim();
+      const channelId = youTubeChannelId(youtubeInput);
+      const links = normalizeLinks({
+        youtube: channelId ? '' : youtubeInput, facebook: c.facebook, instagram: c.instagram, tiktok: c.tiktok, x: c.x, mixlr: c.mixlr,
+      }, { youtube: 'YouTube', facebook: 'Facebook', instagram: 'Instagram', tiktok: 'TikTok', x: 'X', mixlr: 'Mixlr' });
+      const channels: LiveChannels = Object.fromEntries(Object.entries(links).filter(([, v]) => v)) as LiveChannels;
+      if (channelId) { channels.youtube_channel_id = channelId; channels.youtube = `https://www.youtube.com/channel/${channelId}`; }
+      await saveChannels(parish.id, channels);
+      showToast('Channels saved');
       onSaved();
     } catch (e) {
       showToast(errorMessage(e));
     }
   };
+  const row = (key: 'facebook' | 'instagram' | 'tiktok' | 'x' | 'mixlr') => (
+    <Field label={PLATFORMS[key].label}>
+      <input value={c[key] ?? ''} onChange={e => setC({ ...c, [key]: e.target.value })} inputMode="url" placeholder={PLATFORMS[key].hint} className={inputClass} style={inputStyle} />
+    </Field>
+  );
   return (
-    <div className="rounded-2xl border p-4 space-y-3" style={card}>
-      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-        Stream on YouTube, Facebook or any platform, then paste the link here. YouTube streams play inside the app.
-      </p>
-      <Field label="Stream or channel link"><input value={url} onChange={e => setUrl(e.target.value)} inputMode="url" placeholder="https://youtube.com/live/…" className={inputClass} style={inputStyle} /></Field>
-      <Field label="Title"><input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Sunday service — live" className={inputClass} style={inputStyle} /></Field>
-      <div className="flex flex-wrap gap-2">
-        {parish.live_now ? (
-          <button onClick={() => go(false)} className="px-5 py-2.5 rounded-xl text-sm font-semibold" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>End live</button>
-        ) : (
-          <button onClick={() => go(true)} disabled={!url.trim()} className="px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2 disabled:opacity-50"
-                  style={{ backgroundColor: '#EF4444', color: '#fff' }}><Radio size={16} /> Go live</button>
-        )}
-        <button onClick={() => go(!!parish.live_now)} className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Save link</button>
+    <details className="rounded-2xl border p-4" style={card}>
+      <summary className="text-sm font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>Your channels</summary>
+      <div className="space-y-3 mt-3">
+        <Field label="YouTube channel">
+          <input value={c.youtube_input ?? ''} onChange={e => setC({ ...c, youtube_input: e.target.value })} placeholder="https://youtube.com/channel/UC… or the channel id" className={inputClass} style={inputStyle} />
+        </Field>
+        <p className="text-[11px] -mt-1" style={{ color: 'var(--color-text-muted)' }}>With the channel id (starts with UC), whatever is live on your channel plays in the app automatically.</p>
+        {row('facebook')}{row('instagram')}{row('tiktok')}{row('x')}{row('mixlr')}
+        <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">Save channels</button>
       </div>
-      <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>A “live” flag switches itself off after six hours if you forget.</p>
+    </details>
+  );
+}
+
+// ── Plan ─────────────────────────────────────────────────────
+
+function PlanTab({ parish }: { parish: PrivateParish }) {
+  const [params] = useSearchParams();
+  const [plans, setPlans] = useState<Plan[] | null | undefined>(undefined);
+  const [sub, setSub] = useState<Subscription | null>(null);
+  const [active, setActive] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(() => {
+    listPlans().then(setPlans).catch(() => setPlans(null));
+    getSubscription(parish.id).then(setSub).catch(() => {});
+    hasPlan(parish.id).then(setActive);
+  }, [parish.id]);
+  useEffect(() => {
+    load();
+    // Back from Paystack: the webhook may take a moment
+    if (params.get('subscribed')) { const t = setTimeout(load, 4000); return () => clearTimeout(t); }
+  }, [load, params]);
+
+  const go = async (fn: () => Promise<void>) => { setBusy(true); try { await fn(); } catch (e) { showToast(errorMessage(e)); } finally { setBusy(false); } };
+  const end = sub?.current_period_end ? new Date(sub.current_period_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
+
+  return (
+    <div className="space-y-4">
+      {params.get('subscribed') && !active && <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>Payment received — your plan will show here in a moment.</p>}
+      <div className="rounded-2xl border p-4 space-y-3" style={card}>
+        <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+          <Crown size={18} style={{ color: 'var(--color-accent-gold)' }} /> Partner plan
+          <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full" style={active ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}>
+            {active ? (sub?.status === 'non_renewing' ? 'Ends soon' : sub?.status === 'past_due' ? 'Payment failed' : 'Active') : 'Not subscribed'}
+          </span>
+        </p>
+        <ul className="space-y-1.5">
+          {PARTNER_FEATURES.map(f => <li key={f} className="text-sm flex gap-2" style={{ color: 'var(--color-text-secondary)' }}><Check size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }} /> {f}</li>)}
+        </ul>
+        {active && end && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{sub?.status === 'non_renewing' ? 'Ends' : 'Renews'} on {end}.</p>}
+        {sub?.status === 'past_due' && <p className="text-xs" style={{ color: 'var(--color-warning)' }}>The last payment failed. Update the card to keep gifts and livestreaming on.</p>}
+      </div>
+
+      {active && sub ? (
+        <button disabled={busy} onClick={() => go(() => manageSubscription(parish.id))} className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+          Change card or cancel
+        </button>
+      ) : plans === undefined ? (
+        <p className="text-sm animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>
+      ) : plans === null || plans.length === 0 ? (
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Plans open when the church’s online service is set up.</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 gap-2">
+          {plans.map(p => (
+            <button key={p.id} disabled={busy} onClick={() => go(() => subscribe(parish.id, p.id))} className="rounded-2xl border p-4 text-left disabled:opacity-60" style={card}>
+              <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.interval === 'monthly' ? 'Monthly' : 'Yearly'}</span>
+              <span className="block text-lg font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-accent-gold)' }}>{planPrice(p)}</span>
+              <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Pay securely with Paystack</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -367,7 +630,9 @@ function PayoutAccountCard({ parishId }: { parishId: string }) {
   );
 }
 
-function GivingTab({ parishId, fullAdmin }: { parishId: string; fullAdmin: boolean }) {
+function GivingTab({ parishId, fullAdmin, onPlan }: { parishId: string; fullAdmin: boolean; onPlan: () => void }) {
+  const [plan, setPlan] = useState<boolean | null>(null);
+  useEffect(() => { hasPlan(parishId).then(setPlan); }, [parishId]);
   const [items, setItems] = useState<(Donation & { donor_name: string | null; is_anonymous: boolean })[]>([]);
   useEffect(() => { parishDonations(parishId).then(setItems).catch(e => showToast(errorMessage(e))); }, [parishId]);
 
@@ -393,6 +658,7 @@ function GivingTab({ parishId, fullAdmin }: { parishId: string; fullAdmin: boole
 
   return (
     <div className="space-y-3">
+      {plan === false && <PlanGate feature="Taking gifts" fullAdmin={fullAdmin} onPlan={onPlan} />}
       {fullAdmin && <PayoutAccountCard parishId={parishId} />}
       <div className="grid grid-cols-2 gap-2">
         {[...totals.byPurpose].map(([key, amount]) => {
@@ -547,7 +813,7 @@ export default function ParishAdmin() {
   const full = FULL_ADMIN_ROLES.includes(myRole);
   // What each team role can open (the server enforces the same rules)
   const allowed: Record<Tab, boolean> = {
-    details: full, live: full || myRole === 'media', team: full, events: true,
+    details: full, plan: full, media: full || myRole === 'media', live: full || myRole === 'media', team: full, events: true,
     prayers: full || myRole === 'parochial_committee', giving: full || myRole === 'parochial_committee', appointments: full,
   };
   const visibleTabs = TABS.filter(t => allowed[t.id]);
@@ -580,11 +846,13 @@ export default function ParishAdmin() {
 
       <p className="text-[11px] mb-4" style={{ color: 'var(--color-text-muted)' }}>Your role: {TEAM_ROLES[myRole].label}</p>
       {activeTab === 'details' && <DetailsTab parish={parish} onSaved={reload} />}
-      {activeTab === 'live' && <LiveTab parish={parish} onSaved={reload} />}
+      {activeTab === 'plan' && <PlanTab parish={parish} />}
+      {activeTab === 'media' && <ParishMediaManager parish={parish} onSaved={reload} />}
+      {activeTab === 'live' && <LiveTab parish={parish} onSaved={reload} fullAdmin={full} onPlan={() => setTab('plan')} />}
       {activeTab === 'team' && <TeamTab parishId={parish.id} />}
       {activeTab === 'events' && <EventsTab parishId={parish.id} />}
       {activeTab === 'prayers' && <PrayersTab parishId={parish.id} />}
-      {activeTab === 'giving' && <GivingTab parishId={parish.id} fullAdmin={full} />}
+      {activeTab === 'giving' && <GivingTab parishId={parish.id} fullAdmin={full} onPlan={() => setTab('plan')} />}
       {activeTab === 'appointments' && <AppointmentsTab parishId={parish.id} />}
     </div>
   );
