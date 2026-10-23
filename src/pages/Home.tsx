@@ -9,7 +9,7 @@ import { useReadingProgress } from '../hooks/useProgress';
 import { hasOnboarded } from '../hooks/useProfile';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useT } from '../i18n';
+import { useT, tr } from '../i18n';
 import { getServiceScheduleForDate, formatDate, toISODate, formatServiceTime } from '../utils/dateUtils';
 import { getLiturgicalExclamation, getLiturgicalSeason } from '../utils/liturgical';
 import { churchObservances } from '../utils/churchCalendar';
@@ -27,7 +27,7 @@ function SectionTitle({ children, to, more }: { children: React.ReactNode; to?: 
   return (
     <div className="flex items-end justify-between mb-3">
       <h2 className="text-lg font-[Outfit] font-semibold" style={{ color: 'var(--color-text-primary)' }}>{children}</h2>
-      {to && <Link to={to} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{more ?? 'See all'}</Link>}
+      {to && <Link to={to} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{more ?? tr('See all')}</Link>}
     </div>
   );
 }
@@ -46,8 +46,8 @@ function ReadingsCard({ lessons, title }: { lessons: BibleLesson[]; title: strin
         )}
       </div>
       <div className="space-y-1.5">
-        {l.firstLesson && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}><span className="text-xs font-bold mr-2" style={{ color: 'var(--color-accent-brand)' }}>1st</span>{l.firstLesson.raw}</p>}
-        {l.secondLesson && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}><span className="text-xs font-bold mr-2" style={{ color: 'var(--color-accent-blue)' }}>2nd</span>{l.secondLesson.raw}</p>}
+        {l.firstLesson && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}><span className="text-xs font-bold mr-2" style={{ color: 'var(--color-accent-brand)' }}>{tr('1st')}</span>{l.firstLesson.raw}</p>}
+        {l.secondLesson && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}><span className="text-xs font-bold mr-2" style={{ color: 'var(--color-accent-blue)' }}>{tr('2nd')}</span>{l.secondLesson.raw}</p>}
       </div>
     </Link>
   );
@@ -136,10 +136,10 @@ export default function Home() {
       <section aria-labelledby="votd">
         <div className="flex items-center justify-between mb-2">
           <h2 id="votd" className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{t('home.verseOfDay')}</h2>
-          <button onClick={shareVerse} className="p-1.5 -m-1.5 rounded-lg" aria-label="Share the verse" style={{ color: 'var(--color-text-muted)' }}><Share2 size={16} /></button>
+          <button onClick={shareVerse} className="p-1.5 -m-1.5 rounded-lg" aria-label={tr('Share the verse')} style={{ color: 'var(--color-text-muted)' }}><Share2 size={16} /></button>
         </div>
         <Link to={verse.path} className="block">
-          <p className="text-lg leading-relaxed" style={{ color: 'var(--color-text-primary)', fontFamily: "Literata, Georgia, serif" }}>“{verse.text}”</p>
+          <p className="text-lg leading-relaxed" style={{ color: 'var(--color-text-primary)', fontFamily: "Literata, Georgia, serif" }}>“{tr(verse.text)}”</p>
           <p className="text-sm font-semibold mt-2" style={{ color: 'var(--color-text-secondary)' }}>{verse.reference}</p>
         </Link>
       </section>
@@ -147,7 +147,7 @@ export default function Home() {
       {liveNow.length > 0 && (
         <Link to="/live" className="flex items-center gap-3 p-3.5 rounded-2xl border" style={{ ...card, borderColor: '#EF4444' }}>
           <Radio size={18} style={{ color: '#EF4444' }} />
-          <span className="flex-1 min-w-0 text-sm truncate" style={{ color: 'var(--color-text-primary)' }}><b style={{ color: '#EF4444' }}>Live</b> · {liveNow.map(p => p.name).join(' · ')}</span>
+          <span className="flex-1 min-w-0 text-sm truncate" style={{ color: 'var(--color-text-primary)' }}><b style={{ color: '#EF4444' }}>{tr('Live')}</b> · {liveNow.map(p => p.name).join(' · ')}</span>
           <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
         </Link>
       )}
@@ -165,12 +165,12 @@ export default function Home() {
           ))}
         </div>
         <Link to={resume?.to.startsWith('/devotion') ? resume.to : '/devotion'} className="btn-primary mt-3 w-full py-3 rounded-xl text-sm flex items-center justify-center gap-2 font-semibold">
-          <Bird size={18} /> {devotion ? 'Continue devotion' : t('home.startDevotion')}
+          <Bird size={18} /> {devotion ? tr('Continue devotion') : t('home.startDevotion')}
         </Link>
         {resume && !devotion && (
           <Link to={resume.to} className="mt-2 flex items-center gap-3 px-4 py-3 rounded-xl text-sm" style={card}>
             <span style={{ color: 'var(--color-text-muted)' }}>{resume.icon}</span>
-            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}><span style={{ color: 'var(--color-text-muted)' }}>{t('home.continue')}: </span>{resume.text}</span>
+            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}><span style={{ color: 'var(--color-text-muted)' }}>{t('home.continue')}: </span>{tr(resume.text)}</span>
             <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
           </Link>
         )}
@@ -178,9 +178,9 @@ export default function Home() {
 
       {(todayLessons.length > 0 || tomorrowLessons.length > 0) && (
         <section className="space-y-2">
-          <SectionTitle to="/lessons" more="Calendar">Bible lessons</SectionTitle>
-          {todayLessons.length > 0 && <ReadingsCard lessons={todayLessons} title="Today’s readings" />}
-          {tomorrowLessons.length > 0 && <ReadingsCard lessons={tomorrowLessons} title="Prepare for Sunday" />}
+          <SectionTitle to="/lessons" more="Calendar">{tr('Bible lessons')}</SectionTitle>
+          {todayLessons.length > 0 && <ReadingsCard lessons={todayLessons} title={tr('Today’s readings')} />}
+          {tomorrowLessons.length > 0 && <ReadingsCard lessons={tomorrowLessons} title={tr('Prepare for Sunday')} />}
         </section>
       )}
 
@@ -195,7 +195,7 @@ export default function Home() {
                     <span className="block text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>{new Date(e.starts_at).toLocaleDateString('en-GB', { month: 'short' })}</span>
                     <span className="block text-lg font-bold font-[Outfit] leading-none" style={{ color: 'var(--color-text-primary)' }}>{new Date(e.starts_at).getDate()}</span>
                   </span>
-                  <span className="flex-1 min-w-0 text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{e.title}</span>
+                  <span className="flex-1 min-w-0 text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(e.title)}</span>
                 </Link>
               </li>
             ))}

@@ -24,6 +24,8 @@ import {
 import { PARTNER_FEATURES, listPlans, getSubscription, hasPlan, subscribe, manageSubscription, planPrice, type Plan, type Subscription } from '../lib/plan';
 import { ShareRow } from '../components/ShareRow';
 import { ParishMediaManager } from '../components/ParishMedia';
+import { ParishStructureCard, ShepherdClaimsCard } from '../components/ParishStructure';
+import { tr } from '../i18n';
 
 type Tab = 'details' | 'plan' | 'media' | 'live' | 'team' | 'events' | 'prayers' | 'giving' | 'appointments';
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
@@ -81,7 +83,7 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
         social_links: social as Record<string, string>,
         accepts_prayer_requests: p.accepts_prayer_requests, accepts_appointments: p.accepts_appointments,
       });
-      showToast('Saved');
+      showToast(tr('Saved'));
       onSaved();
     } catch (e) {
       showToast(errorMessage(e));
@@ -100,9 +102,7 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
   return (
     <div className="space-y-4">
       {p.status !== 'published' && (
-        <p className="text-xs p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
-          Waiting for a moderator to list this {p.kind === 'ministry' ? 'ministry' : 'parish'} in the directory. You can prepare its details now.
-        </p>
+        <p className="text-xs p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Waiting for a moderator to list this')}{' '}{p.kind === 'ministry' ? tr('ministry') : tr('parish')}{' '}{tr('in the directory. You can prepare its details now.')}</p>
       )}
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         {text('name', 'Name')}
@@ -125,47 +125,41 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
           </Field>
         ))}
         <label className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          <input type="checkbox" className="mt-1" checked={p.contact_public} onChange={e => set({ contact_public: e.target.checked })} />
-          Show the phone and email publicly in the directory
-        </label>
+          <input type="checkbox" className="mt-1" checked={p.contact_public} onChange={e => set({ contact_public: e.target.checked })} />{tr('Show the phone and email publicly in the directory')}</label>
       </section>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
-        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>Service times</h3>
+        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('Service times')}</h3>
         {times.map((t, i) => (
           <div key={i} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center">
             <input value={t.service} onChange={e => set({ service_times: times.map((x, j) => (j === i ? { ...x, service: e.target.value } : x)) })}
-                   placeholder="Service, e.g. Lord's Day Service" className={inputClass} style={inputStyle} />
+                   placeholder={tr('Service, e.g. Lord\'s Day Service')} className={inputClass} style={inputStyle} />
             <input type="time" value={t.time} onChange={e => set({ service_times: times.map((x, j) => (j === i ? { ...x, time: e.target.value } : x)) })}
                    className={inputClass} style={inputStyle} />
-            <button onClick={() => set({ service_times: times.filter((_, j) => j !== i) })} aria-label="Remove" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={16} /></button>
+            <button onClick={() => set({ service_times: times.filter((_, j) => j !== i) })} aria-label={tr('Remove')} style={{ color: 'var(--color-text-muted)' }}><Trash2 size={16} /></button>
           </div>
         ))}
         <button onClick={() => set({ service_times: [...times, { service: '', time: '' }] })} className="text-xs font-semibold inline-flex items-center gap-1"
-                style={{ color: 'var(--color-accent-brand)' }}><Plus size={14} /> Add a service</button>
+                style={{ color: 'var(--color-accent-brand)' }}><Plus size={14} />{' '}{tr('Add a service')}</button>
       </section>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
-        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>Message to givers</h3>
-        <Field label="Shown on the Give page">
+        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('Message to givers')}</h3>
+        <Field label={tr('Shown on the Give page')}>
           <input value={giving.note ?? ''} onChange={e => set({ giving_details: { note: e.target.value } })}
-                 placeholder="e.g. Harvest thanksgiving offerings close on Sunday" className={inputClass} style={inputStyle} />
+                 placeholder={tr('e.g. Harvest thanksgiving offerings close on Sunday')} className={inputClass} style={inputStyle} />
         </Field>
-        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Set the bank account gifts are paid into under the Giving tab.</p>
+        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Set the bank account gifts are paid into under the Giving tab.')}</p>
       </section>
 
       <section className="rounded-2xl border p-4 space-y-2" style={card}>
         <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          <input type="checkbox" checked={p.accepts_prayer_requests !== false} onChange={e => set({ accepts_prayer_requests: e.target.checked })} />
-          Accept prayer requests from members
-        </label>
+          <input type="checkbox" checked={p.accepts_prayer_requests !== false} onChange={e => set({ accepts_prayer_requests: e.target.checked })} />{tr('Accept prayer requests from members')}</label>
         <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          <input type="checkbox" checked={!!p.accepts_appointments} onChange={e => set({ accepts_appointments: e.target.checked })} />
-          Let members book appointments
-        </label>
+          <input type="checkbox" checked={!!p.accepts_appointments} onChange={e => set({ accepts_appointments: e.target.checked })} />{tr('Let members book appointments')}</label>
       </section>
 
-      <button onClick={save} disabled={busy} className="btn-primary w-full py-3 rounded-xl text-sm font-semibold disabled:opacity-50">Save details</button>
+      <button onClick={save} disabled={busy} className="btn-primary w-full py-3 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Save details')}</button>
     </div>
   );
 }
@@ -176,11 +170,11 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
 function PlanGate({ feature, fullAdmin, onPlan }: { feature: string; fullAdmin: boolean; onPlan: () => void }) {
   return (
     <div className="rounded-2xl border p-4 space-y-2" style={card}>
-      <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}><Crown size={16} style={{ color: 'var(--color-accent-gold)' }} /> {feature} is part of the Partner plan</p>
-      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Gifts, support for your articles and livestreaming come with the plan. Reading, worship and prayer stay free for everyone.</p>
+      <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}><Crown size={16} style={{ color: 'var(--color-accent-gold)' }} /> {feature}{' '}{tr('is part of the Partner plan')}</p>
+      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Gifts, support for your articles and livestreaming come with the plan. Reading, worship and prayer stay free for everyone.')}</p>
       {fullAdmin
-        ? <button onClick={onPlan} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">See the plan</button>
-        : <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Ask your shepherd or parish administrator to subscribe.</p>}
+        ? <button onClick={onPlan} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">{tr('See the plan')}</button>
+        : <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Ask your shepherd or parish administrator to subscribe.')}</p>}
     </div>
   );
 }
@@ -193,16 +187,16 @@ function DestinationsEditor({ value, onChange }: { value: Destination[]; onChang
     <div className="space-y-2">
       {value.map((d, i) => (
         <div key={i} className="flex gap-2">
-          <select value={d.platform} onChange={e => set(i, { platform: e.target.value as LivePlatform })} aria-label="Platform" className="rounded-xl px-2 py-2 text-sm border w-32 shrink-0" style={inputStyle}>
-            {PLATFORM_KEYS.map(k => <option key={k} value={k}>{PLATFORMS[k].label}</option>)}
+          <select value={d.platform} onChange={e => set(i, { platform: e.target.value as LivePlatform })} aria-label={tr('Platform')} className="rounded-xl px-2 py-2 text-sm border w-32 shrink-0" style={inputStyle}>
+            {PLATFORM_KEYS.map(k => <option key={k} value={k}>{tr(PLATFORMS[k].label)}</option>)}
           </select>
           <input value={d.url} onChange={e => set(i, { url: e.target.value })} inputMode="url" placeholder={PLATFORMS[d.platform].hint} aria-label={`${PLATFORMS[d.platform].label} link`} className={inputClass} style={inputStyle} />
-          <button onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Remove" className="p-2 shrink-0" style={{ color: 'var(--color-text-muted)' }}><X size={16} /></button>
+          <button onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label={tr('Remove')} className="p-2 shrink-0" style={{ color: 'var(--color-text-muted)' }}><X size={16} /></button>
         </div>
       ))}
       {value.length < 8 && (
         <button onClick={() => onChange([...value, { platform: value.some(v => v.platform === 'youtube') ? 'facebook' : 'youtube', url: '' }])}
-                className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}><Plus size={14} /> Add a platform</button>
+                className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}><Plus size={14} />{' '}{tr('Add a platform')}</button>
       )}
     </div>
   );
@@ -235,7 +229,7 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
   }, [parish.id]);
   useEffect(() => { load(); }, [load]);
 
-  if (plan === null) return <p className="text-center py-8 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+  if (plan === null) return <p className="text-center py-8 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
 
   const live = streams.find(isStreamLive);
   const scheduled = streams.filter(s => s.status === 'scheduled').sort((a, b) => (a.scheduled_at ?? '').localeCompare(b.scheduled_at ?? ''));
@@ -245,7 +239,7 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
   const goLive = (s: Livestream) => run(async () => {
     await setStreamStatus(s.id, 'live');
     try { const sent = await notifyLive(s.id); showToast(`You’re live — ${sent} member${sent === 1 ? '' : 's'} alerted`); }
-    catch { showToast('You’re live. Alerts could not be sent.'); }
+    catch { showToast(tr('You’re live. Alerts could not be sent.')); }
   });
 
   const submit = (startNow: boolean) => form && run(async () => {
@@ -257,7 +251,7 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
     });
     setForm(null);
     if (startNow) await goLive(saved);
-    else showToast('Scheduled — it shows on the Live page');
+    else showToast(tr('Scheduled — it shows on the Live page'));
   });
 
   return (
@@ -266,11 +260,11 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
 
       {plan && live && (
         <div className="rounded-2xl border-2 p-4 space-y-3" style={{ ...card, borderColor: '#EF4444' }}>
-          <p className="text-xs font-bold flex items-center gap-1" style={{ color: '#EF4444' }}><Radio size={14} /> LIVE NOW</p>
-          <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{live.title}</p>
+          <p className="text-xs font-bold flex items-center gap-1" style={{ color: '#EF4444' }}><Radio size={14} />{' '}{tr('LIVE NOW')}</p>
+          <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(live.title)}</p>
           <div className="flex flex-wrap gap-2">
             <button disabled={busy} onClick={() => run(() => setStreamStatus(live.id, 'ended'))} className="px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"
-                    style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}><Square size={14} /> End broadcast</button>
+                    style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}><Square size={14} />{' '}{tr('End broadcast')}</button>
             {!live.notified_at && (
               <button disabled={busy} onClick={() => run(async () => { const n = await notifyLive(live.id); showToast(`${n} alerted`); })}
                       className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
@@ -286,54 +280,50 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setForm({ title: '', when: '', description: '', destinations: fromChannels(parish.live_channels) })}
                   className="py-3 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2" style={{ backgroundColor: '#EF4444', color: '#fff' }}>
-            <Radio size={16} /> Go live
-          </button>
+            <Radio size={16} />{' '}{tr('Go live')}</button>
           <button onClick={() => setForm({ title: '', when: ' ', description: '', destinations: fromChannels(parish.live_channels) })}
                   className="py-3 rounded-xl text-sm font-semibold border inline-flex items-center justify-center gap-2" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-            <CalendarClock size={16} /> Schedule
-          </button>
+            <CalendarClock size={16} />{' '}{tr('Schedule')}</button>
         </div>
       )}
 
       {plan && form && (
         <div className="rounded-2xl border p-4 space-y-3" style={card}>
-          <Field label="Title"><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} maxLength={140} placeholder="e.g. Sunday service" className={inputClass} style={inputStyle} /></Field>
+          <Field label={tr('Title')}><input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} maxLength={140} placeholder={tr('e.g. Sunday service')} className={inputClass} style={inputStyle} /></Field>
           {form.when !== '' && (
-            <Field label="Starts"><input type="datetime-local" value={form.when.trim()} onChange={e => setForm({ ...form, when: e.target.value })} className={inputClass} style={inputStyle} /></Field>
+            <Field label={tr('Starts')}><input type="datetime-local" value={form.when.trim()} onChange={e => setForm({ ...form, when: e.target.value })} className={inputClass} style={inputStyle} /></Field>
           )}
-          <Field label="Where it streams">
+          <Field label={tr('Where it streams')}>
             <DestinationsEditor value={form.destinations} onChange={destinations => setForm({ ...form, destinations })} />
           </Field>
-          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-            Paste the link of this broadcast on each platform (YouTube and Facebook play inside the app). With a YouTube channel saved below, the channel’s live video plays even without a link.
-          </p>
-          <Field label="Description (optional)"><textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} maxLength={1000} className={inputClass} style={inputStyle} /></Field>
+          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Paste the link of this broadcast on each platform (YouTube and Facebook play inside the app). With a YouTube channel saved below, the channel’s live video plays even without a link.')}</p>
+          <Field label={tr('Description (optional)')}><textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={2} maxLength={1000} className={inputClass} style={inputStyle} /></Field>
           <div className="flex gap-2">
             {form.when === '' ? (
               <button disabled={busy || form.title.trim().length < 3} onClick={() => submit(true)} className="px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2 disabled:opacity-50"
                       style={{ backgroundColor: '#EF4444', color: '#fff' }}><Radio size={16} /> Go live & alert</button>
             ) : (
-              <button disabled={busy || form.title.trim().length < 3 || !form.when.trim()} onClick={() => submit(false)} className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">Schedule</button>
+              <button disabled={busy || form.title.trim().length < 3 || !form.when.trim()} onClick={() => submit(false)} className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Schedule')}</button>
             )}
-            <button onClick={() => setForm(null)} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+            <button onClick={() => setForm(null)} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
           </div>
         </div>
       )}
 
       {scheduled.length > 0 && (
         <section>
-          <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>Scheduled</h3>
+          <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{tr('Scheduled')}</h3>
           <ul className="space-y-2">
             {scheduled.map(s => (
               <li key={s.id} className="rounded-2xl border p-3 space-y-2" style={card}>
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{s.title}</p>
-                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.scheduled_at ? new Date(s.scheduled_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : ''} · {s.destinations.map(d => PLATFORMS[d.platform]?.label).join(', ') || 'YouTube channel'}</p>
+                    <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(s.title)}</p>
+                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{s.scheduled_at ? new Date(s.scheduled_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : ''} · {s.destinations.map(d => PLATFORMS[d.platform]?.label).join(', ') || tr('YouTube channel')}</p>
                   </div>
-                  {plan && !live && <button disabled={busy} onClick={() => goLive(s)} className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ backgroundColor: '#EF4444', color: '#fff' }}>Go live</button>}
-                  <button disabled={busy} onClick={async () => { if (await confirmDialog({ title: 'Cancel this broadcast?', confirmLabel: 'Cancel broadcast', danger: true })) run(() => setStreamStatus(s.id, 'cancelled')); }}
-                          aria-label="Cancel broadcast" className="p-1.5" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={15} /></button>
+                  {plan && !live && <button disabled={busy} onClick={() => goLive(s)} className="px-3 py-1.5 rounded-lg text-xs font-bold" style={{ backgroundColor: '#EF4444', color: '#fff' }}>{tr('Go live')}</button>}
+                  <button disabled={busy} onClick={async () => { if (await confirmDialog({ title: tr('Cancel this broadcast?'), confirmLabel: tr('Cancel broadcast'), danger: true })) run(() => setStreamStatus(s.id, 'cancelled')); }}
+                          aria-label={tr('Cancel broadcast')} className="p-1.5" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={15} /></button>
                 </div>
                 <ShareRow text={shareMessage(parish.name, s)} url={streamLink(s.id)} />
               </li>
@@ -345,15 +335,15 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
       <ChannelsCard parish={parish} onSaved={onSaved} />
 
       <details className="rounded-2xl border p-4 text-sm" style={card}>
-        <summary className="font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>How to stream to several platforms at once</summary>
+        <summary className="font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>{tr('How to stream to several platforms at once')}</summary>
         <ol className="list-decimal pl-5 mt-3 space-y-1.5" style={{ color: 'var(--color-text-secondary)' }}>
-          <li>Start the stream with the tool you use: YouTube Studio, Facebook Live Producer, or OBS on a computer.</li>
-          <li>To reach YouTube, Facebook, Instagram and TikTok together, send one stream to a multistreaming service (for example Restream or StreamYard), or add each platform’s stream key in OBS’s “Multiple RTMP outputs”.</li>
-          <li>Here, press <b>Go live</b>, paste the link from each platform and send the alert. Members and followers get a notification; the broadcast shows on the Live page and your parish page.</li>
-          <li>Share it to WhatsApp, Facebook, X and Telegram with the buttons — the link opens the broadcast in the app, with every platform listed.</li>
-          <li>Press <b>End broadcast</b> when you finish; it then appears under “Watch again”.</li>
+          <li>{tr('Start the stream with the tool you use: YouTube Studio, Facebook Live Producer, or OBS on a computer.')}</li>
+          <li>{tr('To reach YouTube, Facebook, Instagram and TikTok together, send one stream to a multistreaming service (for example Restream or StreamYard), or add each platform’s stream key in OBS’s “Multiple RTMP outputs”.')}</li>
+          <li>{tr('Here, press')}{' '}<b>{tr('Go live')}</b>{tr(', paste the link from each platform and send the alert. Members and followers get a notification; the broadcast shows on the Live page and your parish page.')}</li>
+          <li>{tr('Share it to WhatsApp, Facebook, X and Telegram with the buttons — the link opens the broadcast in the app, with every platform listed.')}</li>
+          <li>{tr('Press')}{' '}<b>{tr('End broadcast')}</b>{' '}{tr('when you finish; it then appears under “Watch again”.')}</li>
         </ol>
-        <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>Never paste a stream key here — keys stay in your streaming software.</p>
+        <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>{tr('Never paste a stream key here — keys stay in your streaming software.')}</p>
       </details>
     </div>
   );
@@ -371,7 +361,7 @@ function ChannelsCard({ parish, onSaved }: { parish: PrivateParish; onSaved: () 
       const channels: LiveChannels = Object.fromEntries(Object.entries(links).filter(([, v]) => v)) as LiveChannels;
       if (channelId) { channels.youtube_channel_id = channelId; channels.youtube = `https://www.youtube.com/channel/${channelId}`; }
       await saveChannels(parish.id, channels);
-      showToast('Channels saved');
+      showToast(tr('Channels saved'));
       onSaved();
     } catch (e) {
       showToast(errorMessage(e));
@@ -384,14 +374,14 @@ function ChannelsCard({ parish, onSaved }: { parish: PrivateParish; onSaved: () 
   );
   return (
     <details className="rounded-2xl border p-4" style={card}>
-      <summary className="text-sm font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>Your channels</summary>
+      <summary className="text-sm font-semibold cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>{tr('Your channels')}</summary>
       <div className="space-y-3 mt-3">
-        <Field label="YouTube channel">
+        <Field label={tr('YouTube channel')}>
           <input value={c.youtube_input ?? ''} onChange={e => setC({ ...c, youtube_input: e.target.value })} placeholder="https://youtube.com/channel/UC… or the channel id" className={inputClass} style={inputStyle} />
         </Field>
-        <p className="text-[11px] -mt-1" style={{ color: 'var(--color-text-muted)' }}>With the channel id (starts with UC), whatever is live on your channel plays in the app automatically.</p>
+        <p className="text-[11px] -mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('With the channel id (starts with UC), whatever is live on your channel plays in the app automatically.')}</p>
         {row('facebook')}{row('instagram')}{row('tiktok')}{row('x')}{row('mixlr')}
-        <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">Save channels</button>
+        <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">{tr('Save channels')}</button>
       </div>
     </details>
   );
@@ -422,36 +412,33 @@ function PlanTab({ parish }: { parish: PrivateParish }) {
 
   return (
     <div className="space-y-4">
-      {params.get('subscribed') && !active && <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>Payment received — your plan will show here in a moment.</p>}
+      {params.get('subscribed') && !active && <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>{tr('Payment received — your plan will show here in a moment.')}</p>}
       <div className="rounded-2xl border p-4 space-y-3" style={card}>
         <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-          <Crown size={18} style={{ color: 'var(--color-accent-gold)' }} /> Partner plan
-          <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full" style={active ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}>
-            {active ? (sub?.status === 'non_renewing' ? 'Ends soon' : sub?.status === 'past_due' ? 'Payment failed' : 'Active') : 'Not subscribed'}
+          <Crown size={18} style={{ color: 'var(--color-accent-gold)' }} />{' '}{tr('Partner plan')}<span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full" style={active ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}>
+            {active ? (sub?.status === 'non_renewing' ? tr('Ends soon') : sub?.status === 'past_due' ? tr('Payment failed') : tr('Active')) : tr('Not subscribed')}
           </span>
         </p>
         <ul className="space-y-1.5">
           {PARTNER_FEATURES.map(f => <li key={f} className="text-sm flex gap-2" style={{ color: 'var(--color-text-secondary)' }}><Check size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }} /> {f}</li>)}
         </ul>
-        {active && end && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{sub?.status === 'non_renewing' ? 'Ends' : 'Renews'} on {end}.</p>}
-        {sub?.status === 'past_due' && <p className="text-xs" style={{ color: 'var(--color-warning)' }}>The last payment failed. Update the card to keep gifts and livestreaming on.</p>}
+        {active && end && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{sub?.status === 'non_renewing' ? tr('Ends') : tr('Renews')}{' '}{tr('on')}{' '}{end}.</p>}
+        {sub?.status === 'past_due' && <p className="text-xs" style={{ color: 'var(--color-warning)' }}>{tr('The last payment failed. Update the card to keep gifts and livestreaming on.')}</p>}
       </div>
 
       {active && sub ? (
-        <button disabled={busy} onClick={() => go(() => manageSubscription(parish.id))} className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-          Change card or cancel
-        </button>
+        <button disabled={busy} onClick={() => go(() => manageSubscription(parish.id))} className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Change card or cancel')}</button>
       ) : plans === undefined ? (
-        <p className="text-sm animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>
+        <p className="text-sm animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>
       ) : plans === null || plans.length === 0 ? (
-        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Plans open when the church’s online service is set up.</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('Plans open when the church’s online service is set up.')}</p>
       ) : (
         <div className="grid sm:grid-cols-2 gap-2">
           {plans.map(p => (
             <button key={p.id} disabled={busy} onClick={() => go(() => subscribe(parish.id, p.id))} className="rounded-2xl border p-4 text-left disabled:opacity-60" style={card}>
-              <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.interval === 'monthly' ? 'Monthly' : 'Yearly'}</span>
+              <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.interval === 'monthly' ? tr('Monthly') : tr('Yearly')}</span>
               <span className="block text-lg font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-accent-gold)' }}>{planPrice(p)}</span>
-              <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Pay securely with Paystack</span>
+              <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Pay securely with Paystack')}</span>
             </button>
           ))}
         </div>
@@ -477,27 +464,27 @@ function TeamTab({ parishId }: { parishId: string }) {
           <li key={a.user_id} className="flex items-center gap-3 rounded-2xl border p-3" style={card}>
             <span className="flex-1">
               <span className="block font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
-                {[a.church_title, a.display_name].filter(Boolean).join(' ') || 'Member'}{a.user_id === user?.id ? ' (you)' : ''}
+                {[a.church_title, a.display_name].filter(Boolean).join(' ') || tr('Member')}{a.user_id === user?.id ? tr(' (you)') : ''}
               </span>
-              <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{TEAM_ROLES[a.role]?.label ?? a.role}{a.verified ? '' : ' · awaiting verification'}</span>
+              <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{TEAM_ROLES[a.role]?.label ?? a.role}{a.verified ? '' : tr(' · awaiting verification')}</span>
             </span>
             {a.user_id !== user?.id && (
-              <button onClick={async () => { if (await confirmDialog({ title: 'Remove this person from the team?', confirmLabel: 'Remove', danger: true })) { try { await removeParishAdmin(parishId, a.user_id); load(); } catch (e) { showToast(errorMessage(e)); } } }}
-                      aria-label="Remove" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={16} /></button>
+              <button onClick={async () => { if (await confirmDialog({ title: tr('Remove this person from the team?'), confirmLabel: tr('Remove'), danger: true })) { try { await removeParishAdmin(parishId, a.user_id); load(); } catch (e) { showToast(errorMessage(e)); } } }}
+                      aria-label={tr('Remove')} style={{ color: 'var(--color-text-muted)' }}><Trash2 size={16} /></button>
             )}
           </li>
         ))}
       </ul>
       <div className="rounded-2xl border p-4 space-y-2" style={card}>
-        <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>Add to the team</p>
-        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>They must have signed up to the app first. {TEAM_ROLES[role].label}: {TEAM_ROLES[role].can.toLowerCase()}.</p>
-        <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Their email address" inputMode="email" className={inputClass} style={inputStyle} />
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Add to the team')}</p>
+        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('They must have signed up to the app first.')}{' '}{tr(TEAM_ROLES[role].label)}: {TEAM_ROLES[role].can.toLowerCase()}.</p>
+        <input value={email} onChange={e => setEmail(e.target.value)} placeholder={tr('Their email address')} inputMode="email" className={inputClass} style={inputStyle} />
         <div className="flex gap-2">
-          <select value={role} onChange={e => setRole(e.target.value as TeamRole)} className={inputClass} style={inputStyle} aria-label="Role">
-            {(Object.keys(TEAM_ROLES) as TeamRole[]).filter(r => r !== 'editor').map(r => <option key={r} value={r}>{TEAM_ROLES[r].label}</option>)}
+          <select value={role} onChange={e => setRole(e.target.value as TeamRole)} className={inputClass} style={inputStyle} aria-label={tr('Role')}>
+            {(Object.keys(TEAM_ROLES) as TeamRole[]).filter(r => r !== 'editor').map(r => <option key={r} value={r}>{tr(TEAM_ROLES[r].label)}</option>)}
           </select>
-          <button onClick={async () => { try { await addParishAdmin(parishId, email, role); setEmail(''); showToast('Added'); load(); } catch (e) { showToast(errorMessage(e)); } }}
-                  disabled={!email.includes('@')} className="btn-primary px-4 rounded-xl text-sm font-semibold disabled:opacity-50">Add</button>
+          <button onClick={async () => { try { await addParishAdmin(parishId, email, role); setEmail(''); showToast(tr('Added')); load(); } catch (e) { showToast(errorMessage(e)); } }}
+                  disabled={!email.includes('@')} className="btn-primary px-4 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Add')}</button>
         </div>
       </div>
     </div>
@@ -512,21 +499,21 @@ function EventsTab({ parishId }: { parishId: string }) {
   useEffect(() => { load(); }, [load]);
   return (
     <div className="space-y-3">
-      <Link to="/events?submit=1" className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1"><Plus size={16} /> Add an event</Link>
-      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Events you add as a verified administrator are published to the public calendar straight away.</p>
+      <Link to="/events?submit=1" className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1"><Plus size={16} />{' '}{tr('Add an event')}</Link>
+      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Events you add as a verified administrator are published to the public calendar straight away.')}</p>
       <ul className="space-y-2">
         {events.map(e => (
           <li key={e.id} className="rounded-2xl border p-3 flex items-center gap-3" style={card}>
             <span className="flex-1 min-w-0">
               <span className="block text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{new Date(e.starts_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-              <span className="block text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{e.title}</span>
+              <span className="block text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(e.title)}</span>
               <span className="block text-[11px] capitalize" style={{ color: 'var(--color-text-muted)' }}>{e.status}</span>
             </span>
-            {e.status === 'pending' && <button onClick={async () => { await setEventStatus(e.id, 'published'); load(); }} className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>Publish</button>}
-            {e.status === 'published' && <button onClick={async () => { if (await confirmDialog({ title: 'Cancel this event?', message: 'It will show as cancelled on the calendar.', confirmLabel: 'Cancel event', danger: true })) { await setEventStatus(e.id, 'cancelled'); load(); } }} className="text-xs font-semibold" style={{ color: 'var(--color-warning)' }}>Cancel</button>}
+            {e.status === 'pending' && <button onClick={async () => { await setEventStatus(e.id, 'published'); load(); }} className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>{tr('Publish')}</button>}
+            {e.status === 'published' && <button onClick={async () => { if (await confirmDialog({ title: tr('Cancel this event?'), message: tr('It will show as cancelled on the calendar.'), confirmLabel: tr('Cancel event'), danger: true })) { await setEventStatus(e.id, 'cancelled'); load(); } }} className="text-xs font-semibold" style={{ color: 'var(--color-warning)' }}>{tr('Cancel')}</button>}
           </li>
         ))}
-        {events.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>No events yet.</p>}
+        {events.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>{tr('No events yet.')}</p>}
       </ul>
     </div>
   );
@@ -546,20 +533,20 @@ function PrayersTab({ parishId }: { parishId: string }) {
       {items.map(r => (
         <li key={r.id} className="rounded-2xl border p-4" style={card}>
           <div className="flex items-center gap-2 text-[10px] uppercase font-bold mb-1" style={{ color: 'var(--color-text-muted)' }}>
-            <span>{r.status}</span><span>· {r.visibility === 'shepherd' ? 'For the shepherd only' : r.visibility}</span>
+            <span>{r.status}</span><span>· {r.visibility === 'shepherd' ? tr('For the shepherd only') : r.visibility}</span>
           </div>
-          <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{r.title}</p>
+          <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(r.title)}</p>
           {r.body && <p className="text-sm mt-1 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>{r.body}</p>}
-          <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{r.is_anonymous ? 'Anonymous' : r.display_name} · {new Date(r.created_at).toLocaleDateString('en-GB')} · prayed {r.prayer_count}×</p>
+          <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{r.is_anonymous ? tr('Anonymous') : r.display_name} · {new Date(r.created_at).toLocaleDateString('en-GB')}{' '}{tr('· prayed')}{' '}{r.prayer_count}×</p>
           {r.status === 'pending' && (
             <div className="flex gap-3 mt-3 text-xs font-semibold">
-              <button onClick={() => decide(r.id, 'published')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={14} /> Publish</button>
-              <button onClick={() => decide(r.id, 'hidden')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}><X size={14} /> Keep private</button>
+              <button onClick={() => decide(r.id, 'published')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={14} />{' '}{tr('Publish')}</button>
+              <button onClick={() => decide(r.id, 'hidden')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}><X size={14} />{' '}{tr('Keep private')}</button>
             </div>
           )}
         </li>
       ))}
-      {items.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>No prayer requests for this parish yet.</p>}
+      {items.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>{tr('No prayer requests for this parish yet.')}</p>}
     </ul>
   );
 }
@@ -596,34 +583,32 @@ function PayoutAccountCard({ parishId }: { parishId: string }) {
 
   return (
     <section className="rounded-2xl border p-4 space-y-3" style={card}>
-      <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>Payout account</h3>
-      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-        Members always pay through the app’s secure gateway; gifts to this parish settle into this account. Only shepherds and administrators can see it.
-      </p>
+      <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('Payout account')}</h3>
+      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Members always pay through the app’s secure gateway; gifts to this parish settle into this account. Only shepherds and administrators can see it.')}</p>
       {account && !editing ? (
         <div className="text-sm space-y-1">
           <p style={{ color: 'var(--color-text-primary)' }}>{account.bank_name} · ••••{account.account_number.slice(-4)}</p>
           {account.account_name && <p style={{ color: 'var(--color-text-secondary)' }}>{account.account_name}</p>}
           <p className="text-xs font-semibold" style={{ color: account.status === 'verified' ? 'var(--color-success)' : 'var(--color-warning)' }}>
-            {account.status === 'verified' ? 'Verified — online giving is on' : account.status === 'failed' ? `Not verified: ${account.status_message ?? ''}` : 'Pending'}
+            {account.status === 'verified' ? tr('Verified — online giving is on') : account.status === 'failed' ? `Not verified: ${account.status_message ?? ''}` : tr('Pending')}
           </p>
-          <button onClick={() => setEditing(true)} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Change account</button>
+          <button onClick={() => setEditing(true)} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Change account')}</button>
         </div>
       ) : (
         <div className="space-y-2">
-          <select value={bankCode} onChange={e => setBankCode(e.target.value)} className={inputClass} style={inputStyle} aria-label="Bank">
-            <option value="">{banks.length ? 'Choose the bank' : 'Loading banks…'}</option>
+          <select value={bankCode} onChange={e => setBankCode(e.target.value)} className={inputClass} style={inputStyle} aria-label={tr('Bank')}>
+            <option value="">{banks.length ? tr('Choose the bank') : tr('Loading banks…')}</option>
             {banks.map(b => <option key={b.code + b.name} value={b.code}>{b.name}</option>)}
           </select>
-          <input value={number} onChange={e => setNumber(e.target.value.replace(/\D/g, '').slice(0, 10))} inputMode="numeric" placeholder="10-digit account number"
+          <input value={number} onChange={e => setNumber(e.target.value.replace(/\D/g, '').slice(0, 10))} inputMode="numeric" placeholder={tr('10-digit account number')}
                  className={inputClass} style={inputStyle} />
           <div className="flex gap-2">
             <button onClick={save} disabled={busy || !bankCode || number.length !== 10} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">
-              {busy ? 'Checking with the bank…' : 'Verify and save'}
+              {busy ? tr('Checking with the bank…') : tr('Verify and save')}
             </button>
-            {account && <button onClick={() => setEditing(false)} className="px-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>}
+            {account && <button onClick={() => setEditing(false)} className="px-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>}
           </div>
-          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>The account name is confirmed with the bank before anything is saved.</p>
+          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('The account name is confirmed with the bank before anything is saved.')}</p>
         </div>
       )}
     </section>
@@ -666,24 +651,24 @@ function GivingTab({ parishId, fullAdmin, onPlan }: { parishId: string; fullAdmi
           return (
             <div key={key} className="rounded-2xl border p-3" style={card}>
               <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-accent-gold)' }}>{money(amount, currency)}</p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{DONATION_PURPOSES[purpose as keyof typeof DONATION_PURPOSES] ?? purpose} (confirmed)</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{DONATION_PURPOSES[purpose as keyof typeof DONATION_PURPOSES] ?? purpose}{' '}{tr('(confirmed)')}</p>
             </div>
           );
         })}
       </div>
-      {totals.pledged.length > 0 && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{totals.pledged.length} open pledge{totals.pledged.length > 1 ? 's' : ''}</p>}
+      {totals.pledged.length > 0 && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{totals.pledged.length}{' '}{tr('open pledge')}{totals.pledged.length > 1 ? 's' : ''}</p>}
       <button onClick={exportCsv} disabled={!items.length} className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1 disabled:opacity-50"
-              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}><Download size={15} /> Export CSV</button>
+              style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}><Download size={15} />{' '}{tr('Export CSV')}</button>
       <ul className="space-y-1">
         {items.slice(0, 100).map(d => (
           <li key={d.id} className="flex items-center gap-2 text-sm rounded-xl px-3 py-2" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}>{DONATION_PURPOSES[d.purpose]} · {d.is_anonymous ? 'Anonymous' : d.donor_name ?? '—'}</span>
+            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(DONATION_PURPOSES[d.purpose])} · {d.is_anonymous ? tr('Anonymous') : d.donor_name ?? '—'}</span>
             <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{money(d.amount_minor, d.currency)}</span>
             <span className="text-[10px] uppercase w-16 text-right" style={{ color: d.status === 'paid' ? 'var(--color-success)' : 'var(--color-text-muted)' }}>{d.status}</span>
           </li>
         ))}
       </ul>
-      {items.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>No gifts recorded through the app yet.</p>}
+      {items.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>{tr('No gifts recorded through the app yet.')}</p>}
     </div>
   );
 }
@@ -707,7 +692,7 @@ function AppointmentsTab({ parishId }: { parishId: string }) {
   const decide = async (b: Appointment, status: Appointment['status']) => {
     let note = '';
     if (status === 'declined') {
-      const answer = await promptDialog({ title: 'Decline appointment', label: 'A short note for the member (optional)', confirmLabel: 'Decline', required: false });
+      const answer = await promptDialog({ title: tr('Decline appointment'), label: tr('A short note for the member (optional)'), confirmLabel: tr('Decline'), required: false });
       if (answer === null) return;
       note = answer;
     }
@@ -718,21 +703,21 @@ function AppointmentsTab({ parishId }: { parishId: string }) {
     <div className="space-y-4">
       <section>
         <h3 className="font-semibold text-sm mb-2" style={{ color: 'var(--color-text-primary)' }}>Requests & bookings</h3>
-        {upcoming.length === 0 ? <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Nothing booked.</p> : (
+        {upcoming.length === 0 ? <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('Nothing booked.')}</p> : (
           <ul className="space-y-2">
             {upcoming.map(b => (
               <li key={b.id} className="rounded-2xl border p-3" style={card}>
                 <p className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
                   {new Date(b.starts_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}
-                  {b.host_id === user?.id ? ' · with you' : ''}
+                  {b.host_id === user?.id ? tr(' · with you') : ''}
                 </p>
                 <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{b.member_name} — {b.topic}</p>
                 {b.details && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{b.details}</p>}
                 {b.member_phone && <a href={`tel:${b.member_phone}`} className="text-xs" style={{ color: 'var(--color-accent-brand)' }}>{b.member_phone}</a>}
                 <div className="flex gap-3 mt-2 text-xs font-semibold">
-                  {b.status === 'requested' && <button onClick={() => decide(b, 'confirmed')} style={{ color: 'var(--color-success)' }}>Confirm</button>}
-                  <button onClick={() => decide(b, 'declined')} style={{ color: 'var(--color-warning)' }}>Decline</button>
-                  {b.status === 'confirmed' && <button onClick={() => decide(b, 'done')} style={{ color: 'var(--color-text-muted)' }}>Mark done</button>}
+                  {b.status === 'requested' && <button onClick={() => decide(b, 'confirmed')} style={{ color: 'var(--color-success)' }}>{tr('Confirm')}</button>}
+                  <button onClick={() => decide(b, 'declined')} style={{ color: 'var(--color-warning)' }}>{tr('Decline')}</button>
+                  {b.status === 'confirmed' && <button onClick={() => decide(b, 'done')} style={{ color: 'var(--color-text-muted)' }}>{tr('Mark done')}</button>}
                 </div>
               </li>
             ))}
@@ -741,31 +726,31 @@ function AppointmentsTab({ parishId }: { parishId: string }) {
       </section>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
-        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>My weekly hours</h3>
+        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('My weekly hours')}</h3>
         <ul className="space-y-1">
           {slots.filter(s => s.host_id === user?.id).map(s => (
             <li key={s.id} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              <span className="flex-1">{WEEKDAYS[s.weekday]} {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)} · {s.minutes_per_meeting} min{s.location ? ` · ${s.location}` : ''}</span>
-              <button onClick={async () => { await deleteSlot(s.id); load(); }} aria-label="Remove"><Trash2 size={14} /></button>
+              <span className="flex-1">{tr(WEEKDAYS[s.weekday])} {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)} · {s.minutes_per_meeting}{' '}{tr('min')}{s.location ? ` · ${s.location}` : ''}</span>
+              <button onClick={async () => { await deleteSlot(s.id); load(); }} aria-label={tr('Remove')}><Trash2 size={14} /></button>
             </li>
           ))}
         </ul>
         <div className="grid grid-cols-2 gap-2">
-          <select value={slot.weekday} onChange={e => setSlot({ ...slot, weekday: Number(e.target.value) })} className={inputClass} style={inputStyle} aria-label="Day">
+          <select value={slot.weekday} onChange={e => setSlot({ ...slot, weekday: Number(e.target.value) })} className={inputClass} style={inputStyle} aria-label={tr('Day')}>
             {WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}
           </select>
-          <select value={slot.minutes_per_meeting} onChange={e => setSlot({ ...slot, minutes_per_meeting: Number(e.target.value) })} className={inputClass} style={inputStyle} aria-label="Length">
-            {[15, 20, 30, 45, 60].map(m => <option key={m} value={m}>{m} minutes each</option>)}
+          <select value={slot.minutes_per_meeting} onChange={e => setSlot({ ...slot, minutes_per_meeting: Number(e.target.value) })} className={inputClass} style={inputStyle} aria-label={tr('Length')}>
+            {[15, 20, 30, 45, 60].map(m => <option key={m} value={m}>{m}{' '}{tr('minutes each')}</option>)}
           </select>
-          <input type="time" value={slot.start_time} onChange={e => setSlot({ ...slot, start_time: e.target.value })} className={inputClass} style={inputStyle} aria-label="From" />
-          <input type="time" value={slot.end_time} onChange={e => setSlot({ ...slot, end_time: e.target.value })} className={inputClass} style={inputStyle} aria-label="To" />
+          <input type="time" value={slot.start_time} onChange={e => setSlot({ ...slot, start_time: e.target.value })} className={inputClass} style={inputStyle} aria-label={tr('From')} />
+          <input type="time" value={slot.end_time} onChange={e => setSlot({ ...slot, end_time: e.target.value })} className={inputClass} style={inputStyle} aria-label={tr('To')} />
         </div>
-        <input value={slot.location} onChange={e => setSlot({ ...slot, location: e.target.value })} placeholder="Where, e.g. Vestry or a call link" className={inputClass} style={inputStyle} />
+        <input value={slot.location} onChange={e => setSlot({ ...slot, location: e.target.value })} placeholder={tr('Where, e.g. Vestry or a call link')} className={inputClass} style={inputStyle} />
         <button onClick={async () => {
-          try { await saveSlot({ ...slot, parish_id: parishId, active: true, location: slot.location || null }); showToast('Hours added'); load(); }
+          try { await saveSlot({ ...slot, parish_id: parishId, active: true, location: slot.location || null }); showToast(tr('Hours added')); load(); }
           catch (e) { showToast(errorMessage(e)); }
-        }} disabled={slot.end_time <= slot.start_time} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">Add hours</button>
-        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Turn on “Let members book appointments” under Details for these to show.</p>
+        }} disabled={slot.end_time <= slot.start_time} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Add hours')}</button>
+        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Turn on “Let members book appointments” under Details for these to show.')}</p>
       </section>
     </div>
   );
@@ -793,20 +778,18 @@ export default function ParishAdmin() {
   }, [parishId]);
   useEffect(() => { reload(); }, [reload]);
 
-  if (!user) return <div className="px-4 py-6 max-w-2xl mx-auto"><SignInPrompt message="Sign in to manage your parish or ministry." /></div>;
+  if (!user) return <div className="px-4 py-6 max-w-2xl mx-auto"><SignInPrompt message={tr('Sign in to manage your parish or ministry.')} /></div>;
   if (error) return <ErrorState error={error} />;
   if (mine && mine.length === 0) {
     return (
       <div className="px-4 py-10 max-w-md mx-auto text-center space-y-3">
-        <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>You don’t manage a parish or ministry yet</p>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          Register it in the directory. Once a moderator lists it, you can manage it here — or ask its current administrator to add you.
-        </p>
-        <Link to="/directory?submit=1" className="btn-primary inline-block px-5 py-2.5 rounded-xl text-sm font-semibold">Register a parish or ministry</Link>
+        <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('You don’t manage a parish or ministry yet')}</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Register it in the directory. Once a moderator lists it, you can manage it here — or ask its current administrator to add you.')}</p>
+        <Link to="/directory?submit=1" className="btn-primary inline-block px-5 py-2.5 rounded-xl text-sm font-semibold">{tr('Register a parish or ministry')}</Link>
       </div>
     );
   }
-  if (!parish) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+  if (!parish) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
 
   const setTab = (t: Tab) => setParams({ parish: parish.id, tab: t }, { replace: true });
   const myRole = mine?.find(m => m.parish.id === parish.id)?.role ?? 'admin';
@@ -823,15 +806,15 @@ export default function ParishAdmin() {
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
       <div className="flex items-center gap-2 mb-4">
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] uppercase font-bold tracking-wider" style={{ color: 'var(--color-accent-gold)' }}>{parish.kind === 'ministry' ? 'Ministry' : 'Parish'} admin</p>
+          <p className="text-[11px] uppercase font-bold tracking-wider" style={{ color: 'var(--color-accent-gold)' }}>{parish.kind === 'ministry' ? tr('Ministry') : tr('Parish')}{' '}{tr('admin')}</p>
           <h1 className="text-xl font-bold font-[Outfit] truncate" style={{ color: 'var(--color-text-primary)' }}>{parish.name}</h1>
         </div>
         {mine && mine.length > 1 && (
-          <select value={parish.id} onChange={e => setParams({ parish: e.target.value, tab })} className="rounded-xl px-2 py-2 text-xs border" style={inputStyle} aria-label="Parish">
+          <select value={parish.id} onChange={e => setParams({ parish: e.target.value, tab })} className="rounded-xl px-2 py-2 text-xs border" style={inputStyle} aria-label={tr('Parish')}>
             {mine.map(m => <option key={m.parish.id} value={m.parish.id}>{m.parish.name}</option>)}
           </select>
         )}
-        <Link to={`/directory/${parish.id}`} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>View page</Link>
+        <Link to={`/directory/${parish.id}`} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('View page')}</Link>
       </div>
 
       <div className="flex gap-1 overflow-x-auto hide-scrollbar mb-5" role="tablist">
@@ -839,17 +822,17 @@ export default function ParishAdmin() {
           <button key={t.id} role="tab" aria-selected={activeTab === t.id} onClick={() => setTab(t.id)}
                   className="px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1.5"
                   style={activeTab === t.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
-            {t.icon}{t.label}
+            {t.icon}{tr(t.label)}
           </button>
         ))}
       </div>
 
-      <p className="text-[11px] mb-4" style={{ color: 'var(--color-text-muted)' }}>Your role: {TEAM_ROLES[myRole].label}</p>
-      {activeTab === 'details' && <DetailsTab parish={parish} onSaved={reload} />}
+      <p className="text-[11px] mb-4" style={{ color: 'var(--color-text-muted)' }}>{tr('Your role:')}{' '}{tr(TEAM_ROLES[myRole].label)}</p>
+      {activeTab === 'details' && <div className="space-y-4"><DetailsTab parish={parish} onSaved={reload} /><ParishStructureCard parish={parish} onSaved={reload} /></div>}
       {activeTab === 'plan' && <PlanTab parish={parish} />}
       {activeTab === 'media' && <ParishMediaManager parish={parish} onSaved={reload} />}
       {activeTab === 'live' && <LiveTab parish={parish} onSaved={reload} fullAdmin={full} onPlan={() => setTab('plan')} />}
-      {activeTab === 'team' && <TeamTab parishId={parish.id} />}
+      {activeTab === 'team' && <div className="space-y-4"><ShepherdClaimsCard parishId={parish.id} /><TeamTab parishId={parish.id} /></div>}
       {activeTab === 'events' && <EventsTab parishId={parish.id} />}
       {activeTab === 'prayers' && <PrayersTab parishId={parish.id} />}
       {activeTab === 'giving' && <GivingTab parishId={parish.id} fullAdmin={full} onPlan={() => setTab('plan')} />}

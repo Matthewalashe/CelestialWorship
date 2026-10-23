@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { tr } from '../i18n';
 
 const BASE_TITLE = 'CelestialWorship';
 
@@ -27,7 +28,7 @@ const PAGE_TITLES: Record<string, string> = {
 export function usePageTitle(pageKey: string, customTitle?: string) {
   useEffect(() => {
     if (customTitle) {
-      document.title = `${customTitle} | ${BASE_TITLE}`;
+      document.title = `${tr(customTitle)} | ${BASE_TITLE}`;
     } else if (PAGE_TITLES[pageKey]) {
       document.title = PAGE_TITLES[pageKey];
     } else {

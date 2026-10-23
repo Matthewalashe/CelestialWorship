@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { isFollowing, setFollowing } from '../lib/live';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
+import { tr } from '../i18n';
 
 /** Follow a parish or ministry: its broadcasts come first on Live, and you're told when it goes live */
 export function FollowButton({ parishId, name }: { parishId: string; name: string }) {
@@ -11,7 +12,7 @@ export function FollowButton({ parishId, name }: { parishId: string; name: strin
   const [on, setOn] = useState(false);
   useEffect(() => { if (user) isFollowing(parishId).then(setOn).catch(() => {}); }, [user, parishId]);
   const toggle = async () => {
-    if (!user) { showToast('Sign in to follow'); return; }
+    if (!user) { showToast(tr('Sign in to follow')); return; }
     try {
       await setFollowing(parishId, !on);
       setOn(!on);
@@ -23,7 +24,7 @@ export function FollowButton({ parishId, name }: { parishId: string; name: strin
   return (
     <button onClick={toggle} aria-pressed={on} className="h-9 px-4 rounded-full text-sm font-semibold inline-flex items-center gap-1.5"
             style={on ? { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' } : { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-primary)' }}>
-      {on ? <BellRing size={15} /> : <Bell size={15} />} {on ? 'Following' : 'Follow'}
+      {on ? <BellRing size={15} /> : <Bell size={15} />} {on ? tr('Following') : tr('Follow')}
     </button>
   );
 }

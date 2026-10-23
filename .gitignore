@@ -33,3 +33,4 @@ __pycache__/
 
 # Browser test output
 tests/e2e/out/
+scripts/i18n-strings.json

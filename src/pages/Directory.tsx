@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Plus, MapPin, Church } from 'lucide-react';
-import { useParishes, useParishSubmission, type ParishSubmission } from '../hooks/useParishes';
+import { Search, Plus, MapPin, Church, Phone, Mail, User as UserIcon, ChevronRight } from 'lucide-react';
+import { useParishes, useParishSubmission, continentOf, PARISH_LEVELS, type ParishSubmission, type Parish, type ParishLevel } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
 import { useProfile } from '../hooks/useProfile';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,6 +10,8 @@ import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
 import { Sheet } from '../components/Dialog';
 import { normalizeLinks } from '../utils/safeUrl';
+import { ClaimParish } from '../components/ClaimParish';
+import { tr } from '../i18n';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -19,12 +21,18 @@ interface ParishDraft {
   kind: 'parish' | 'ministry';
   name: string; diocese: string; province: string; country: string; state_region: string; city: string; address: string;
   map_url: string; shepherd_name: string; phone: string; email: string; website: string; contact_public: boolean; sundayTime: string;
+  level: ParishLevel; ownership: 'community' | 'private'; affiliated: boolean; affiliation: string;
+  /** Independent shepherds: own the ministry, or support it */
+  relationship: 'owner' | 'supporting';
 }
 
 const EMPTY: ParishDraft = {
   kind: 'parish', name: '', diocese: '', province: '', country: '', state_region: '', city: '', address: '', map_url: '', shepherd_name: '',
   phone: '', email: '', website: '', contact_public: false, sundayTime: '10:00',
+  level: 'parish', ownership: 'community', affiliated: true, affiliation: '', relationship: 'owner',
 };
+
+const AFFILIATIONS = ['Supreme Headquarters, Porto-Novo', 'International Headquarters, Ketu', 'Celestial City, Imeko'];
 
 function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKind: 'parish' | 'ministry' }) {
   const { submit, signedIn } = useParishSubmission();
@@ -47,12 +55,15 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
         email: v.email.trim() || null, website: urls.website, map_url: urls.map_url,
         service_times: v.sundayTime ? [{ service: 'lords_day_service', day: 'Sunday', time: v.sundayTime }] : null,
         giving_details: null, contact_public: v.contact_public,
-      };
+        level: v.kind === 'ministry' ? 'parish' : v.level, ownership: v.ownership, affiliated: v.affiliated,
+        affiliation: v.affiliated ? (v.affiliation.trim() || null) : null, continent: continentOf({ country: v.country.trim(), continent: null }),
+        ...(v.kind === 'ministry' ? { registrant_relationship: v.relationship } : {}),
+      } as ParishSubmission;
       const id = await submit(row);
       // People registering a parish are usually its shepherd or admin
       if (v.kind === 'parish' && (profile.memberType === 'shepherd' || profile.memberType === 'church_admin')) await save({ parishId: id, parishName: row.name });
       draft.clear();
-      showToast('Thank you — the parish will be listed once a moderator confirms it');
+      showToast(tr('Thank you — the parish will be listed once a moderator confirms it'));
       onClose();
     } catch (e) {
       showToast(errorMessage(e));
@@ -62,50 +73,131 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
   };
 
   return (
-    <Sheet label={v.kind === 'ministry' ? 'Register your ministry' : 'Add a parish'} onClose={onClose}>
+    <Sheet label={v.kind === 'ministry' ? tr('Register your ministry') : tr('Add a parish')} onClose={onClose}>
       <div className="space-y-3">
-        {!signedIn ? <SignInPrompt message="Sign in to add a parish to the directory." /> : (
+        {!signedIn ? <SignInPrompt message={tr('Sign in to add a parish to the directory.')} /> : (
           <>
             <div className="flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }}>
               {(['parish', 'ministry'] as const).map(k => (
                 <button key={k} onClick={() => draft.setValue({ kind: k })} aria-pressed={v.kind === k}
                         className="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold"
                         style={v.kind === k ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-                  {k === 'parish' ? 'A parish (congregation)' : 'My ministry (independent shepherd)'}
+                  {k === 'parish' ? tr('A parish (congregation)') : tr('My ministry (independent shepherd)')}
                 </button>
               ))}
             </div>
+            {v.kind === 'ministry' && (
+              <fieldset className="rounded-xl border p-3" style={{ borderColor: 'var(--color-border)' }}>
+                <legend className="text-xs font-semibold px-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Your place in this ministry')}</legend>
+                {([['owner', 'I founded / own this ministry'], ['supporting', 'I support or serve in this ministry']] as const).map(([val, label]) => (
+                  <label key={val} className="flex items-center gap-2 text-sm py-1" style={{ color: 'var(--color-text-primary)' }}>
+                    <input type="radio" name="relationship" checked={v.relationship === val} onChange={() => draft.setValue({ relationship: val })} /> {label}
+                  </label>
+                ))}
+              </fieldset>
+            )}
             <input value={v.name} onChange={e => draft.setValue({ name: e.target.value })}
-                   placeholder={v.kind === 'ministry' ? 'Ministry name' : 'Parish name, e.g. CCC Mercy Land Parish'}
+                   placeholder={v.kind === 'ministry' ? tr('Ministry name') : tr('Parish name, e.g. CCC Mercy Land Parish')}
                    className={inputClass} style={inputStyle} />
             <div className="grid grid-cols-2 gap-2">
-              <input value={v.country} onChange={e => draft.setValue({ country: e.target.value })} placeholder="Country" className={inputClass} style={inputStyle} />
-              <input value={v.state_region} onChange={e => draft.setValue({ state_region: e.target.value })} placeholder="State / region" className={inputClass} style={inputStyle} />
-              <input value={v.city} onChange={e => draft.setValue({ city: e.target.value })} placeholder="Town / city" className={inputClass} style={inputStyle} />
-              <input value={v.province} onChange={e => draft.setValue({ province: e.target.value })} placeholder="Province (optional)" className={inputClass} style={inputStyle} />
+              <input value={v.country} onChange={e => draft.setValue({ country: e.target.value })} placeholder={tr('Country')} className={inputClass} style={inputStyle} />
+              <input value={v.state_region} onChange={e => draft.setValue({ state_region: e.target.value })} placeholder={tr('State / region')} className={inputClass} style={inputStyle} />
+              <input value={v.city} onChange={e => draft.setValue({ city: e.target.value })} placeholder={tr('Town / city')} className={inputClass} style={inputStyle} />
+              <input value={v.province} onChange={e => draft.setValue({ province: e.target.value })} placeholder={tr('Province (optional)')} className={inputClass} style={inputStyle} />
             </div>
-            <input value={v.diocese} onChange={e => draft.setValue({ diocese: e.target.value })} placeholder="Diocese / district (optional)" className={inputClass} style={inputStyle} />
-            <input value={v.address} onChange={e => draft.setValue({ address: e.target.value })} placeholder="Street address" className={inputClass} style={inputStyle} />
-            <input value={v.map_url} onChange={e => draft.setValue({ map_url: e.target.value })} placeholder="Google Maps link (optional)" className={inputClass} style={inputStyle} inputMode="url" />
+            <input value={v.diocese} onChange={e => draft.setValue({ diocese: e.target.value })} placeholder={tr('Diocese / district (optional)')} className={inputClass} style={inputStyle} />
+            <input value={v.address} onChange={e => draft.setValue({ address: e.target.value })} placeholder={tr('Street address')} className={inputClass} style={inputStyle} />
+            <input value={v.map_url} onChange={e => draft.setValue({ map_url: e.target.value })} placeholder={tr('Google Maps link (optional)')} className={inputClass} style={inputStyle} inputMode="url" />
             <input value={v.shepherd_name} onChange={e => draft.setValue({ shepherd_name: e.target.value })}
-                   placeholder={v.kind === 'ministry' ? 'Your name and title' : 'Shepherd in charge (optional)'} className={inputClass} style={inputStyle} />
+                   placeholder={v.kind === 'ministry' ? tr('Your name and title') : tr('Shepherd in charge (optional)')} className={inputClass} style={inputStyle} />
             <div className="grid grid-cols-2 gap-2">
-              <input value={v.phone} onChange={e => draft.setValue({ phone: e.target.value })} placeholder="Parish phone" className={inputClass} style={inputStyle} inputMode="tel" />
-              <input value={v.email} onChange={e => draft.setValue({ email: e.target.value })} placeholder="Parish email" className={inputClass} style={inputStyle} inputMode="email" />
+              <input value={v.phone} onChange={e => draft.setValue({ phone: e.target.value })} placeholder={tr('Parish phone')} className={inputClass} style={inputStyle} inputMode="tel" />
+              <input value={v.email} onChange={e => draft.setValue({ email: e.target.value })} placeholder={tr('Parish email')} className={inputClass} style={inputStyle} inputMode="email" />
             </div>
-            <input value={v.website} onChange={e => draft.setValue({ website: e.target.value })} placeholder="Website or social page (optional)" className={inputClass} style={inputStyle} inputMode="url" />
-            <label className="text-xs block" style={{ color: 'var(--color-text-muted)' }}>Sunday service time
-              <input type="time" value={v.sundayTime} onChange={e => draft.setValue({ sundayTime: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
+            <input value={v.website} onChange={e => draft.setValue({ website: e.target.value })} placeholder={tr('Website or social page (optional)')} className={inputClass} style={inputStyle} inputMode="url" />
+            {v.kind === 'parish' && (
+              <div className="grid grid-cols-2 gap-2">
+                <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('This parish is')}<select value={v.level} onChange={e => draft.setValue({ level: e.target.value as ParishLevel })} className={`${inputClass} mt-1`} style={inputStyle}>
+                    {(Object.keys(PARISH_LEVELS) as ParishLevel[]).filter(l => !['supreme_hq', 'international_hq'].includes(l)).map(l => <option key={l} value={l}>{tr(PARISH_LEVELS[l])}</option>)}
+                  </select>
+                </label>
+                <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Ownership')}<select value={v.ownership} onChange={e => draft.setValue({ ownership: e.target.value as 'community' | 'private' })} className={`${inputClass} mt-1`} style={inputStyle}>
+                    <option value="community">{tr('Community church')}</option>
+                    <option value="private">{tr('Privately owned')}</option>
+                  </select>
+                </label>
+              </div>
+            )}
+            <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+              <input type="checkbox" checked={v.affiliated} onChange={e => draft.setValue({ affiliated: e.target.checked })} />{' '}{tr('Affiliated to a headquarters or diocese')}</label>
+            {v.affiliated && (
+              <>
+                <input list="affiliations" value={v.affiliation} onChange={e => draft.setValue({ affiliation: e.target.value })} placeholder={tr('Affiliated to, e.g. a headquarters or diocese')} className={inputClass} style={inputStyle} />
+                <datalist id="affiliations">{AFFILIATIONS.map(a => <option key={a} value={a} />)}</datalist>
+              </>
+            )}
+            <label className="text-xs block" style={{ color: 'var(--color-text-muted)' }}>{tr('Sunday service time')}<input type="time" value={v.sundayTime} onChange={e => draft.setValue({ sundayTime: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
             </label>
             <label className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              <input type="checkbox" className="mt-1" checked={v.contact_public} onChange={e => draft.setValue({ contact_public: e.target.checked })} />
-              The parish agrees to show its phone and email publicly in the directory
-            </label>
-            <button onClick={send} disabled={busy || !valid} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">Submit for listing</button>
+              <input type="checkbox" className="mt-1" checked={v.contact_public} onChange={e => draft.setValue({ contact_public: e.target.checked })} />{tr('The parish agrees to show its phone and email publicly in the directory')}</label>
+            <button onClick={send} disabled={busy || !valid} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Submit for listing')}</button>
           </>
         )}
       </div>
     </Sheet>
+  );
+}
+
+/** One parish: its address, contact and shepherd at a glance */
+function ParishCard({ p, onClaim }: { p: Parish; onClaim: () => void }) {
+  const body = (
+    <>
+      <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+        {p.name}
+        {p.kind === 'ministry' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>{tr('Ministry')}</span>}
+        {p.level && p.level !== 'parish' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-brand)' }}>{tr(PARISH_LEVELS[p.level])}</span>}
+        {p.live_now && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: '#EF4444' }}>{tr('● Live')}</span>}
+      </span>
+      {p.address && <span className="block text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>{p.address}</span>}
+      {p.shepherd_name && <span className="flex items-center gap-1 text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}><UserIcon size={11} /> {p.shepherd_name}</span>}
+      {(p.affiliation || p.ownership === 'private') && (
+        <span className="block text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
+          {[p.ownership === 'private' ? 'Privately owned' : null, p.affiliation ? `Affiliated: ${p.affiliation}` : null].filter(Boolean).join(' · ')}
+        </span>
+      )}
+    </>
+  );
+  const contact = (p.phone || p.email) && (
+    <span className="flex flex-wrap gap-3 mt-2 text-xs">
+      {p.phone && <a href={`tel:${p.phone.replace(/[^\d+]/g, '')}`} className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-accent-brand)' }}><Phone size={12} /> {p.phone}</a>}
+      {p.email && <a href={`mailto:${p.email}`} className="inline-flex items-center gap-1 font-semibold break-all" style={{ color: 'var(--color-accent-brand)' }}><Mail size={12} /> {p.email}</a>}
+    </span>
+  );
+  if (!p.seed) {
+    return (
+      <div className="rounded-2xl border p-4" style={card}>
+        <Link to={`/directory/${p.id}`} className="flex items-start gap-3">
+          <Church size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-brand)' }} />
+          <span className="flex-1 min-w-0">{body}</span>
+          <ChevronRight size={16} className="shrink-0" style={{ color: 'var(--color-text-muted)' }} />
+        </Link>
+        <span className="block pl-8">{contact}</span>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-2xl border p-4" style={card}>
+      <div className="flex items-start gap-3">
+        <Church size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
+        <span className="flex-1 min-w-0">{body}{contact}</span>
+      </div>
+      {p.listing && (
+        <div className="flex items-center gap-2 mt-3 pl-8">
+          <span className="flex-1 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('From the Church’s public list (2005–2012) — may be out of date.')}</span>
+          <button onClick={onClaim} className="text-xs font-semibold px-3 py-1.5 rounded-full border shrink-0" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Claim this parish')}</button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -117,80 +209,101 @@ export default function Directory() {
   const [country, setCountry] = useState('');
   const [kind, setKind] = useState<'all' | 'parish' | 'ministry'>('all');
 
-  const countries = useMemo(() => [...new Set(parishes.map(p => p.country))].sort(), [parishes]);
+  const [continent, setContinent] = useState('');
+  const [state, setState] = useState('');
+  const continents = useMemo(() => [...new Set(parishes.map(continentOf))].sort(), [parishes]);
+  const countries = useMemo(() => [...new Set(parishes.filter(p => !continent || continentOf(p) === continent).map(p => p.country))].sort(), [parishes, continent]);
+  const states = useMemo(() => [...new Set(parishes.filter(p => p.country === country).map(p => p.state_region).filter(Boolean) as string[])].sort(), [parishes, country]);
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return parishes.filter(p =>
-      (!country || p.country === country) &&
+      (!continent || continentOf(p) === continent) && (!country || p.country === country) && (!state || p.state_region === state) &&
       (kind === 'all' || (p.kind ?? 'parish') === kind) &&
-      (!q || [p.name, p.city, p.state_region, p.province, p.diocese, p.shepherd_name, p.address].filter(Boolean).join(' ').toLowerCase().includes(q)));
-  }, [parishes, query, country, kind]);
+      (!q || [p.name, p.city, p.state_region, p.province, p.diocese, p.shepherd_name, p.address, p.country].filter(Boolean).join(' ').toLowerCase().includes(q)));
+  }, [parishes, query, continent, country, state, kind]);
+
+  // Continent › country › state › town
+  const grouped = useMemo(() => {
+    const out = new Map<string, Map<string, Parish[]>>();
+    for (const p of [...filtered].sort((a, b) => (a.city ?? '').localeCompare(b.city ?? '') || a.name.localeCompare(b.name))) {
+      const head = `${continentOf(p)} › ${p.country}${p.state_region ? ` › ${p.state_region}` : ''}`;
+      const town = p.city || p.state_region || p.country;
+      if (!out.has(head)) out.set(head, new Map());
+      const towns = out.get(head)!;
+      towns.set(town, [...(towns.get(town) ?? []), p]);
+    }
+    return [...out.entries()].sort(([a], [b]) => a.localeCompare(b));
+  }, [filtered]);
+  const claimId = params.get('claim');
+  const claim = claimId ? parishes.find(p => p.id === claimId) : undefined;
+
+  const chip = (on: boolean) => (on ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-primary)' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' });
 
   return (
-    <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
+    <div className="px-4 py-6 max-w-3xl mx-auto pb-24">
       <div className="flex items-start justify-between gap-3 mb-1">
-        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Parishes</h1>
+        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Parishes')}</h1>
         <button onClick={() => setParams({ submit: '1' })} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-          <Plus size={16} /> Add a parish
-        </button>
+          <Plus size={16} />{' '}{tr('Add a parish')}</button>
       </div>
-      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>Find a Celestial Church of Christ parish near you.</p>
+      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>{parishes.length}{' '}{tr('parishes and ministries. Find one near you.')}</p>
 
-      <div className="flex gap-2 mb-4">
-        <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Parish, town, state or shepherd"
-                 className={`${inputClass} pl-9`} style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} />
-        </div>
-        <select value={country} onChange={e => setCountry(e.target.value)} className="rounded-xl px-3 text-sm border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label="Country">
-          <option value="">All countries</option>
+      <div className="relative mb-3">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
+        <input value={query} onChange={e => setQuery(e.target.value)} placeholder={tr('Parish, town, street, state or shepherd')} aria-label={tr('Search parishes')}
+               className={`${inputClass} pl-9`} style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} />
+      </div>
+      <div className="flex gap-1.5 overflow-x-auto hide-scrollbar mb-2" role="group" aria-label={tr('Continent')}>
+        {['', ...continents].map(c => (
+          <button key={c || 'all'} onClick={() => { setContinent(c); setCountry(''); setState(''); }} aria-pressed={continent === c}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap" style={chip(continent === c)}>{c || tr('All continents')}</button>
+        ))}
+      </div>
+      <div className="flex gap-2 mb-3">
+        <select value={country} onChange={e => { setCountry(e.target.value); setState(''); }} className="flex-1 rounded-xl px-3 py-2 text-sm border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label={tr('Country')}>
+          <option value="">{tr('All countries')}</option>
           {countries.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        {country && states.length > 0 && (
+          <select value={state} onChange={e => setState(e.target.value)} className="flex-1 rounded-xl px-3 py-2 text-sm border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label={tr('State or region')}>
+            <option value="">{tr('All states / regions')}</option>
+            {states.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        )}
       </div>
-
       <div className="flex rounded-xl p-0.5 border mb-4 w-fit" style={card}>
         {(['all', 'parish', 'ministry'] as const).map(k => (
           <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
                   style={kind === k ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-            {k === 'all' ? 'All' : k === 'parish' ? 'Parishes' : 'Ministries'}
+            {k === 'all' ? tr('All') : k === 'parish' ? tr('Parishes') : tr('Ministries')}
           </button>
         ))}
       </div>
 
       {!backendReady && (
-        <p className="text-xs mb-3 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
-          Showing the Church’s headquarters. Parish listings appear once the online directory is set up.
-        </p>
+        <p className="text-xs mb-3 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Showing the headquarters and the parishes from the Church’s public list. Parishes registered in the app appear once the online directory is set up.')}</p>
       )}
 
-      {loading ? <p className="text-center py-10 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>
-        : filtered.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>No parishes match.</p>
+      {loading ? <p className="text-center py-10 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>
+        : filtered.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('No parishes match.')}</p>
         : (
-          <ul className="space-y-2">
-            {filtered.map(p => (
-              <li key={p.id}>
-                <Link to={p.seed ? '#' : `/directory/${p.id}`} onClick={e => { if (p.seed) e.preventDefault(); }}
-                      className="flex items-start gap-3 rounded-2xl border p-4" style={card}>
-                  <Church size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-brand)' }} />
-                  <span className="flex-1 min-w-0">
-                    <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                      {p.name}
-                      {p.kind === 'ministry' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>Ministry</span>}
-                      {p.live_now && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: '#EF4444' }}>● Live</span>}
-                    </span>
-                    <span className="block text-xs mt-0.5 flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
-                      <MapPin size={11} /> {[p.city, p.state_region, p.country].filter(Boolean).join(', ')}
-                    </span>
-                    {p.shepherd_name && <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>Shepherd: {p.shepherd_name}</span>}
-                    {p.seed && p.address && <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{p.address}</span>}
-                  </span>
-                </Link>
-              </li>
+          <div className="space-y-6">
+            {grouped.map(([head, towns]) => (
+              <section key={head}>
+                <h2 className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>{head}</h2>
+                {[...towns.entries()].map(([town, list]) => (
+                  <div key={town} className="mb-3">
+                    <p className="text-sm font-semibold mb-1.5 flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}><MapPin size={13} /> {town}</p>
+                    <ul className="space-y-2">{list.map(p => <li key={p.id}><ParishCard p={p} onClaim={() => setParams({ claim: p.id })} /></li>)}</ul>
+                  </div>
+                ))}
+              </section>
             ))}
-          </ul>
+          </div>
         )}
 
       {params.get('submit') === '1' && <SubmitParish initialKind={params.get('kind') === 'ministry' ? 'ministry' : 'parish'} onClose={() => setParams({})} />}
+      {claim && <ClaimParish parish={claim} onClose={() => setParams({})} />}
     </div>
   );
 }

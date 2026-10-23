@@ -4,6 +4,7 @@ import { useProfile } from '../hooks/useProfile';
 import { setProfileImage } from '../lib/media';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
+import { tr } from '../i18n';
 
 /** A person's picture, or their initial */
 export function Avatar({ url, name, size = 36 }: { url?: string | null; name: string; size?: number }) {
@@ -23,12 +24,12 @@ export function ProfileMedia() {
 
   const change = async (kind: 'avatar' | 'banner', file?: File) => {
     if (!file) return;
-    if (!file.type.startsWith('image/')) { showToast('Choose a photo'); return; }
+    if (!file.type.startsWith('image/')) { showToast(tr('Choose a photo')); return; }
     setBusy(kind);
     try {
       const url = await setProfileImage(kind, file, kind === 'avatar' ? profile.avatarUrl : profile.bannerUrl);
       await save(kind === 'avatar' ? { avatarUrl: url } : { bannerUrl: url });
-      showToast(kind === 'avatar' ? 'Photo updated' : 'Banner updated');
+      showToast(kind === 'avatar' ? tr('Photo updated') : tr('Banner updated'));
     } catch (e) {
       showToast(errorMessage(e));
     } finally {
@@ -43,7 +44,7 @@ export function ProfileMedia() {
            style={{ background: profile.bannerUrl ? undefined : 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
         {profile.bannerUrl && <img src={profile.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
         {signedIn && (
-          <button onClick={() => bannerInput.current?.click()} disabled={busy !== null} aria-label="Change banner"
+          <button onClick={() => bannerInput.current?.click()} disabled={busy !== null} aria-label={tr('Change banner')}
                   className={`${btn} right-2 bottom-2`} style={{ backgroundColor: 'rgba(0,0,0,0.55)', color: '#fff' }}>
             <ImagePlus size={17} className={busy === 'banner' ? 'animate-pulse' : ''} />
           </button>
@@ -54,7 +55,7 @@ export function ProfileMedia() {
           <Avatar url={profile.avatarUrl} name={profile.displayName || '·'} size={84} />
         </div>
         {signedIn && (
-          <button onClick={() => avatarInput.current?.click()} disabled={busy !== null} aria-label="Change photo"
+          <button onClick={() => avatarInput.current?.click()} disabled={busy !== null} aria-label={tr('Change photo')}
                   className={`${btn} -right-1 bottom-0`} style={{ backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-primary)' }}>
             <Camera size={16} className={busy === 'avatar' ? 'animate-pulse' : ''} />
           </button>

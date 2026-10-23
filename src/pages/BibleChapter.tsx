@@ -20,6 +20,7 @@ import { recordChapterOpened, recordChapterCompleted, useReadingProgress } from 
 import { HIGHLIGHT_COLORS, type HighlightColor, type Note } from '../types/notes';
 import { showToast } from '../components/Toast';
 import { shareCard } from '../utils/shareCard';
+import { contentDefaults, tr } from '../i18n';
 
 const VERSION_KEY = 'cw-bible-version';
 
@@ -102,7 +103,7 @@ export default function BibleChapter() {
 
   // Version comes from the URL, then the last one used, then KJV
   const versionId = searchParams.get('lang') || (() => {
-    try { return localStorage.getItem(VERSION_KEY) || DEFAULT_VERSION_ID; } catch { return DEFAULT_VERSION_ID; }
+    try { return localStorage.getItem(VERSION_KEY) || contentDefaults().bibleVersion; } catch { return DEFAULT_VERSION_ID; }
   })();
   const version = getBibleVersion(versionId);
   const sideBySide = searchParams.get('sbs') === 'true';
@@ -240,7 +241,7 @@ export default function BibleChapter() {
 
   const applyHighlight = async (color: HighlightColor | null) => {
     await setHighlight(selected, color);
-    showToast(color ? `Highlighted ${reference}` : 'Highlight removed');
+    showToast(color ? `Highlighted ${reference}` : tr('Highlight removed'));
     clearSelection();
   };
 
@@ -251,7 +252,7 @@ export default function BibleChapter() {
     const existing = passages.find(p => p.book === bookInfo.name && p.chapter === chapter && p.verseStart === start && p.verseEnd === end);
     if (existing) {
       await deletePassage(existing.id);
-      showToast('Removed from saved passages');
+      showToast(tr('Removed from saved passages'));
     } else {
       await savePassage(bookInfo.name, chapter, start, end, selectedText);
       showToast(`${reference} saved`);
@@ -271,9 +272,9 @@ export default function BibleChapter() {
   const copySelection = async () => {
     try {
       await navigator.clipboard.writeText(`${selectedText}\n— ${reference} (${version.abbreviation})`);
-      showToast('Copied');
+      showToast(tr('Copied'));
     } catch {
-      showToast("Couldn't copy");
+      showToast(tr('Couldn\'t copy'));
     }
     clearSelection();
   };
@@ -285,7 +286,7 @@ export default function BibleChapter() {
     }
     try {
       await navigator.clipboard.writeText(`${text}\n${shareUrl()}`);
-      showToast('Verse and link copied');
+      showToast(tr('Verse and link copied'));
     } catch {}
     clearSelection();
   };
@@ -293,16 +294,16 @@ export default function BibleChapter() {
   const shareImage = async () => {
     try {
       const result = await shareCard({ text: selectedText, reference, footer: version.abbreviation });
-      if (result === 'downloaded') showToast('Image saved');
+      if (result === 'downloaded') showToast(tr('Image saved'));
     } catch {
-      showToast("Couldn't create the image");
+      showToast(tr('Couldn\'t create the image'));
     }
     clearSelection();
   };
 
   const sendToDisplay = () => {
     showBibleVerse(`${reference} (${version.abbreviation})`, selectedText);
-    showToast('Sent to display');
+    showToast(tr('Sent to display'));
   };
 
   // ── Read aloud, verse by verse so the current verse is shown ──
@@ -314,19 +315,19 @@ export default function BibleChapter() {
   const readAloud = () => {
     if (speakingVerse !== null) { stopSpeaking(); return; }
     if (!('speechSynthesis' in window) || !sortedVerses.length) {
-      showToast('Read aloud isn’t supported on this device');
+      showToast(tr('Read aloud isn’t supported on this device'));
       return;
     }
-    const lang = version.language === 'yo' ? 'yo' : 'en';
+    const lang = version.language;
     const voices = window.speechSynthesis.getVoices();
     const voice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
-    if (lang === 'yo' && !voice) showToast('No Yorùbá voice on this device — it will sound English');
+    if (lang === 'yo' && !voice) showToast(tr('No Yorùbá voice on this device — it will sound English'));
     const startIndex = selected.length ? sortedVerses.findIndex(([n]) => Number(n) === selectedSorted[0]) : 0;
     const speakFrom = (i: number) => {
       if (i >= sortedVerses.length) { setSpeakingVerse(null); return; }
       const [num, text] = sortedVerses[i];
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = lang === 'yo' ? 'yo-NG' : 'en-GB';
+      u.lang = lang === 'yo' ? 'yo-NG' : lang === 'fr' ? 'fr-FR' : 'en-GB';
       if (voice) u.voice = voice;
       u.rate = 0.92;
       u.onstart = () => {
@@ -354,8 +355,8 @@ export default function BibleChapter() {
   if (!bookInfo || !validChapter) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
-        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>That chapter doesn't exist.</p>
-        <Link to="/bible" className="btn-primary px-6 py-2 rounded-xl text-sm">Back to books</Link>
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('That chapter doesn\'t exist.')}</p>
+        <Link to="/bible" className="btn-primary px-6 py-2 rounded-xl text-sm">{tr('Back to books')}</Link>
       </div>
     );
   }
@@ -369,16 +370,15 @@ export default function BibleChapter() {
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <Link to={`/bible?lang=${version.id}`} className="text-sm inline-flex items-center gap-1" style={{ color: 'var(--color-accent-gold)' }}>
-          <ChevronLeft size={16} /> Books
-        </Link>
+          <ChevronLeft size={16} />{' '}{tr('Books')}</Link>
         <div className="flex items-center gap-1.5">
           <button onClick={readAloud} className={iconButton} style={{ ...cardStyle, color: speakingVerse !== null ? 'var(--color-accent-brand)' : cardStyle.color }}
-                  aria-label={speakingVerse !== null ? 'Stop reading' : 'Read aloud'} title={speakingVerse !== null ? 'Stop reading' : 'Read aloud'}>
+                  aria-label={speakingVerse !== null ? tr('Stop reading') : tr('Read aloud')} title={speakingVerse !== null ? tr('Stop reading') : tr('Read aloud')}>
             {speakingVerse !== null ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
           <button onClick={() => updateParams({ sbs: sideBySide ? null : 'true' })} className={iconButton}
                   style={{ ...cardStyle, color: sideBySide ? 'var(--color-accent-gold)' : cardStyle.color }}
-                  aria-pressed={sideBySide} aria-label="Side by side" title="Side by side">
+                  aria-pressed={sideBySide} aria-label={tr('Side by side')} title={tr('Side by side')}>
             <Columns2 size={16} />
           </button>
           <MusicButton />
@@ -394,21 +394,20 @@ export default function BibleChapter() {
           <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
             {bookInfo.name} {chapter}
           </h1>
-          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
-            Chapter {chapter} of {bookInfo.chapters}{isCompleted(bookInfo.name, chapter) ? ' · Read ✓' : ''}
+          <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{tr('Chapter')}{' '}{chapter}{' '}{tr('of')}{' '}{bookInfo.chapters}{isCompleted(bookInfo.name, chapter) ? tr(' · Read ✓') : ''}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <select value={version.id} onChange={e => chooseVersion(e.target.value)} aria-label="Bible version"
+          <select value={version.id} onChange={e => chooseVersion(e.target.value)} aria-label={tr('Bible version')}
                   className="h-9 px-2 rounded-lg text-xs font-semibold border"
                   style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
             {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation} — {v.name}</option>)}
           </select>
           {sideBySide && (
-            <select value={secondVersion.id} onChange={e => updateParams({ with: e.target.value })} aria-label="Second version"
+            <select value={secondVersion.id} onChange={e => updateParams({ with: e.target.value })} aria-label={tr('Second version')}
                     className="h-9 px-2 rounded-lg text-xs font-semibold border"
                     style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}>
-              {BIBLE_VERSIONS.filter(v => v.id !== version.id).map(v => <option key={v.id} value={v.id}>with {v.abbreviation}</option>)}
+              {BIBLE_VERSIONS.filter(v => v.id !== version.id).map(v => <option key={v.id} value={v.id}>{tr('with')}{' '}{v.abbreviation}</option>)}
             </select>
           )}
         </div>
@@ -435,23 +434,20 @@ export default function BibleChapter() {
       </div>
 
       {version.preview && (
-        <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
-          This edition is digitised from a 1900 printing and is still being proofread. If a word looks wrong, compare with your printed Bibeli Mimọ.
-        </p>
+        <p className="text-xs mb-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('This edition is digitised from a 1900 printing and is still being proofread. If a word looks wrong, compare with your printed Bibeli Mimọ.')}</p>
       )}
 
       {chapterNotes.length > 0 && (
         <div className="mb-4">
           <button onClick={() => setShowNotes(s => !s)} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}>
-            <StickyNote size={14} /> {chapterNotes.length} note{chapterNotes.length > 1 ? 's' : ''} on this chapter
-          </button>
+            <StickyNote size={14} /> {chapterNotes.length}{' '}{tr('note')}{chapterNotes.length > 1 ? 's' : ''}{' '}{tr('on this chapter')}</button>
           {showNotes && (
             <ul className="mt-2 space-y-2">
               {chapterNotes.map(n => (
                 <li key={n.id}>
                   <Link to={`/notes?open=${n.id}`} className="block p-3 rounded-xl text-sm" style={{ backgroundColor: 'var(--color-bg-card)' }}>
                     <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
-                      {n.link?.kind === 'bible' ? `v${n.link.verseStart}${n.link.verseEnd > n.link.verseStart ? `-${n.link.verseEnd}` : ''} · ` : ''}{n.title || 'Note'}
+                      {n.link?.kind === 'bible' ? `v${n.link.verseStart}${n.link.verseEnd > n.link.verseStart ? `-${n.link.verseEnd}` : ''} · ` : ''}{n.title || tr('Note')}
                     </span>
                     <span className="block line-clamp-2" style={{ color: 'var(--color-text-secondary)' }}>{n.content}</span>
                   </Link>
@@ -464,17 +460,17 @@ export default function BibleChapter() {
 
       {/* Verses */}
       {loading ? (
-        <div className="py-16 text-center animate-pulse" style={{ color: 'var(--color-text-secondary)' }}>Loading…</div>
+        <div className="py-16 text-center animate-pulse" style={{ color: 'var(--color-text-secondary)' }}>{tr('Loading…')}</div>
       ) : error || !data ? (
         <div className="py-10 text-center">
-          <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{error || 'Couldn’t load this chapter.'}</p>
+          <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{error || tr('Couldn’t load this chapter.')}</p>
           <div className="flex flex-wrap justify-center gap-2">
             {version.preview && (
-              <button onClick={() => chooseVersion('yo')} className="btn-primary px-5 py-2 rounded-xl text-sm">Read in Yorùbá Òde-Òní</button>
+              <button onClick={() => chooseVersion('yo')} className="btn-primary px-5 py-2 rounded-xl text-sm">{tr('Read in Yorùbá Òde-Òní')}</button>
             )}
             {version.id !== DEFAULT_VERSION_ID && (
               <button onClick={() => chooseVersion(DEFAULT_VERSION_ID)} className="px-5 py-2 rounded-xl text-sm border"
-                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Read in KJV</button>
+                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Read in KJV')}</button>
             )}
           </div>
         </div>
@@ -518,12 +514,11 @@ export default function BibleChapter() {
       <div className="flex justify-between mt-8 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
         {chapter > 1 ? (
           <Link to={chapterPath(chapter - 1)} className="px-4 py-2 rounded-lg inline-flex items-center gap-1" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
-            <ChevronLeft size={16} /> Chapter {chapter - 1}
+            <ChevronLeft size={16} />{' '}{tr('Chapter')}{' '}{chapter - 1}
           </Link>
         ) : <div />}
         {chapter < bookInfo.chapters ? (
-          <Link to={chapterPath(chapter + 1)} className="px-4 py-2 rounded-lg inline-flex items-center gap-1" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
-            Chapter {chapter + 1} <ChevronRight size={16} />
+          <Link to={chapterPath(chapter + 1)} className="px-4 py-2 rounded-lg inline-flex items-center gap-1" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>{tr('Chapter')}{' '}{chapter + 1} <ChevronRight size={16} />
           </Link>
         ) : <div />}
       </div>
@@ -555,7 +550,7 @@ export default function BibleChapter() {
                style={{ backgroundColor: 'var(--color-bg-secondary)', borderColor: 'var(--color-border)' }}>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>{reference}</span>
-              <button onClick={clearSelection} className="p-1" aria-label="Clear selection" style={{ color: 'var(--color-text-muted)' }}><X size={18} /></button>
+              <button onClick={clearSelection} className="p-1" aria-label={tr('Clear selection')} style={{ color: 'var(--color-text-muted)' }}><X size={18} /></button>
             </div>
             {showColors ? (
               <div className="flex items-center gap-2">
@@ -563,7 +558,7 @@ export default function BibleChapter() {
                   <button key={c} onClick={() => applyHighlight(c)} aria-label={`Highlight ${HIGHLIGHT_COLORS[c].label}`}
                           className="w-9 h-9 rounded-full border-2" style={{ backgroundColor: HIGHLIGHT_COLORS[c].swatch, borderColor: 'var(--color-bg-card)' }} />
                 ))}
-                <button onClick={() => applyHighlight(null)} className="ml-auto text-xs font-semibold px-3 h-9 rounded-lg" style={cardStyle}>Remove</button>
+                <button onClick={() => applyHighlight(null)} className="ml-auto text-xs font-semibold px-3 h-9 rounded-lg" style={cardStyle}>{tr('Remove')}</button>
               </div>
             ) : (
               <div className="grid grid-cols-7 gap-1">
@@ -578,7 +573,7 @@ export default function BibleChapter() {
                 ].map(a => (
                   <button key={a.label} onClick={a.onClick} className="flex flex-col items-center gap-1 py-1.5 rounded-lg text-[10px] font-semibold"
                           style={{ color: 'var(--color-text-secondary)' }}>
-                    {a.icon}{a.label}
+                    {a.icon}{tr(a.label)}
                   </button>
                 ))}
               </div>

@@ -1,669 +1,362 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import React, { useState, useEffect, useMemo } from 'react';
-import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
-import { CCCLogo } from '../components/icons/celestial-icons';
+import { Music, BookOpen, Megaphone, MonitorPlay, Search, ChevronLeft, ChevronRight, EyeOff, Image as ImageIcon, Wifi, WifiOff, ListOrdered, History as HistoryIcon, Send } from 'lucide-react';
 import { useDisplayController, loadOperatorQueue, clearOperatorQueue, newRoomCode } from '../hooks/useLiveDisplay';
-import { useHymnSearch } from '../hooks/useHymns';
+import { useHymnSearch, useHymns } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
-import { DisplayState, Hymn } from '../types';
+import type { DisplayState, Hymn } from '../types';
 import { buildSlides, displayTitle } from '../utils/hymnText';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { tr } from '../i18n';
 
-interface HistoryItem {
-  id: string;
-  timestamp: Date;
-  state: DisplayState;
+/**
+ * The projector operator. Inspired by presentation software used in churches:
+ * sources on the left, the item's slides in the middle, LIVE and NEXT monitors on the right.
+ * Keys: → / Space / PageDown next · ← / PageUp previous · B black · L logo · 1–9 jump to a slide.
+ */
+
+type Source = 'hymns' | 'bible' | 'notices';
+type Lang = 'yo' | 'both' | 'en';
+interface Slide { label: string; state: DisplayState }
+
+const btn = 'inline-flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
+const panel = 'rounded-2xl border bg-[var(--color-bg-card)] border-[var(--color-border)]';
+
+/** What the projector shows, drawn small — the same layout as the Display page */
+function Monitor({ state, label, live }: { state: DisplayState | null; label: string; live?: boolean }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className={`text-[11px] font-bold tracking-widest uppercase ${live ? 'text-red-600' : 'text-[var(--color-text-muted)]'}`}>{live && '● '}{label}</span>
+        {state && state.type !== 'blank' && state.type !== 'logo' && <span className="text-[11px] text-[var(--color-text-muted)] truncate ml-2">{tr(state.title)}</span>}
+      </div>
+      <div className={`relative aspect-video rounded-xl overflow-hidden bg-black text-white flex flex-col items-center justify-center p-4 text-center ${live ? 'ring-2 ring-red-500' : 'ring-1 ring-[var(--color-border)]'}`}>
+        {!state || state.type === 'blank' ? <span className="text-xs text-white/70">{state ? tr('Black screen') : tr('Nothing next')}</span>
+          : state.type === 'logo' ? <img src="/logo.png" alt={tr('Logo')} className="w-1/4 opacity-90" />
+          : (
+            <>
+              {state.title && <span className="text-[10px] font-bold uppercase tracking-wider text-[#E8C36A] mb-1.5 line-clamp-1">{tr(state.title)}</span>}
+              <span className="text-[13px] leading-snug whitespace-pre-line line-clamp-6 font-medium">{state.content}</span>
+              {state.type === 'hymn' && state.totalVerses ? <span className="absolute bottom-1.5 right-2.5 text-[9px] text-white/70">{state.verseIndex}/{state.totalVerses}</span> : null}
+            </>
+          )}
+      </div>
+    </div>
+  );
 }
+
+// ── Hymns ────────────────────────────────────────────────────
+
+function hymnSlides(hymn: Hymn, lang: Lang, repeatChorus: boolean): Slide[] {
+  const slides = buildSlides(hymn, repeatChorus);
+  return slides.map((s, i) => {
+    const yo = s.verse.yorubaLines.join('\n'), en = s.verse.englishLines.join('\n');
+    const content = lang === 'yo' ? (yo || en) : lang === 'en' ? (en || yo) : [yo, en].filter(Boolean).join('\n\n');
+    return {
+      label: s.label,
+      state: { type: 'hymn', hymnNumber: hymn.number, title: `${hymn.number} · ${displayTitle(hymn, lang === 'en' ? 'en' : 'yo')}`, content, verseIndex: i + 1, totalVerses: slides.length },
+    };
+  });
+}
+
+function HymnSource({ onPick, current }: { onPick: (h: Hymn) => void; current: number | null }) {
+  const [search, setSearch] = useState('');
+  const { results = [] } = useHymnSearch(search, []);
+  const { hymns } = useHymns();
+  const [queue, setQueue] = useState(loadOperatorQueue);
+  const row = (h: Hymn, sub?: string) => (
+    <button key={`${h.number}-${sub ?? ''}`} onClick={() => onPick(h)}
+            className={`w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-xl ${current === h.number ? 'bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]' : 'hover:bg-[var(--color-bg-secondary)]'}`}>
+      <span className="w-10 text-center font-bold tabular-nums">{h.number}</span>
+      <span className="flex-1 min-w-0">
+        {sub && <span className="block text-[11px] opacity-70">{sub}</span>}
+        <span className="block text-sm font-semibold truncate">{displayTitle(h, 'yo')}</span>
+      </span>
+    </button>
+  );
+  return (
+    <div className="flex flex-col min-h-0 h-full">
+      <label className="relative block mb-2">
+        <span className="sr-only">{tr('Find a hymn')}</span>
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder={tr('Number or words')} inputMode="search"
+               className="w-full rounded-xl pl-9 pr-3 py-2.5 text-sm border outline-none bg-[var(--color-bg-primary)] border-[var(--color-border)]" />
+      </label>
+      <div className="flex-1 overflow-y-auto -mx-1 px-1 space-y-0.5">
+        {search
+          ? results.slice(0, 30).map(h => row(h))
+          : queue && queue.items.length > 0 ? (
+            <>
+              <div className="flex items-center justify-between px-1 py-1">
+                <span className="text-[11px] uppercase tracking-widest font-bold text-[var(--color-text-muted)] flex items-center gap-1"><ListOrdered size={13} /> {queue.serviceName}</span>
+                <button onClick={() => { clearOperatorQueue(); setQueue(null); }} className="text-[11px] text-[var(--color-text-muted)] hover:text-red-600">{tr('Clear')}</button>
+              </div>
+              {queue.items.map((item, i) => { const h = hymns.find(x => x.number === item.hymnNumber); return h ? <React.Fragment key={i}>{row(h, item.slotName)}</React.Fragment> : null; })}
+            </>
+          ) : <p className="text-sm text-[var(--color-text-muted)] p-3">{tr('Type a hymn number or words. Plan a service in “Plan hymns” and its hymns line up here.')}</p>}
+      </div>
+    </div>
+  );
+}
+
+// ── Bible ────────────────────────────────────────────────────
+
+function BibleSource({ book, chapter, lang, onChange }: { book: string; chapter: number; lang: 'en' | 'yo'; onChange: (b: string, c: number, l: 'en' | 'yo') => void }) {
+  const [ref, setRef] = useState('');
+  const info = BIBLE_BOOKS.find(b => b.name === book) ?? BIBLE_BOOKS[0];
+  const jump = (e: React.FormEvent) => {
+    e.preventDefault();
+    const m = ref.match(/^(\d?\s*[a-zA-Z\s]+)\s+(\d+)/);
+    const resolved = m && resolveBookName(m[1].trim());
+    if (resolved) { onChange(resolved, Number(m![2]), lang); setRef(''); }
+  };
+  return (
+    <div className="flex flex-col min-h-0 h-full gap-2">
+      <form onSubmit={jump}>
+        <label className="sr-only" htmlFor="op-ref">{tr('Go to a passage')}</label>
+        <input id="op-ref" value={ref} onChange={e => setRef(e.target.value)} placeholder={tr('Go to, e.g. John 3')}
+               className="w-full rounded-xl px-3 py-2.5 text-sm border outline-none bg-[var(--color-bg-primary)] border-[var(--color-border)]" />
+      </form>
+      <div className="flex gap-1">
+        {([['en', 'KJV'], ['yo', 'Yorùbá']] as const).map(([l, t]) => (
+          <button key={l} onClick={() => onChange(book, chapter, l)} aria-pressed={lang === l}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold ${lang === l ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>{t}</button>
+        ))}
+      </div>
+      <select value={book} onChange={e => onChange(e.target.value, 1, lang)} aria-label={tr('Book')} className="rounded-xl px-3 py-2 text-sm border bg-[var(--color-bg-primary)] border-[var(--color-border)]">
+        {BIBLE_BOOKS.map(b => <option key={b.name} value={b.name}>{b.name}</option>)}
+      </select>
+      <div className="flex-1 overflow-y-auto grid grid-cols-6 gap-1 content-start">
+        {Array.from({ length: info.chapters }, (_, i) => i + 1).map(c => (
+          <button key={c} onClick={() => onChange(book, c, lang)} aria-pressed={chapter === c}
+                  className={`py-2 rounded-lg text-sm font-semibold tabular-nums ${chapter === c ? 'bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]' : 'bg-[var(--color-bg-secondary)]'}`}>{c}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Notices ──────────────────────────────────────────────────
+
+const PRESETS: [string, string][] = [
+  ['Welcome', 'Welcome to the Celestial Church of Christ!\nWe are glad you are here.'],
+  ['Tithes & offering', 'Please prepare your tithes and offering.'],
+  ['Silence', 'Let us keep silence before the Lord.'],
+  ['Closing', 'Thank you for worshipping with us.\nHave a blessed week.'],
+];
+
+function NoticeSource({ onSend }: { onSend: (s: DisplayState) => void }) {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap gap-1.5">
+        {PRESETS.map(([t, c]) => <button key={t} onClick={() => { setTitle(t); setContent(c); }} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--color-bg-secondary)]">{t}</button>)}
+      </div>
+      <label className="text-xs text-[var(--color-text-muted)]">{tr('Title')}<input value={title} onChange={e => setTitle(e.target.value)} className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm border outline-none bg-[var(--color-bg-primary)] border-[var(--color-border)]" />
+      </label>
+      <label className="text-xs text-[var(--color-text-muted)]">{tr('Message')}<textarea value={content} onChange={e => setContent(e.target.value)} rows={5} className="mt-1 w-full rounded-xl px-3 py-2.5 text-sm border outline-none resize-none bg-[var(--color-bg-primary)] border-[var(--color-border)]" />
+      </label>
+      <button disabled={!title.trim() && !content.trim()} onClick={() => onSend({ type: 'announcement', title: title.trim(), content: content.trim() })}
+              className={`${btn} py-2.5 bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]`}><Send size={15} />{' '}{tr('Show')}</button>
+    </div>
+  );
+}
+
+// ── Page ─────────────────────────────────────────────────────
 
 export default function Control() {
   usePageView('operator');
-  usePageTitle('control');
+  usePageTitle('control', 'Operator');
   const { sendToDisplay, room, setRoom, remoteConnected } = useDisplayController();
-  const [displayState, setDisplayState] = useState<DisplayState>({ type: 'blank', content: '' });
-  const [history, setHistory] = useState<HistoryItem[]>([]);
-  
-  const [activeTab, setActiveTab] = useState<'hymns' | 'bible' | 'announcements'>('hymns');
+  const { hymns } = useHymns();
 
-  const updateDisplay = (newState: DisplayState) => {
-    sendToDisplay(newState);
-    setDisplayState(newState);
-    setHistory(prev => {
-      const newHistory = [{ id: Math.random().toString(36).substr(2, 9), timestamp: new Date(), state: newState }, ...prev].slice(0, 10);
-      return newHistory;
-    });
-  };
+  const [source, setSource] = useState<Source>('hymns');
+  const [live, setLive] = useState<DisplayState>({ type: 'blank', content: '' });
+  const [history, setHistory] = useState<{ at: Date; state: DisplayState }[]>([]);
 
-  const handleShowLogo = () => updateDisplay({ type: 'logo', content: '' });
-  const handleClearDisplay = () => updateDisplay({ type: 'blank', content: '' });
-
-  // B = black screen, L = logo, from anywhere on the operator page
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === 'b' || e.key === 'B') handleClearDisplay();
-      if (e.key === 'l' || e.key === 'L') handleShowLogo();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  });
-
-  return (
-    <div className="flex flex-col h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] font-inter overflow-hidden">
-      {/* Top Persistent Controls */}
-      <div className="flex justify-between items-center bg-[var(--color-bg-card)] p-4 border-b border-[var(--color-border)] shadow-sm shrink-0">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="text-sm font-semibold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] inline-flex items-center gap-1">
-            <ChevronLeft size={16} /> Exit
-          </Link>
-          <div>
-            <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-bold mb-1">Live Status</div>
-            <div className="text-lg font-bold text-[var(--color-accent-gold)] flex items-center gap-2">
-              <span className={`w-3 h-3 rounded-full ${displayState.type !== 'blank' ? 'bg-red-500 animate-pulse' : 'bg-gray-500'}`}></span>
-              {displayState.type.toUpperCase()}
-            </div>
-          </div>
-          
-          <div className="flex gap-2">
-            <button onClick={handleShowLogo} className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] px-6 py-2 rounded-lg font-bold hover:bg-[var(--color-accent-gold)]/20 transition-colors shadow-sm text-sm">
-              LOGO
-            </button>
-            <button onClick={handleClearDisplay} className="bg-red-500/20 text-red-400 border border-red-500/50 px-6 py-2 rounded-lg font-bold hover:bg-red-500/40 transition-colors shadow-sm text-sm">
-              BLACK
-            </button>
-          </div>
-        </div>
-
-        {/* Live Preview Panel */}
-        <div className="flex items-center gap-4">
-          <div className="text-xs text-[var(--color-text-secondary)] uppercase tracking-wider font-bold text-right">Live Preview</div>
-          <div className="w-48 h-24 bg-black border-2 border-[var(--color-accent-gold)] rounded-lg overflow-hidden relative flex flex-col items-center justify-center p-2 text-center text-white shrink-0">
-            {displayState.type === 'logo' && <div className="text-[var(--color-accent-gold)] font-bold text-sm flex items-center justify-center"><CCCLogo size={18} className="inline mr-1" /> CCC LIVE</div>}
-            {displayState.type === 'hymn' && (
-              <>
-                <div className="text-[10px] text-[var(--color-accent-gold)] font-bold">Hymn {displayState.hymnNumber} (V{displayState.verseIndex})</div>
-                <div className="text-[8px] line-clamp-3 mt-1 leading-tight">{displayState.content}</div>
-              </>
-            )}
-            {displayState.type === 'verse' && (
-              <>
-                <div className="text-[10px] text-[var(--color-accent-gold)] font-bold">{displayState.title}</div>
-                <div className="text-[8px] line-clamp-3 mt-1 leading-tight">{displayState.content}</div>
-              </>
-            )}
-            {displayState.type === 'announcement' && (
-              <>
-                <div className="text-[10px] text-[var(--color-accent-gold)] font-bold uppercase">{displayState.title}</div>
-                <div className="text-[8px] line-clamp-3 mt-1 leading-tight">{displayState.content}</div>
-              </>
-            )}
-            {displayState.type === 'blank' && <div className="text-[10px] text-gray-600">BLANK</div>}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar Tabs */}
-        <div className="w-24 bg-[var(--color-bg-card)] border-r border-[var(--color-border)] flex flex-col shrink-0">
-          <button onClick={() => setActiveTab('hymns')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'hymns' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <Music size={28} className="mb-1" />
-            <span className="text-xs font-bold">Hymns</span>
-          </button>
-          <button onClick={() => setActiveTab('bible')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'bible' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <BookOpen size={28} className="mb-1" />
-            <span className="text-xs font-bold">Bible</span>
-          </button>
-          <button onClick={() => setActiveTab('announcements')} className={`flex flex-col items-center justify-center p-4 h-24 border-b border-[var(--color-border)] transition-colors ${activeTab === 'announcements' ? 'bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] border-r-4 border-r-[var(--color-accent-gold)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)]'}`}>
-            <Megaphone size={28} className="mb-1" />
-            <span className="text-xs font-bold">Alerts</span>
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-[var(--color-bg-primary)]">
-          {activeTab === 'hymns' && <HymnsTab displayState={displayState} updateDisplay={updateDisplay} />}
-          {activeTab === 'bible' && <BibleTab displayState={displayState} updateDisplay={updateDisplay} />}
-          {activeTab === 'announcements' && <AnnouncementsTab updateDisplay={updateDisplay} />}
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="bg-[var(--color-bg-card)] border-t border-[var(--color-border)] h-16 shrink-0 flex items-center justify-between px-4">
-        <div className="flex items-center gap-4 flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
-          <span className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-widest shrink-0">History</span>
-          {history.length === 0 && <span className="text-sm text-[var(--color-text-muted)] italic">No items displayed yet</span>}
-          {history.map((item) => (
-            <div key={item.id} className="flex items-center gap-2 bg-[var(--color-bg-secondary)] px-3 py-1 rounded-md text-xs border border-[var(--color-border)] shrink-0">
-              <span className="text-[var(--color-text-muted)]">{item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-              <span className="font-bold text-[var(--color-accent-gold)]">
-                {item.state.type === 'hymn' ? `Hymn ${item.state.hymnNumber}` : item.state.type === 'verse' ? item.state.title : item.state.type === 'logo' ? 'LOGO' : item.state.type === 'blank' ? 'BLACK' : item.state.title}
-              </span>
-            </div>
-          ))}
-        </div>
-        {/* Another device as the screen: share a room code */}
-        {room ? (
-          <div className="ml-4 shrink-0 flex items-center gap-2 text-xs">
-            <span className={`w-2 h-2 rounded-full ${remoteConnected ? 'bg-emerald-500' : 'bg-gray-500'}`} />
-            <span className="text-[var(--color-text-secondary)]">
-              Screen code <strong className="text-[var(--color-text-primary)] tracking-widest">{room}</strong> · open {window.location.host}/display?room={room}
-            </span>
-            <button onClick={() => setRoom(null)} className="text-[var(--color-text-muted)] hover:text-red-400 font-semibold">Stop</button>
-          </div>
-        ) : (
-          <button onClick={() => setRoom(newRoomCode())}
-                  className="ml-4 shrink-0 px-3 py-2 rounded-lg text-xs font-bold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
-            Use another device as the screen
-          </button>
-        )}
-        <button
-          onClick={() => window.open(room ? `/display?room=${room}` : '/display', 'celestialworship-display', 'width=1920,height=1080')}
-          className="ml-2 shrink-0 bg-[var(--color-accent-brand)]/20 text-[var(--color-accent-brand)] border border-[var(--color-accent-brand)]/50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[var(--color-accent-brand)]/40 transition-colors flex items-center gap-2"
-        >
-          <MonitorPlay size={18} className="inline mr-1" /> Open Display Window
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// TAB COMPONENTS
-// ============================================================================
-
-function HymnsTab({ displayState, updateDisplay }: { displayState: DisplayState, updateDisplay: (state: DisplayState) => void }) {
-  const [search, setSearch] = useState('');
-  const { results: hymns = [] } = useHymnSearch(search, []);
-  const [selectedHymn, setSelectedHymn] = useState<Hymn | null>(null);
-  const [displayLang, setDisplayLang] = useState<'en' | 'yo' | 'both'>('yo');
-  const [queue, setQueue] = useState(loadOperatorQueue);
-
-  const handleSelectHymn = (hymn: Hymn) => {
-    setSelectedHymn(hymn);
-    setSearch('');
-  };
-
+  // Hymn being presented
+  const [hymnNo, setHymnNo] = useState<number | null>(null);
+  const [lang, setLang] = useState<Lang>('yo');
   const [repeatChorus, setRepeatChorus] = useState(true);
+  // Bible being presented
+  const [book, setBook] = useState('John');
+  const [chapter, setChapter] = useState(1);
+  const [bibleLang, setBibleLang] = useState<'en' | 'yo'>('en');
+  const [picked, setPicked] = useState<number[]>([]);
+  const { data: chapterData, loading: bibleLoading } = useBible(book, chapter, bibleLang);
+  const [mode, setMode] = useState<'hymn' | 'bible'>('hymn');
 
-  // Stanzas in sung order: a chorus printed once is repeated after every verse
-  const slides = useMemo(
-    () => (selectedHymn ? buildSlides(selectedHymn, repeatChorus) : []),
-    [selectedHymn, repeatChorus]
-  );
+  const hymn = hymns.find(h => h.number === hymnNo) ?? null;
 
-  // Position of the slide on screen (1-based), only when this hymn is live
-  const activePosition = displayState.type === 'hymn' && displayState.hymnNumber === selectedHymn?.number
-    ? displayState.verseIndex ?? -1
-    : -1;
+  const slides: Slide[] = useMemo(() => {
+    if (mode === 'hymn') return hymn ? hymnSlides(hymn, lang, repeatChorus) : [];
+    if (!chapterData) return [];
+    return Object.entries(chapterData.verses).map(([v, text]) => ({
+      label: v, state: { type: 'verse', title: `${book} ${chapter}:${v}${bibleLang === 'yo' ? ' (Yorùbá)' : ' (KJV)'}`, content: text },
+    }));
+  }, [mode, hymn, lang, repeatChorus, chapterData, book, chapter, bibleLang]);
 
-  const showSlide = (position: number) => {
-    const slide = slides[position - 1];
-    if (!selectedHymn || !slide) return;
-    const yo = slide.verse.yorubaLines.join('\n');
-    const en = slide.verse.englishLines.join('\n');
-    const content = displayLang === 'yo' ? (yo || en) : displayLang === 'en' ? (en || yo) : [yo, en].filter(Boolean).join('\n\n');
-    updateDisplay({
-      type: 'hymn',
-      hymnNumber: selectedHymn.number,
-      title: `${displayTitle(selectedHymn, displayLang === 'en' ? 'en' : 'yo')} · ${slide.label}`,
-      content,
-      verseIndex: position,
-      totalVerses: slides.length,
-    });
+  const sameAsLive = useCallback((s: DisplayState) => s.type === live.type && s.title === live.title && s.content === live.content, [live]);
+  const liveIndex = slides.findIndex(s => sameAsLive(s.state));
+  const nextSlide = slides[liveIndex + 1] ?? (liveIndex === -1 ? slides[0] : undefined);
+
+  const go = useCallback((state: DisplayState) => {
+    sendToDisplay(state);
+    setLive(state);
+    setHistory(h => [{ at: new Date(), state }, ...h.filter(x => !(x.state.title === state.title && x.state.content === state.content))].slice(0, 12));
+  }, [sendToDisplay]);
+
+  const next = useCallback(() => { if (nextSlide) go(nextSlide.state); }, [nextSlide, go]);
+  const prev = useCallback(() => { if (liveIndex > 0) go(slides[liveIndex - 1].state); }, [liveIndex, slides, go]);
+  const black = useCallback(() => go({ type: 'blank', content: '' }), [go]);
+  const logo = useCallback(() => go({ type: 'logo', content: '' }), [go]);
+
+  // Several verses together
+  const sendPicked = () => {
+    if (!chapterData || !picked.length) return;
+    const nums = [...picked].sort((a, b) => a - b);
+    const text = nums.map(n => `${n} ${chapterData.verses[String(n)]}`).join('\n');
+    const range = nums.length > 1 && nums[nums.length - 1] - nums[0] === nums.length - 1 ? `${nums[0]}-${nums[nums.length - 1]}` : nums.join(',');
+    go({ type: 'verse', title: `${book} ${chapter}:${range}${bibleLang === 'yo' ? ' (Yorùbá)' : ' (KJV)'}`, content: text });
+    setPicked([]);
   };
 
-  const handleNextVerse = () => {
-    if (activePosition < 1) showSlide(1);
-    else if (activePosition < slides.length) showSlide(activePosition + 1);
-  };
-
-  const handlePrevVerse = () => {
-    if (activePosition > 1) showSlide(activePosition - 1);
-  };
-
-  // Keyboard: → / Space / PageDown = next, ← / PageUp = previous (clickers send PageUp/PageDown)
   useEffect(() => {
-    if (!selectedHymn) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); handleNextVerse(); }
-      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); handlePrevVerse(); }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (['ArrowRight', ' ', 'PageDown', 'ArrowDown'].includes(e.key)) { e.preventDefault(); next(); }
+      else if (['ArrowLeft', 'PageUp', 'ArrowUp'].includes(e.key)) { e.preventDefault(); prev(); }
+      else if (e.key.toLowerCase() === 'b') black();
+      else if (e.key.toLowerCase() === 'l') logo();
+      else if (/^[1-9]$/.test(e.key) && slides[Number(e.key) - 1]) go(slides[Number(e.key) - 1].state);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  });
+  }, [next, prev, black, logo, go, slides]);
 
-  if (!selectedHymn) {
-    return (
-      <div className="max-w-4xl mx-auto h-full flex flex-col">
-        <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-accent-gold)] mb-6">Select a Hymn</h2>
-        <div className="relative mb-6">
-          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-          <input 
-            type="text" 
-            placeholder="Search Hymn Number or Title..." 
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full bg-[var(--color-bg-card)] border-2 border-[var(--color-border)] rounded-2xl py-4 pl-12 pr-4 text-xl focus:outline-none focus:border-[var(--color-accent-gold)] transition-colors shadow-sm"
-          />
-        </div>
-        
-        <div className="space-y-3 overflow-y-auto flex-1 pr-2">
-          {search ? hymns.slice(0, 20).map((hymn: Hymn) => (
-            <button
-              key={hymn.number}
-              onClick={() => handleSelectHymn(hymn)}
-              className="w-full flex items-center gap-6 text-left bg-[var(--color-bg-card)] p-4 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent-gold)] hover:bg-[var(--color-bg-card-hover)] transition-all shadow-sm group"
-            >
-              <div className="w-16 h-16 rounded-lg bg-[var(--color-bg-secondary)] flex items-center justify-center font-bold text-2xl text-[var(--color-accent-gold)] group-hover:bg-[var(--color-accent-gold)]/20 transition-colors shrink-0">
-                {hymn.number}
-              </div>
-              <div className="flex-1">
-                <div className="text-lg font-bold group-hover:text-[var(--color-accent-gold)] transition-colors">{displayTitle(hymn, "yo")}</div>
-                <div className="text-sm text-[var(--color-text-secondary)] line-clamp-1">{displayTitle(hymn, 'en')}</div>
-              </div>
-            </button>
-          )) : queue && queue.items.length > 0 ? (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm uppercase tracking-wider font-bold text-[var(--color-text-secondary)]">
-                  Queue · {queue.serviceName}
-                </h3>
-                <button
-                  onClick={() => { clearOperatorQueue(); setQueue(null); }}
-                  className="text-xs text-[var(--color-text-muted)] hover:text-red-400"
-                >
-                  Clear queue
-                </button>
-              </div>
-              <div className="space-y-2">
-                {queue.items.map((item, i) => {
-                  const hymn = hymns.find(h => h.number === item.hymnNumber);
-                  if (!hymn) return null;
-                  return (
-                    <button
-                      key={`${item.hymnNumber}-${i}`}
-                      onClick={() => handleSelectHymn(hymn)}
-                      className="w-full flex items-center gap-4 text-left bg-[var(--color-bg-card)] p-3 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent-gold)] transition-all"
-                    >
-                      <span className="w-12 h-12 rounded-lg bg-[var(--color-bg-secondary)] flex items-center justify-center font-bold text-xl text-[var(--color-accent-gold)] shrink-0">
-                        {hymn.number}
-                      </span>
-                      <span className="flex-1 min-w-0">
-                        <span className="block text-xs text-[var(--color-text-muted)]">{item.slotName}</span>
-                        <span className="block font-bold truncate">{displayTitle(hymn, "yo")}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-48 text-[var(--color-text-muted)] italic">
-              Type to search for a hymn...
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const openScreen = () => window.open(room ? `/display?room=${room}` : '/display', 'celestialworship-display', 'width=1920,height=1080');
+  const sourceTabs: [Source, string, React.ReactNode][] = [['hymns', 'Hymns', <Music size={16} />], ['bible', 'Bible', <BookOpen size={16} />], ['notices', 'Notices', <Megaphone size={16} />]];
+  const itemTitle = mode === 'hymn' ? (hymn ? `${hymn.number} · ${displayTitle(hymn, lang === 'en' ? 'en' : 'yo')}` : null) : `${book} ${chapter}`;
 
   return (
-    <div className="max-w-5xl mx-auto h-full flex flex-col">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 bg-[var(--color-bg-card)] p-6 rounded-2xl border border-[var(--color-border)] shadow-sm">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] px-3 py-1 rounded-md font-bold text-sm">HYMN {selectedHymn.number}</span>
-            <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">{selectedHymn.categories.join(', ').replace(/_/g, ' ')}</span>
-          </div>
-          <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-text-primary)]">{displayTitle(selectedHymn, displayLang === 'en' ? 'en' : 'yo')}</h2>
+    <div className="min-h-screen lg:h-screen flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
+      {/* Bar */}
+      <header className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
+        <Link to="/" className="text-sm text-[var(--color-text-secondary)] inline-flex items-center gap-1 pr-2"><ChevronLeft size={16} />{' '}{tr('Exit')}</Link>
+        <h1 className="font-bold font-[Outfit] flex items-center gap-2"><MonitorPlay size={18} className="text-[var(--color-accent-brand)]" />{' '}{tr('Operator')}</h1>
+        <div className="ml-auto flex items-center gap-2 text-xs">
+          {room ? (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg ${remoteConnected ? 'text-emerald-600' : 'text-[var(--color-text-muted)]'}`} title={`Open ${window.location.host}/display?room=${room} on the screen device`}>
+              {remoteConnected ? <Wifi size={14} /> : <WifiOff size={14} />}{' '}{tr('Screen code')}{' '}<b className="tracking-widest text-[var(--color-text-primary)]">{room}</b>
+              <button onClick={() => setRoom(null)} className="ml-1 underline">{tr('stop')}</button>
+            </span>
+          ) : (
+            <button onClick={() => setRoom(newRoomCode())} className="px-2.5 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)]">{tr('Use another device as the screen')}</button>
+          )}
+          <button onClick={openScreen} className={`${btn} px-3 py-1.5 bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)] text-sm`}><MonitorPlay size={15} />{' '}{tr('Open screen')}</button>
         </div>
-        <button 
-          onClick={() => setSelectedHymn(null)}
-          className="bg-[var(--color-bg-secondary)] border border-[var(--color-border)] px-6 py-3 rounded-xl text-sm font-bold hover:bg-[var(--color-border-hover)] transition-colors self-start md:self-auto shadow-sm"
-        >
-          Change Hymn
-        </button>
-      </div>
-      
-      {/* Quick Nav + Language Toggle */}
-      <div className="flex flex-col gap-3 mb-6">
-        <div className="flex justify-between items-center">
-          <h3 className="text-xl font-[Outfit] font-bold text-[var(--color-accent-gold)]">Verses</h3>
-          <div className="flex gap-2">
-            <button 
-              onClick={handlePrevVerse}
-              disabled={activePosition <= 1}
-              className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-            >
-              <ChevronLeft size={16} className="inline" /> Prev
-            </button>
-            <button 
-              onClick={handleNextVerse}
-              disabled={activePosition >= slides.length}
-              className="px-4 py-2 bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] disabled:opacity-50 disabled:cursor-not-allowed font-bold"
-            >
-              Next <ChevronRight size={16} className="inline" />
-            </button>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">Display Language:</span>
-          <div className="flex bg-[var(--color-bg-card)] rounded-lg p-0.5 border border-[var(--color-border)]">
-            {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setDisplayLang(key)}
-                aria-pressed={displayLang === key}
-                className={`px-3 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                  displayLang === key ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
-                }`}
-              >
-                {label}
-              </button>
+      </header>
+
+      <div className="flex-1 min-h-0 grid gap-3 p-3 lg:grid-cols-[300px_1fr_340px]">
+        {/* Sources */}
+        <aside className={`${panel} p-3 flex flex-col min-h-[320px] lg:min-h-0 order-2 lg:order-1`}>
+          <div className="flex gap-1 mb-3" role="tablist">
+            {sourceTabs.map(([id, label, icon]) => (
+              <button key={id} role="tab" aria-selected={source === id} onClick={() => setSource(id)}
+                      className={`flex-1 py-2 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-1.5 ${source === id ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>{icon}{label}</button>
             ))}
           </div>
-          <label className="flex items-center gap-2 text-xs ml-auto" style={{ color: 'var(--color-text-secondary)' }}>
-            <input type="checkbox" checked={repeatChorus} onChange={e => setRepeatChorus(e.target.checked)} />
-            Repeat chorus after each verse
-          </label>
-        </div>
-        <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-          Keys: → / Space next · ← previous · B black screen · L logo
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-y-auto pb-8 pr-2">
-        {slides.map((slide, i) => {
-          const position = i + 1;
-          const isActive = activePosition === position;
-          const preview = (displayLang === 'en' ? slide.verse.englishLines : slide.verse.yorubaLines).join('\n')
-            || slide.verse.englishLines.join('\n') || slide.verse.yorubaLines.join('\n');
-          return (
-            <button
-              key={position}
-              onClick={() => showSlide(position)}
-              className={`flex flex-col text-left p-5 rounded-2xl border-2 transition-all group relative overflow-hidden ${
-                isActive 
-                  ? 'bg-[var(--color-accent-gold)]/10 border-[var(--color-accent-gold)] shadow-[0_0_20px_rgba(212,168,67,0.15)] ring-1 ring-[var(--color-accent-gold)]' 
-                  : 'bg-[var(--color-bg-card)] border-[var(--color-border)] hover:border-[var(--color-accent-gold)]/50 hover:shadow-md'
-              }`}
-            >
-              <div className="flex items-center justify-between w-full mb-3">
-                <span className={`text-xl font-bold px-3 py-1 rounded-md ${isActive ? 'bg-[var(--color-accent-gold)] text-[var(--color-bg-primary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] group-hover:bg-[var(--color-accent-gold)]/20 group-hover:text-[var(--color-accent-gold)]'}`}>
-                  {slide.label}
-                </span>
-                {isActive && <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent-gold)] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[var(--color-accent-gold)]"></span>
-                </span>}
-              </div>
-              <div className={`text-sm line-clamp-4 whitespace-pre-line ${isActive ? 'text-[var(--color-text-primary)] font-medium' : 'text-[var(--color-text-secondary)]'}`}>
-                {preview}
-              </div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-
-function BibleTab({ displayState, updateDisplay }: { displayState: DisplayState, updateDisplay: (state: DisplayState) => void }) {
-  const [quickRef, setQuickRef] = useState('');
-  
-  const [selectedBook, setSelectedBook] = useState<string>('Genesis');
-  const [selectedChapter, setSelectedChapter] = useState<number>(1);
-  const [selectedVerseRange, setSelectedVerseRange] = useState<number[]>([]);
-  const [bibleLang, setBibleLang] = useState<'en' | 'yo'>('en');
-
-  const { data: chapterData, loading } = useBible(selectedBook, selectedChapter, bibleLang);
-
-  const bookInfo = BIBLE_BOOKS.find(b => b.name === selectedBook) || BIBLE_BOOKS[0];
-  const chapters = Array.from({ length: bookInfo.chapters }, (_, i) => i + 1);
-
-  const handleQuickRef = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!quickRef) return;
-    
-    const match = quickRef.match(/^(\d?\s*[a-zA-Z\s]+)\s+(\d+)(?::(\d+)(?:-(\d+))?)?$/);
-    if (match) {
-      const bookStr = match[1].trim();
-      const ch = parseInt(match[2], 10);
-      const resolved = resolveBookName(bookStr);
-      if (resolved) {
-        setSelectedBook(resolved);
-        setSelectedChapter(ch);
-        setSelectedVerseRange([]);
-        setQuickRef('');
-      }
-    }
-  };
-
-  const handleSelectVerse = (verseNumStr: string, text: string) => {
-    const vNum = parseInt(verseNumStr, 10);
-    
-    updateDisplay({
-      type: 'verse',
-      title: `${selectedBook} ${selectedChapter}:${vNum}`,
-      content: text
-    });
-    
-    setSelectedVerseRange([vNum]);
-  };
-  
-  const otBooks = BIBLE_BOOKS.filter(b => b.testament === 'OT');
-  const ntBooks = BIBLE_BOOKS.filter(b => b.testament === 'NT');
-
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex flex-col xl:flex-row gap-6 h-full">
-        {/* Left side: Book & Chapter Selection */}
-        <div className="w-full xl:w-1/3 flex flex-col gap-4">
-          <form onSubmit={handleQuickRef} className="relative">
-            <Zap size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-            <input
-              type="text"
-              placeholder="Quick Jump (e.g. John 3:16)"
-              value={quickRef}
-              onChange={e => setQuickRef(e.target.value)}
-              className="w-full bg-[var(--color-bg-card)] border-2 border-[var(--color-border)] rounded-xl py-3 pl-12 pr-4 text-md focus:outline-none focus:border-[var(--color-accent-brand)] shadow-sm"
-            />
-          </form>
-
-          {/* Bible Language Toggle */}
-          <div className="flex items-center gap-2 bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-3">
-            <span className="text-xs text-[var(--color-text-secondary)] uppercase font-bold tracking-wider">Language:</span>
-            <div className="flex bg-[var(--color-bg-secondary)] rounded-lg p-0.5 flex-1">
-              <button
-                onClick={() => setBibleLang('en')}
-                className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                  bibleLang === 'en' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
-                }`}
-              >
-                English (KJV)
-              </button>
-              <button
-                onClick={() => setBibleLang('yo')}
-                className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                  bibleLang === 'yo' ? 'bg-[var(--color-accent-brand)] text-[var(--color-bg-primary)] shadow' : 'text-[var(--color-text-secondary)]'
-                }`}
-              >
-                Yorùbá
-              </button>
-            </div>
+          <div className="flex-1 min-h-0">
+            {source === 'hymns' && <HymnSource current={mode === 'hymn' ? hymnNo : null} onPick={h => { setHymnNo(h.number); setMode('hymn'); }} />}
+            {source === 'bible' && <BibleSource book={book} chapter={chapter} lang={bibleLang} onChange={(b, c, l) => { setBook(b); setChapter(c); setBibleLang(l); setPicked([]); setMode('bible'); }} />}
+            {source === 'notices' && <NoticeSource onSend={go} />}
           </div>
+        </aside>
 
-          <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 flex flex-col flex-1 overflow-hidden shadow-sm">
-            <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-widest mb-3">Books</h3>
-            <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-thin">
-              <div>
-                <h4 className="text-xs font-bold text-[var(--color-accent-gold)] mb-2 sticky top-0 bg-[var(--color-bg-card)] py-1">Old Testament</h4>
-                <div className="grid grid-cols-3 gap-1">
-                  {otBooks.map(b => (
-                    <button
-                      key={b.name}
-                      onClick={() => { setSelectedBook(b.name); setSelectedChapter(1); setSelectedVerseRange([]); }}
-                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-brand)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
-                      title={b.name}
-                    >
-                      {b.abbreviation}
-                    </button>
+        {/* Slides */}
+        <main className={`${panel} p-3 flex flex-col min-h-[360px] lg:min-h-0 order-3 lg:order-2`}>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <h2 className="font-bold text-lg flex-1 min-w-0 truncate">{itemTitle ?? tr('Choose a hymn or a passage')}</h2>
+            {mode === 'hymn' && hymn && (
+              <>
+                <div className="inline-flex rounded-lg p-0.5 border border-[var(--color-border)]" role="group" aria-label={tr('Language on screen')}>
+                  {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([v, t]) => (
+                    <button key={v} onClick={() => setLang(v)} aria-pressed={lang === v} className={`px-2.5 py-1 rounded-md text-xs font-semibold ${lang === v ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'text-[var(--color-text-secondary)]'}`}>{t}</button>
                   ))}
                 </div>
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-[var(--color-accent-gold)] mb-2 sticky top-0 bg-[var(--color-bg-card)] py-1">New Testament</h4>
-                <div className="grid grid-cols-3 gap-1">
-                  {ntBooks.map(b => (
-                    <button
-                      key={b.name}
-                      onClick={() => { setSelectedBook(b.name); setSelectedChapter(1); setSelectedVerseRange([]); }}
-                      className={`text-xs py-2 px-1 rounded-md truncate transition-colors font-medium ${selectedBook === b.name ? 'bg-[var(--color-accent-brand)] text-white' : 'hover:bg-[var(--color-bg-secondary)]'}`}
-                      title={b.name}
-                    >
-                      {b.abbreviation}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right side: Chapters & Verses */}
-        <div className="w-full xl:w-2/3 flex flex-col bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-[var(--color-border)]">
-            <h2 className="text-2xl font-[Outfit] font-bold text-[var(--color-accent-gold)] mb-4">{selectedBook}</h2>
-            <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-thin">
-              {chapters.map(ch => (
-                <button
-                  key={ch}
-                  onClick={() => { setSelectedChapter(ch); setSelectedVerseRange([]); }}
-                  className={`px-4 py-2 rounded-lg font-bold shrink-0 transition-colors ${selectedChapter === ch ? 'bg-[var(--color-accent-brand)] text-white shadow-md' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:border-[var(--color-accent-brand)]/50'}`}
-                >
-                  Ch {ch}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4 bg-[var(--color-bg-primary)]">
-            {loading ? (
-              <div className="flex items-center justify-center h-full text-[var(--color-text-muted)] animate-pulse font-medium">Loading chapter...</div>
-            ) : !chapterData ? (
-              <div className="flex items-center justify-center h-full text-red-400 font-medium">Failed to load {selectedBook} {selectedChapter}</div>
-            ) : (
-              <div className="space-y-3 max-w-3xl mx-auto pb-12">
-                {Object.entries(chapterData.verses).map(([vNumStr, text]) => {
-                  const vNum = parseInt(vNumStr, 10);
-                  const isSelected = selectedVerseRange.includes(vNum);
-                  const isActiveOnDisplay = displayState.type === 'verse' && displayState.title === `${selectedBook} ${selectedChapter}:${vNum}`;
-                  
-                  return (
-                    <div 
-                      key={vNumStr} 
-                      className={`flex gap-4 p-4 rounded-xl transition-all hover:bg-[var(--color-bg-card)] ${
-                        isActiveOnDisplay ? 'bg-[var(--color-accent-brand)]/10 shadow-sm' : 
-                        isSelected ? 'bg-[var(--color-accent-gold)]/5' : ''
-                      }`}
-                    >
-                      <div className="font-bold text-[var(--color-text-secondary)] min-w-[2rem] text-right pt-1">{vNumStr}</div>
-                      <div className="flex-1 text-lg leading-relaxed">{text}</div>
-                      <button 
-                        onClick={() => handleSelectVerse(vNumStr, text)}
-                        className={`shrink-0 px-6 py-2 rounded-lg font-bold self-start transition-all shadow-sm ${
-                          isActiveOnDisplay ? 'bg-[var(--color-accent-brand)] text-white ring-2 ring-offset-2 ring-offset-[var(--color-bg-primary)] ring-[var(--color-accent-brand)]' : 'bg-[var(--color-bg-secondary)] border border-[var(--color-border)] hover:bg-[var(--color-accent-brand)] hover:text-white hover:border-[var(--color-accent-brand)]'
-                        }`}
-                      >
-                        {isActiveOnDisplay ? 'Live' : 'Send'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                <label className="text-xs inline-flex items-center gap-1.5 text-[var(--color-text-secondary)]">
+                  <input type="checkbox" checked={repeatChorus} onChange={e => setRepeatChorus(e.target.checked)} />{' '}{tr('Chorus after each verse')}</label>
+              </>
+            )}
+            {mode === 'bible' && picked.length > 0 && (
+              <button onClick={sendPicked} className={`${btn} px-3 py-1.5 text-sm bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]`}><Send size={14} />{' '}{tr('Show')}{' '}{picked.length}{' '}{tr('verses')}</button>
             )}
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {mode === 'bible' && bibleLoading ? <p className="text-sm text-[var(--color-text-muted)] p-4 animate-pulse">{tr('Loading…')}</p>
+              : slides.length === 0 ? <p className="text-sm text-[var(--color-text-muted)] p-4">{tr('Pick a hymn, a Bible chapter or a notice on the left. Click a slide to put it on the screen.')}</p>
+              : (
+                <ol className={`grid gap-2 ${mode === 'hymn' ? 'sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                  {slides.map((s, i) => {
+                    const isLive = i === liveIndex;
+                    const isNext = nextSlide === s;
+                    const verse = Number(s.label);
+                    return (
+                      <li key={`${s.label}-${i}`} className="relative">
+                        <button onClick={() => go(s.state)} aria-current={isLive || undefined}
+                                className={`w-full h-full flex flex-col text-left rounded-xl border-2 p-3 ${isLive ? 'border-red-500 bg-red-500/5' : isNext ? 'border-[var(--color-accent-brand)]/60' : 'border-[var(--color-border)] hover:border-[var(--color-text-muted)]'}`}>
+                          <span className="flex items-center justify-between text-[11px] font-bold mb-1">
+                            <span className={isLive ? 'text-red-600' : 'text-[var(--color-text-muted)]'}>{mode === 'hymn' ? `${i < 9 ? `${i + 1} · ` : ''}${s.label}` : `Verse ${s.label}`}</span>
+                            {isLive ? <span className="text-red-600">{tr('LIVE')}</span> : isNext ? <span className="text-[var(--color-accent-brand)]">{tr('NEXT')}</span> : null}
+                          </span>
+                          <span className={`block whitespace-pre-line text-sm leading-relaxed ${mode === 'hymn' ? 'line-clamp-6' : ''}`}>{s.state.content}</span>
+                        </button>
+                        {mode === 'bible' && (
+                          <label className="absolute top-2.5 right-3 text-[11px] inline-flex items-center gap-1 text-[var(--color-text-muted)]" title={tr('Select to show several verses together')}>
+                            <input type="checkbox" aria-label={`Select verse ${s.label}`} checked={picked.includes(verse)} onChange={e => setPicked(p => (e.target.checked ? [...p, verse] : p.filter(x => x !== verse)))} />
+                          </label>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+          </div>
+        </main>
 
-
-function AnnouncementsTab({ updateDisplay }: { updateDisplay: (state: DisplayState) => void }) {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-
-  const handleSend = () => {
-    if (!title && !content) return;
-    updateDisplay({
-      type: 'announcement',
-      title: title.trim(),
-      content: content.trim()
-    });
-  };
-
-  const applyPreset = (presetTitle: string, presetContent: string) => {
-    setTitle(presetTitle);
-    setContent(presetContent);
-  };
-
-  return (
-    <div className="max-w-3xl mx-auto h-full flex flex-col gap-6 pt-4">
-      <h2 className="text-3xl font-[Outfit] font-bold text-[var(--color-accent-gold)]">Announcements</h2>
-      
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        <button onClick={() => applyPreset('Welcome', 'Welcome to Celestial Church of Christ!\nWe are glad you are here.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          Welcome
-        </button>
-        <button onClick={() => applyPreset('Tithes & Offering', 'Please prepare your tithes and offering.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          Offering
-        </button>
-        <button onClick={() => applyPreset('Closing', 'Thanks for worshipping with us!\nHave a blessed week ahead.')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          Closing
-        </button>
-        <button onClick={() => applyPreset('Notice', '')} className="px-5 py-2 bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-full text-sm font-bold hover:border-[var(--color-accent-gold)] transition-colors whitespace-nowrap shadow-sm">
-          Custom Notice
-        </button>
-      </div>
-
-      <div className="bg-[var(--color-bg-card)] p-6 rounded-2xl border border-[var(--color-border)] shadow-sm flex flex-col gap-4">
-        <div>
-          <label htmlFor="announce-title" className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Title (Optional)</label>
-          <input
-            id="announce-title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. ANNOUNCEMENT"
-            className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-xl focus:outline-none focus:border-[var(--color-accent-gold)] transition-colors"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="announce-content" className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Message Content</label>
-          <textarea
-            id="announce-content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Type your message here..."
-            rows={6}
-            className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-lg focus:outline-none focus:border-[var(--color-accent-gold)] transition-colors resize-none"
-          />
-        </div>
-        
-        <button 
-          onClick={handleSend}
-          disabled={!title && !content}
-          className="mt-4 w-full bg-gradient-to-r from-[var(--color-accent-gold)] to-yellow-600 text-white font-bold text-xl py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-        >
-          Send to Display
-        </button>
+        {/* Monitors and controls */}
+        <aside className="flex flex-col gap-3 order-1 lg:order-3 min-h-0">
+          <div className={`${panel} p-3 space-y-3`}>
+            <Monitor state={live} label={tr('Live')} live />
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={prev} disabled={liveIndex <= 0} className={`${btn} py-3 bg-[var(--color-bg-secondary)]`}><ChevronLeft size={18} />{' '}{tr('Prev')}</button>
+              <button onClick={next} disabled={!nextSlide} className={`${btn} py-3 bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]`}>{tr('Next')}{' '}<ChevronRight size={18} /></button>
+              <button onClick={black} className={`${btn} py-2.5 ${live.type === 'blank' ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)]'}`} title="B"><EyeOff size={16} />{' '}{tr('Black')}</button>
+              <button onClick={logo} className={`${btn} py-2.5 ${live.type === 'logo' ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)]'}`} title="L"><ImageIcon size={16} />{' '}{tr('Logo')}</button>
+            </div>
+            <Monitor state={nextSlide?.state ?? null} label={tr('Next')} />
+            <p className="text-[11px] text-[var(--color-text-muted)]">{tr('Keys: → Space next · ← previous · 1–9 slide · B black · L logo. Clickers work too.')}</p>
+          </div>
+          <div className={`${panel} p-3 flex-1 min-h-0 overflow-y-auto hidden lg:block`}>
+            <p className="text-[11px] uppercase tracking-widest font-bold text-[var(--color-text-muted)] mb-2 flex items-center gap-1"><HistoryIcon size={13} />{' '}{tr('Shown')}</p>
+            {history.length === 0 ? <p className="text-xs text-[var(--color-text-muted)]">{tr('Nothing yet.')}</p> : (
+              <ul className="space-y-1">
+                {history.map((h, i) => (
+                  <li key={i}>
+                    <button onClick={() => go(h.state)} className="w-full text-left text-xs px-2 py-1.5 rounded-lg hover:bg-[var(--color-bg-secondary)] flex gap-2">
+                      <span className="text-[var(--color-text-muted)] tabular-nums">{h.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="truncate">{h.state.type === 'blank' ? tr('Black') : h.state.type === 'logo' ? tr('Logo') : h.state.title || h.state.content.slice(0, 40)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </aside>
       </div>
     </div>
   );

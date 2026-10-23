@@ -12,7 +12,7 @@
  *   NIV additionally needs Biblica's permission for commercial use.
  */
 
-export type BibleLanguageCode = 'en' | 'yo';
+export type BibleLanguageCode = 'en' | 'yo' | 'fr';
 
 export interface BibleVersion {
   /** Used in URLs (?lang=…). "en" and "yo" are kept for existing links. */
@@ -52,6 +52,14 @@ const LOCAL_VERSIONS: BibleVersion[] = [
     source: { kind: 'local', dir: 'yo' },
     copyright: 'Copyright © 2009, 2017 by Biblica, Inc. Used under the Creative Commons Attribution-ShareAlike 4.0 licence. The original work by Biblica, Inc. is available for free at www.biblica.com and open.bible.',
   },
+  {
+    id: 'fr',
+    abbreviation: 'LSG',
+    name: 'Louis Segond (1910)',
+    language: 'fr',
+    source: { kind: 'local', dir: 'fr' },
+    copyright: 'La Bible Louis Segond, 1910 — domaine public. Texte de getbible.net.',
+  },
 ];
 
 const API_VERSION_META: Record<string, Omit<BibleVersion, 'source' | 'id'>> = {
@@ -90,7 +98,7 @@ export function getBibleVersion(id: string | null | undefined): BibleVersion {
 
 /** Companion version for side-by-side reading: the other language, using a complete text */
 export function companionVersion(version: BibleVersion): BibleVersion {
-  if (version.language === 'yo') return BIBLE_VERSIONS[0];
+  if (version.language !== 'en') return BIBLE_VERSIONS[0];
   return BIBLE_VERSIONS.find(v => v.language === 'yo' && !v.preview) ?? BIBLE_VERSIONS[0];
 }
 

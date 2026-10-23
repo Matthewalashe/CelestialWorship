@@ -1,9 +1,9 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useServices } from '../hooks/useServices';
 import { useHymns } from '../hooks/useHymns';
 import { useLessons } from '../hooks/useLessons';
-import { loadChapter } from '../hooks/useBible';
+import { buildHymnContext, dayOccasions } from '../hooks/useHymnContext';
 import { extractHymnSlots, getCandidateHymns, planHymns, ScoredHymnSuggestion, recordHymnUsage } from '../utils/hymnMatcher';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { ServiceOrder, Hymn, HymnCategory } from '../types';
@@ -15,6 +15,7 @@ import { showToast } from '../components/Toast';
 import { Music, BookOpen, Lock, Unlock, ChevronUp, ChevronDown, Check, Clock, AlertTriangle, Star, ClipboardCopy, Printer, Save, MonitorPlay, X } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { OPERATOR_QUEUE_KEY, type OperatorQueueItem } from '../hooks/useLiveDisplay';
+import { tr } from '../i18n';
 
 interface SlotSelection {
   stepNumber: number;
@@ -48,6 +49,8 @@ export default function Suggestions() {
   const planDay = useMemo(() => fromISODate(planDate), [planDate]);
   const todaysLessons = useMemo(() => allLessons.filter(l => l.date === planDate), [allLessons, planDate]);
   const season = useMemo(() => getLiturgicalSeason(planDay), [planDay]);
+  // The occasion the suggestions follow: from the lessons and the Church's calendar
+  const occasions = useMemo(() => dayOccasions(planDate, allLessons), [planDate, allLessons]);
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [slotSelections, setSlotSelections] = useState<SlotSelection[]>([]);
@@ -74,38 +77,12 @@ export default function Suggestions() {
 
   const todayServiceTypes = useMemo(() => getServiceTypesForDate(planDay), [planDay]);
 
-  // Helper to fetch lesson text from Bible data files
-  const fetchLessonText = useCallback(async (): Promise<{ refs: { book: string; chapter: number }[]; text: string }> => {
-    const refs: { book: string; chapter: number }[] = [];
-    const textParts: string[] = [];
-
-    for (const lesson of todaysLessons) {
-      if (lesson.firstLesson) {
-        refs.push({ book: lesson.firstLesson.book, chapter: lesson.firstLesson.chapter });
-        try {
-          const ch = await loadChapter(lesson.firstLesson.book, lesson.firstLesson.chapter, 'en');
-          if (ch) textParts.push(Object.values(ch.verses).join(' '));
-        } catch {}
-      }
-      if (lesson.secondLesson) {
-        refs.push({ book: lesson.secondLesson.book, chapter: lesson.secondLesson.chapter });
-        try {
-          const ch = await loadChapter(lesson.secondLesson.book, lesson.secondLesson.chapter, 'en');
-          if (ch) textParts.push(Object.values(ch.verses).join(' '));
-        } catch {}
-      }
-    }
-
-    return { refs, text: textParts.join(' ') };
-  }, [todaysLessons]);
-
   const handleSelectService = async (service: ServiceOrder) => {
     setSelectedServiceId(service.id);
 
-    // Fetch actual lesson text for deep matching
-    const { refs: lessonRefs, text: lessonText } = await fetchLessonText();
-
-    const plan = planHymns(service, hymns, { date: planDate, lessonRefs, lessonText });
+    // The day's set verses (English and Yorùbá), its occasion and observances
+    const ctx = await buildHymnContext(planDate, allLessons, service.id);
+    const plan = planHymns(service, hymns, ctx);
     const selections: SlotSelection[] = plan.map(({ stepNumber, slotName, slot, candidates, selected }) => ({
       stepNumber,
       slotName,
@@ -134,13 +111,12 @@ export default function Suggestions() {
     const service = services.find(s => s.id === plan.serviceId);
     if (!service) return;
 
-    // Fetch actual lesson text for deep matching
-    const { refs: lessonRefs, text: lessonText } = await fetchLessonText();
+    const ctx = await buildHymnContext(planDate, allLessons, service.id);
 
     setSelectedServiceId(service.id);
     const slots = extractHymnSlots(service);
     const selections: SlotSelection[] = slots.map(({ stepNumber, slotName, slot }) => {
-      const candidates = getCandidateHymns(slot, hymns, 15, { date: planDate, serviceId: service.id, lessonRefs, lessonText });
+      const candidates = getCandidateHymns(slot, hymns, 15, ctx);
       const planSlot = plan.slots.find(ps => ps.stepNumber === stepNumber);
       let selectedHymn = null;
       if (planSlot?.hymnNumber) {
@@ -277,7 +253,7 @@ export default function Suggestions() {
     const usedHymns = [...slotSelections, ...extraSlots].map(s => s.selectedHymn?.number).filter((n): n is number => n !== undefined);
     recordHymnUsage(usedHymns, planDate);
 
-    showToast('Plan saved');
+    showToast(tr('Plan saved'));
   };
 
   const sendToOperator = () => {
@@ -286,7 +262,7 @@ export default function Suggestions() {
       .filter(s => s.selectedHymn)
       .map(s => ({ hymnNumber: s.selectedHymn!.number, slotName: s.slotName }));
     localStorage.setItem(OPERATOR_QUEUE_KEY, JSON.stringify({ serviceName: selectedService.displayName, items }));
-    showToast('Sent to the Operator queue — open Operator → Hymns');
+    showToast(tr('Sent to the Operator queue — open Operator → Hymns'));
   };
 
   const deletePlan = (id: string) => {
@@ -298,7 +274,7 @@ export default function Suggestions() {
   if (servicesLoading || hymnsLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-[var(--color-text-secondary)]">Loading...</div>
+        <div className="animate-pulse text-[var(--color-text-secondary)]">{tr('Loading...')}</div>
       </div>
     );
   }
@@ -312,20 +288,16 @@ export default function Suggestions() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
-          <><Music size={24} className="inline-block mr-2 align-text-bottom" /> Hymn Selector</>
+          <><Music size={24} className="inline-block mr-2 align-text-bottom" />{' '}{tr('Hymn Selector')}</>
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Plan hymns for a service. Suggestions follow the Order of Service, the day's readings, the season and what was sung recently — accept, swap or override any of them.
-        </p>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{tr('Plan hymns for a service. Suggestions follow the Order of Service, the day\'s readings, the season and what was sung recently — accept, swap or override any of them.')}</p>
       </div>
 
       {/* Service Selector */}
       {!selectedServiceId ? (
         <div>
           <div className="flex flex-wrap items-end gap-3 mb-5 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
-            <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
-              Service date
-              <input
+            <label className="flex flex-col gap-1 text-xs uppercase tracking-wider text-[var(--color-text-muted)]">{tr('Service date')}<input
                 type="date"
                 value={planDate}
                 onChange={e => e.target.value && setPlanDate(e.target.value)}
@@ -334,13 +306,13 @@ export default function Suggestions() {
             </label>
             <div className="text-xs text-[var(--color-text-secondary)] pb-2">
               {formatDate(planDay)}
-              {season.label && <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] font-semibold">{season.label}</span>}
-              {todaysLessons.length === 0 && <span className="block mt-1 text-[var(--color-text-muted)]">No readings published for this date — suggestions use the service and season only.</span>}
+              {season.label && <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] font-semibold">{tr(season.label)}</span>}
+              {occasions.map(o => <span key={o} className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-brand)]/10 text-[var(--color-accent-brand)] font-semibold">{o}</span>)}
+              {todaysLessons.length === 0 && <span className="block mt-1 text-[var(--color-text-muted)]">{tr('No readings published for this date — suggestions use the service and season only.')}</span>}
             </div>
           </div>
 
-          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
-            Services on {planDay.toLocaleDateString('en-GB', { weekday: 'long' })}
+          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">{tr('Services on')}{' '}{planDay.toLocaleDateString('en-GB', { weekday: 'long' })}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
             {services.filter(s => todayServiceTypes.includes(s.id)).map(svc => {
@@ -353,22 +325,19 @@ export default function Suggestions() {
                   className="text-left p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-accent-gold)] shadow-[0_0_15px_rgba(212,168,67,0.15)] hover:shadow-[0_0_20px_rgba(212,168,67,0.3)] transition-all group relative"
                 >
                   <span className="absolute top-3 right-3 text-[10px] uppercase font-bold text-[var(--color-accent-gold)] bg-[var(--color-accent-gold)]/10 px-2 py-0.5 rounded-full">
-                    {planDate === toISODate(new Date()) ? 'Today' : planDay.toLocaleDateString('en-GB', { weekday: 'short' })}
+                    {planDate === toISODate(new Date()) ? tr('Today') : planDay.toLocaleDateString('en-GB', { weekday: 'short' })}
                   </span>
                   <div className="font-medium text-[var(--color-text-primary)] font-[Outfit] group-hover:text-[var(--color-accent-gold)] transition-colors pr-12">
                     {svc.displayName}
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)] mt-1">
-                    {svc.time && `${svc.time} • `} {slotCount} hymn slots
-                  </div>
+                    {svc.time && `${svc.time} • `} {slotCount}{' '}{tr('hymn slots')}</div>
                 </button>
               );
             })}
           </div>
 
-          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
-            Other Services
-          </h2>
+          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">{tr('Other Services')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
             {services.filter(s => !todayServiceTypes.includes(s.id)).map(svc => {
               const slotCount = svc.steps.filter(s => s.hymnSlot).length;
@@ -383,7 +352,7 @@ export default function Suggestions() {
                     {svc.displayName}
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)] mt-1">
-                    {svc.day} {svc.time && `• ${svc.time}`} • {slotCount} hymn{slotCount !== 1 ? 's' : ''}
+                    {svc.day} {svc.time && `• ${svc.time}`} • {slotCount}{' '}{tr('hymn')}{slotCount !== 1 ? 's' : ''}
                   </div>
                 </button>
               );
@@ -393,9 +362,7 @@ export default function Suggestions() {
           {/* Past Plans Section */}
           {pastPlans.length > 0 && (
             <div>
-              <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
-                Recent Plans
-              </h2>
+              <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">{tr('Recent Plans')}</h2>
               <div className="space-y-2">
                 {pastPlans.map(plan => (
                   <div key={plan.id} className="flex gap-2">
@@ -411,12 +378,12 @@ export default function Suggestions() {
                           {new Date(plan.date).toLocaleDateString()}
                         </div>
                       </div>
-                      <span className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)]">Load ↻</span>
+                      <span className="text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)]">{tr('Load ↻')}</span>
                     </button>
                     <button
                       onClick={() => deletePlan(plan.id)}
                       className="px-4 py-2 rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-red-400 hover:border-red-400/30 transition-all"
-                      title="Delete plan"
+                      title={tr('Delete plan')}
                     >
                       ✕
                     </button>
@@ -436,8 +403,7 @@ export default function Suggestions() {
                   {selectedService?.displayName}
                 </h2>
                 <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                  {slotSelections.length} hymn slots (per Order of Service) • {filledCount} filled
-                </p>
+                  {slotSelections.length}{' '}{tr('hymn slots (per Order of Service) •')}{' '}{filledCount}{' '}{tr('filled')}</p>
               </div>
               <button
                 onClick={() => {
@@ -446,9 +412,7 @@ export default function Suggestions() {
                   setExtraSlots([]);
                 }}
                 className="px-3 py-1.5 rounded-lg text-sm bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-border)] transition-all"
-              >
-                Change Service
-              </button>
+              >{tr('Change Service')}</button>
             </div>
             {/* Progress Bar */}
             <div className="w-full h-1.5 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden">
@@ -464,7 +428,7 @@ export default function Suggestions() {
             <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 mb-6 relative overflow-hidden">
 
               <div className="text-xs uppercase font-semibold text-[var(--color-text-muted)] mb-2 flex items-center gap-2">
-                <><BookOpen size={14} className="inline mr-1" /> Readings for {formatDate(planDay)}</>
+                <><BookOpen size={14} className="inline mr-1" />{' '}{tr('Readings for')}{' '}{formatDate(planDay)}</>
               </div>
               <div className="space-y-1">
                 {todaysLessons.map((l, i) => (
@@ -514,7 +478,7 @@ export default function Suggestions() {
                       <div className="text-left">
                         <div className="text-sm font-medium text-[var(--color-text-primary)] flex items-center gap-2">
                           {slot.slotName}
-                          {isLocked && <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">Locked</span>}
+                          {isLocked && <span className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">{tr('Locked')}</span>}
                         </div>
                         {slot.category && (
                           <span
@@ -525,7 +489,7 @@ export default function Suggestions() {
                               border: `1px solid ${CATEGORY_COLORS[slot.category]}30`
                             }}
                           >
-                            {CATEGORY_LABELS[slot.category]}
+                            {tr(CATEGORY_LABELS[slot.category])}
                           </span>
                         )}
                       </div>
@@ -534,24 +498,21 @@ export default function Suggestions() {
                     <div className="flex items-center justify-between sm:justify-end gap-4 pl-11 sm:pl-0">
                       {slot.selectedHymn ? (
                         <div className="flex-1 sm:flex-none text-right">
-                          <div className="text-sm font-semibold text-[var(--color-accent-gold)]">
-                            Hymn {slot.selectedHymn.number}
+                          <div className="text-sm font-semibold text-[var(--color-accent-gold)]">{tr('Hymn')}{' '}{slot.selectedHymn.number}
                           </div>
                           <div className="text-xs text-[var(--color-text-secondary)] line-clamp-1 max-w-[200px]">
                             {displayTitle(slot.selectedHymn, 'yo')}
                           </div>
                         </div>
                       ) : (
-                        <div className="text-sm text-[var(--color-text-muted)] italic">
-                          Select a hymn...
-                        </div>
+                        <div className="text-sm text-[var(--color-text-muted)] italic">{tr('Select a hymn...')}</div>
                       )}
 
                       <div className="flex items-center gap-2 border-l border-[var(--color-border)] pl-4">
                         <button
                           onClick={(e) => toggleLock(e, idx)}
                           className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-                          title={isLocked ? "Unlock slot" : "Lock slot"}
+                          title={isLocked ? tr('Unlock slot') : tr('Lock slot')}
                         >
                           {isLocked ? <Lock size={16} /> : <Unlock size={16} />}
                         </button>
@@ -568,7 +529,7 @@ export default function Suggestions() {
                       {/* Manual search */}
                       <input
                         type="text"
-                        placeholder="Search by number, title, or lyrics..."
+                        placeholder={tr('Search by number, title, or lyrics...')}
                         value={manualSearches[idx] || ''}
                         onChange={e =>
                           setManualSearches(prev => ({ ...prev, [idx]: e.target.value }))
@@ -621,17 +582,17 @@ export default function Suggestions() {
                                   </span>
                                   {isRecentlyUsed && (
                                     <span className="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
-                                      <><Clock size={12} className="inline mr-1" /> Recently Used</>
+                                      <><Clock size={12} className="inline mr-1" />{' '}{tr('Recently Used')}</>
                                     </span>
                                   )}
                                   {duplicates.length > 0 && (
                                     <span className="text-[10px] text-red-400 bg-red-400/10 px-2 py-0.5 rounded-full border border-red-400/20">
-                                      <><AlertTriangle size={12} className="inline mr-1" /> Used in Step {duplicates.join(', ')}</>
+                                      <><AlertTriangle size={12} className="inline mr-1" />{' '}{tr('Used in Step')}{' '}{duplicates.join(', ')}</>
                                     </span>
                                   )}
                                   {!manualSearches[idx] && score >= 90 && (
                                     <span className="text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
-                                      <><Star size={12} className="inline mr-1" /> Top Match</>
+                                      <><Star size={12} className="inline mr-1" />{' '}{tr('Top Match')}</>
                                     </span>
                                   )}
                                 </div>
@@ -647,9 +608,7 @@ export default function Suggestions() {
                           <Link
                             to={`/hymns/${slot.selectedHymn.number}`}
                             className="inline-block px-4 py-2 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-secondary)] text-sm hover:text-[var(--color-accent-gold)] hover:border-[var(--color-accent-gold)]/50 transition-colors"
-                          >
-                            View Hymn Details ↗
-                          </Link>
+                          >{tr('View Hymn Details ↗')}</Link>
                         </div>
                       )}
                     </div>
@@ -662,9 +621,7 @@ export default function Suggestions() {
           {/* Extra Hymn Slots */}
           {extraSlots.length > 0 && (
             <div className="mt-4 space-y-3">
-              <h3 className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-2">
-                Additional Hymns
-              </h3>
+              <h3 className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] flex items-center gap-2">{tr('Additional Hymns')}</h3>
               {extraSlots.map((slot, idx) => {
                 const globalIdx = slotSelections.length + idx;
                 const isExpanded = expandedSlot === globalIdx;
@@ -698,7 +655,7 @@ export default function Suggestions() {
                         <button
                           onClick={(e) => { e.stopPropagation(); handleRemoveExtraSlot(idx); }}
                           className="text-[var(--color-text-muted)] hover:text-red-400 p-1"
-                          aria-label="Remove extra slot"
+                          aria-label={tr('Remove extra slot')}
                         >
                           <X size={16} />
                         </button>
@@ -708,7 +665,7 @@ export default function Suggestions() {
                       <div className="border-t border-[var(--color-border)] p-4 bg-[var(--color-bg-secondary)]/30 rounded-b-2xl">
                         <input
                           type="text"
-                          placeholder="Search by number, title, or lyrics..."
+                          placeholder={tr('Search by number, title, or lyrics...')}
                           value={manualSearches[globalIdx] || ''}
                           onChange={e => setManualSearches(prev => ({ ...prev, [globalIdx]: e.target.value }))}
                           className="w-full bg-[var(--color-bg-card)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] rounded-xl px-4 py-2.5 text-sm border border-[var(--color-border)] focus:outline-none focus:border-[var(--color-accent-gold)] mb-3"
@@ -745,9 +702,7 @@ export default function Suggestions() {
           <button
             onClick={handleAddExtraSlot}
             className="w-full mt-4 py-3 rounded-xl border-2 border-dashed border-[var(--color-border)] text-[var(--color-text-muted)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 hover:text-[var(--color-accent-gold)] transition-all"
-          >
-            + Add More Hymns
-          </button>
+          >{tr('+ Add More Hymns')}</button>
 
           {/* Action Bar */}
           {(slotSelections.length > 0 || extraSlots.length > 0) && (
@@ -760,28 +715,28 @@ export default function Suggestions() {
                 }}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 transition-all"
               >
-                {showExport ? <><Check size={14} className="inline mr-1" /> Copied</> : <><ClipboardCopy size={14} className="inline mr-1" /> Copy Text</>}
+                {showExport ? <><Check size={14} className="inline mr-1" />{' '}{tr('Copied')}</> : <><ClipboardCopy size={14} className="inline mr-1" />{' '}{tr('Copy Text')}</>}
               </button>
 
               <button
                 onClick={() => window.print()}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-medium hover:border-[var(--color-accent-gold)]/50 transition-all"
               >
-                <><Printer size={14} className="inline mr-1" /> Print</>
+                <><Printer size={14} className="inline mr-1" />{' '}{tr('Print')}</>
               </button>
 
               <button
                 onClick={savePlan}
                 className="py-2.5 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-accent-brand)] text-sm font-medium hover:bg-[var(--color-accent-brand)]/10 transition-all"
               >
-                <><Save size={14} className="inline mr-1" /> Save Plan</>
+                <><Save size={14} className="inline mr-1" />{' '}{tr('Save Plan')}</>
               </button>
 
               <button
                 onClick={sendToOperator}
                 className="py-2.5 rounded-xl bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)] text-sm font-bold hover:opacity-90 transition-opacity shadow-lg"
               >
-                <><MonitorPlay size={14} className="inline mr-1" /> Send to Operator</>
+                <><MonitorPlay size={14} className="inline mr-1" />{' '}{tr('Send to Operator')}</>
               </button>
             </div>
           )}

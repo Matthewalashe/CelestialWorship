@@ -9,9 +9,15 @@ import ScrollToTop from './components/ScrollToTop'
 import App from './App'
 import './index.css'
 import { reportError } from './hooks/useAnalytics'
+import { useLanguageVersion } from './i18n'
 
 window.addEventListener('error', e => reportError(e.error ?? e.message, 'window'))
 window.addEventListener('unhandledrejection', e => reportError(e.reason, 'promise'))
+
+/** Draws the app again in a new language; providers (and the music) carry on */
+function Localised() {
+  return <App key={useLanguageVersion()} />
+}
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -21,7 +27,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <ReaderProvider>
             <MusicProvider>
               <ScrollToTop />
-              <App />
+              <Localised />
             </MusicProvider>
           </ReaderProvider>
         </AuthProvider>

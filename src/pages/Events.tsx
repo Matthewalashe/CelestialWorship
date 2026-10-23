@@ -7,12 +7,14 @@ import { useParishes } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { listEvents, submitEvent, EVENT_CATEGORIES, type ChurchEvent, type EventCategory } from '../lib/community';
-import { churchObservances, downloadIcs } from '../utils/churchCalendar';
+import { churchObservances, lessonEvents, downloadIcs } from '../utils/churchCalendar';
+import { useLessons } from '../hooks/useLessons';
 import { toISODate } from '../utils/dateUtils';
 import { SignInPrompt } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
 import { errorMessage, BackendError } from '../lib/backend';
 import { Sheet } from '../components/Dialog';
+import { tr } from '../i18n';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -57,7 +59,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
         parish_id: profile.parishId, scope: v.scope,
       });
       draft.clear();
-      showToast('Event submitted — it appears once approved (straight away for verified parish admins)');
+      showToast(tr('Event submitted — it appears once approved (straight away for verified parish admins)'));
       onDone();
     } catch (e) {
       showToast(errorMessage(e));
@@ -67,34 +69,29 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
   };
 
   return (
-    <Sheet label="Add an event" onClose={onClose}>
+    <Sheet label={tr('Add an event')} onClose={onClose}>
       <div className="space-y-3">
-        <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="Event name" maxLength={140} className={inputClass} style={inputStyle} />
+        <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('Event name')} maxLength={140} className={inputClass} style={inputStyle} />
         <div className="grid grid-cols-2 gap-2">
-          <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Date
-            <input type="date" value={v.date} onChange={e => draft.setValue({ date: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
+          <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Date')}<input type="date" value={v.date} onChange={e => draft.setValue({ date: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
           </label>
-          <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Time (optional)
-            <input type="time" value={v.time} onChange={e => draft.setValue({ time: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
+          <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Time (optional)')}<input type="time" value={v.time} onChange={e => draft.setValue({ time: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
           </label>
         </div>
-        <label className="text-xs block" style={{ color: 'var(--color-text-muted)' }}>Ends on (for events over several days)
-          <input type="date" value={v.endDate} min={v.date} onChange={e => draft.setValue({ endDate: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
+        <label className="text-xs block" style={{ color: 'var(--color-text-muted)' }}>{tr('Ends on (for events over several days)')}<input type="date" value={v.endDate} min={v.date} onChange={e => draft.setValue({ endDate: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
         </label>
-        <select value={v.category} onChange={e => draft.setValue({ category: e.target.value as EventCategory })} className={inputClass} style={inputStyle} aria-label="Type">
-          {(Object.keys(EVENT_CATEGORIES) as EventCategory[]).map(c => <option key={c} value={c}>{EVENT_CATEGORIES[c]}</option>)}
+        <select value={v.category} onChange={e => draft.setValue({ category: e.target.value as EventCategory })} className={inputClass} style={inputStyle} aria-label={tr('Type')}>
+          {(Object.keys(EVENT_CATEGORIES) as EventCategory[]).map(c => <option key={c} value={c}>{tr(EVENT_CATEGORIES[c])}</option>)}
         </select>
-        <input value={v.location} onChange={e => draft.setValue({ location: e.target.value })} placeholder={profile.parishName || 'Venue'} className={inputClass} style={inputStyle} />
+        <input value={v.location} onChange={e => draft.setValue({ location: e.target.value })} placeholder={profile.parishName || tr('Venue')} className={inputClass} style={inputStyle} />
         <textarea value={v.description} onChange={e => draft.setValue({ description: e.target.value })} rows={3} maxLength={4000}
-                  placeholder="Details — programme, dress code, what to bring" className={inputClass} style={inputStyle} />
-        <input value={v.contact} onChange={e => draft.setValue({ contact: e.target.value })} placeholder="Contact for enquiries (optional)" className={inputClass} style={inputStyle} />
-        <select value={v.scope} onChange={e => draft.setValue({ scope: e.target.value as 'church' | 'parish' })} className={inputClass} style={inputStyle} aria-label="Who is it for">
-          <option value="parish">{profile.parishName ? `For ${profile.parishName}` : 'For my parish'}</option>
-          <option value="church">For the whole Church</option>
+                  placeholder={tr('Details — programme, dress code, what to bring')} className={inputClass} style={inputStyle} />
+        <input value={v.contact} onChange={e => draft.setValue({ contact: e.target.value })} placeholder={tr('Contact for enquiries (optional)')} className={inputClass} style={inputStyle} />
+        <select value={v.scope} onChange={e => draft.setValue({ scope: e.target.value as 'church' | 'parish' })} className={inputClass} style={inputStyle} aria-label={tr('Who is it for')}>
+          <option value="parish">{profile.parishName ? `For ${profile.parishName}` : tr('For my parish')}</option>
+          <option value="church">{tr('For the whole Church')}</option>
         </select>
-        <button onClick={submit} disabled={busy || !v.title.trim() || !v.date} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
-          Submit event
-        </button>
+        <button onClick={submit} disabled={busy || !v.title.trim() || !v.date} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Submit event')}</button>
       </div>
     </Sheet>
   );
@@ -136,9 +133,11 @@ export default function Events() {
 
   useEffect(() => { load(); }, [load]);
 
+  const { lessons } = useLessons();
   const events = useMemo(() => {
     const years = new Set([range.from.getFullYear(), range.to.getFullYear()]);
-    const observances = [...years].flatMap(y => churchObservances(y))
+    const builtIns = [...years].flatMap(y => churchObservances(y));
+    const observances = [...builtIns, ...lessonEvents(lessons, builtIns)]
       .filter(e => new Date(e.ends_at ?? e.starts_at) >= range.from && new Date(e.starts_at) <= range.to);
     let list = [...observances, ...dbEvents];
     if (scope === 'parish') list = list.filter(e => e.builtIn || (profile.parishId && e.parish_id === profile.parishId));
@@ -148,7 +147,7 @@ export default function Events() {
       list = list.filter(e => new Date(e.ends_at ?? e.starts_at) >= today);
     }
     return list.sort((a, b) => a.starts_at.localeCompare(b.starts_at));
-  }, [dbEvents, range, scope, profile.parishId, view]);
+  }, [dbEvents, range, scope, profile.parishId, view, lessons]);
 
   const byDay = useMemo(() => {
     const map = new Map<string, ChurchEvent[]>();
@@ -182,15 +181,14 @@ export default function Events() {
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
       <div className="flex items-start justify-between gap-3 mb-1">
-        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Events</h1>
+        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Events')}</h1>
         {user && (
           <button onClick={() => setParams({ submit: '1' })} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-            <Plus size={16} /> Add event
-          </button>
+            <Plus size={16} />{' '}{tr('Add event')}</button>
         )}
       </div>
-      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>Church observances, harvests, conventions and parish social events.</p>
-      {!user && <div className="mb-4"><SignInPrompt message="Sign in to add your parish’s events to the calendar." /></div>}
+      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('Church observances, harvests, conventions and parish social events.')}</p>
+      {!user && <div className="mb-4"><SignInPrompt message={tr('Sign in to add your parish’s events to the calendar.')} /></div>}
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="flex rounded-xl p-0.5 border" style={card}>
@@ -205,18 +203,18 @@ export default function Events() {
             <button key={s} onClick={() => setScope(s)} aria-pressed={scope === s} disabled={s === 'parish' && !profile.parishId}
                     className="px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
                     style={scope === s ? { backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-              {s === 'all' ? 'Whole Church' : 'My parish'}
+              {s === 'all' ? tr('Whole Church') : tr('My parish')}
             </button>
           ))}
         </div>
       </div>
 
       <div className="flex items-center justify-between mb-3">
-        <button onClick={() => move(-1)} className="p-2 rounded-lg" style={card} aria-label="Previous month"><ChevronLeft size={18} /></button>
+        <button onClick={() => move(-1)} className="p-2 rounded-lg" style={card} aria-label={tr('Previous month')}><ChevronLeft size={18} /></button>
         <h2 className="font-semibold font-[Outfit]" style={{ color: 'var(--color-accent-gold)' }}>
-          {MONTHS[cursor.month]} {cursor.year}{view === 'list' ? ' onwards' : ''}
+          {tr(MONTHS[cursor.month])} {cursor.year}{view === 'list' ? tr(' onwards') : ''}
         </h2>
-        <button onClick={() => move(1)} className="p-2 rounded-lg" style={card} aria-label="Next month"><ChevronRight size={18} /></button>
+        <button onClick={() => move(1)} className="p-2 rounded-lg" style={card} aria-label={tr('Next month')}><ChevronRight size={18} /></button>
       </div>
 
       {view === 'calendar' && (
@@ -254,7 +252,7 @@ export default function Events() {
       {backendNote && <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>{backendNote}</p>}
 
       {shown.length === 0 ? (
-        <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>No events {selectedDay ? 'on this day' : 'in this period'}.</p>
+        <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('No events')}{' '}{selectedDay ? tr('on this day') : tr('in this period')}.</p>
       ) : (
         <ul className="space-y-2">
           {shown.map(e => (
@@ -264,10 +262,10 @@ export default function Events() {
                 <span className="flex-1 min-w-0">
                   <span className="block text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{formatWhen(e)}</span>
                   <span className="block font-semibold mt-0.5" style={{ color: e.status === 'cancelled' ? 'var(--color-text-muted)' : 'var(--color-text-primary)', textDecoration: e.status === 'cancelled' ? 'line-through' : undefined }}>
-                    {e.title}
+                    {tr(e.title)}
                   </span>
                   <span className="block text-xs mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
-                    {e.builtIn ? 'Whole Church' : parishName(e.parish_id) ?? (e.scope === 'church' ? 'Whole Church' : 'Parish event')}
+                    {e.builtIn ? tr('Whole Church') : parishName(e.parish_id) ?? (e.scope === 'church' ? tr('Whole Church') : tr('Parish event'))}
                     {e.location ? ` · ${e.location}` : ''}
                   </span>
                 </span>
@@ -279,21 +277,20 @@ export default function Events() {
 
       {open && (
         <Sheet label={open.title} onClose={() => setOpen(null)}
-               title={<span className="text-[10px] uppercase font-bold tracking-wider" style={{ color: CATEGORY_COLORS[open.category] }}>{EVENT_CATEGORIES[open.category]}</span>}>
+               title={<span className="text-[10px] uppercase font-bold tracking-wider" style={{ color: CATEGORY_COLORS[open.category] }}>{tr(EVENT_CATEGORIES[open.category])}</span>}>
           <div>
-            <h3 className="text-xl font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-text-primary)' }}>{open.title}</h3>
-            {open.status === 'cancelled' && <p className="text-sm font-semibold mt-1" style={{ color: 'var(--color-warning)' }}>Cancelled</p>}
+            <h3 className="text-xl font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-text-primary)' }}>{tr(open.title)}</h3>
+            {open.status === 'cancelled' && <p className="text-sm font-semibold mt-1" style={{ color: 'var(--color-warning)' }}>{tr('Cancelled')}</p>}
             <p className="text-sm mt-3 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><Clock size={15} /> {formatWhen(open)}
               {open.ends_at && ` – ${new Date(open.ends_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}</p>
             {open.location && <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><MapPin size={15} /> {open.location}</p>}
             {(parishName(open.parish_id) || open.builtIn) && (
-              <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><Church size={15} /> {open.builtIn ? 'Observed by the whole Church' : parishName(open.parish_id)}</p>
+              <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><Church size={15} /> {open.builtIn ? tr('Observed by the whole Church') : parishName(open.parish_id)}</p>
             )}
-            {open.description && <p className="text-sm mt-4 whitespace-pre-line leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>{open.description}</p>}
-            {open.contact && <p className="text-sm mt-3" style={{ color: 'var(--color-text-secondary)' }}>Enquiries: {open.contact}</p>}
+            {open.description && <p className="text-sm mt-4 whitespace-pre-line leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>{tr(open.description)}</p>}
+            {open.contact && <p className="text-sm mt-3" style={{ color: 'var(--color-text-secondary)' }}>{tr('Enquiries:')}{' '}{open.contact}</p>}
             <button onClick={() => downloadIcs(open)} className="btn-primary mt-5 px-4 py-2.5 rounded-xl text-sm font-semibold inline-flex items-center gap-2">
-              <CalendarPlus size={16} /> Add to my calendar
-            </button>
+              <CalendarPlus size={16} />{' '}{tr('Add to my calendar')}</button>
           </div>
         </Sheet>
       )}

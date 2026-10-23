@@ -5,6 +5,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { referenceToPath } from '../utils/parseReference';
 import { BookOpen, Clock, Moon, Flame, Sun, Zap } from 'lucide-react';
 import { CCCLogo, MemberInPrayer } from '../components/icons/celestial-icons';
+import { tr } from '../i18n';
 
 export default function LessonDetail() {
   const { date } = useParams<{ date: string }>();
@@ -16,7 +17,7 @@ export default function LessonDetail() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-[var(--color-text-secondary)]">Loading...</div>
+        <div className="animate-pulse text-[var(--color-text-secondary)]">{tr('Loading...')}</div>
       </div>
     );
   }
@@ -24,10 +25,9 @@ export default function LessonDetail() {
   if (!lessons.length) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
-        <p className="text-[var(--color-text-secondary)]">No lessons found for this date.</p>
+        <p className="text-[var(--color-text-secondary)]">{tr('No lessons found for this date.')}</p>
         <Link to="/lessons" className="text-[var(--color-accent-gold)] hover:underline mt-4 inline-flex items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Calendar
-        </Link>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>{' '}{tr('Back to Calendar')}</Link>
       </div>
     );
   }
@@ -39,8 +39,7 @@ export default function LessonDetail() {
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24">
       {/* Header */}
       <Link to="/lessons" className="text-[var(--color-accent-gold)] text-sm hover:underline mb-4 inline-flex items-center gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Back to Calendar
-      </Link>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>{' '}{tr('Back to Calendar')}</Link>
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
@@ -76,9 +75,7 @@ export default function LessonDetail() {
             {/* First Lesson */}
             {lesson.firstLesson && (
               <div className="mb-3">
-                <div className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">
-                  First Lesson
-                </div>
+                <div className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">{tr('First Lesson')}</div>
                 <Link
                   to={referenceToPath(lesson.firstLesson)}
                   className="flex items-center gap-2 p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-card-hover)] transition-colors group"
@@ -87,9 +84,7 @@ export default function LessonDetail() {
                   <span className="text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-gold)] transition-colors font-medium">
                     {lesson.firstLesson.raw}
                   </span>
-                  <span className="ml-auto text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)] transition-colors">
-                    Read →
-                  </span>
+                  <span className="ml-auto text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)] transition-colors">{tr('Read →')}</span>
                 </Link>
               </div>
             )}
@@ -97,9 +92,7 @@ export default function LessonDetail() {
             {/* Second Lesson */}
             {lesson.secondLesson && (
               <div>
-                <div className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">
-                  Second Lesson
-                </div>
+                <div className="text-xs uppercase tracking-wider text-[var(--color-text-muted)] mb-1">{tr('Second Lesson')}</div>
                 <Link
                   to={referenceToPath(lesson.secondLesson)}
                   className="flex items-center gap-2 p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-card-hover)] transition-colors group"
@@ -108,9 +101,7 @@ export default function LessonDetail() {
                   <span className="text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-gold)] transition-colors font-medium">
                     {lesson.secondLesson.raw}
                   </span>
-                  <span className="ml-auto text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)] transition-colors">
-                    Read →
-                  </span>
+                  <span className="ml-auto text-[var(--color-text-muted)] group-hover:text-[var(--color-accent-gold)] transition-colors">{tr('Read →')}</span>
                 </Link>
               </div>
             )}
@@ -120,7 +111,7 @@ export default function LessonDetail() {
 
       {/* Related Service Link */}
       <div className="mt-6">
-        <p className="text-sm text-[var(--color-text-muted)] mb-2">Related Services</p>
+        <p className="text-sm text-[var(--color-text-muted)] mb-2">{tr('Related Services')}</p>
         <div className="flex flex-wrap gap-2">
           {getDayServices(firstLesson.day).map(svc => (
             <Link

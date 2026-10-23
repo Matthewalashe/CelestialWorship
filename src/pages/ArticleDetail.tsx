@@ -17,6 +17,7 @@ import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 import { parishCanReceive } from '../lib/payments';
 import { referenceToPath } from '../utils/parseReference';
+import { tr } from '../i18n';
 
 function referencePath(a: Article): string | null {
   const r = a.reference;
@@ -62,13 +63,13 @@ export default function ArticleDetail() {
 
   useEffect(() => { load(); }, [load]);
 
-  if (state.status === 'loading') return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+  if (state.status === 'loading') return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
   if (state.status === 'error') return <ErrorState error={state.error} onRetry={load} />;
   if (!article) {
     return (
       <div className="text-center py-16 px-4">
-        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>This article isn’t available.</p>
-        <Link to="/articles" className="btn-primary px-5 py-2 rounded-xl text-sm">All articles</Link>
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('This article isn’t available.')}</p>
+        <Link to="/articles" className="btn-primary px-5 py-2 rounded-xl text-sm">{tr('All articles')}</Link>
       </div>
     );
   }
@@ -76,11 +77,11 @@ export default function ArticleDetail() {
   const share = async () => {
     const url = `${window.location.origin}/articles/${article.id}`;
     if (navigator.share) { try { await navigator.share({ title: article.title, text: article.summary ?? '', url }); return; } catch {} }
-    try { await navigator.clipboard.writeText(url); showToast('Link copied'); } catch {}
+    try { await navigator.clipboard.writeText(url); showToast(tr('Link copied')); } catch {}
   };
 
   const onAmen = async () => {
-    if (!user) { showToast('Sign in to say Amen'); return; }
+    if (!user) { showToast(tr('Sign in to say Amen')); return; }
     const next = !amen.mine;
     setAmen(a => ({ amen: a.amen + (next ? 1 : -1), mine: next }));
     try { await toggleAmen(article.id, next); } catch (e) { showToast(errorMessage(e)); load(); }
@@ -98,9 +99,9 @@ export default function ArticleDetail() {
   };
 
   const report = async () => {
-    const reason = await promptDialog({ title: 'Report this article', label: 'What is wrong with it?' });
+    const reason = await promptDialog({ title: tr('Report this article'), label: tr('What is wrong with it?') });
     if (!reason?.trim()) return;
-    try { await reportContent('article', article.id, reason.trim()); showToast('Thank you — a moderator will look at it'); }
+    try { await reportContent('article', article.id, reason.trim()); showToast(tr('Thank you — a moderator will look at it')); }
     catch (e) { showToast(errorMessage(e)); }
   };
 
@@ -115,41 +116,39 @@ export default function ArticleDetail() {
     <div className="flex items-center gap-1 py-2 border-y" style={{ borderColor: 'var(--color-border)' }}>
       {published && (
         <button onClick={onAmen} aria-pressed={amen.mine} className={actionBtn}
-                style={{ color: amen.mine ? 'var(--color-accent-brand)' : 'var(--color-text-secondary)', fontWeight: amen.mine ? 600 : 400 }}>
-          🙏 Amen{amen.amen ? ` · ${amen.amen}` : ''}
+                style={{ color: amen.mine ? 'var(--color-accent-brand)' : 'var(--color-text-secondary)', fontWeight: amen.mine ? 600 : 400 }}>{tr('🙏 Amen')}{amen.amen ? ` · ${amen.amen}` : ''}
         </button>
       )}
       {published && <a href="#responses" className={actionBtn} style={{ color: 'var(--color-text-secondary)' }}><MessageCircle size={16} /> {comments.length}</a>}
-      <button onClick={share} className={`${actionBtn} ml-auto`} aria-label="Share" style={{ color: 'var(--color-text-secondary)' }}><Share2 size={16} /></button>
+      <button onClick={share} className={`${actionBtn} ml-auto`} aria-label={tr('Share')} style={{ color: 'var(--color-text-secondary)' }}><Share2 size={16} /></button>
       {user?.id === article.author_id ? (
-        <Link to={`/articles/write?id=${article.id}`} className={actionBtn} style={{ color: 'var(--color-text-secondary)' }}><PenLine size={16} /> Edit</Link>
+        <Link to={`/articles/write?id=${article.id}`} className={actionBtn} style={{ color: 'var(--color-text-secondary)' }}><PenLine size={16} />{' '}{tr('Edit')}</Link>
       ) : user && published && (
-        <button onClick={report} className={actionBtn} aria-label="Report" style={muted}><Flag size={15} /></button>
+        <button onClick={report} className={actionBtn} aria-label={tr('Report')} style={muted}><Flag size={15} /></button>
       )}
     </div>
   );
 
   return (
     <article className="px-5 py-6 max-w-[680px] mx-auto pb-24">
-      <Link to="/articles" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>‹ Articles</Link>
+      <Link to="/articles" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Articles')}</Link>
 
       {!published && (
-        <p className="text-xs mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
-          Preview — this article is {article.status === 'submitted' ? 'waiting for review' : article.status}.
-          {article.moderation_note && <> Moderator’s note: {article.moderation_note}</>}
+        <p className="text-xs mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Preview — this article is')}{' '}{article.status === 'submitted' ? tr('waiting for review') : article.status}.
+          {article.moderation_note && <>{' '}{tr('Moderator’s note:')}{' '}{article.moderation_note}</>}
         </p>
       )}
 
-      <h1 className="text-[2rem] sm:text-[2.6rem] font-bold leading-[1.15] mt-6" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{article.title}</h1>
-      {article.summary && <p className="text-xl mt-3 leading-snug" style={{ color: 'var(--color-text-muted)', fontFamily: SERIF_STACK }}>{article.summary}</p>}
+      <h1 className="text-[2rem] sm:text-[2.6rem] font-bold leading-[1.15] mt-6" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{tr(article.title)}</h1>
+      {article.summary && <p className="text-xl mt-3 leading-snug" style={{ color: 'var(--color-text-muted)', fontFamily: SERIF_STACK }}>{tr(article.summary)}</p>}
 
       {/* Byline */}
       <div className="flex items-center gap-3 mt-6 mb-5">
-        <Link to={`/articles?author=${article.author_id}`} aria-hidden tabIndex={-1}>
+        <Link to={`/people/${article.author_id}`} aria-hidden tabIndex={-1}>
           <Avatar url={author?.avatarUrl} name={authorName} size={44} />
         </Link>
         <div className="min-w-0">
-          <Link to={`/articles?author=${article.author_id}`} className="font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}>
+          <Link to={`/people/${article.author_id}`} className="font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-text-primary)' }}>
             {authorName} {author && <ShepherdBadge verified={author.verified} />}
           </Link>
           <p className="text-sm" style={muted}>
@@ -161,7 +160,7 @@ export default function ArticleDetail() {
       {actions}
 
       <div className="mt-6 flex flex-wrap items-center gap-2 text-xs">
-        <span className="uppercase tracking-widest font-semibold" style={muted}>{ARTICLE_KINDS[article.kind]}</span>
+        <span className="uppercase tracking-widest font-semibold" style={muted}>{tr(ARTICLE_KINDS[article.kind])}</span>
         {article.reference && refPath && (
           <Link to={refPath} className="inline-flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full"
                 style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
@@ -180,10 +179,10 @@ export default function ArticleDetail() {
 
       {published && canSupport && (
         <div className="mt-10 rounded-2xl p-5 text-center" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-          <p className="font-semibold" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>Blessed by this teaching?</p>
-          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>Support {authorName}’s ministry.</p>
+          <p className="font-semibold" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{tr('Blessed by this teaching?')}</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('Support the ministry of')} {authorName}.</p>
           <Link to={`/give?parish=${article.support_parish_id}&purpose=support&source=article&id=${article.id}`}
-                className="btn-primary inline-block mt-3 px-6 py-2.5 rounded-full text-sm font-semibold">Support</Link>
+                className="btn-primary inline-block mt-3 px-6 py-2.5 rounded-full text-sm font-semibold">{tr('Support')}</Link>
         </div>
       )}
 
@@ -192,31 +191,30 @@ export default function ArticleDetail() {
       {/* More from the author */}
       {more.length > 0 && (
         <section className="mt-10">
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>More from {authorName}</h2>
+          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('More from')}{' '}{authorName}</h2>
           <ul className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
             {more.map(a => <li key={a.id} style={{ borderColor: 'var(--color-border)' }}><ArticleRow a={a} /></li>)}
           </ul>
-          <Link to={`/articles?author=${article.author_id}`} className="text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>See all</Link>
+          <Link to={`/people/${article.author_id}`} className="text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('See all')}</Link>
         </section>
       )}
 
       {published && (
         <section id="responses" className="mt-10">
-          <h2 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>Responses ({comments.length})</h2>
+          <h2 className="font-semibold mb-3" style={{ color: 'var(--color-text-primary)' }}>{tr('Responses (')}{comments.length})</h2>
           {user ? (
             <div className="mb-5">
-              <label className="sr-only" htmlFor="response">Your response</label>
-              <textarea id="response" value={comment} onChange={e => setComment(e.target.value)} rows={3} maxLength={2000} placeholder="What are your thoughts?"
+              <label className="sr-only" htmlFor="response">{tr('Your response')}</label>
+              <textarea id="response" value={comment} onChange={e => setComment(e.target.value)} rows={3} maxLength={2000} placeholder={tr('What are your thoughts?')}
                         className="w-full rounded-xl px-3 py-2 text-sm border outline-none"
                         style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }} />
               <div className="flex justify-end mt-2">
-                <button onClick={postComment} disabled={!comment.trim()} className="btn-primary px-4 py-1.5 rounded-full text-sm font-semibold disabled:opacity-50">Respond</button>
+                <button onClick={postComment} disabled={!comment.trim()} className="btn-primary px-4 py-1.5 rounded-full text-sm font-semibold disabled:opacity-50">{tr('Respond')}</button>
               </div>
             </div>
           ) : (
             <p className="text-sm mb-5" style={muted}>
-              <Link to={`/signin?returnTo=/articles/${article.id}`} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link> to respond.
-            </p>
+              <Link to={`/signin?returnTo=/articles/${article.id}`} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Sign in')}</Link>{' '}{tr('to respond.')}</p>
           )}
           <ul className="divide-y" style={{ borderColor: 'var(--color-border)' }}>
             {comments.map(c => (

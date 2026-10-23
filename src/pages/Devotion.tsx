@@ -19,6 +19,8 @@ import { recordActivity, recordDevotionPosition, useStreak } from '../hooks/useP
 import { getCandidateHymns } from '../utils/hymnMatcher';
 import { toISODate } from '../utils/dateUtils';
 import { PassageText } from '../components/PassageText';
+import { tr } from '../i18n';
+import { useHymnContext } from '../hooks/useHymnContext';
 
 const STORAGE_KEY = 'cw-devotion-state';
 
@@ -58,7 +60,7 @@ function SegmentRenderer({ segment }: { segment: ContentSegment }) {
     case 'hymn':
       return (
         <div className="mt-4">
-          {segment.title && <p className="text-[0.8em] font-semibold mb-2" style={{ color: 'var(--color-accent-gold)' }}>{segment.title}</p>}
+          {segment.title && <p className="text-[0.8em] font-semibold mb-2" style={{ color: 'var(--color-accent-gold)' }}>{tr(segment.title)}</p>}
           <div className="pl-4">
             {segment.lines.map((line, i) => <p key={i} className="italic">{line}</p>)}
           </div>
@@ -70,14 +72,14 @@ function SegmentRenderer({ segment }: { segment: ContentSegment }) {
           {segment.reference && <p className="text-[0.8em] font-semibold mb-2" style={{ color: 'var(--color-accent-blue)' }}>{segment.reference}</p>}
           <div className="pl-3 space-y-1">
             {segment.verses.map((v, i) => (
-              <p key={i}><sup className="text-[0.6em] font-bold mr-1" style={{ color: 'var(--color-accent-blue)' }}>{v.number}</sup>{v.text}</p>
+              <p key={i}><sup className="text-[0.6em] font-bold mr-1" style={{ color: 'var(--color-accent-blue)' }}>{v.number}</sup>{tr(v.text)}</p>
             ))}
           </div>
         </div>
       );
     case 'instruction':
     default:
-      return <p className="whitespace-pre-line">{segment.text}</p>;
+      return <p className="whitespace-pre-line">{tr(segment.text)}</p>;
   }
 }
 
@@ -148,14 +150,12 @@ export default function Devotion() {
     [services, selectedServiceId, todayServiceIds]
   );
 
+  const hymnContext = useHymnContext(toISODate(new Date()), selectedService?.id);
   const steps = selectedService?.steps.filter(s => !s.isHeader) || [];
   const currentStepData = steps[currentStep];
 
-  const getHymnsForCategory = (category: HymnCategory): Hymn[] => {
-    const refs = todaysLessons.flatMap(l => [l.firstLesson, l.secondLesson]).filter(Boolean).map(r => ({ book: r!.book, chapter: r!.chapter }));
-    return getCandidateHymns({ category }, hymns, 8, { date: toISODate(new Date()), serviceId: selectedService?.id, lessonRefs: refs })
-      .map(c => c.hymn);
-  };
+  const getHymnsForCategory = (category: HymnCategory): Hymn[] =>
+    getCandidateHymns({ category }, hymns, 8, hymnContext).map(c => c.hymn);
 
   const [completed, setCompleted] = useState(false);
   const streak = useStreak();
@@ -200,14 +200,14 @@ export default function Devotion() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <div className="text-[var(--color-text-secondary)]">
-            {loadingTimeout ? 'Taking longer than expected...' : 'Preparing your devotion...'}
+            {loadingTimeout ? tr('Taking longer than expected...') : tr('Preparing your devotion...')}
           </div>
           {loadingTimeout && (
             <button
               onClick={() => window.location.reload()}
               className="mt-4 px-4 py-2 rounded-xl text-sm"
               style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}
-            >Tap to retry</button>
+            >{tr('Tap to retry')}</button>
           )}
         </div>
       </div>
@@ -220,16 +220,14 @@ export default function Devotion() {
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
         <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-3xl"
              style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)' }}>🕊️</div>
-        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Amen.</h1>
-        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
-          You have completed {selectedService?.displayName ?? 'your devotion'}. “The LORD bless thee, and keep thee.” — Numbers 6:24
-        </p>
+        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Amen.')}</h1>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr('You have completed')}{' '}{selectedService?.displayName ?? tr('your devotion')}{tr('. “The LORD bless thee, and keep thee.” — Numbers 6:24')}</p>
         <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-gold)' }}>
-          🔥 {streak.current} day{streak.current === 1 ? '' : 's'} in a row{streak.best > streak.current ? ` · best ${streak.best}` : ''}
+          🔥 {streak.current}{' '}{tr('day')}{streak.current === 1 ? '' : 's'}{' '}{tr('in a row')}{streak.best > streak.current ? ` · best ${streak.best}` : ''}
         </p>
         <div className="flex justify-center gap-2 pt-2">
-          <Link to="/notes?new=1" className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold">Write a reflection</Link>
-          <Link to="/" className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>Home</Link>
+          <Link to="/notes?new=1" className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold">{tr('Write a reflection')}</Link>
+          <Link to="/" className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Home')}</Link>
         </div>
       </div>
     );
@@ -241,12 +239,12 @@ export default function Devotion() {
       <div className="max-w-xl mx-auto px-4 py-8 pb-24">
         <div className="text-center mb-8">
           <div className="mb-4" style={{ color: 'var(--color-accent-brand)' }}><Bird size={48} /></div>
-          <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">Private Devotion</h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-2">A quiet, step-by-step guide for personal worship</p>
+          <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">{tr('Private Devotion')}</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-2">{tr('A quiet, step-by-step guide for personal worship')}</p>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">{formatDate(new Date())}</p>
         </div>
         <div className="mb-6">
-          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">Choose your service</h2>
+          <h2 className="text-sm uppercase tracking-wider text-[var(--color-text-muted)] mb-3">{tr('Choose your service')}</h2>
           <div className="space-y-2">
             {todayServiceIds.map(id => {
               const svc = services.find(s => s.id === id);
@@ -259,15 +257,15 @@ export default function Devotion() {
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[var(--color-text-primary)] font-medium">{svc.displayName}</span>
-                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[var(--color-accent-brand)]/15 text-[var(--color-accent-brand)]">Today</span>
+                      <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[var(--color-accent-brand)]/15 text-[var(--color-accent-brand)]">{tr('Today')}</span>
                     </div>
-                    <span className="text-xs text-[var(--color-text-secondary)]">{svc.steps.filter(s => !s.isHeader).length} steps</span>
+                    <span className="text-xs text-[var(--color-text-secondary)]">{svc.steps.filter(s => !s.isHeader).length}{' '}{tr('steps')}</span>
                   </div>
                 </button>
               );
             })}
             <details className="mt-2" open={!!selectedServiceId && !todayServiceIds.includes(selectedServiceId)}>
-              <summary className="text-sm text-[var(--color-text-muted)] cursor-pointer">Other services...</summary>
+              <summary className="text-sm text-[var(--color-text-muted)] cursor-pointer">{tr('Other services...')}</summary>
               <div className="space-y-2 mt-2">
                 {services.filter(s => !todayServiceIds.includes(s.id)).map(svc => (
                   <button key={svc.id} onClick={() => setSelectedServiceId(svc.id)}
@@ -283,7 +281,7 @@ export default function Devotion() {
         </div>
         {todaysLessons.length > 0 && (
           <div className="bg-[var(--color-bg-card)] rounded-2xl p-4 mb-6">
-            <h3 className="text-sm text-[var(--color-text-muted)] mb-2">Today's Readings</h3>
+            <h3 className="text-sm text-[var(--color-text-muted)] mb-2">{tr('Today\'s Readings')}</h3>
             {todaysLessons.map((l, i) => (
               <div key={i} className="text-sm text-[var(--color-text-primary)] py-1">
                 {l.firstLesson && <span>{l.firstLesson.raw}</span>}
@@ -294,27 +292,25 @@ export default function Devotion() {
         )}
         {showResumePrompt && savedState && (
           <div className="mb-4 p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-accent-brand)' }}>
-            <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Resume where you left off?</p>
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Step {(savedState.currentStep || 0) + 1}</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>{tr('Resume where you left off?')}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Step')}{' '}{(savedState.currentStep || 0) + 1}</p>
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => { setIsStarted(true); setShowResumePrompt(false); }}
                 className="flex-1 py-2 rounded-xl text-sm font-semibold"
                 style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}
-              >Resume</button>
+              >{tr('Resume')}</button>
               <button
                 onClick={() => { clearDevotionState(); setCurrentStep(0); setShowResumePrompt(false); }}
                 className="flex-1 py-2 rounded-xl text-sm"
                 style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}
-              >Start Over</button>
+              >{tr('Start Over')}</button>
             </div>
           </div>
         )}
         <button onClick={() => setIsStarted(true)}
           className="w-full py-4 rounded-2xl text-[var(--color-text-on-accent)] font-bold text-lg"
-          style={{ backgroundColor: 'var(--color-accent-brand)' }}>
-          Begin Devotion
-        </button>
+          style={{ backgroundColor: 'var(--color-accent-brand)' }}>{tr('Begin Devotion')}</button>
       </div>
     );
   }
@@ -344,8 +340,7 @@ export default function Devotion() {
       <div className="mb-6">
         <div className="flex items-center justify-between text-sm text-[var(--color-text-muted)] mb-2">
           <span className="capitalize text-xs">{stepType}</span>
-          <button onClick={() => setShowStepPicker(!showStepPicker)} aria-expanded={showStepPicker} className="inline-flex items-center gap-1" aria-label="Choose a step">
-            Step {currentStep + 1} of {steps.length} <ChevronDown size={14} />
+          <button onClick={() => setShowStepPicker(!showStepPicker)} aria-expanded={showStepPicker} className="inline-flex items-center gap-1" aria-label={tr('Choose a step')}>{tr('Step')}{' '}{currentStep + 1}{' '}{tr('of')}{' '}{steps.length} <ChevronDown size={14} />
           </button>
         </div>
         <div className="h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
@@ -399,14 +394,11 @@ export default function Devotion() {
                       ))}
                     </div>
                     <button onClick={() => { setPickerCategory(currentStepData.hymnSlot!.category || null); setShowHymnPicker(true); }}
-                      className="mt-2 text-xs text-[var(--color-accent-gold)] hover:underline">
-                      See all matching hymns →
-                    </button>
+                      className="mt-2 text-xs text-[var(--color-accent-gold)] hover:underline">{tr('See all matching hymns →')}</button>
                   </>
                 )}
                 {currentStepData.hymnSlot.fixedHymnNumber && (
-                  <Link to={`/hymns/${currentStepData.hymnSlot.fixedHymnNumber}`} className="text-sm text-[var(--color-accent-gold)] hover:underline">
-                    Open Hymn #{currentStepData.hymnSlot.fixedHymnNumber} →
+                  <Link to={`/hymns/${currentStepData.hymnSlot.fixedHymnNumber}`} className="text-sm text-[var(--color-accent-gold)] hover:underline">{tr('Open Hymn #')}{currentStepData.hymnSlot.fixedHymnNumber} →
                   </Link>
                 )}
               </div>
@@ -420,23 +412,17 @@ export default function Devotion() {
       <div className="flex gap-3 mt-4">
         <button onClick={() => setCurrentStep(s => Math.max(0, s - 1))} disabled={currentStep === 0}
           className="flex-1 py-3 rounded-xl text-[var(--color-text-primary)] disabled:opacity-30"
-          style={{ backgroundColor: 'var(--color-bg-card)' }}>
-          ‹ Previous
-        </button>
+          style={{ backgroundColor: 'var(--color-bg-card)' }}>{tr('‹ Previous')}</button>
         {currentStep < steps.length - 1 ? (
           <button onClick={() => setCurrentStep(s => s + 1)}
             className="flex-1 py-3 rounded-xl font-semibold text-[var(--color-text-on-accent)]"
-            style={{ backgroundColor: 'var(--color-accent-brand)' }}>
-            Next ›
-          </button>
+            style={{ backgroundColor: 'var(--color-accent-brand)' }}>{tr('Next ›')}</button>
         ) : (
-          <button onClick={handleComplete} className="flex-1 py-3 rounded-xl font-semibold text-white bg-emerald-600">
-            ✓ Complete
-          </button>
+          <button onClick={handleComplete} className="flex-1 py-3 rounded-xl font-semibold text-white bg-emerald-600">{tr('✓ Complete')}</button>
         )}
       </div>
 
-      <button onClick={handleExit} className="mt-3 text-sm text-[var(--color-text-muted)] text-center">Exit Devotion</button>
+      <button onClick={handleExit} className="mt-3 text-sm text-[var(--color-text-muted)] text-center">{tr('Exit Devotion')}</button>
 
       {showHymnPicker && pickerCategory && (
         <Sheet label={CATEGORY_LABELS[pickerCategory]} onClose={() => setShowHymnPicker(false)}>
@@ -445,7 +431,7 @@ export default function Devotion() {
               <Link key={h.number} to={`/hymns/${h.number}`} onClick={() => setShowHymnPicker(false)}
                 className="block p-3 rounded-lg" style={{ backgroundColor: 'var(--color-bg-card)' }}>
                 <span className="text-[var(--color-accent-gold)] font-semibold">#{h.number}</span>
-                <span className="text-[var(--color-text-primary)] ml-2">{h.englishTitle || h.yorubaTitle || 'Untitled'}</span>
+                <span className="text-[var(--color-text-primary)] ml-2">{h.englishTitle || h.yorubaTitle || tr('Untitled')}</span>
               </Link>
             ))}
           </div>
@@ -464,10 +450,10 @@ export default function Devotion() {
         >
           {segments.map((segment, i) => <SegmentRenderer key={i} segment={segment} />)}
           {currentStepData.hymnSlot?.fixedHymnNumber && (
-            <p className="mt-6"><Link to={`/hymns/${currentStepData.hymnSlot.fixedHymnNumber}`} className="underline">Hymn {currentStepData.hymnSlot.fixedHymnNumber}</Link></p>
+            <p className="mt-6"><Link to={`/hymns/${currentStepData.hymnSlot.fixedHymnNumber}`} className="underline">{tr('Hymn')}{' '}{currentStepData.hymnSlot.fixedHymnNumber}</Link></p>
           )}
           {currentStepData.hymnSlot?.category && (
-            <p className="mt-6">Hymn: {getHymnsForCategory(currentStepData.hymnSlot.category).slice(0, 4).map(h => (
+            <p className="mt-6">{tr('Hymn:')}{' '}{getHymnsForCategory(currentStepData.hymnSlot.category).slice(0, 4).map(h => (
               <Link key={h.number} to={`/hymns/${h.number}`} className="underline mr-3">{h.number}</Link>
             ))}</p>
           )}

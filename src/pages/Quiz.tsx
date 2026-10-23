@@ -13,6 +13,7 @@ import { recordActivity } from '../hooks/useProgress';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { parseReference, referenceToPath } from '../utils/parseReference';
 import { RoundSummary, LevelBar, BadgeShelf, Leaderboard, useGameState, shareText } from '../components/GameUi';
+import { tr } from '../i18n';
 
 const ROUND_SIZE = 10;
 const LIVES = 3;
@@ -53,7 +54,7 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
         <h1 className="text-2xl font-bold font-[Outfit] flex items-center gap-2 mb-1" style={{ color: 'var(--color-text-primary)' }}>
           <GraduationCap size={24} style={{ color: 'var(--color-accent-gold)' }} /> Quizzes & games
         </h1>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Learn as you play: every answer explains itself and shows you where to read more.</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Learn as you play: every answer explains itself and shows you where to read more.')}</p>
       </div>
 
       <div className="p-4 rounded-2xl border" style={card}><LevelBar xp={game.xp} /></div>
@@ -62,15 +63,15 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
       <div className="p-4 rounded-2xl border flex items-center gap-4" style={{ ...card, borderColor: 'var(--color-accent-gold)' }}>
         <CalendarCheck size={30} style={{ color: 'var(--color-accent-gold)' }} />
         <div className="flex-1 min-w-0">
-          <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Daily challenge</p>
+          <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Daily challenge')}</p>
           <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
-            {daily ? <>Done today: {[...daily].map(m => (m === '1' ? '🟩' : '🟥')).join('')}</> : 'Five questions, the same for everyone today.'}
+            {daily ? <>{tr('Done today:')}{' '}{[...daily].map(m => (m === '1' ? '🟩' : '🟥')).join('')}</> : tr('Five questions, the same for everyone today.')}
             {game.daily.streak > 0 && ` · 🔥 ${game.daily.streak}-day streak`}
           </p>
         </div>
         {daily
-          ? <button onClick={() => shareText(dailyShareText(daily, game.daily.streak), '/quiz?daily=1')} className="p-2 rounded-xl" aria-label="Share today’s result" style={{ color: 'var(--color-accent-brand)' }}><Share2 size={18} /></button>
-          : <button onClick={() => onPlay('daily', 'daily')} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">Play</button>}
+          ? <button onClick={() => shareText(dailyShareText(daily, game.daily.streak), '/quiz?daily=1')} className="p-2 rounded-xl" aria-label={tr('Share today’s result')} style={{ color: 'var(--color-accent-brand)' }}><Share2 size={18} /></button>
+          : <button onClick={() => onPlay('daily', 'daily')} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">{tr('Play')}</button>}
       </div>
 
       {/* Topics */}
@@ -84,11 +85,10 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
               <button onClick={() => setPicked(open ? null : t)} aria-expanded={open} className="w-full text-left p-4 flex items-center gap-4">
                 <span className="text-3xl" aria-hidden>{QUIZ_TOPICS[t].icon}</span>
                 <span className="flex-1 min-w-0">
-                  <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{QUIZ_TOPICS[t].title}</span>
-                  <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{QUIZ_TOPICS[t].description}</span>
+                  <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(QUIZ_TOPICS[t].title)}</span>
+                  <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr(QUIZ_TOPICS[t].description)}</span>
                   {p.attempts > 0 && (
-                    <span className="block text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
-                      Best {p.best}%{total ? ` · learnt ${Math.min(p.mastered.length, total)} of ${total}` : ''}
+                    <span className="block text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Best')}{' '}{p.best}%{total ? ` · learnt ${Math.min(p.mastered.length, total)} of ${total}` : ''}
                     </span>
                   )}
                 </span>
@@ -98,13 +98,13 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
                 <div className="grid grid-cols-2 gap-2 px-4 pb-4">
                   <button onClick={() => onPlay(t, 'learn')} className="p-3 rounded-xl border text-left" style={{ borderColor: 'var(--color-border)' }}>
                     <BookOpen size={18} style={{ color: 'var(--color-accent-brand)' }} />
-                    <span className="block text-sm font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>Learn</span>
-                    <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>No clock. Take your time.</span>
+                    <span className="block text-sm font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>{tr('Learn')}</span>
+                    <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('No clock. Take your time.')}</span>
                   </button>
                   <button onClick={() => onPlay(t, 'challenge')} className="p-3 rounded-xl border text-left" style={{ borderColor: 'var(--color-border)' }}>
                     <Timer size={18} style={{ color: 'var(--color-accent-gold)' }} />
-                    <span className="block text-sm font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>Challenge</span>
-                    <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>20 s a question, 3 lives, combos.</span>
+                    <span className="block text-sm font-semibold mt-1" style={{ color: 'var(--color-text-primary)' }}>{tr('Challenge')}</span>
+                    <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('20 s a question, 3 lives, combos.')}</span>
                   </button>
                 </div>
               )}
@@ -116,19 +116,19 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
       <Link to="/maps" className="p-4 rounded-2xl border flex items-center gap-4" style={card}>
         <MapIcon size={28} style={{ color: 'var(--color-accent-gold)' }} />
         <span className="flex-1">
-          <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>Bible map games</span>
-          <span className="block text-xs" style={{ color: 'var(--color-text-secondary)' }}>The journey of Jesus, Bible places today, old and new maps.</span>
+          <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Bible map games')}</span>
+          <span className="block text-xs" style={{ color: 'var(--color-text-secondary)' }}>{tr('The journey of Jesus, Bible places today, old and new maps.')}</span>
         </span>
         <ChevronRight size={18} style={{ color: 'var(--color-text-muted)' }} />
       </Link>
 
       <section>
-        <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>Badges</h2>
+        <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{tr('Badges')}</h2>
         <BadgeShelf earned={game.badges} />
       </section>
 
       <section>
-        <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>This week’s leaderboard</h2>
+        <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{tr('This week’s leaderboard')}</h2>
         <Leaderboard />
       </section>
     </div>
@@ -218,7 +218,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
           onAgain={onAgain}
           extra={dailyText ? <p className="text-2xl tracking-widest" aria-label={`${right} of ${marks.length} right`}>{marks.map(m => (m ? '🟩' : '🟥')).join('')}</p> : undefined}
         />
-        <p className="text-center"><button onClick={onExit} className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}>Back to quizzes</button></p>
+        <p className="text-center"><button onClick={onExit} className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}>{tr('Back to quizzes')}</button></p>
       </div>
     );
   }
@@ -231,7 +231,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
         <span className="text-xs font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
           {mode === 'challenge' && <span aria-label={`${lives} lives left`} className="inline-flex gap-0.5">{Array.from({ length: LIVES }, (_, i) => <Heart key={i} size={13} fill={i < lives ? '#EF4444' : 'none'} stroke="#EF4444" />)}</span>}
           {combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} ×{comboMultiplier(combo)}</span>}
-          <span>{xp} XP</span>
+          <span>{xp}{' '}{tr('XP')}</span>
           <span>{index + 1}/{questions.length}</span>
         </span>
       </div>
@@ -244,7 +244,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
       </div>
 
       <h2 className="text-xl font-bold font-[Outfit] leading-snug mb-5" style={{ color: 'var(--color-text-primary)' }}>{q.question}</h2>
-      <div className="space-y-2 relative" role="radiogroup" aria-label="Answers">
+      <div className="space-y-2 relative" role="radiogroup" aria-label={tr('Answers')}>
         {gain !== null && gain > 0 && <span className="absolute -top-8 right-0 text-lg font-black animate-slide-up" style={{ color: 'var(--color-accent-gold)' }} aria-hidden>+{gain}</span>}
         {q.options.map((opt, i) => {
           const isAnswer = i === q.answer;
@@ -270,12 +270,12 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
       {answered && (
         <div className="mt-5 p-4 rounded-2xl animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
           <p className="font-semibold mb-1" style={{ color: chosen === q.answer ? 'var(--color-success)' : 'var(--color-warning)' }}>
-            {chosen === q.answer ? 'Correct!' : chosen === -1 ? `Time’s up — the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
+            {chosen === q.answer ? tr('Correct!') : chosen === -1 ? `Time’s up — the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
           </p>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{q.explanation}</p>
-          <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>Source: <SourceLink source={q.source} /></p>
+          <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}<SourceLink source={q.source} /></p>
           <button onClick={next} className="btn-primary w-full mt-4 py-3 rounded-xl text-sm font-semibold">
-            {mode === 'challenge' && lives <= 0 ? 'See my score' : index + 1 < questions.length ? 'Next question' : 'See my score'}
+            {mode === 'challenge' && lives <= 0 ? tr('See my score') : index + 1 < questions.length ? tr('Next question') : tr('See my score')}
           </button>
         </div>
       )}
@@ -307,7 +307,7 @@ export default function Quiz() {
   const play = (t: QuizTopic | 'daily', m: Mode) => setParams(t === 'daily' ? { daily: '1' } : { topic: t, mode: m });
 
   if (!topic) return <Home onPlay={play} />;
-  if (!questions.length) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Preparing questions…</p>;
+  if (!questions.length) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Preparing questions…')}</p>;
 
   return (
     <Round

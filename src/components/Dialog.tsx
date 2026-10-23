@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { tr } from '../i18n';
 
 /**
  * Accessible dialog / bottom sheet (PRINCIPLES §4):
@@ -50,7 +51,7 @@ export function Sheet({ label, onClose, children, title, wide = false }: {
 
   return createPortal(
     <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
-      <button data-close aria-label="Close" tabIndex={-1} onClick={onClose} className="absolute inset-0 w-full h-full bg-black/50 cursor-default animate-fade-in" />
+      <button data-close aria-label={tr('Close')} tabIndex={-1} onClick={onClose} className="absolute inset-0 w-full h-full bg-black/50 cursor-default animate-fade-in" />
       <div
         ref={panelRef}
         role="dialog"
@@ -62,7 +63,7 @@ export function Sheet({ label, onClose, children, title, wide = false }: {
       >
         <div className="flex items-center justify-between gap-3 mb-3">
           <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{title ?? label}</h2>
-          <button onClick={onClose} aria-label="Close" className="p-1.5 -m-1.5 rounded-lg" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
+          <button onClick={onClose} aria-label={tr('Close')} className="p-1.5 -m-1.5 rounded-lg" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
         </div>
         {children}
       </div>
@@ -119,7 +120,7 @@ export function DialogHost() {
         {request.message && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{request.message}</p>}
         {request.kind === 'prompt' && (
           <label className="block text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-            {request.label}
+            {tr(request.label)}
             <textarea value={text} onChange={e => setText(e.target.value)} rows={3} maxLength={1000}
                       className="mt-1 w-full rounded-xl px-3 py-2 text-sm border outline-none font-normal"
                       style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }} />
@@ -127,7 +128,7 @@ export function DialogHost() {
         )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={() => close(request.kind === 'confirm' ? false : null)} className="px-4 py-2 rounded-xl text-sm font-semibold"
-                  style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+                  style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
           <button type="submit" disabled={!canSubmit} className="px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-50"
                   style={request.kind === 'confirm' && request.danger
                     ? { backgroundColor: '#DC2626', color: '#fff' }

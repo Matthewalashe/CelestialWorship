@@ -8,6 +8,7 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { ToastHost } from './components/Toast';
 import { DialogHost } from './components/Dialog';
 import { useIsDesktop } from './hooks/useMediaQuery';
+import { tr } from './i18n';
 
 /** On a computer the app opens in Studio; on a phone, at Today */
 function Start() {
@@ -48,6 +49,9 @@ const Live = React.lazy(() => import('./pages/Live'));
 const LiveStream = React.lazy(() => import('./pages/LiveStream'));
 const Quiz = React.lazy(() => import('./pages/Quiz'));
 const Learn = React.lazy(() => import('./pages/Learn'));
+const Library = React.lazy(() => import('./pages/Library'));
+const ChurchStructure = React.lazy(() => import('./pages/ChurchStructure'));
+const Person = React.lazy(() => import('./pages/Person'));
 const Stories = React.lazy(() => import('./pages/Stories'));
 const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
@@ -59,9 +63,7 @@ const LoadingFallback = () => (
     <div className="flex flex-col items-center gap-3">
       <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
            style={{ borderColor: 'var(--color-accent-brand)', borderTopColor: 'transparent' }} />
-      <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>
-        Loading...
-      </span>
+      <span className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading...')}</span>
     </div>
   </div>
 );
@@ -108,6 +110,9 @@ function App() {
             <Route path="/live" element={<Live />} />
             <Route path="/live/:id" element={<LiveStream />} />
             <Route path="/learn" element={<Learn />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/structure" element={<ChurchStructure />} />
+            <Route path="/people/:id" element={<Person />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/stories/:id" element={<StoryDetail />} />
             <Route path="/quiz" element={<Quiz />} />

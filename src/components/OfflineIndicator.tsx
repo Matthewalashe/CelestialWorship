@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
+import { tr } from '../i18n';
 
 export function OfflineIndicator() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -31,11 +32,11 @@ export function OfflineIndicator() {
       aria-live="polite"
     >
       <WifiOff size={16} />
-      <span>You're offline — cached content available</span>
+      <span>{tr('You\'re offline — cached content available')}</span>
       <button
         onClick={() => setDismissed(true)}
         className="ml-2 opacity-70 hover:opacity-100"
-        aria-label="Dismiss offline notice"
+        aria-label={tr('Dismiss offline notice')}
       >
         ✕
       </button>

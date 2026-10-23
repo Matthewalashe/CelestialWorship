@@ -9,6 +9,7 @@ import { createDonation, verifyDonation, listMyDonations, DONATION_PURPOSES, typ
 import { payDonation, parishCanReceive } from '../lib/payments';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
+import { tr } from '../i18n';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-3 text-sm border outline-none';
@@ -80,7 +81,7 @@ export default function Give() {
         pledgeDue: pledge ? pledgeDue || undefined : undefined, source,
       });
       if (pledge) {
-        showToast('Pledge recorded — you can redeem it from your giving history');
+        showToast(tr('Pledge recorded — you can redeem it from your giving history'));
         setAmount(''); setNote('');
         setHistory(await listMyDonations());
       } else {
@@ -114,14 +115,14 @@ export default function Give() {
       <div className="px-4 py-12 max-w-md mx-auto text-center space-y-4">
         <div className="flex justify-center">{icon}</div>
         <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
-          {result === 'checking' ? 'Confirming your gift…' : result === 'paid' ? 'Thank you — God bless you' : result === 'failed' ? 'The payment didn’t go through' : 'Waiting for confirmation'}
+          {result === 'checking' ? tr('Confirming your gift…') : result === 'paid' ? tr('Thank you — God bless you') : result === 'failed' ? tr('The payment didn’t go through') : tr('Waiting for confirmation')}
         </h1>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {result === 'paid' ? '“God loveth a cheerful giver.” — 2 Corinthians 9:7. Your receipt is sent to your email by Paystack.'
-            : result === 'failed' ? 'You were not charged. You can try again.'
-            : result === 'checking' ? 'This takes a moment.' : 'If you were charged, your gift will show as paid once Paystack confirms it.'}
+          {result === 'paid' ? tr('“God loveth a cheerful giver.” — 2 Corinthians 9:7. Your receipt is sent to your email by Paystack.')
+            : result === 'failed' ? tr('You were not charged. You can try again.')
+            : result === 'checking' ? tr('This takes a moment.') : tr('If you were charged, your gift will show as paid once Paystack confirms it.')}
         </p>
-        <button onClick={() => { setResult(null); setParams({}); }} className="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold">Done</button>
+        <button onClick={() => { setResult(null); setParams({}); }} className="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold">{tr('Done')}</button>
       </div>
     );
   }
@@ -130,43 +131,40 @@ export default function Give() {
     <div className="px-4 py-6 max-w-md mx-auto pb-24 space-y-5">
       <header>
         <h1 className="text-2xl font-bold font-[Outfit] flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-          <HandCoins size={24} style={{ color: 'var(--color-accent-gold)' }} /> Give
-        </h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>
-          “Bring ye all the tithes into the storehouse” — Malachi 3:10
-        </p>
+          <HandCoins size={24} style={{ color: 'var(--color-accent-gold)' }} />{' '}{tr('Give')}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Bring ye all the tithes into the storehouse” — Malachi 3:10')}</p>
       </header>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         <label className="block">
-          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>To</span>
+          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>{tr('To')}</span>
           <select value={parishId} onChange={e => setParishId(e.target.value)} className={`${inputClass} mt-1`} style={inputStyle}>
-            <option value="">Choose a parish or ministry</option>
+            <option value="">{tr('Choose a parish or ministry')}</option>
             {realParishes.map(p => <option key={p.id} value={p.id}>{p.name}{p.city ? `, ${p.city}` : ''}</option>)}
           </select>
         </label>
         {parishId && canReceive === false && (
           <p className="text-xs p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}>
-            {parish?.name ?? 'This parish'} isn’t taking online gifts at the moment. {parish?.giving_details?.note ?? 'Please give in church.'}
+            {parish?.name ?? tr('This parish')}{' '}{tr('isn’t taking online gifts at the moment.')}{' '}{parish?.giving_details?.note ?? tr('Please give in church.')}
           </p>
         )}
 
         <div>
-          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>For</span>
+          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>{tr('For')}</span>
           <div className="flex flex-wrap gap-2 mt-1">
             {(Object.keys(DONATION_PURPOSES) as DonationPurpose[]).filter(p => p !== 'pledge' && (p !== 'support' || purpose === 'support')).map(p => (
               <button key={p} onClick={() => setPurpose(p)} aria-pressed={purpose === p}
                       className="px-3 py-1.5 rounded-full text-xs font-semibold border"
                       style={purpose === p ? { backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' }
                                            : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
-                {DONATION_PURPOSES[p]}
+                {tr(DONATION_PURPOSES[p])}
               </button>
             ))}
           </div>
         </div>
 
         <label className="block">
-          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>Amount (₦)</span>
+          <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: 'var(--color-text-muted)' }}>{tr('Amount (₦)')}</span>
           <input value={amount} onChange={e => setAmount(e.target.value)} inputMode="decimal" placeholder="0"
                  className={`${inputClass} mt-1 text-2xl font-bold`} style={inputStyle} />
         </label>
@@ -177,35 +175,32 @@ export default function Give() {
           ))}
         </div>
 
-        <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Email for your receipt" className={inputClass} style={inputStyle} autoComplete="email" />
-        <input value={note} onChange={e => setNote(e.target.value)} maxLength={500} placeholder="Note (optional), e.g. thanksgiving for my new job" className={inputClass} style={inputStyle} />
+        <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder={tr('Email for your receipt')} className={inputClass} style={inputStyle} autoComplete="email" />
+        <input value={note} onChange={e => setNote(e.target.value)} maxLength={500} placeholder={tr('Note (optional), e.g. thanksgiving for my new job')} className={inputClass} style={inputStyle} />
         <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          <input type="checkbox" checked={anonymous} onChange={e => setAnonymous(e.target.checked)} /> Give anonymously to the parish
-        </label>
+          <input type="checkbox" checked={anonymous} onChange={e => setAnonymous(e.target.checked)} />{' '}{tr('Give anonymously to the parish')}</label>
         {user && (
           <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            <input type="checkbox" checked={pledge} onChange={e => setPledge(e.target.checked)} /> Make this a pledge to pay later
-          </label>
+            <input type="checkbox" checked={pledge} onChange={e => setPledge(e.target.checked)} />{' '}{tr('Make this a pledge to pay later')}</label>
         )}
-        {pledge && <input type="date" value={pledgeDue} onChange={e => setPledgeDue(e.target.value)} className={inputClass} style={inputStyle} aria-label="Pledge due date" />}
+        {pledge && <input type="date" value={pledgeDue} onChange={e => setPledgeDue(e.target.value)} className={inputClass} style={inputStyle} aria-label={tr('Pledge due date')} />}
 
         <button onClick={give} disabled={busy || !valid}
                 className="btn-primary w-full py-3.5 rounded-xl text-base font-bold disabled:opacity-50 inline-flex items-center justify-center gap-2">
-          <Lock size={16} /> {pledge ? 'Record pledge' : amountMinor > 0 ? `Give ${money(amountMinor, 'NGN')}` : 'Give'}
+          <Lock size={16} /> {pledge ? tr('Record pledge') : amountMinor > 0 ? `Give ${money(amountMinor, 'NGN')}` : tr('Give')}
         </button>
         <p className="text-[11px] flex items-start gap-1.5" style={{ color: 'var(--color-text-muted)' }}>
-          <ShieldCheck size={13} className="shrink-0 mt-0.5" /> Payment is processed securely by Paystack (card, bank transfer or USSD) and goes straight to the parish’s account. Card details never touch this app.
-        </p>
+          <ShieldCheck size={13} className="shrink-0 mt-0.5" />{' '}{tr('Payment is processed securely by Paystack (card, bank transfer or USSD) and goes straight to the parish’s account. Card details never touch this app.')}</p>
       </section>
 
       {user ? history.length > 0 && (
         <section>
-          <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>My giving</h2>
+          <h2 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{tr('My giving')}</h2>
           <ul className="space-y-1.5">
             {history.slice(0, 30).map(d => (
               <li key={d.id} className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm" style={{ backgroundColor: 'var(--color-bg-card)' }}>
                 <span className="flex-1 min-w-0">
-                  <span className="block truncate" style={{ color: 'var(--color-text-primary)' }}>{DONATION_PURPOSES[d.purpose]} · {parishes.find(p => p.id === d.parish_id)?.name ?? ''}</span>
+                  <span className="block truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(DONATION_PURPOSES[d.purpose])} · {parishes.find(p => p.id === d.parish_id)?.name ?? ''}</span>
                   <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
                     {new Date(d.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     {d.status === 'pledged' && d.pledge_due ? ` · due ${new Date(d.pledge_due).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}` : ''}
@@ -213,16 +208,15 @@ export default function Give() {
                 </span>
                 <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{money(d.amount_minor, d.currency)}</span>
                 {d.status === 'pledged'
-                  ? <button onClick={() => redeemPledge(d)} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Pay now</button>
-                  : <span className="text-[10px] uppercase w-14 text-right" style={{ color: d.status === 'paid' ? 'var(--color-success)' : 'var(--color-text-muted)' }}>{d.status === 'initiated' ? 'pending' : d.status}</span>}
+                  ? <button onClick={() => redeemPledge(d)} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Pay now')}</button>
+                  : <span className="text-[10px] uppercase w-14 text-right" style={{ color: d.status === 'paid' ? 'var(--color-success)' : 'var(--color-text-muted)' }}>{d.status === 'initiated' ? tr('pending') : d.status}</span>}
               </li>
             ))}
           </ul>
         </section>
       ) : (
         <p className="text-xs text-center" style={{ color: 'var(--color-text-muted)' }}>
-          <Link to="/signin?returnTo=/give" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link> to keep a record of your giving and make pledges.
-        </p>
+          <Link to="/signin?returnTo=/give" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Sign in')}</Link>{' '}{tr('to keep a record of your giving and make pledges.')}</p>
       )}
     </div>
   );

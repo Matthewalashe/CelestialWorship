@@ -10,7 +10,8 @@
 export const config = {
   matcher: [
     '/articles/:id', '/live/:id', '/hymns/:number', '/stories/bs-:n', '/stories/cl-:rest',
-    '/directory/:id', '/bible/:book/:chapter', '/services/:id', '/lessons/:date',
+    '/directory/:id', '/bible/:book/:chapter', '/services/:id', '/lessons/:date', '/people/:id',
+    '/library', '/structure', '/directory',
     '/stories', '/learn', '/quiz', '/maps', '/events', '/live', '/articles', '/our-church', '/constitution', '/hymns', '/bible', '/services', '/devotion',
   ],
 };
@@ -35,6 +36,9 @@ const STATIC: Record<string, Meta> = {
   '/hymns': { title: 'CCC Hymnal', description: '457 Celestial Church of Christ hymns in Yorùbá and English, with sol-fa.', kind: 'Hymnal' },
   '/bible': { title: 'Holy Bible', description: 'The King James Bible in English and the Bible in Yorùbá, with highlights, notes and reading plans.', kind: 'Bible' },
   '/services': { title: 'Order of Service', description: 'The liturgy of the Celestial Church of Christ, step by step, with hymns and readings.', kind: 'Service' },
+  '/library': { title: 'Library', description: 'Articles and commentaries by shepherds, books and resources for the Celestial Church of Christ.', kind: 'Library' },
+  '/structure': { title: 'Ranks, structure & symbols', description: 'The ranks and robes of the Celestial Church of Christ, how the Church is governed, and the meaning of its emblem, altar, candles and colours.', kind: 'Our Church' },
+  '/directory': { title: 'Parishes', description: 'Celestial Church of Christ parishes and ministries around the world, by continent, country and state, with addresses and shepherds.', kind: 'Parishes' },
   '/devotion': { title: 'Daily devotion', description: 'Pray the Order of Service at home, step by step, with readings and hymns.', kind: 'Devotion' },
 };
 
@@ -101,6 +105,17 @@ async function metaFor(url: URL): Promise<Meta | null> {
         title: p.name, description: clip(`${p.kind === 'ministry' ? 'Ministry' : 'Celestial Church of Christ parish'}${where ? ` in ${where}` : ''}${p.shepherd_name ? `. Shepherd: ${p.shepherd_name}` : ''}. Services, events, livestreams and giving.`),
         kind: p.kind === 'ministry' ? 'Ministry' : 'Parish', image: p.cover_url || undefined,
         jsonLd: { '@context': 'https://schema.org', '@type': 'Church', name: p.name, address: where },
+      };
+    }
+    case 'people': {
+      if (!/^[0-9a-f-]{36}$/.test(id)) return null;
+      const [p] = await rest(`public_profiles?id=eq.${id}&select=display_name,church_title,rank,office,office_scope,bio,avatar_url`);
+      if (!p || !p.display_name) return null;
+      const name = [p.church_title, p.display_name].filter(Boolean).join(' ');
+      const role = [p.rank, [p.office, p.office_scope].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+      return {
+        title: name, description: clip(p.bio || role || 'Member of the Celestial Church of Christ'), kind: 'Profile', type: 'profile', image: p.avatar_url || undefined,
+        jsonLd: { '@context': 'https://schema.org', '@type': 'Person', name, jobTitle: role || undefined },
       };
     }
     case 'hymns': {

@@ -15,6 +15,7 @@ import { displayTitle, stanzaLabel, type HymnLanguage } from '../utils/hymnText'
 import { showToast } from '../components/Toast';
 import { HymnTranslations } from '../components/HymnTranslations';
 import { Tv, Share2, Music2, Heart, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { contentDefaults, tr } from '../i18n';
 
 type LyricsView = 'yo' | 'both' | 'en';
 
@@ -98,7 +99,7 @@ function Stanza({
       <div className="pt-[0.2em] text-right select-none">
         {chorus ? (
           <span className="text-[0.6em] font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent-gold)' }}>
-            {view === 'en' ? 'Cho.' : 'Ègbè'}
+            {view === 'en' ? tr('Cho.') : tr('Ègbè')}
           </span>
         ) : (
           <span className="font-[Outfit] font-bold text-[0.8em]" style={{ color: 'var(--color-accent-brand)' }}>
@@ -112,7 +113,7 @@ function Stanza({
         style={chorus ? { borderColor: 'color-mix(in srgb, var(--color-accent-gold) 50%, transparent)' } : undefined}
       >
         {verse.repeat ? (
-          <p className="text-[0.75em] italic" style={{ color: 'var(--color-text-muted)' }}>Repeat chorus</p>
+          <p className="text-[0.75em] italic" style={{ color: 'var(--color-text-muted)' }}>{tr('Repeat chorus')}</p>
         ) : (
           <div className={view === 'both' && showYo && showEn ? 'grid gap-3 md:grid-cols-2 md:gap-8' : ''}>
             {(showYo || fallbackYo) && <StanzaLines lines={yo.lines} lang="yo" chorus={chorus} />}
@@ -136,7 +137,7 @@ function Stanza({
         className="absolute -top-1 right-0 p-1.5 rounded-lg transition-opacity hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus:opacity-100"
         style={{ color: 'var(--color-text-muted)' }}
         aria-label={`Show ${stanzaLabel(verse)} on the display`}
-        title="Show on display"
+        title={tr('Show on display')}
       >
         <Tv size={16} />
       </button>}
@@ -153,7 +154,7 @@ export default function HymnDetail() {
   const { isFavorite, toggleFavorite } = useFavoriteHymns();
 
   const [view, setViewState] = useState<LyricsView>(() =>
-    readStored<LyricsView>(VIEW_KEY, 'yo', v => v === 'yo' || v === 'en' || v === 'both'));
+    readStored<LyricsView>(VIEW_KEY, contentDefaults().hymnView, v => v === 'yo' || v === 'en' || v === 'both'));
   const [showSolfa, setShowSolfa] = useState(false);
 
   const setView = (v: LyricsView) => { setViewState(v); store(VIEW_KEY, v); };
@@ -191,12 +192,12 @@ export default function HymnDetail() {
     threshold: 80,
   });
 
-  if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">Loading...</div>;
+  if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">{tr('Loading...')}</div>;
   if (!hymn) {
     return (
       <div className="p-8 text-center">
-        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>Hymn {number} isn't in the hymnal.</p>
-        <Link to="/hymns" className="btn-primary px-6 py-2 rounded-xl text-sm">Browse hymns</Link>
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('Hymn')}{' '}{number}{' '}{tr('isn\'t in the hymnal.')}</p>
+        <Link to="/hymns" className="btn-primary px-6 py-2 rounded-xl text-sm">{tr('Browse hymns')}</Link>
       </div>
     );
   }
@@ -223,9 +224,9 @@ export default function HymnDetail() {
     }
     try {
       await navigator.clipboard.writeText(`${text}\n\n${url}`);
-      showToast('Lyrics copied');
+      showToast(tr('Lyrics copied'));
     } catch {
-      showToast("Couldn't copy the lyrics");
+      showToast(tr('Couldn\'t copy the lyrics'));
     }
   };
 
@@ -249,15 +250,14 @@ export default function HymnDetail() {
           onClick={() => navigate(-1)}
           className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors inline-flex items-center gap-1 text-sm"
         >
-          <ChevronLeft size={18} /> Back
-        </button>
+          <ChevronLeft size={18} />{' '}{tr('Back')}</button>
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => toggleFavorite(hymn.number)}
             className={iconButton}
             style={{ backgroundColor: 'var(--color-bg-card)', color: favorite ? '#EF4444' : 'var(--color-text-secondary)' }}
             aria-pressed={favorite}
-            aria-label={favorite ? 'Remove from favourites' : 'Add to favourites'}
+            aria-label={favorite ? tr('Remove from favourites') : tr('Add to favourites')}
           >
             <Heart size={16} fill={favorite ? 'currentColor' : 'none'} />
           </button>
@@ -308,7 +308,7 @@ export default function HymnDetail() {
       {/* Language */}
       <div className="flex justify-center mb-6">
         <div className="flex rounded-xl p-1 border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
-             role="group" aria-label="Lyrics language">
+             role="group" aria-label={tr('Lyrics language')}>
           {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
             <button
               key={key}
@@ -334,7 +334,7 @@ export default function HymnDetail() {
             style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             aria-expanded={showSolfa}
           >
-            <Music2 size={16} /> {showSolfa ? 'Hide solfa' : 'Show solfa'}
+            <Music2 size={16} /> {showSolfa ? tr('Hide solfa') : tr('Show solfa')}
           </button>
           {showSolfa && (
             <pre className="p-4 rounded-xl mt-2 border font-mono text-[13px] leading-relaxed overflow-x-auto"
@@ -347,9 +347,7 @@ export default function HymnDetail() {
 
       {hymn.needsVerseSplitReview && (
         <p className="flex items-start gap-2 text-xs mb-6 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>
-          <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-          The printed layout of this hymn was irregular, so its verses may not line up exactly between Yorùbá and English.
-        </p>
+          <AlertTriangle size={14} className="shrink-0 mt-0.5" />{tr('The printed layout of this hymn was irregular, so its verses may not line up exactly between Yorùbá and English.')}</p>
       )}
 
       {/* Lyrics */}
@@ -398,8 +396,7 @@ export default function HymnDetail() {
             className="h-10 px-5 rounded-xl text-sm font-bold inline-flex items-center gap-2"
             style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}
           >
-            <Share2 size={16} /> Share
-          </button>
+            <Share2 size={16} />{' '}{tr('Share')}</button>
           <button
             onClick={() => goTo(nextNumber)}
             disabled={nextNumber === null}

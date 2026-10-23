@@ -17,6 +17,7 @@ import {
   type Note, type NoteTag, type NoteLink, type PassageCategory, type PrayerCategory,
 } from '../types/notes';
 import { Sheet } from '../components/Dialog';
+import { tr } from '../i18n';
 
 type Tab = 'notes' | 'saved' | 'highlights' | 'prayers' | 'drafts' | 'backup';
 
@@ -73,12 +74,12 @@ function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLin
     if (note) await updateNote(note.id, { title, content, tags });
     else await createNote(title.trim() || (effectiveLink ? linkLabel(effectiveLink) : 'Untitled'), content, tags, effectiveLink);
     draft.clear();
-    showToast('Note saved');
+    showToast(tr('Note saved'));
     onClose();
   };
 
   return (
-    <Sheet label={note ? 'Edit note' : 'New note'} onClose={onClose}>
+    <Sheet label={note ? tr('Edit note') : tr('New note')} onClose={onClose}>
       <div>
         {effectiveLink && (
           <Link to={linkPath(effectiveLink)} className="inline-flex items-center gap-1 text-xs font-semibold mb-3 px-2 py-1 rounded-lg"
@@ -86,10 +87,10 @@ function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLin
             {effectiveLink.kind === 'hymn' ? <Music size={12} /> : <BookOpen size={12} />} {linkLabel(effectiveLink)}
           </Link>
         )}
-        <input value={title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="Title"
+        <input value={title} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('Title')}
                className={`${inputClass} mb-2 font-semibold`} style={inputStyle} />
         <textarea value={content} onChange={e => draft.setValue({ content: e.target.value })} rows={9}
-                  placeholder="Write your thoughts, sermon points, or what God is saying to you…"
+                  placeholder={tr('Write your thoughts, sermon points, or what God is saying to you…')}
                   className={`${inputClass} mb-3 resize-y leading-relaxed`} style={inputStyle} />
         <div className="flex flex-wrap gap-2 mb-4">
           {(Object.keys(NOTE_TAG_LABELS) as NoteTag[]).map(tag => {
@@ -99,21 +100,21 @@ function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLin
                       aria-pressed={on} className="px-3 py-1 rounded-full text-xs font-semibold border"
                       style={on ? { backgroundColor: `${NOTE_TAG_COLORS[tag]}22`, borderColor: NOTE_TAG_COLORS[tag], color: NOTE_TAG_COLORS[tag] }
                                 : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
-                {NOTE_TAG_LABELS[tag]}
+                {tr(NOTE_TAG_LABELS[tag])}
               </button>
             );
           })}
         </div>
         <div className="flex items-center justify-between gap-2">
           <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-            {draft.savedAt ? 'Draft saved on this device' : ''}
+            {draft.savedAt ? tr('Draft saved on this device') : ''}
           </span>
           <div className="flex gap-2">
             {draft.hasDraft && !note && (
               <button onClick={() => { draft.clear(); onClose(); }} className="px-4 py-2 rounded-xl text-sm"
-                      style={{ color: 'var(--color-text-secondary)' }}>Discard</button>
+                      style={{ color: 'var(--color-text-secondary)' }}>{tr('Discard')}</button>
             )}
-            <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">Save</button>
+            <button onClick={save} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold">{tr('Save')}</button>
           </div>
         </div>
       </div>
@@ -152,12 +153,11 @@ function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
       <div className="flex gap-2 mb-3">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-text-muted)' }} />
-          <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search notes"
+          <input value={query} onChange={e => setQuery(e.target.value)} placeholder={tr('Search notes')}
                  className={`${inputClass} pl-9`} style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} />
         </div>
         <button onClick={() => setEditing('new')} className="btn-primary px-4 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-          <Plus size={16} /> New
-        </button>
+          <Plus size={16} />{' '}{tr('New')}</button>
       </div>
       <div className="flex gap-2 overflow-x-auto hide-scrollbar mb-4">
         {(Object.keys(NOTE_TAG_LABELS) as NoteTag[]).map(tag => (
@@ -166,7 +166,7 @@ function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
                   style={tagFilter === tag
                     ? { backgroundColor: `${NOTE_TAG_COLORS[tag]}22`, borderColor: NOTE_TAG_COLORS[tag], color: NOTE_TAG_COLORS[tag] }
                     : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
-            {NOTE_TAG_LABELS[tag]}
+            {tr(NOTE_TAG_LABELS[tag])}
           </button>
         ))}
       </div>
@@ -179,10 +179,10 @@ function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
             <li key={n.id} className="rounded-2xl border p-4" style={card}>
               <div className="flex items-start gap-2">
                 <button onClick={() => setEditing(n)} className="flex-1 min-w-0 text-left">
-                  <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{n.title || 'Untitled'}</span>
+                  <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{n.title || tr('Untitled')}</span>
                   <span className="block text-sm line-clamp-2 mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{n.content}</span>
                 </button>
-                <button onClick={() => updateNote(n.id, { pinned: !n.pinned })} aria-label={n.pinned ? 'Unpin' : 'Pin'} className="p-1"
+                <button onClick={() => updateNote(n.id, { pinned: !n.pinned })} aria-label={n.pinned ? tr('Unpin') : tr('Pin')} className="p-1"
                         style={{ color: n.pinned ? 'var(--color-accent-gold)' : 'var(--color-text-muted)' }}>
                   {n.pinned ? <Pin size={16} fill="currentColor" /> : <PinOff size={16} />}
                 </button>
@@ -190,9 +190,9 @@ function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
               <div className="flex flex-wrap items-center gap-2 mt-2 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
                 <span>{formatWhen(n.updatedAt)}</span>
                 {n.link && <Link to={linkPath(n.link)} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{linkLabel(n.link)}</Link>}
-                {n.tags.map(t => <span key={t} style={{ color: NOTE_TAG_COLORS[t] }}>#{NOTE_TAG_LABELS[t]}</span>)}
-                <button onClick={async () => { if (await confirmDialog({ title: 'Delete this note?', confirmLabel: 'Delete', danger: true })) { await deleteNote(n.id); showToast('Note deleted'); } }}
-                        className="ml-auto p-1" aria-label="Delete note"><Trash2 size={14} /></button>
+                {n.tags.map(t => <span key={t} style={{ color: NOTE_TAG_COLORS[t] }}>#{tr(NOTE_TAG_LABELS[t])}</span>)}
+                <button onClick={async () => { if (await confirmDialog({ title: tr('Delete this note?'), confirmLabel: tr('Delete'), danger: true })) { await deleteNote(n.id); showToast(tr('Note deleted')); } }}
+                        className="ml-auto p-1" aria-label={tr('Delete note')}><Trash2 size={14} /></button>
               </div>
             </li>
           ))}
@@ -220,7 +220,7 @@ function SavedTab() {
                   style={category === c
                     ? { backgroundColor: `${PASSAGE_CATEGORY_COLORS[c]}22`, borderColor: PASSAGE_CATEGORY_COLORS[c], color: PASSAGE_CATEGORY_COLORS[c] }
                     : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
-            {PASSAGE_CATEGORY_LABELS[c]}
+            {tr(PASSAGE_CATEGORY_LABELS[c])}
           </button>
         ))}
       </div>
@@ -234,16 +234,16 @@ function SavedTab() {
               <li key={p.id} className="rounded-2xl border p-4" style={card}>
                 <Link to={`/bible/${slug(p.book)}/${p.chapter}?v=${p.verseStart}-${p.verseEnd}`} className="block">
                   <span className="text-sm font-bold" style={{ color: 'var(--color-accent-brand)' }}>{ref}</span>
-                  <span className="block text-sm mt-1 italic leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>“{p.text}”</span>
+                  <span className="block text-sm mt-1 italic leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>“{tr(p.text)}”</span>
                 </Link>
                 {annotating === p.id ? (
                   <div className="mt-2">
                     <textarea value={annotation} onChange={e => setAnnotation(e.target.value)} rows={3} className={inputClass} style={inputStyle}
-                              placeholder="What does this passage mean to you?" />
+                              placeholder={tr('What does this passage mean to you?')} />
                     <div className="flex justify-end gap-2 mt-2">
-                      <button onClick={() => setAnnotating(null)} className="text-sm px-3 py-1" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+                      <button onClick={() => setAnnotating(null)} className="text-sm px-3 py-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
                       <button onClick={async () => { await updatePassage(p.id, { annotation }); setAnnotating(null); }}
-                              className="btn-primary text-sm px-4 py-1.5 rounded-lg">Save</button>
+                              className="btn-primary text-sm px-4 py-1.5 rounded-lg">{tr('Save')}</button>
                     </div>
                   </div>
                 ) : p.annotation ? (
@@ -251,13 +251,13 @@ function SavedTab() {
                 ) : null}
                 <div className="flex flex-wrap items-center gap-2 mt-3">
                   <select value={p.category ?? ''} onChange={e => updatePassage(p.id, { category: (e.target.value || undefined) as PassageCategory | undefined })}
-                          className="text-xs rounded-lg px-2 py-1 border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label="Category">
-                    <option value="">No category</option>
-                    {(Object.keys(PASSAGE_CATEGORY_LABELS) as PassageCategory[]).map(c => <option key={c} value={c}>{PASSAGE_CATEGORY_LABELS[c]}</option>)}
+                          className="text-xs rounded-lg px-2 py-1 border" style={{ ...inputStyle, backgroundColor: 'var(--color-bg-card)' }} aria-label={tr('Category')}>
+                    <option value="">{tr('No category')}</option>
+                    {(Object.keys(PASSAGE_CATEGORY_LABELS) as PassageCategory[]).map(c => <option key={c} value={c}>{tr(PASSAGE_CATEGORY_LABELS[c])}</option>)}
                   </select>
                   <button onClick={() => { setAnnotating(p.id); setAnnotation(p.annotation); }} className="text-xs font-semibold"
-                          style={{ color: 'var(--color-accent-brand)' }}>{p.annotation ? 'Edit reflection' : 'Add reflection'}</button>
-                  <button onClick={() => deletePassage(p.id)} className="ml-auto p-1" aria-label="Remove" style={{ color: 'var(--color-text-muted)' }}>
+                          style={{ color: 'var(--color-accent-brand)' }}>{p.annotation ? tr('Edit reflection') : tr('Add reflection')}</button>
+                  <button onClick={() => deletePassage(p.id)} className="ml-auto p-1" aria-label={tr('Remove')} style={{ color: 'var(--color-text-muted)' }}>
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -294,8 +294,7 @@ function HighlightsTab() {
             <span className="w-3 h-10 rounded-full shrink-0" style={{ backgroundColor: HIGHLIGHT_COLORS[g.color].swatch }} />
             <span className="flex-1">
               <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{g.book} {g.chapter}</span>
-              <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                Verse{g.verses.length > 1 ? 's' : ''} {g.verses.join(', ')} · {HIGHLIGHT_COLORS[g.color].label}
+              <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Verse')}{g.verses.length > 1 ? 's' : ''} {g.verses.join(', ')} · {tr(HIGHLIGHT_COLORS[g.color].label)}
               </span>
             </span>
           </Link>
@@ -324,7 +323,7 @@ function PrayersTab() {
     draft.clear();
     setAdding(false);
     recordActivity('prayer');
-    showToast('Added to your prayer journal');
+    showToast(tr('Added to your prayer journal'));
   };
 
   return (
@@ -335,33 +334,31 @@ function PrayersTab() {
             <button key={f} onClick={() => setFilter(f)} aria-pressed={filter === f}
                     className="px-3 py-1.5 rounded-lg text-xs font-semibold"
                     style={filter === f ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-              {f === 'open' ? 'Praying for' : `Answered (${answeredCount})`}
+              {f === 'open' ? tr('Praying for') : `Answered (${answeredCount})`}
             </button>
           ))}
         </div>
         <button onClick={() => setAdding(a => !a)} className="ml-auto btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-          <Plus size={16} /> Prayer
-        </button>
+          <Plus size={16} />{' '}{tr('Prayer')}</button>
       </div>
-      <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>
-        Your journal stays on this device. To ask the church to pray with you, use{' '}
-        <Link to="/prayer-requests" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Prayer requests</Link>.
+      <p className="text-xs mb-4" style={{ color: 'var(--color-text-muted)' }}>{tr('Your journal stays on this device. To ask the church to pray with you, use')}{' '}
+        <Link to="/prayer-requests" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Prayer requests')}</Link>.
       </p>
 
       {(adding || draft.hasDraft) && (
         <div className="rounded-2xl border p-4 mb-4 space-y-2" style={card}>
-          <input value={draft.value.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="What are you praying for?"
+          <input value={draft.value.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('What are you praying for?')}
                  className={inputClass} style={inputStyle} />
           <textarea value={draft.value.description} onChange={e => draft.setValue({ description: e.target.value })} rows={3}
-                    placeholder="Details (optional)" className={inputClass} style={inputStyle} />
+                    placeholder={tr('Details (optional)')} className={inputClass} style={inputStyle} />
           <div className="flex gap-2">
             <select value={draft.value.category} onChange={e => draft.setValue({ category: e.target.value as PrayerCategory | '' })}
-                    className="flex-1 rounded-xl px-3 py-2 text-sm border" style={inputStyle} aria-label="Category">
-              <option value="">Category</option>
-              {(Object.keys(PRAYER_CATEGORY_LABELS) as PrayerCategory[]).map(c => <option key={c} value={c}>{PRAYER_CATEGORY_LABELS[c]}</option>)}
+                    className="flex-1 rounded-xl px-3 py-2 text-sm border" style={inputStyle} aria-label={tr('Category')}>
+              <option value="">{tr('Category')}</option>
+              {(Object.keys(PRAYER_CATEGORY_LABELS) as PrayerCategory[]).map(c => <option key={c} value={c}>{tr(PRAYER_CATEGORY_LABELS[c])}</option>)}
             </select>
-            <button onClick={() => { draft.clear(); setAdding(false); }} className="px-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
-            <button onClick={add} className="btn-primary px-4 rounded-xl text-sm font-semibold">Save</button>
+            <button onClick={() => { draft.clear(); setAdding(false); }} className="px-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
+            <button onClick={add} className="btn-primary px-4 rounded-xl text-sm font-semibold">{tr('Save')}</button>
           </div>
         </div>
       )}
@@ -374,40 +371,40 @@ function PrayersTab() {
             <li key={p.id} className="rounded-2xl border p-4" style={card}>
               <div className="flex items-start gap-2">
                 <div className="flex-1 min-w-0">
-                  <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.title}</span>
-                  {p.description && <span className="block text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{p.description}</span>}
+                  <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(p.title)}</span>
+                  {p.description && <span className="block text-sm mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr(p.description)}</span>}
                   {p.isAnswered && p.answeredNote && (
                     <span className="block text-sm mt-2 p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 12%, transparent)', color: 'var(--color-text-primary)' }}>
                       {p.answeredNote}
                     </span>
                   )}
                 </div>
-                {p.category && <span className="text-[10px] uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{PRAYER_CATEGORY_LABELS[p.category]}</span>}
+                {p.category && <span className="text-[10px] uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{tr(PRAYER_CATEGORY_LABELS[p.category])}</span>}
               </div>
               {answering === p.id ? (
                 <div className="mt-2">
                   <textarea value={testimony} onChange={e => setTestimony(e.target.value)} rows={2} className={inputClass} style={inputStyle}
-                            placeholder="How did God answer? (optional)" />
+                            placeholder={tr('How did God answer? (optional)')} />
                   <div className="flex justify-end gap-2 mt-2">
-                    <button onClick={() => setAnswering(null)} className="text-sm px-3" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
-                    <button onClick={async () => { await toggleAnswered(p.id, testimony.trim() || undefined); setAnswering(null); showToast('Praise God! Marked as answered'); }}
-                            className="btn-primary text-sm px-4 py-1.5 rounded-lg">Mark answered</button>
+                    <button onClick={() => setAnswering(null)} className="text-sm px-3" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
+                    <button onClick={async () => { await toggleAnswered(p.id, testimony.trim() || undefined); setAnswering(null); showToast(tr('Praise God! Marked as answered')); }}
+                            className="btn-primary text-sm px-4 py-1.5 rounded-lg">{tr('Mark answered')}</button>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                   <span>{p.isAnswered && p.answeredAt ? `Answered ${formatWhen(p.answeredAt)}` : `Since ${formatWhen(p.createdAt)}`}</span>
                   {!p.isAnswered && (
-                    <button onClick={async () => { await markPrayed(p.id); recordActivity('prayer'); showToast('Amen'); }}
+                    <button onClick={async () => { await markPrayed(p.id); recordActivity('prayer'); showToast(tr('Amen')); }}
                             className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
-                      <Heart size={13} /> I prayed{p.prayedCount ? ` · ${p.prayedCount}` : ''}
+                      <Heart size={13} />{' '}{tr('I prayed')}{p.prayedCount ? ` · ${p.prayedCount}` : ''}
                     </button>
                   )}
                   <button onClick={() => (p.isAnswered ? toggleAnswered(p.id) : (setAnswering(p.id), setTestimony('')))}
                           className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-success)' }}>
-                    <Check size={13} /> {p.isAnswered ? 'Not answered yet' : 'Answered'}
+                    <Check size={13} /> {p.isAnswered ? tr('Not answered yet') : tr('Answered')}
                   </button>
-                  <button onClick={async () => { if (await confirmDialog({ title: 'Delete this prayer?', confirmLabel: 'Delete', danger: true })) deletePrayer(p.id); }} className="ml-auto p-1" aria-label="Delete">
+                  <button onClick={async () => { if (await confirmDialog({ title: tr('Delete this prayer?'), confirmLabel: tr('Delete'), danger: true })) deletePrayer(p.id); }} className="ml-auto p-1" aria-label={tr('Delete')}>
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -443,10 +440,10 @@ function DraftsTab() {
           <li key={d.key} className="flex items-center gap-3 rounded-2xl border p-4" style={card}>
             <Link to={to} className="flex-1 min-w-0">
               <span className="block text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>{label}</span>
-              <span className="block text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{preview || 'Untitled'}</span>
+              <span className="block text-sm truncate" style={{ color: 'var(--color-text-primary)' }}>{preview || tr('Untitled')}</span>
               {d.savedAt && <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{formatWhen(d.savedAt)}</span>}
             </Link>
-            <button onClick={() => { discardDraft(d.key); setDrafts(listDrafts()); }} aria-label="Discard draft" className="p-1" style={{ color: 'var(--color-text-muted)' }}>
+            <button onClick={() => { discardDraft(d.key); setDrafts(listDrafts()); }} aria-label={tr('Discard draft')} className="p-1" style={{ color: 'var(--color-text-muted)' }}>
               <Trash2 size={14} />
             </button>
           </li>
@@ -472,7 +469,7 @@ function BackupTab() {
     a.download = `celestialworship-backup-${data.exportedAt.slice(0, 10)}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    showToast('Backup file downloaded');
+    showToast(tr('Backup file downloaded'));
   };
 
   const upload = async (file: File) => {
@@ -488,49 +485,38 @@ function BackupTab() {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border p-4" style={card}>
-        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>On this device</h3>
+        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>{tr('On this device')}</h3>
         <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-          {count === null ? '…' : `${count} item${count === 1 ? '' : 's'}`} — notes, saved passages, highlights and prayers.
-          They stay private on this phone or computer.
-        </p>
+          {count === null ? '…' : `${count} item${count === 1 ? '' : 's'}`}{' '}{tr('— notes, saved passages, highlights and prayers. They stay private on this phone or computer.')}</p>
         <div className="flex flex-wrap gap-2">
           <button onClick={download} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-            <Download size={15} /> Download backup file
-          </button>
+            <Download size={15} />{' '}{tr('Download backup file')}</button>
           <button onClick={() => fileRef.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1"
                   style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-            <Upload size={15} /> Restore from file
-          </button>
+            <Upload size={15} />{' '}{tr('Restore from file')}</button>
           <input ref={fileRef} type="file" accept="application/json,.json" className="hidden"
                  onChange={e => { const f = e.target.files?.[0]; if (f) upload(f); e.target.value = ''; }} />
         </div>
       </div>
 
       <div className="rounded-2xl border p-4" style={card}>
-        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>Your account</h3>
+        <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>{tr('Your account')}</h3>
         {cloud.signedIn ? (
           <>
-            <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-              Keep a copy in your account to move to a new phone. Only you can read it.
-              {cloud.lastBackup && <> Last backup: {formatWhen(cloud.lastBackup)}.</>}
+            <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>{tr('Keep a copy in your account to move to a new phone. Only you can read it.')}{cloud.lastBackup && <>{' '}{tr('Last backup:')}{' '}{formatWhen(cloud.lastBackup)}.</>}
             </p>
             <div className="flex flex-wrap gap-2">
-              <button disabled={cloud.busy} onClick={async () => { try { await cloud.backUp(); showToast('Backed up to your account'); } catch (e) { showToast(errorMessage(e)); } }}
+              <button disabled={cloud.busy} onClick={async () => { try { await cloud.backUp(); showToast(tr('Backed up to your account')); } catch (e) { showToast(errorMessage(e)); } }}
                       className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1 disabled:opacity-60">
-                <Cloud size={15} /> Back up now
-              </button>
+                <Cloud size={15} />{' '}{tr('Back up now')}</button>
               <button disabled={cloud.busy} onClick={async () => { try { const r = await cloud.restore(); showToast(`Restored: ${r.added} new, ${r.updated} updated`); setCount(await librarySize()); } catch (e) { showToast(errorMessage(e)); } }}
                       className="px-4 py-2 rounded-xl text-sm font-semibold border disabled:opacity-60"
-                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-                Restore from account
-              </button>
+                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Restore from account')}</button>
             </div>
           </>
         ) : (
           <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            <Link to="/signin?returnTo=/notes?tab=backup" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>Sign in</Link>{' '}
-            to back up your library to your account and restore it on another device.
-          </p>
+            <Link to="/signin?returnTo=/notes?tab=backup" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Sign in')}</Link>{' '}{tr('to back up your library to your account and restore it on another device.')}</p>
         )}
       </div>
     </div>
@@ -575,8 +561,8 @@ export default function Notes() {
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
-      <h1 className="text-2xl font-bold font-[Outfit] mb-1" style={{ color: 'var(--color-text-primary)' }}>My Library</h1>
-      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>Notes, saved verses, highlights and your prayer journal</p>
+      <h1 className="text-2xl font-bold font-[Outfit] mb-1" style={{ color: 'var(--color-text-primary)' }}>{tr('My Library')}</h1>
+      <p className="text-sm mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('Notes, saved verses, highlights and your prayer journal')}</p>
 
       <div className="flex gap-1 overflow-x-auto hide-scrollbar mb-5 -mx-1 px-1" role="tablist">
         {TABS.map(t => (
@@ -585,7 +571,7 @@ export default function Notes() {
                   style={tab === t.id
                     ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
                     : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
-            {t.icon}{t.label}
+            {t.icon}{tr(t.label)}
           </button>
         ))}
       </div>

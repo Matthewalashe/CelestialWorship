@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!api/|data/|assets/|stories/[^/]+\\.webp|logo|pwa-|favicon|og-|icons|sw|workbox|manifest|registerSW|push-handler|robots|sitemap).*)",
+      "source": "/((?!api/|data/|i18n/|assets/|stories/[^/]+\\.webp|logo|pwa-|favicon|og-|icons|sw|workbox|manifest|registerSW|push-handler|robots|sitemap).*)",
       "destination": "/index.html"
     }
   ],
@@ -94,6 +94,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/i18n/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=600, stale-while-revalidate=86400"
         }
       ]
     },

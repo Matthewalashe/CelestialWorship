@@ -46,12 +46,18 @@ export interface MemberProfile {
   phone: string;
   phonePublic: boolean;
   birthday: string; // YYYY-MM-DD or ''
-  preferredLanguage: 'en' | 'yo' | 'fr';
+  preferredLanguage: 'en' | 'yo' | 'fr' | 'egun';
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   onboardedAt: string | null;
   /** Profile photo and banner (set through lib/media.ts) */
   avatarUrl: string | null;
   bannerUrl: string | null;
+  /** Spiritual rank, e.g. "Senior Leader"; office, e.g. "Head of Province" over "Lagos Province 3" */
+  rank: string;
+  rankLine: '' | 'men' | 'women';
+  office: string;
+  officeScope: string;
+  bio: string;
 }
 
 const KEY = 'cw-profile';
@@ -59,7 +65,7 @@ const CHANGE_EVENT = 'cw-profile-changed';
 
 export const EMPTY_PROFILE: MemberProfile = {
   displayName: '', memberType: 'laity', churchTitle: '', ministry: '', parishId: null, parishName: '', country: '',
-  stateRegion: '', phone: '', phonePublic: false, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified', avatarUrl: null, bannerUrl: null,
+  stateRegion: '', phone: '', phonePublic: false, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified', avatarUrl: null, bannerUrl: null, rank: '', rankLine: '', office: '', officeScope: '', bio: '',
   onboardedAt: null,
 };
 
@@ -94,6 +100,11 @@ function toRow(p: MemberProfile) {
     birthday: p.birthday || null,
     preferred_language: p.preferredLanguage,
     onboarded_at: p.onboardedAt,
+    rank: p.rank || null,
+    rank_line: p.rankLine || null,
+    office: p.office || null,
+    office_scope: p.officeScope || null,
+    bio: p.bio || null,
   };
 }
 
@@ -114,6 +125,11 @@ function fromRow(row: any, local: MemberProfile): MemberProfile {
     verificationStatus: row.verification_status ?? local.verificationStatus,
     onboardedAt: row.onboarded_at ?? local.onboardedAt,
     avatarUrl: row.avatar_url ?? null,
+    rank: row.rank ?? local.rank ?? '',
+    rankLine: row.rank_line ?? local.rankLine ?? '',
+    office: row.office ?? local.office ?? '',
+    officeScope: row.office_scope ?? local.officeScope ?? '',
+    bio: row.bio ?? local.bio ?? '',
     bannerUrl: row.banner_url ?? null,
   };
 }

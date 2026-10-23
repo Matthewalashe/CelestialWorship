@@ -11,7 +11,7 @@ BASE = 'http://localhost:4173'
 AXE = 'https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js'
 ROUTES = ['/', '/services', '/services/lords_day_service', '/hymns', '/hymns/5', '/bible', '/bible/john/3', '/devotion', '/learn',
           '/stories', '/stories/bs-01', '/articles', '/events', '/directory', '/give', '/live', '/quiz', '/maps', '/notes', '/profile',
-          '/our-church', '/constitution', '/lessons', '/prayer-requests']
+          '/our-church', '/constitution', '/lessons', '/prayer-requests', '/library', '/structure', '/control']
 
 failures = 0
 with sync_playwright() as p:

@@ -4,6 +4,7 @@ import { BookOpen, Music, Calendar, BadgeCheck } from 'lucide-react';
 import { listArticles, ARTICLE_KINDS, type Article, type ArticleReference } from '../lib/community';
 import { markdownExcerpt } from '../utils/markdown';
 import type { MemberProfile } from '../hooks/useProfile';
+import { tr } from '../i18n';
 
 /**
  * Articles are long-form writing by shepherds (in a parish or independent), read like a book.
@@ -46,12 +47,12 @@ export function ArticleRow({ a, status }: { a: Article; status?: string }) {
         {a.author_name}
         {status && <span className="ml-auto" style={{ color: a.status === 'rejected' ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>{status}</span>}
       </p>
-      <h2 className="text-xl font-bold leading-snug mt-2" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{a.title}</h2>
+      <h2 className="text-xl font-bold leading-snug mt-2" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{tr(a.title)}</h2>
       <p className="text-[15px] mt-1 line-clamp-2" style={{ color: 'var(--color-text-secondary)' }}>{a.summary || markdownExcerpt(a.body)}</p>
       <p className="text-xs mt-2.5 flex flex-wrap items-center gap-x-2" style={{ color: 'var(--color-text-muted)' }}>
         <span>{dateLabel(a.published_at ?? a.updated_at)}</span>
         <span aria-hidden>·</span>
-        <span>{readingMinutes(a.body)} min read</span>
+        <span>{readingMinutes(a.body)}{' '}{tr('min read')}</span>
         <span aria-hidden>·</span>
         <span>{a.reference ? referenceLabel(a.reference) : ARTICLE_KINDS[a.kind]}</span>
       </p>
@@ -61,7 +62,7 @@ export function ArticleRow({ a, status }: { a: Article; status?: string }) {
 
 export function ShepherdBadge({ verified }: { verified: boolean }) {
   if (!verified) return null;
-  return <BadgeCheck size={15} aria-label="Verified shepherd" style={{ color: 'var(--color-accent-brand)' }} />;
+  return <BadgeCheck size={15} aria-label={tr('Verified shepherd')} style={{ color: 'var(--color-accent-brand)' }} />;
 }
 
 /** "Commentaries on this passage / hymn": shown under the text when shepherds have written about it */
@@ -81,8 +82,8 @@ export function RelatedArticles({ reference, title }: { reference: ArticleRefere
         {items.map(a => (
           <li key={a.id} style={{ borderColor: 'var(--color-border)' }}>
             <Link to={`/articles/${a.id}`} className="block py-3">
-              <span className="block font-semibold" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{a.title}</span>
-              <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{a.author_name} · {readingMinutes(a.body)} min read</span>
+              <span className="block font-semibold" style={{ color: 'var(--color-text-primary)', fontFamily: SERIF_STACK }}>{tr(a.title)}</span>
+              <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{a.author_name} · {readingMinutes(a.body)}{' '}{tr('min read')}</span>
             </Link>
           </li>
         ))}

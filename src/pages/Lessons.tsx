@@ -5,6 +5,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { getDatesInMonth, toISODate } from '../utils/dateUtils';
 import type { BibleLesson } from '../types';
 import { Calendar, BookOpen } from 'lucide-react';
+import { tr } from '../i18n';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -58,7 +59,7 @@ export default function Lessons() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-pulse text-[var(--color-text-secondary)]">Loading lessons...</div>
+        <div className="animate-pulse text-[var(--color-text-secondary)]">{tr('Loading lessons...')}</div>
       </div>
     );
   }
@@ -68,11 +69,9 @@ export default function Lessons() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
-          <><Calendar size={24} className="inline-block mr-2 align-text-bottom" /> Bible Lessons</>
+          <><Calendar size={24} className="inline-block mr-2 align-text-bottom" />{' '}{tr('Bible Lessons')}</>
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Lectionary calendar for the Celestial Church of Christ
-        </p>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{tr('Lectionary calendar for the Celestial Church of Christ')}</p>
       </div>
 
       {/* Month Navigation */}
@@ -81,25 +80,19 @@ export default function Lessons() {
           onClick={goPrev}
           disabled={!canGoPrev}
           className="p-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] disabled:opacity-30 hover:bg-[var(--color-bg-card-hover)] transition-colors"
-        >
-          ← Prev
-        </button>
+        >{tr('← Prev')}</button>
         <h2 className="text-lg font-semibold text-[var(--color-accent-gold)] font-[Outfit]">
-          {MONTHS[month]} {year}
+          {tr(MONTHS[month])} {year}
         </h2>
         <button
           onClick={goNext}
           disabled={!canGoNext}
           className="p-2 rounded-lg bg-[var(--color-bg-card)] text-[var(--color-text-primary)] disabled:opacity-30 hover:bg-[var(--color-bg-card-hover)] transition-colors"
-        >
-          Next →
-        </button>
+        >{tr('Next →')}</button>
       </div>
 
       {monthLessons.length === 0 && (
-        <div className="mb-4 p-4 rounded-2xl text-sm bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">
-          Lessons for {MONTHS[month]} {year} haven't been published yet. Check back soon.
-        </div>
+        <div className="mb-4 p-4 rounded-2xl text-sm bg-[var(--color-bg-card)] border border-[var(--color-border)] text-[var(--color-text-secondary)]">{tr('Lessons for')}{' '}{tr(MONTHS[month])} {year}{' '}{tr('haven\'t been published yet. Check back soon.')}</div>
       )}
 
       {/* View Toggle */}
@@ -111,9 +104,7 @@ export default function Lessons() {
               ? 'bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)]'
               : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]'
           }`}
-        >
-          Calendar
-        </button>
+        >{tr('Calendar')}</button>
         <button
           onClick={() => setView('list')}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -121,9 +112,7 @@ export default function Lessons() {
               ? 'bg-[var(--color-accent-gold)] text-[var(--color-text-on-accent)]'
               : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]'
           }`}
-        >
-          List
-        </button>
+        >{tr('List')}</button>
       </div>
 
       {view === 'calendar' ? (
@@ -184,11 +173,11 @@ export default function Lessons() {
           <div className="flex items-center gap-4 mt-4 text-xs text-[var(--color-text-muted)]">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-blue-400" />
-              <span>Service day</span>
+              <span>{tr('Service day')}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[var(--color-accent-gold)]" />
-              <span>Special occasion</span>
+              <span>{tr('Special occasion')}</span>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight, BookOpen, Type } from 'lucide-react';
 import { useReader, TEXT_SIZES, type ReaderSettings } from '../hooks/useReader';
 import { useSwipe } from '../hooks/useSwipe';
 import { Sheet } from './Dialog';
+import { tr } from '../i18n';
 
 /**
  * Kindle-style reading for the Bible, hymns and devotion: a full-screen monochrome page,
@@ -59,7 +60,7 @@ function Segmented<T extends string | number | boolean>({ label, value, options,
           <button key={String(o.value)} onClick={() => onChange(o.value)} aria-pressed={value === o.value} aria-label={o.aria}
                   className="flex-1 py-2 rounded-lg text-sm font-semibold"
                   style={value === o.value ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-secondary)' } : { color: 'var(--color-text-secondary)' }}>
-            {o.label}
+            {tr(o.label)}
           </button>
         ))}
       </div>
@@ -71,31 +72,29 @@ export function ReaderSettingsSheet({ onClose, wakeLock }: { onClose: () => void
   const { settings, update } = useReader();
   const sizeIndex = Math.max(0, TEXT_SIZES.indexOf(settings.size));
   return (
-    <Sheet label="Reading settings" title="Aa  Reading" onClose={onClose}>
+    <Sheet label={tr('Reading settings')} title={tr('Aa  Reading')} onClose={onClose}>
       <div className="space-y-4">
-        <Segmented label="Page" value={settings.page} onChange={page => update({ page })}
+        <Segmented label={tr('Page')} value={settings.page} onChange={page => update({ page })}
                    options={[{ value: 'normal', label: 'Colour' }, { value: 'paper', label: 'Paper' }, { value: 'night', label: 'Night' }]} />
         <div>
-          <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Text size</p>
+          <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-muted)' }}>{tr('Text size')}</p>
           <div className="flex items-center gap-3">
-            <button onClick={() => update({ size: TEXT_SIZES[Math.max(0, sizeIndex - 1)] })} aria-label="Smaller text" className="w-10 h-10 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>A</button>
-            <input type="range" min={0} max={TEXT_SIZES.length - 1} step={1} value={sizeIndex} aria-label="Text size"
+            <button onClick={() => update({ size: TEXT_SIZES[Math.max(0, sizeIndex - 1)] })} aria-label={tr('Smaller text')} className="w-10 h-10 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>A</button>
+            <input type="range" min={0} max={TEXT_SIZES.length - 1} step={1} value={sizeIndex} aria-label={tr('Text size')}
                    onChange={e => update({ size: TEXT_SIZES[Number(e.target.value)] })} className="flex-1 accent-current" style={{ color: 'var(--color-text-primary)' }} />
-            <button onClick={() => update({ size: TEXT_SIZES[Math.min(TEXT_SIZES.length - 1, sizeIndex + 1)] })} aria-label="Larger text" className="w-10 h-10 rounded-xl border text-xl font-semibold" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>A</button>
+            <button onClick={() => update({ size: TEXT_SIZES[Math.min(TEXT_SIZES.length - 1, sizeIndex + 1)] })} aria-label={tr('Larger text')} className="w-10 h-10 rounded-xl border text-xl font-semibold" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>A</button>
           </div>
         </div>
-        <Segmented label="Typeface" value={settings.font} onChange={font => update({ font })}
-                   options={[{ value: 'serif', label: <span style={{ fontFamily: SERIF }}>Book</span> }, { value: 'sans', label: <span style={{ fontFamily: SANS }}>Clean</span> }]} />
-        <Segmented<ReaderSettings['leading']> label="Line spacing" value={settings.leading} onChange={leading => update({ leading })}
+        <Segmented label={tr('Typeface')} value={settings.font} onChange={font => update({ font })}
+                   options={[{ value: 'serif', label: <span style={{ fontFamily: SERIF }}>{tr('Book')}</span> }, { value: 'sans', label: <span style={{ fontFamily: SANS }}>{tr('Clean')}</span> }]} />
+        <Segmented<ReaderSettings['leading']> label={tr('Line spacing')} value={settings.leading} onChange={leading => update({ leading })}
                    options={[{ value: 1.5, label: 'Tight' }, { value: 1.75, label: 'Normal' }, { value: 2, label: 'Loose' }]} />
-        <Segmented<ReaderSettings['margin']> label="Margins" value={settings.margin} onChange={margin => update({ margin })}
+        <Segmented<ReaderSettings['margin']> label={tr('Margins')} value={settings.margin} onChange={margin => update({ margin })}
                    options={[{ value: 'narrow', label: 'Narrow' }, { value: 'normal', label: 'Normal' }, { value: 'wide', label: 'Wide' }]} />
-        <Segmented label="Alignment" value={settings.justify} onChange={justify => update({ justify })}
+        <Segmented label={tr('Alignment')} value={settings.justify} onChange={justify => update({ justify })}
                    options={[{ value: false, label: 'Left' }, { value: true, label: 'Justified' }]} />
         {wakeLock?.supported && (
-          <label className="flex items-center justify-between text-sm py-1" style={{ color: 'var(--color-text-primary)' }}>
-            Keep the screen on while reading
-            <input type="checkbox" checked={wakeLock.active} onChange={wakeLock.toggle} className="w-5 h-5" />
+          <label className="flex items-center justify-between text-sm py-1" style={{ color: 'var(--color-text-primary)' }}>{tr('Keep the screen on while reading')}<input type="checkbox" checked={wakeLock.active} onChange={wakeLock.toggle} className="w-5 h-5" />
           </label>
         )}
       </div>
@@ -113,8 +112,8 @@ export function ReaderButtons({ wakeLock }: { wakeLock?: WakeLockControl }) {
   const style = { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' };
   return (
     <>
-      <button onClick={() => setOpen(true)} className={cls} style={style} aria-label="Reading settings"><Type size={16} /></button>
-      <button onClick={() => setReading(true)} className={cls} style={style} aria-label="Reading mode"><BookOpen size={16} /> <span className="hidden sm:inline">Read</span></button>
+      <button onClick={() => setOpen(true)} className={cls} style={style} aria-label={tr('Reading settings')}><Type size={16} /></button>
+      <button onClick={() => setReading(true)} className={cls} style={style} aria-label={tr('Reading mode')}><BookOpen size={16} /> <span className="hidden sm:inline">{tr('Read')}</span></button>
       {open && <ReaderSettingsSheet onClose={() => setOpen(false)} wakeLock={wakeLock} />}
     </>
   );
@@ -224,7 +223,7 @@ export function ReaderFrame({ title, place, children, prev, next, wakeLock, onLe
           </div>
           {next && (
             <button onClick={next.go} className="block mx-auto mt-12 mb-4 px-5 py-2.5 text-sm border rounded-full" style={{ borderColor: pal.rule, color: pal.text }}>
-              {next.label} ›
+              {tr(next.label)} ›
             </button>
           )}
         </div>
@@ -232,19 +231,19 @@ export function ReaderFrame({ title, place, children, prev, next, wakeLock, onLe
 
       {/* Top bar */}
       <div className={`${bar} top-0 pt-[env(safe-area-inset-top)] h-14`} style={{ backgroundColor: pal.bg, borderBottom: `1px solid ${pal.rule}`, opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}>
-        <button onClick={leave} className={barBtn} aria-label="Leave reading mode"><X size={20} /></button>
+        <button onClick={leave} className={barBtn} aria-label={tr('Leave reading mode')}><X size={20} /></button>
         <p className="flex-1 text-center text-sm truncate" style={{ fontFamily: SERIF }}>{title}</p>
         {actions}
-        <button onClick={() => setSettingsOpen(true)} className={barBtn} aria-label="Reading settings"><Type size={18} /></button>
+        <button onClick={() => setSettingsOpen(true)} className={barBtn} aria-label={tr('Reading settings')}><Type size={18} /></button>
       </div>
 
       {/* Bottom bar: where you are, and the previous/next chapter */}
       <div className={`${bar} bottom-0 h-14 pb-[env(safe-area-inset-bottom)]`} style={{ backgroundColor: pal.bg, borderTop: chrome ? `1px solid ${pal.rule}` : 'none' }}>
-        <button onClick={prev?.go} disabled={!prev} className={`${barBtn} disabled:opacity-20`} aria-label={prev ? prev.label : 'No previous'} style={{ opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}><ChevronLeft size={20} /></button>
+        <button onClick={prev?.go} disabled={!prev} className={`${barBtn} disabled:opacity-20`} aria-label={prev ? prev.label : tr('No previous')} style={{ opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}><ChevronLeft size={20} /></button>
         <p className="flex-1 text-center text-[11px] tracking-wide" style={{ color: pal.muted }} aria-live="off">
           {place ? `${place} · ` : ''}{Math.round(progress * 100)}%
         </p>
-        <button onClick={next?.go} disabled={!next} className={`${barBtn} disabled:opacity-20`} aria-label={next ? next.label : 'No next'} style={{ opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}><ChevronRight size={20} /></button>
+        <button onClick={next?.go} disabled={!next} className={`${barBtn} disabled:opacity-20`} aria-label={next ? next.label : tr('No next')} style={{ opacity: chrome ? 1 : 0, pointerEvents: chrome ? 'auto' : 'none' }}><ChevronRight size={20} /></button>
       </div>
 
       {settingsOpen && <ReaderSettingsSheet onClose={() => setSettingsOpen(false)} wakeLock={wakeLock} />}

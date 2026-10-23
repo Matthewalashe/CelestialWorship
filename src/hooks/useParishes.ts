@@ -48,8 +48,45 @@ export interface Parish {
   partner?: boolean;
   logo_url?: string | null;
   cover_url?: string | null;
+  /** parish, cathedral, circuit/district/state/province/regional/diocesan/national headquarters */
+  level?: ParishLevel;
+  parent_id?: string | null;
+  ownership?: 'community' | 'private';
+  affiliated?: boolean;
+  affiliation?: string | null;
+  continent?: string | null;
+  /** From the Church's archived public list, not yet claimed by the parish */
+  listing?: { source: string; url: string };
   /** Seed entries (headquarters) shipped with the app */
   seed?: boolean;
+}
+
+export type ParishLevel = 'parish' | 'cathedral' | 'circuit_hq' | 'district_hq' | 'state_hq' | 'province_hq' | 'regional_hq' | 'diocesan_hq' | 'national_hq' | 'supreme_hq' | 'international_hq';
+
+export const PARISH_LEVELS: Record<ParishLevel, string> = {
+  parish: 'Parish', cathedral: 'Cathedral', circuit_hq: 'Circuit headquarters', district_hq: 'District headquarters',
+  state_hq: 'State headquarters', province_hq: 'Provincial headquarters', regional_hq: 'Regional headquarters',
+  diocesan_hq: 'Diocesan headquarters', national_hq: 'National headquarters', supreme_hq: 'Supreme Headquarters', international_hq: 'International Headquarters',
+};
+
+const CONTINENT: Record<string, string> = {
+  Nigeria: 'Africa', Benin: 'Africa', Togo: 'Africa', Ghana: 'Africa', "Côte d'Ivoire": 'Africa', 'South Africa': 'Africa', Cameroon: 'Africa',
+  Gabon: 'Africa', Congo: 'Africa', Liberia: 'Africa', 'Sierra Leone': 'Africa', Gambia: 'Africa', Senegal: 'Africa', Kenya: 'Africa', Libya: 'Africa',
+  'United States': 'North America', Canada: 'North America', 'United Kingdom': 'Europe', Ireland: 'Europe', France: 'Europe', Germany: 'Europe',
+  Italy: 'Europe', Spain: 'Europe', Belgium: 'Europe', Netherlands: 'Europe', Austria: 'Europe', Switzerland: 'Europe', Sweden: 'Europe',
+  Norway: 'Europe', Denmark: 'Europe', 'United Arab Emirates': 'Asia', China: 'Asia', India: 'Asia', Australia: 'Oceania', Brazil: 'South America',
+};
+export const continentOf = (p: Pick<Parish, 'continent' | 'country'>) => p.continent || CONTINENT[p.country] || 'Other';
+
+let listedPromise: Promise<Parish[]> | null = null;
+function loadListed(): Promise<Parish[]> {
+  if (!listedPromise) {
+    listedPromise = fetch('/data/parishes_listed.json')
+      .then(r => (r.ok ? r.json() : []))
+      .then((rows: Parish[]) => rows.map(p => ({ ...p, seed: true, latitude: null, longitude: null, diocese: null, province: null, website: null, service_times: null, giving_details: null })))
+      .catch(() => []);
+  }
+  return listedPromise;
 }
 
 export type ParishSubmission = Omit<Parish, 'id' | 'seed'> & { contact_public: boolean };
@@ -72,16 +109,17 @@ export function useParishes() {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    const seed = await loadSeed();
+    const seed = [...await loadSeed(), ...await loadListed()];
     const { data, error } = await supabase.from('parish_directory').select('*').order('country').order('name').limit(5000);
     if (error) {
       setBackendReady(false);
       setParishes(seed);
     } else {
       setBackendReady(true);
-      // Seed entries are dropped once the same parish is listed in the directory
-      const names = new Set((data ?? []).map(p => p.name.toLowerCase()));
-      setParishes([...(data as Parish[]), ...seed.filter(s => !names.has(s.name.toLowerCase()))]);
+      // Seed and listed entries are dropped once the parish itself is in the directory
+      const key = (p: Parish) => `${p.name.toLowerCase()}|${(p.city ?? '').toLowerCase()}`;
+      const names = new Set((data ?? []).map(p => key(p as Parish)));
+      setParishes([...(data as Parish[]), ...seed.filter(s => !names.has(key(s)))]);
     }
     setLoading(false);
   }, []);

@@ -19,7 +19,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         // Bible books (~13 MB) and story pages are cached as they are read, not at install time
         // The sharing image and the map games' data aren't needed to start the app
-        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png'],
+        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png', '**/i18n/**', '**/data/parishes_listed.json'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/data\//],
@@ -32,6 +32,13 @@ export default defineConfig({
               expiration: { maxEntries: 140 },
               cacheableResponse: { statuses: [200] },
             },
+          },
+          {
+            // Only the chosen language's words are fetched (they are also kept in local storage);
+            // the Church's published parish list is fetched when the directory opens
+            urlPattern: ({ url }) => url.pathname.startsWith('/i18n/') || url.pathname === '/data/parishes_listed.json',
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'cw-on-demand', expiration: { maxEntries: 10 } },
           },
           {
             // Children's stories, their pictures and the Bible maps, kept once opened

@@ -4,6 +4,7 @@ import { useConstitutionSearch } from '../hooks/useConstitution';
 import type { ConstitutionSection, ConstitutionClause } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { tr } from '../i18n';
 
 function highlightText(text: string, query: string): React.ReactNode {
   if (!query.trim()) return <>{text}</>;
@@ -93,7 +94,7 @@ export default function Constitution() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-pulse" style={{ color: 'var(--color-text-secondary)' }}>Loading constitution...</div>
+        <div className="animate-pulse" style={{ color: 'var(--color-text-secondary)' }}>{tr('Loading constitution...')}</div>
       </div>
     );
   }
@@ -101,7 +102,7 @@ export default function Constitution() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div style={{ color: 'var(--color-text-muted)' }}>Could not load constitution data.</div>
+        <div style={{ color: 'var(--color-text-muted)' }}>{tr('Could not load constitution data.')}</div>
       </div>
     );
   }
@@ -111,15 +112,14 @@ export default function Constitution() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-[Outfit] font-bold" style={{ color: 'var(--color-text-primary)' }}>
-          <ScrollText size={24} className="inline-block mr-2 align-text-bottom" /> Constitution
-        </h1>
+          <ScrollText size={24} className="inline-block mr-2 align-text-bottom" />{' '}{tr('Constitution')}</h1>
         {meta && (
           <>
             <p className="text-sm mt-1 font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-              {meta.title}
+              {tr(meta.title)}
             </p>
             <p className="text-xs mt-0.5 italic" style={{ color: 'var(--color-text-muted)' }}>
-              {meta.subtitle}
+              {tr(meta.subtitle)}
             </p>
           </>
         )}
@@ -131,7 +131,7 @@ export default function Constitution() {
           type="text"
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
-          placeholder="Search the Constitution..."
+          placeholder={tr('Search the Constitution...')}
           className="w-full rounded-xl px-4 py-3 text-sm transition-colors"
           style={{
             backgroundColor: 'var(--color-bg-card)',
@@ -155,7 +155,7 @@ export default function Constitution() {
               >
                 <span className="text-xl">{section.icon}</span>
                 <span className="flex-1 font-semibold text-sm font-[Outfit]">
-                  {section.title}
+                  {tr(section.title)}
                 </span>
                 {section.type === 'clauses' && section.clauses && (
                   <span className="text-xs px-2 py-0.5 rounded-full" style={{
@@ -200,8 +200,7 @@ export default function Constitution() {
       </div>
 
       {sections.length === 0 && (
-        <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
-          No sections found matching "{searchTerm}"
+        <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>{tr('No sections found matching "')}{searchTerm}"
         </div>
       )}
 

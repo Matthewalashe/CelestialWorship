@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Plus, Minus, Maximize2 } from 'lucide-react';
 import { createJsonResource } from '../lib/jsonResource';
 import { NT_REGIONS, OLD_MAP_LABELS, type LonLat } from '../data/bibleLands';
+import { tr } from '../i18n';
 
 /**
  * Maps of the Bible lands drawn as SVG from Natural Earth data (scripts/build_maps.py).
@@ -334,7 +335,7 @@ export function BibleMap({
         ))}
       </div>
       {old && <Compass />}
-      <p className="absolute left-2 bottom-1 text-[9px] opacity-70" style={{ color: c.text }}>Natural Earth · regions approximate</p>
+      <p className="absolute left-2 bottom-1 text-[9px] opacity-70" style={{ color: c.text }}>{tr('Natural Earth · regions approximate')}</p>
       {children}
     </div>
   );
@@ -353,7 +354,7 @@ function Compass() {
 
 export function LayerToggle({ layer, onChange }: { layer: MapLayer; onChange: (l: MapLayer) => void }) {
   return (
-    <div className="inline-flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }} role="group" aria-label="Map style">
+    <div className="inline-flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }} role="group" aria-label={tr('Map style')}>
       {([['then', 'Then'], ['now', 'Now'], ['both', 'Both']] as const).map(([v, text]) => (
         <button key={v} onClick={() => onChange(v)} aria-pressed={layer === v} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
                 style={layer === v ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>

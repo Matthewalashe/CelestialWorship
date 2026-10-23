@@ -3,12 +3,12 @@ import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
-import { useT, type StringKey } from '../i18n';
+import { useT, type StringKey, tr, UI_LANGUAGES, setUILanguage } from '../i18n';
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Languages,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
@@ -60,7 +60,7 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
 
 
 /** Pages reached from Learn keep the Learn tab lit */
-const LEARN_PATHS = ['/learn', '/stories', '/lessons', '/articles', '/our-church', '/constitution', '/quiz', '/maps'];
+const LEARN_PATHS = ['/learn', '/stories', '/lessons', '/articles', '/library', '/structure', '/people', '/our-church', '/constitution', '/quiz', '/maps'];
 /** On a computer: Studio first, then the same places as on a phone */
 const DesktopItems: NavItem[] = [
   { path: '/', label: 'nav.studio', icon: <MonitorPlay size={20} /> },
@@ -77,7 +77,7 @@ const isActivePath = (pathname: string, path: string) =>
 export default function Layout() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { t } = useT();
+  const { t, lang } = useT();
   const { canModerate } = useAuth();
   const { profile } = useProfile();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -99,19 +99,19 @@ export default function Layout() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen"
          style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>
-      <a href="#main-content" className="skip-to-content">Skip to content</a>
+      <a href="#main-content" className="skip-to-content">{tr('Skip to content')}</a>
 
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 glass-sidebar fixed top-0 left-0 h-screen z-10 p-5">
         <Link to="/" className="flex items-center gap-3 mb-6">
           <img src={logoUrl} alt="" className="w-10 h-10 rounded-xl object-cover shadow-md" />
           <div>
-            <p className="text-lg font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>CelestialWorship</p>
-            <p className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>Celestial Worship Companion</p>
+            <p className="text-lg font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>{tr('CelestialWorship')}</p>
+            <p className="text-[9px] uppercase tracking-widest" style={{ color: 'var(--color-text-muted)' }}>{tr('Celestial Worship Companion')}</p>
           </div>
         </Link>
 
-        <nav aria-label="Main navigation" className="flex flex-col gap-1 flex-1 overflow-y-auto min-h-0 -mx-1 px-1 custom-scrollbar">
+        <nav aria-label={tr('Main navigation')} className="flex flex-col gap-1 flex-1 overflow-y-auto min-h-0 -mx-1 px-1 custom-scrollbar">
           {(desktop ? DesktopItems : NavItems).map(item => (
             <NavLink
               prefetch="intent"
@@ -134,7 +134,7 @@ export default function Layout() {
 
           {sidebarGroups.map(group => (
             <div key={group.title} className="mt-4 pt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
-              <p className="text-[10px] uppercase tracking-wider px-4 mb-1" style={{ color: 'var(--color-text-muted)' }}>{group.title}</p>
+              <p className="text-[10px] uppercase tracking-wider px-4 mb-1" style={{ color: 'var(--color-text-muted)' }}>{tr(group.title)}</p>
               {group.items.map(item => (
                 <NavLink
                   prefetch="intent"
@@ -156,10 +156,10 @@ export default function Layout() {
             onClick={toggleTheme}
             className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-full transition-colors text-sm"
             style={{ color: 'var(--color-text-secondary)' }}
-            aria-label="Toggle theme"
+            aria-label={tr('Toggle theme')}
           >
             {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-            <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+            <span>{theme === 'light' ? tr('Dark Mode') : tr('Light Mode')}</span>
           </button>
         </div>
       </aside>
@@ -170,7 +170,7 @@ export default function Layout() {
         <header className="md:hidden flex items-center justify-between px-4 py-3 glass-nav z-10 sticky top-0">
           <Link to="/" className="flex items-center gap-2">
             <img src={logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
-            <span className="text-base font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>CelestialWorship</span>
+            <span className="text-base font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>{tr('CelestialWorship')}</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link to="/profile" aria-label={t('nav.profile')} className="rounded-full">
@@ -197,10 +197,10 @@ export default function Layout() {
       {/* Menu: everything beyond the five tabs */}
       {moreOpen && (
         <Sheet label={t('nav.more')} onClose={() => setMoreOpen(false)}>
-          <nav aria-label="Menu" className="space-y-4">
+          <nav aria-label={tr('Menu')} className="space-y-4">
             {groups.map(group => (
               <div key={group.title}>
-                <p className="text-[11px] uppercase tracking-wider font-semibold mb-1 px-1" style={{ color: 'var(--color-text-muted)' }}>{group.title}</p>
+                <p className="text-[11px] uppercase tracking-wider font-semibold mb-1 px-1" style={{ color: 'var(--color-text-muted)' }}>{tr(group.title)}</p>
                 <ul className="grid grid-cols-2 gap-1">
                   {group.items.map(item => {
                     const active = isActivePath(location.pathname, item.path);
@@ -218,14 +218,23 @@ export default function Layout() {
               </div>
             ))}
             <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} {theme === 'light' ? 'Dark mode' : 'Light mode'}
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} {theme === 'light' ? tr('Dark mode') : tr('Light mode')}
             </button>
+            <div role="group" aria-label={tr('App language')} className="flex flex-wrap items-center gap-1.5 px-1">
+              <Languages size={16} aria-hidden style={{ color: 'var(--color-text-muted)' }} />
+              {UI_LANGUAGES.map(l => (
+                <button key={l.id} onClick={() => setUILanguage(l.id)} aria-pressed={lang === l.id} lang={l.htmlLang}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold border"
+                        style={lang === l.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' }
+                                             : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>{l.name}</button>
+              ))}
+            </div>
           </nav>
         </Sheet>
       )}
 
       {/* Mobile Bottom Nav */}
-      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-30 flex items-center justify-around px-2 py-1 pb-safe"
+      <nav aria-label={tr('Mobile navigation')} className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-30 flex items-center justify-around px-2 py-1 pb-safe"
            style={{ height: '68px' }}>
         {NavItems.map(item => {
           const isActive = isActivePath(location.pathname, item.path);

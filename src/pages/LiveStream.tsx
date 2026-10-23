@@ -10,6 +10,7 @@ import { ErrorState, type Loadable } from '../components/CommunityStates';
 import { getLivestream, bestEmbed, isStreamLive, shareMessage, streamLink, type Livestream } from '../lib/live';
 import { parishCanReceive } from '../lib/payments';
 import { downloadIcs } from '../utils/churchCalendar';
+import { tr } from '../i18n';
 
 export default function LiveStream() {
   const { id } = useParams<{ id: string }>();
@@ -35,13 +36,13 @@ export default function LiveStream() {
     return () => clearInterval(t);
   }, [load]);
 
-  if (state.status === 'loading') return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+  if (state.status === 'loading') return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
   if (state.status === 'error') return <ErrorState error={state.error} onRetry={load} />;
   if (!stream) {
     return (
       <div className="text-center py-16 px-4">
-        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>This broadcast isn’t available.</p>
-        <Link to="/live" className="btn-primary px-5 py-2 rounded-xl text-sm">Live</Link>
+        <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('This broadcast isn’t available.')}</p>
+        <Link to="/live" className="btn-primary px-5 py-2 rounded-xl text-sm">{tr('Live')}</Link>
       </div>
     );
   }
@@ -60,18 +61,17 @@ export default function LiveStream() {
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24 space-y-5">
-      <Link to="/live" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>‹ Live</Link>
+      <Link to="/live" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Live')}</Link>
 
       {stream.status === 'scheduled' ? (
         <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-          <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'var(--color-text-muted)' }}>Starts</p>
+          <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('Starts')}</p>
           <p className="text-xl font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-text-primary)' }}>
-            {start ? new Date(start).toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }) : 'Soon'}
+            {start ? new Date(start).toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }) : tr('Soon')}
           </p>
           {start && (
             <button onClick={addToCalendar} className="mt-3 text-sm font-semibold inline-flex items-center gap-1.5" style={{ color: 'var(--color-accent-brand)' }}>
-              <CalendarPlus size={15} /> Add to my calendar
-            </button>
+              <CalendarPlus size={15} />{' '}{tr('Add to my calendar')}</button>
           )}
         </div>
       ) : (
@@ -79,19 +79,18 @@ export default function LiveStream() {
       )}
 
       <div>
-        <h1 className="text-xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{stream.title}</h1>
+        <h1 className="text-xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr(stream.title)}</h1>
         <div className="flex items-center gap-3 mt-2">
           <Link to={`/directory/${stream.parish_id}`} className="flex-1 min-w-0 text-sm font-semibold truncate" style={{ color: 'var(--color-text-secondary)' }}>{name}</Link>
           <FollowButton parishId={stream.parish_id} name={name} />
         </div>
-        {stream.description && <p className="text-sm mt-3 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>{stream.description}</p>}
+        {stream.description && <p className="text-sm mt-3 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>{tr(stream.description)}</p>}
       </div>
 
       {canGive && (
         <Link to={`/give?parish=${stream.parish_id}&purpose=offering&source=livestream&id=${stream.id}`}
               className="btn-primary w-full py-3 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2">
-          <HandCoins size={18} /> Give an offering
-        </Link>
+          <HandCoins size={18} />{' '}{tr('Give an offering')}</Link>
       )}
 
       <ShareRow text={shareMessage(name, stream)} url={streamLink(stream.id)} />

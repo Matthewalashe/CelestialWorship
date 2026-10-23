@@ -4,9 +4,10 @@ import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { loadChapter } from '../hooks/useBible';
 import { referenceToPath } from '../utils/parseReference';
 import type { ScriptureReference } from '../types';
+import { contentDefaults, tr } from '../i18n';
 
 function preferredVersion(): string {
-  try { return localStorage.getItem('cw-bible-version') || 'en'; } catch { return 'en'; }
+  try { return localStorage.getItem('cw-bible-version') || contentDefaults().bibleVersion; } catch { return 'en'; }
 }
 
 /**
@@ -47,12 +48,12 @@ export function PassageText({ reference, defaultOpen = false, compact = false }:
       </button>
       {open && (
         <div className="px-3 py-3 space-y-1.5 text-sm leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>
-          {failed ? <p style={{ color: 'var(--color-text-muted)' }}>Couldn’t load this passage offline.</p>
-            : !verses ? <p className="animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>
+          {failed ? <p style={{ color: 'var(--color-text-muted)' }}>{tr('Couldn’t load this passage offline.')}</p>
+            : !verses ? <p className="animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>
             : verses.map(([n, t]) => (
               <p key={n}><sup className="text-[10px] font-bold mr-1" style={{ color: 'var(--color-accent-blue)' }}>{n}</sup>{t}</p>
             ))}
-          <Link to={referenceToPath(reference)} className="inline-block text-xs font-semibold pt-1" style={{ color: 'var(--color-accent-brand)' }}>Open in the Bible →</Link>
+          <Link to={referenceToPath(reference)} className="inline-block text-xs font-semibold pt-1" style={{ color: 'var(--color-accent-brand)' }}>{tr('Open in the Bible →')}</Link>
         </div>
       )}
     </div>

@@ -15,6 +15,7 @@ import { SignInPrompt, ErrorState, type Loadable } from '../components/Community
 import { showToast } from '../components/Toast';
 import { confirmDialog, promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
+import { tr } from '../i18n';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -69,7 +70,7 @@ export default function PrayerRequests() {
       });
       draft.clear();
       setComposing(false);
-      showToast('Sent — it will appear once a moderator has seen it');
+      showToast(tr('Sent — it will appear once a moderator has seen it'));
       if (tab === 'mine') load();
     } catch (e) {
       showToast(errorMessage(e));
@@ -77,7 +78,7 @@ export default function PrayerRequests() {
   };
 
   const pray = async (r: SharedPrayerRequest) => {
-    if (!user) { showToast('Sign in to let them know you prayed'); return; }
+    if (!user) { showToast(tr('Sign in to let them know you prayed')); return; }
     try {
       await prayForRequest(r.id);
       const next = [...new Set([...prayed, r.id])];
@@ -87,64 +88,60 @@ export default function PrayerRequests() {
       if (state.status === 'ready' && !prayed.includes(r.id)) {
         setState({ status: 'ready', data: state.data.map(x => (x.id === r.id ? { ...x, prayer_count: x.prayer_count + 1 } : x)) });
       }
-      showToast('Amen');
+      showToast(tr('Amen'));
     } catch (e) {
       showToast(errorMessage(e));
     }
   };
 
   const report = async (r: SharedPrayerRequest) => {
-    const reason = await promptDialog({ title: 'Report this request', label: 'What is wrong with it?' });
+    const reason = await promptDialog({ title: tr('Report this request'), label: tr('What is wrong with it?') });
     if (!reason?.trim()) return;
-    try { await reportContent('prayer_request', r.id, reason.trim()); showToast('Thank you — a moderator will look at it'); }
+    try { await reportContent('prayer_request', r.id, reason.trim()); showToast(tr('Thank you — a moderator will look at it')); }
     catch (e) { showToast(errorMessage(e)); }
   };
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
       <div className="flex items-start justify-between gap-3 mb-1">
-        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Prayer requests</h1>
+        <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Prayer requests')}</h1>
         {user && (
           <button onClick={() => setComposing(c => !c)} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
-            <Plus size={16} /> Request
-          </button>
+            <Plus size={16} />{' '}{tr('Request')}</button>
         )}
       </div>
-      <p className="text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>
-        “Pray one for another” — James 5:16. For a private record, use your{' '}
-        <Link to="/notes?tab=prayers" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>prayer journal</Link>.
+      <p className="text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Pray one for another” — James 5:16. For a private record, use your')}{' '}
+        <Link to="/notes?tab=prayers" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('prayer journal')}</Link>.
       </p>
 
-      {!user && <div className="mb-5"><SignInPrompt message="Sign in to ask the church to pray with you, or to tell others you prayed." /></div>}
+      {!user && <div className="mb-5"><SignInPrompt message={tr('Sign in to ask the church to pray with you, or to tell others you prayed.')} /></div>}
 
       {composing && user && (
         <div className="rounded-2xl border p-4 mb-5 space-y-3" style={card}>
           <input value={draft.value.title} onChange={e => draft.setValue({ title: e.target.value })} maxLength={140}
-                 placeholder="What should we pray for?" className={inputClass} style={inputStyle} />
+                 placeholder={tr('What should we pray for?')} className={inputClass} style={inputStyle} />
           <textarea value={draft.value.body} onChange={e => draft.setValue({ body: e.target.value })} rows={4} maxLength={2000}
-                    placeholder="Share as much or as little as you like" className={inputClass} style={inputStyle} />
+                    placeholder={tr('Share as much or as little as you like')} className={inputClass} style={inputStyle} />
           <div className="grid grid-cols-2 gap-2">
             <select value={draft.value.category} onChange={e => draft.setValue({ category: e.target.value as PrayerCategory | '' })}
-                    className={inputClass} style={inputStyle} aria-label="Category">
-              <option value="">Category</option>
-              {(Object.keys(PRAYER_CATEGORY_LABELS) as PrayerCategory[]).map(c => <option key={c} value={c}>{PRAYER_CATEGORY_LABELS[c]}</option>)}
+                    className={inputClass} style={inputStyle} aria-label={tr('Category')}>
+              <option value="">{tr('Category')}</option>
+              {(Object.keys(PRAYER_CATEGORY_LABELS) as PrayerCategory[]).map(c => <option key={c} value={c}>{tr(PRAYER_CATEGORY_LABELS[c])}</option>)}
             </select>
             <select value={draft.value.visibility} onChange={e => draft.setValue({ visibility: e.target.value as PrayerVisibility })}
-                    className={inputClass} style={inputStyle} aria-label="Who can see it">
-              <option value="church">Everyone in the app</option>
-              <option value="parish" disabled={!profile.parishId}>My parish only</option>
-              <option value="shepherd" disabled={!profile.parishId}>My shepherd only</option>
+                    className={inputClass} style={inputStyle} aria-label={tr('Who can see it')}>
+              <option value="church">{tr('Everyone in the app')}</option>
+              <option value="parish" disabled={!profile.parishId}>{tr('My parish only')}</option>
+              <option value="shepherd" disabled={!profile.parishId}>{tr('My shepherd only')}</option>
             </select>
           </div>
           <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-            <input type="checkbox" checked={draft.value.isAnonymous} onChange={e => draft.setValue({ isAnonymous: e.target.checked })} />
-            Don’t show my name
-          </label>
+            <input type="checkbox" checked={draft.value.isAnonymous} onChange={e => draft.setValue({ isAnonymous: e.target.checked })} />{tr('Don’t show my name')}</label>
           <div className="flex justify-end gap-2">
-            <button onClick={() => setComposing(false)} className="px-4 py-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>Later</button>
-            <button onClick={submit} disabled={draft.value.title.trim().length < 3} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">Send</button>
+            <button onClick={() => setComposing(false)} className="px-4 py-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Later')}</button>
+            <button onClick={submit} disabled={draft.value.title.trim().length < 3} className="btn-primary px-5 py-2 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Send')}</button>
           </div>
-          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Requests are checked by a moderator before others see them. Your draft is kept on this device.</p>
+          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Requests are checked by a moderator before others see them. Your draft is kept on this device.')}</p>
         </div>
       )}
 
@@ -152,17 +149,17 @@ export default function PrayerRequests() {
         {(['wall', 'mine'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t} className="px-4 py-1.5 rounded-lg text-sm font-semibold"
                   style={tab === t ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-            {t === 'wall' ? 'Pray for others' : 'My requests'}
+            {t === 'wall' ? tr('Pray for others') : tr('My requests')}
           </button>
         ))}
       </div>
 
-      {state.status === 'loading' && <p className="text-center py-10 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>}
+      {state.status === 'loading' && <p className="text-center py-10 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>}
       {state.status === 'error' && <ErrorState error={state.error} onRetry={load} />}
       {state.status === 'ready' && state.data.length === 0 && (
         <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
           <HandHeart size={28} className="mx-auto mb-3 opacity-60" />
-          <p className="text-sm">{tab === 'mine' ? 'You haven’t shared a request yet.' : 'No requests right now.'}</p>
+          <p className="text-sm">{tab === 'mine' ? tr('You haven’t shared a request yet.') : tr('No requests right now.')}</p>
         </div>
       )}
       {state.status === 'ready' && state.data.length > 0 && (
@@ -175,35 +172,33 @@ export default function PrayerRequests() {
                 {r.status === 'answered' && (
                   <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold mb-2 px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' }}>
-                    <Sparkles size={11} /> Answered
-                  </span>
+                    <Sparkles size={11} />{' '}{tr('Answered')}</span>
                 )}
                 {mine && r.status === 'pending' && (
                   <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                    <Clock size={11} /> Waiting for a moderator
-                  </span>
+                    <Clock size={11} />{' '}{tr('Waiting for a moderator')}</span>
                 )}
-                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{r.title}</p>
+                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(r.title)}</p>
                 {r.body && <p className="text-sm mt-1 whitespace-pre-line" style={{ color: 'var(--color-text-secondary)' }}>{r.body}</p>}
                 {r.testimony && (
                   <p className="text-sm mt-2 p-3 rounded-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 10%, transparent)', color: 'var(--color-text-primary)' }}>
-                    <span className="font-semibold">Testimony: </span>{r.testimony}
+                    <span className="font-semibold">{tr('Testimony:')}{' '}</span>{r.testimony}
                   </p>
                 )}
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-                  <span>{r.is_anonymous ? 'A Celestian' : r.display_name ?? 'A Celestian'} · {timeAgo(r.created_at)}</span>
+                  <span>{r.is_anonymous ? tr('A Celestian') : r.display_name ?? tr('A Celestian')} · {timeAgo(r.created_at)}</span>
                   {r.category && <span>{PRAYER_CATEGORY_LABELS[r.category as PrayerCategory] ?? r.category}</span>}
-                  {r.visibility !== 'church' && <span>{r.visibility === 'parish' ? 'Parish' : 'Shepherd'}</span>}
+                  {r.visibility !== 'church' && <span>{r.visibility === 'parish' ? tr('Parish') : tr('Shepherd')}</span>}
                   <span className="ml-auto flex items-center gap-3">
                     {r.status !== 'pending' && (
                       <button onClick={() => pray(r)} className="inline-flex items-center gap-1 font-semibold px-3 py-1.5 rounded-lg"
                               style={hasPrayed
                                 ? { backgroundColor: 'color-mix(in srgb, var(--color-accent-brand) 15%, transparent)', color: 'var(--color-accent-brand)' }
                                 : { backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>
-                        <HandHeart size={14} /> {hasPrayed ? 'Prayed' : 'I prayed'} · {r.prayer_count}
+                        <HandHeart size={14} /> {hasPrayed ? tr('Prayed') : tr('I prayed')} · {r.prayer_count}
                       </button>
                     )}
-                    {!mine && user && <button onClick={() => report(r)} aria-label="Report"><Flag size={13} /></button>}
+                    {!mine && user && <button onClick={() => report(r)} aria-label={tr('Report')}><Flag size={13} /></button>}
                   </span>
                 </div>
                 {mine && (
@@ -212,25 +207,25 @@ export default function PrayerRequests() {
                       answering === r.id ? (
                         <div className="flex-1 space-y-2">
                           <textarea value={testimony} onChange={e => setTestimony(e.target.value)} rows={2} className={inputClass} style={inputStyle}
-                                    placeholder="Share how God answered (optional)" />
+                                    placeholder={tr('Share how God answered (optional)')} />
                           <div className="flex justify-end gap-2">
-                            <button onClick={() => setAnswering(null)} className="px-3" style={{ color: 'var(--color-text-secondary)' }}>Cancel</button>
+                            <button onClick={() => setAnswering(null)} className="px-3" style={{ color: 'var(--color-text-secondary)' }}>{tr('Cancel')}</button>
                             <button onClick={async () => {
-                              try { await markRequestAnswered(r.id, testimony); setAnswering(null); showToast('Praise God!'); load(); }
+                              try { await markRequestAnswered(r.id, testimony); setAnswering(null); showToast(tr('Praise God!')); load(); }
                               catch (e) { showToast(errorMessage(e)); }
-                            }} className="btn-primary px-3 py-1.5 rounded-lg font-semibold">Mark answered</button>
+                            }} className="btn-primary px-3 py-1.5 rounded-lg font-semibold">{tr('Mark answered')}</button>
                           </div>
                         </div>
                       ) : (
                         <button onClick={() => { setAnswering(r.id); setTestimony(''); }} className="inline-flex items-center gap-1 font-semibold"
-                                style={{ color: 'var(--color-success)' }}><Check size={13} /> It was answered</button>
+                                style={{ color: 'var(--color-success)' }}><Check size={13} />{' '}{tr('It was answered')}</button>
                       )
                     )}
                     {answering !== r.id && (
                       <button onClick={async () => {
-                        if (!await confirmDialog({ title: 'Delete this request?', confirmLabel: 'Delete', danger: true })) return;
+                        if (!await confirmDialog({ title: tr('Delete this request?'), confirmLabel: tr('Delete'), danger: true })) return;
                         try { await deletePrayerRequest(r.id); load(); } catch (e) { showToast(errorMessage(e)); }
-                      }} className="inline-flex items-center gap-1 ml-auto" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={13} /> Delete</button>
+                      }} className="inline-flex items-center gap-1 ml-auto" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={13} />{' '}{tr('Delete')}</button>
                     )}
                   </div>
                 )}

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 // Using a generic placeholder for the logo import, assuming the actual file will be present
 import logo from '../assets/logo.png';
+import { tr } from '../i18n';
 
 export default function SignIn() {
   const [isSignUp, setIsSignUp] = useState(() => new URLSearchParams(window.location.search).get('mode') === 'signup');
@@ -78,20 +79,16 @@ export default function SignIn() {
           {/* Header */}
           <div className="text-center mb-8 animate-fade-in">
             <div className="inline-block mb-4 p-3 rounded-full" style={{ backgroundColor: 'rgba(255, 215, 0, 0.1)' }}>
-              <img src={logo} alt="Logo" className="w-12 h-12" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              <img src={logo} alt={tr('Logo')} className="w-12 h-12" onError={(e) => { e.currentTarget.style.display = 'none' }} />
             </div>
             <h1 
               className="text-3xl font-[Outfit] font-bold mb-2 tracking-tight"
               style={{ color: 'var(--color-text-primary)' }}
-            >
-              CelestialWorship
-            </h1>
+            >{tr('CelestialWorship')}</h1>
             <p 
               className="text-sm font-inter"
               style={{ color: 'var(--color-text-secondary)' }}
-            >
-              Celestial Worship Companion
-            </p>
+            >{tr('Celestial Worship Companion')}</p>
           </div>
 
           {authError && (
@@ -118,12 +115,12 @@ export default function SignIn() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            <span className="font-medium font-inter">Continue with Google</span>
+            <span className="font-medium font-inter">{tr('Continue with Google')}</span>
           </button>
 
           <div className="flex items-center my-6">
             <div className="flex-1 border-t" style={{ borderColor: 'var(--color-border)' }}></div>
-            <span className="px-4 text-sm font-inter" style={{ color: 'var(--color-text-muted)' }}>or</span>
+            <span className="px-4 text-sm font-inter" style={{ color: 'var(--color-text-muted)' }}>{tr('or')}</span>
             <div className="flex-1 border-t" style={{ borderColor: 'var(--color-border)' }}></div>
           </div>
 
@@ -131,9 +128,7 @@ export default function SignIn() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div>
-                <label htmlFor="signin-name" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
-                  Display Name
-                </label>
+                <label htmlFor="signin-name" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>{tr('Display Name')}</label>
                 <input
                   id="signin-name"
                   type="text"
@@ -146,14 +141,12 @@ export default function SignIn() {
                     borderColor: 'var(--color-border)',
                     color: 'var(--color-text-primary)'
                   }}
-                  placeholder="John Doe"
+                  placeholder={tr('John Doe')}
                 />
               </div>
             )}
             <div>
-              <label htmlFor="signin-email" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
-                Email Address
-              </label>
+              <label htmlFor="signin-email" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>{tr('Email Address')}</label>
               <input
                 id="signin-email"
                 type="email"
@@ -166,13 +159,11 @@ export default function SignIn() {
                   borderColor: 'var(--color-border)',
                   color: 'var(--color-text-primary)'
                 }}
-                placeholder="you@example.com"
+                placeholder={tr('you@example.com')}
               />
             </div>
             <div>
-              <label htmlFor="signin-password" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
-                Password
-              </label>
+              <label htmlFor="signin-password" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>{tr('Password')}</label>
               <input
                 id="signin-password"
                 type="password"
@@ -199,14 +190,14 @@ export default function SignIn() {
                 boxShadow: '0 4px 14px 0 rgba(13, 148, 136, 0.39)'
               }}
             >
-              {isSubmitting ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
+              {isSubmitting ? tr('Processing...') : (isSignUp ? tr('Create Account') : tr('Sign In'))}
             </button>
           </form>
 
           {/* Toggle and Links */}
           <div className="mt-6 text-center space-y-3 font-inter">
             <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+              {isSignUp ? tr('Already have an account?') : tr('Don\'t have an account?')}{' '}
               <button
                 onClick={() => {
                   setIsSignUp(!isSignUp);
@@ -215,7 +206,7 @@ export default function SignIn() {
                 className="font-medium hover:underline focus:outline-none transition-colors"
                 style={{ color: 'var(--color-accent-brand)' }}
               >
-                {isSignUp ? 'Sign In' : 'Sign Up'}
+                {isSignUp ? tr('Sign In') : tr('Sign Up')}
               </button>
             </p>
             <div>

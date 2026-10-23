@@ -8,6 +8,7 @@ import { showToast } from './Toast';
 import type { Hymn } from '../types';
 import { stanzaLabel } from '../utils/hymnText';
 import { Sheet } from './Dialog';
+import { tr } from '../i18n';
 
 /**
  * Egun and French translations of a hymn, contributed by members and published by moderators.
@@ -61,29 +62,28 @@ export function HymnTranslations({ hymn, fontSize }: { hymn: Hymn; fontSize: num
                   style={showing === t.language
                     ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' }
                     : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
-            {LANGUAGE_NAMES[t.language]}
+            {tr(LANGUAGE_NAMES[t.language])}
           </button>
         ))}
-        {translations.length === 0 && <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>No Egun or French translation yet.</span>}
+        {translations.length === 0 && <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('No Egun or French translation yet.')}</span>}
         {user && (
           <button onClick={() => setContributing(true)} className="ml-auto text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}>
-            <Plus size={14} /> Contribute a translation
-          </button>
+            <Plus size={14} />{' '}{tr('Contribute a translation')}</button>
         )}
       </div>
 
       {shown && (
         <div className="mt-4 space-y-5" style={{ fontSize }}>
-          {shown.title && <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{shown.title}</p>}
+          {shown.title && <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(shown.title)}</p>}
           {shown.stanzas.map((s, i) => (
             <div key={i} className={s.kind === 'chorus' ? 'pl-4 border-l-2 italic' : ''} style={{ borderColor: 'color-mix(in srgb, var(--color-accent-gold) 50%, transparent)' }}>
               <p className="text-[0.6em] font-bold uppercase tracking-wider mb-1" style={{ color: 'var(--color-accent-gold)' }}>
-                {s.kind === 'chorus' ? (shown.language === 'fr' ? 'Refrain' : 'Chorus') : s.number}
+                {s.kind === 'chorus' ? (shown.language === 'fr' ? tr('Refrain') : tr('Chorus')) : s.number}
               </p>
               {s.lines.map((l, j) => <p key={j} style={{ color: 'var(--color-text-primary)' }}>{l}</p>)}
             </div>
           ))}
-          {shown.source && <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Source: {shown.source}</p>}
+          {shown.source && <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}{shown.source}</p>}
         </div>
       )}
 
@@ -112,7 +112,7 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
       });
       raise(error, 'Sending your translation');
       draft.clear();
-      showToast('Thank you — a moderator will review it');
+      showToast(tr('Thank you — a moderator will review it'));
       onClose();
     } catch (e) {
       showToast(errorMessage(e));
@@ -125,33 +125,31 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
   const inputStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
 
   return (
-    <Sheet label="Contribute a translation" title={`Translate hymn ${hymn.number}`} onClose={onClose}>
+    <Sheet label={tr('Contribute a translation')} title={`Translate hymn ${hymn.number}`} onClose={onClose}>
       <div className="space-y-3">
         <div className="flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }}>
           {(['fr', 'egun'] as const).map(l => (
             <button key={l} onClick={() => draft.setValue({ language: l })} aria-pressed={v.language === l} className="flex-1 py-1.5 rounded-lg text-xs font-semibold"
                     style={v.language === l ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
-              {LANGUAGE_NAMES[l]}
+              {tr(LANGUAGE_NAMES[l])}
             </button>
           ))}
         </div>
-        <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="Title (optional)" className={inputClass} style={inputStyle} />
+        <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('Title (optional)')} className={inputClass} style={inputStyle} />
         {hymn.verses.map((verse, i) => (
           <div key={i}>
             <p className="text-[11px] font-bold uppercase mb-1" style={{ color: 'var(--color-text-muted)' }}>
               {stanzaLabel(verse)} — <span className="normal-case font-normal">{verse.yorubaLines[0] ?? verse.englishLines[0]}</span>
             </p>
-            <textarea value={v.stanzas[i] ?? ''} rows={Math.max(3, verse.yorubaLines.length)} placeholder="One line per line of the hymn"
+            <textarea value={v.stanzas[i] ?? ''} rows={Math.max(3, verse.yorubaLines.length)} placeholder={tr('One line per line of the hymn')}
                       onChange={e => draft.setValue(d => ({ ...d, stanzas: d.stanzas.map((s, j) => (j === i ? e.target.value : s)) }))}
                       className={inputClass} style={inputStyle} />
           </div>
         ))}
         <input value={v.source} onChange={e => draft.setValue({ source: e.target.value })}
-               placeholder="Source: e.g. “Parish hymn book, Cotonou (with permission)” or “My own translation”" className={inputClass} style={inputStyle} />
-        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>Only submit texts you wrote yourself or have permission to share.</p>
-        <button onClick={submit} disabled={busy || !filled || v.source.trim().length < 3} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">
-          Submit for review
-        </button>
+               placeholder={tr('Source: e.g. “Parish hymn book, Cotonou (with permission)” or “My own translation”')} className={inputClass} style={inputStyle} />
+        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Only submit texts you wrote yourself or have permission to share.')}</p>
+        <button onClick={submit} disabled={busy || !filled || v.source.trim().length < 3} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Submit for review')}</button>
       </div>
     </Sheet>
   );

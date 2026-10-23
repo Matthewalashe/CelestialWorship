@@ -6,8 +6,10 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { moderationQueue, moderate, ARTICLE_KINDS } from '../lib/community';
 import { ErrorState } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
+import { ModerationExtras } from '../components/ModerationExtras';
 import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
+import { tr } from '../i18n';
 
 type Queue = Awaited<ReturnType<typeof moderationQueue>>;
 type Section = keyof Queue;
@@ -61,20 +63,20 @@ export default function Moderate() {
   useEffect(() => { if (canModerate) load(); }, [canModerate, load]);
 
   if (loading) return null;
-  if (!canModerate) return <p className="text-center py-16 text-sm" style={{ color: 'var(--color-text-muted)' }}>This page is for moderators.</p>;
+  if (!canModerate) return <p className="text-center py-16 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('This page is for moderators.')}</p>;
   if (error) return <ErrorState error={error} onRetry={load} />;
-  if (!queue) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>Loading…</p>;
+  if (!queue) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
 
   const decide = async (item: any, approve: boolean) => {
     let update = approve ? APPROVE[section] : REJECT[section];
     if (!approve && section === 'articles') {
-      const note = await promptDialog({ title: 'Not approved', label: 'Note to the author (why it was not approved)', confirmLabel: 'Reject', required: false });
+      const note = await promptDialog({ title: tr('Not approved'), label: tr('Note to the author (why it was not approved)'), confirmLabel: tr('Reject'), required: false });
       if (note === null) return;
       update = { ...update, moderation_note: note };
     }
     try {
       await moderate(TABLE[section], item.id, update);
-      showToast(approve ? 'Approved' : 'Declined');
+      showToast(approve ? tr('Approved') : tr('Declined'));
       load();
     } catch (e) {
       showToast(errorMessage(e));
@@ -85,29 +87,30 @@ export default function Moderate() {
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24">
-      <h1 className="text-2xl font-bold font-[Outfit] mb-4" style={{ color: 'var(--color-text-primary)' }}>Moderation</h1>
+      <h1 className="text-2xl font-bold font-[Outfit] mb-4" style={{ color: 'var(--color-text-primary)' }}>{tr('Moderation')}</h1>
+      <ModerationExtras />
       <div className="flex gap-1 overflow-x-auto hide-scrollbar mb-5" role="tablist">
         {SECTIONS.map(s => (
           <button key={s.id} role="tab" aria-selected={section === s.id} onClick={() => setSection(s.id)}
                   className="px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap"
                   style={section === s.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
-            {s.label} ({(queue[s.id] as any[]).length})
+            {tr(s.label)} ({(queue[s.id] as any[]).length})
           </button>
         ))}
       </div>
-      {items.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>Nothing waiting.</p> : (
+      {items.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('Nothing waiting.')}</p> : (
         <ul className="space-y-3">
           {items.map(item => {
             const s = summary(section, item);
             return (
               <li key={item.id} className="rounded-2xl border p-4" style={card}>
-                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{s.title}</p>
+                <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(s.title)}</p>
                 {s.body && <p className="text-sm mt-1 whitespace-pre-line line-clamp-6" style={{ color: 'var(--color-text-secondary)' }}>{s.body}</p>}
                 {s.meta && <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{s.meta}</p>}
                 <div className="flex items-center gap-4 mt-3 text-sm font-semibold">
-                  <button onClick={() => decide(item, true)} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={16} /> {section === 'reports' ? 'Resolved' : 'Approve'}</button>
-                  <button onClick={() => decide(item, false)} className="inline-flex items-center gap-1" style={{ color: 'var(--color-warning)' }}><X size={16} /> {section === 'reports' ? 'Dismiss' : 'Decline'}</button>
-                  {s.link && <Link to={s.link} className="ml-auto inline-flex items-center gap-1 text-xs" style={{ color: 'var(--color-accent-brand)' }}>Open <ExternalLink size={12} /></Link>}
+                  <button onClick={() => decide(item, true)} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={16} /> {section === 'reports' ? tr('Resolved') : tr('Approve')}</button>
+                  <button onClick={() => decide(item, false)} className="inline-flex items-center gap-1" style={{ color: 'var(--color-warning)' }}><X size={16} /> {section === 'reports' ? tr('Dismiss') : tr('Decline')}</button>
+                  {s.link && <Link to={s.link} className="ml-auto inline-flex items-center gap-1 text-xs" style={{ color: 'var(--color-accent-brand)' }}>{tr('Open')}{' '}<ExternalLink size={12} /></Link>}
                 </div>
               </li>
             );

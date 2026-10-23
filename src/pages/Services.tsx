@@ -4,6 +4,7 @@ import { Church } from 'lucide-react';
 import { useServices } from '../hooks/useServices';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { tr } from '../i18n';
 
 const SERVICE_GROUPS = [
   {
@@ -44,16 +45,16 @@ export default function Services() {
     );
   }, [services, searchTerm]);
 
-  if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">Loading...</div>;
+  if (loading) return <div className="p-4 text-center text-[var(--color-text-secondary)]">{tr('Loading...')}</div>;
 
   return (
     <div className="p-4 max-w-4xl mx-auto pb-24">
-      <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6 font-outfit">Service Directory</h1>
+      <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6 font-outfit">{tr('Service Directory')}</h1>
       
       <div className="mb-8 relative">
         <input 
           type="text" 
-          placeholder="Search services..." 
+          placeholder={tr('Search services...')} 
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
           className="w-full bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-xl py-3 px-4 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent-gold)] transition-colors placeholder:text-[var(--color-text-secondary)] backdrop-blur-md"
@@ -67,7 +68,7 @@ export default function Services() {
 
           return (
             <div key={group.title}>
-              <h2 className="text-xl font-semibold text-[var(--color-accent-gold)] mb-4 font-outfit">{group.title}</h2>
+              <h2 className="text-xl font-semibold text-[var(--color-accent-gold)] mb-4 font-outfit">{tr(group.title)}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupServices.map(service => (
                   <button 

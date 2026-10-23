@@ -2427,11 +2427,11 @@
     "time": "10:00",
     "occasion": "Morning",
     "firstLesson": {
-      "raw": "John 17:1-16 [verify: source shows \"1 John 17:1-16\" - likely OCR/print error; John's Gospel ch.17 fits; 1 John has only 5 chapters]",
-      "book": "John 17:1-16 [verify: source shows \"1 John 17:1-16\" - likely OCR/print error; John's Gospel ch.17 fits; 1 John has only 5 chapters]",
-      "chapter": 1,
+      "raw": "John 17:1-16",
+      "book": "John",
+      "chapter": 17,
       "verseStart": 1,
-      "verseEnd": 1
+      "verseEnd": 16
     },
     "secondLesson": {
       "raw": "Luke 21:1-6",

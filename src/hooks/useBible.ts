@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getBibleVersion, USFM_CODES, type BibleVersion } from '../data/bibleVersions';
+import { resolveBookName } from '../data/bibleBooks';
 
 export interface BibleChapterData {
   book: string;
@@ -23,7 +24,8 @@ function loadLocalBook(dir: string, book: string): Promise<LocalBookFile | null>
   const key = `${dir}:${book}`;
   let pending = bookCache.get(key);
   if (!pending) {
-    const fileName = book.replace(/\s+/g, '');
+    // Lessons write "Psalm 23", the file is Psalms
+    const fileName = (resolveBookName(book) ?? book).replace(/\s+/g, '');
     pending = fetch(`/data/bible/${dir}/${fileName}.json`)
       .then(r => (r.ok ? r.json() : null))
       .catch(() => null);

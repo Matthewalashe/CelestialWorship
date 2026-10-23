@@ -10,6 +10,7 @@ import type { Hymn } from '../types';
 import { sanitizeSearchInput } from '../utils/sanitize';
 import { normalizeForSearch } from '../utils/search';
 import { displayTitle, type HymnLanguage } from '../utils/hymnText';
+import { contentDefaults, tr } from '../i18n';
 
 type LyricsView = 'yo' | 'both' | 'en';
 // Shared with the hymn page so both remember the same choice
@@ -20,7 +21,7 @@ function readView(): LyricsView {
     const v = localStorage.getItem(VIEW_KEY);
     if (v === 'yo' || v === 'en' || v === 'both') return v;
   } catch {}
-  return 'yo';
+  return contentDefaults().hymnView;
 }
 
 export default function Hymns() {
@@ -121,9 +122,9 @@ export default function Hymns() {
   return (
     <div className="px-4 pt-4 pb-24 max-w-4xl mx-auto">
       <div className="flex items-end justify-between mb-4">
-        <h1 className="text-3xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>Hymnal</h1>
+        <h1 className="text-3xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Hymnal')}</h1>
         <div className="flex rounded-lg p-0.5 border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
-             role="group" aria-label="Title language">
+             role="group" aria-label={tr('Title language')}>
           {([['yo', 'Yorùbá'], ['both', 'Both'], ['en', 'English']] as const).map(([key, label]) => (
             <button
               key={key}
@@ -147,15 +148,15 @@ export default function Hymns() {
           <input
             type="search"
             inputMode="search"
-            placeholder="Number, title or words from the hymn…"
+            placeholder={tr('Number, title or words from the hymn…')}
             value={searchTerm}
             onChange={e => setSearchTerm(sanitizeSearchInput(e.target.value))}
             className="w-full rounded-xl py-3.5 pl-11 pr-10 text-base border focus:outline-none transition-colors"
             style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}
-            aria-label="Search hymns"
+            aria-label={tr('Search hymns')}
           />
           {searchTerm && (
-            <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1" aria-label="Clear search"
+            <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 p-1" aria-label={tr('Clear search')}
                     style={{ color: 'var(--color-text-muted)' }}>
               <X size={16} />
             </button>
@@ -173,7 +174,7 @@ export default function Hymns() {
             ? { backgroundColor: '#EF444422', borderColor: '#EF4444', color: '#EF4444' }
             : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
         >
-          <Heart size={12} fill={favoritesOnly ? 'currentColor' : 'none'} /> Favourites{favorites.length ? ` (${favorites.length})` : ''}
+          <Heart size={12} fill={favoritesOnly ? 'currentColor' : 'none'} />{' '}{tr('Favourites')}{favorites.length ? ` (${favorites.length})` : ''}
         </button>
         <select
           value={sectionId}
@@ -184,11 +185,11 @@ export default function Hymns() {
             color: sectionId ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
             borderColor: 'var(--color-border)',
           }}
-          aria-label="Hymnal section"
+          aria-label={tr('Hymnal section')}
         >
-          <option value="">All sections</option>
+          <option value="">{tr('All sections')}</option>
           {sections.map(s => (
-            <option key={s.id} value={s.id}>{s.label} ({s.count})</option>
+            <option key={s.id} value={s.id}>{tr(s.label)} ({s.count})</option>
           ))}
         </select>
         {(Object.keys(CATEGORY_LABELS) as HymnCategory[]).map(key => {
@@ -204,7 +205,7 @@ export default function Hymns() {
                 ? { backgroundColor: `${color}22`, borderColor: color, color }
                 : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
             >
-              {CATEGORY_LABELS[key]}
+              {tr(CATEGORY_LABELS[key])}
             </button>
           );
         })}
@@ -248,19 +249,17 @@ export default function Hymns() {
           {hymns.length === total ? `${total} hymns` : `${hymns.length} of ${total} hymns`}
         </p>
         {hasFilters && (
-          <button onClick={clearAll} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
-            Clear filters
-          </button>
+          <button onClick={clearAll} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Clear filters')}</button>
         )}
       </div>
 
       {loading ? (
-        <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>Loading hymns…</div>
+        <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>{tr('Loading hymns…')}</div>
       ) : hymns.length === 0 ? (
         <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
           {favoritesOnly && favorites.length === 0
-            ? 'No favourites yet — tap the heart on a hymn to save it here.'
-            : 'No hymns match.'}
+            ? tr('No favourites yet — tap the heart on a hymn to save it here.')
+            : tr('No hymns match.')}
         </div>
       ) : (
         <ul className="divide-y rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>

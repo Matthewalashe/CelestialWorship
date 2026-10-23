@@ -94,3 +94,42 @@ export function downloadIcs(event: ChurchEvent) {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
+
+/**
+ * Public occasions named in the Church's Bible lessons (public/data/lessons.json): harvests, Holy Week,
+ * Pentecost, the Founder's remembrance, weeks of prayer, new-moon services and so on.
+ * Plain "Morning" / "Evening" entries are not events. Days already covered by an observance are skipped.
+ */
+export function lessonEvents(lessons: { date: string; time?: string; occasion: string | null }[], observances: ChurchEvent[] = []): ChurchEvent[] {
+  const taken = new Set(observances.map(o => o.starts_at.slice(0, 10)));
+  const out: ChurchEvent[] = [];
+  const seen = new Set<string>();
+  for (const l of lessons) {
+    if (!l.occasion) continue;
+    // "Morning - Imeko Adult Harvest" → "Imeko Adult Harvest"; drop editorial notes in brackets
+    let title = l.occasion.replace(/\[[^\]]*\]/g, '').replace(/^(Morning|Evening)\s*[-–]\s*/i, '').trim();
+    if (!title || /^(morning|evening)$/i.test(title)) continue;
+    let location: string | null = null;
+    const place = title.match(/\(([^)]*(?:KM\s?\d+|Exp|Road|Rd)[^)]*)\)/i);
+    if (place) { location = place[1]; title = title.replace(place[0], '').trim(); }
+    if (/Ketu/i.test(title)) location = location ?? 'International Headquarters, Ketu, Lagos';
+    if (/Porto-?Novo/i.test(title)) location = location ?? 'Supreme Headquarters, Porto-Novo';
+    if (/Imeko/i.test(title)) location = location ?? 'Celestial City, Imeko, Ogun State';
+    if (/Makoko/i.test(title)) location = location ?? 'National Headquarters, Makoko, Yaba, Lagos';
+    const key = `${l.date}|${title.toLowerCase()}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    // A built-in observance already marks Easter, Good Friday, Christmas… on that day
+    if (taken.has(l.date) && /easter|good friday|christmas day|palm sunday|washing of feet|holy thursday|new year|juvenile harvest|holy mary|founder/i.test(title)) continue;
+    const category: ChurchEvent['category'] = /harvest/i.test(title) ? 'harvest' : /founder|remembrance|service of songs/i.test(title) ? 'memorial'
+      : /family day|convocation/i.test(title) ? 'convention' : 'service';
+    const [hh, mm] = (l.time ?? '').split(':').map(Number);
+    const date = new Date(`${l.date}T12:00:00`);
+    const ev = builtIn(`lesson-${l.date}-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}`, title, date,
+      'From the Bible lessons of the Celestial Church of Christ. Confirm the time with your parish.', category,
+      Number.isFinite(hh) ? hh : undefined, location);
+    if (Number.isFinite(mm) && Number.isFinite(hh)) ev.starts_at = at(date, hh, mm);
+    out.push(ev);
+  }
+  return out;
+}
