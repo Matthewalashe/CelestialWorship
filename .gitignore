@@ -30,3 +30,6 @@ npm-debug.log*
 # Python
 __pycache__/
 *.pyc
+
+# Browser test output
+tests/e2e/out/
