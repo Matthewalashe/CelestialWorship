@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
+import { reportError } from '../hooks/useAnalytics';
 
 interface Props {
   children: ReactNode;
@@ -22,7 +23,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('CCC Live Error:', error, info.componentStack);
+    console.error('CelestialWorship error:', error, info.componentStack);
+    reportError(error, 'render');
   }
 
   render() {
@@ -36,7 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
           </h2>
           <p className="text-sm mb-4 max-w-md"
              style={{ color: 'var(--color-text-secondary)' }}>
-            {this.state.error?.message || 'An unexpected error occurred.'}
+            This page couldn’t be shown. Please try again — if it keeps happening, the problem has been reported.
           </p>
           <div className="flex gap-3">
             <button

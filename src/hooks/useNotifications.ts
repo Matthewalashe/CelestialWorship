@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getServiceScheduleForDate, toISODate } from '../utils/dateUtils';
+import { pushConfigured, syncPushSubscription, removePushSubscription } from '../lib/push';
 
 const PREFS_KEY = 'cw-notification-prefs';
 const SCHEDULED_KEY = 'cw-scheduled-notifications';
@@ -152,6 +153,21 @@ export function useNotifications() {
   );
   const [isSupported] = useState(() => 'Notification' in window && 'serviceWorker' in navigator);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // True once this device receives reminders by Web Push (then the in-app timers are not needed)
+  const [pushActive, setPushActive] = useState(false);
+
+  useEffect(() => {
+    if (permission !== 'granted' || !prefs.enabled) {
+      if (pushConfigured && !prefs.enabled) removePushSubscription();
+      setPushActive(false);
+      return;
+    }
+    syncPushSubscription({
+      serviceReminders: prefs.serviceReminders,
+      devotionReminder: prefs.devotionReminders,
+      devotionHour: DEVOTION_REMINDER_HOUR,
+    }).then(setPushActive);
+  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders]);
 
   // Request permission
   const requestPermission = useCallback(async () => {
@@ -196,7 +212,7 @@ export function useNotifications() {
     timersRef.current.forEach(t => clearTimeout(t));
     timersRef.current = [];
 
-    if (permission !== 'granted' || !prefs.enabled) return;
+    if (permission !== 'granted' || !prefs.enabled || pushActive) return;
 
     const schedule = buildSchedule(prefs);
     const alreadyFired = getScheduledNotifications();
@@ -239,7 +255,7 @@ export function useNotifications() {
       timersRef.current.forEach(t => clearTimeout(t));
       timersRef.current = [];
     };
-  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders]);
+  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders, pushActive]);
 
   // Re-schedule when app becomes visible (user returns to app)
   useEffect(() => {
@@ -256,6 +272,7 @@ export function useNotifications() {
   return {
     isSupported,
     permission,
+    pushActive,
     prefs,
     requestPermission,
     toggleServiceReminders,

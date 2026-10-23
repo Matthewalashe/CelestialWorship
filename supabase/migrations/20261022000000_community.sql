@@ -551,9 +551,11 @@ create table if not exists public.hymn_translations (
   contributor_id uuid references auth.users (id) on delete set null,
   status text not null default 'submitted' check (status in ('submitted', 'published', 'rejected')),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (hymn_number, language, status)
+  updated_at timestamptz not null default now()
 );
+-- One published translation per hymn and language; any number of submissions can wait for review
+create unique index if not exists hymn_translations_published_idx
+  on public.hymn_translations (hymn_number, language) where status = 'published';
 alter table public.hymn_translations enable row level security;
 drop policy if exists "translations: read" on public.hymn_translations;
 create policy "translations: read" on public.hymn_translations for select
@@ -827,3 +829,18 @@ returns boolean language sql stable security definer set search_path = public as
   select exists (select 1 from public.payout_accounts where parish_id = pid and status = 'verified' and subaccount_code is not null);
 $$;
 grant execute on function public.parish_can_receive(uuid) to anon, authenticated;
+
+-- Reminders already sent, so the scheduler never sends the same one twice
+create table if not exists public.push_log (
+  endpoint text not null references public.push_subscriptions (endpoint) on delete cascade,
+  key text not null,                         -- e.g. 'lords_day_service-30-2026-06-14'
+  sent_at timestamptz not null default now(),
+  primary key (endpoint, key)
+);
+alter table public.push_log enable row level security;  -- service role only
+
+-- Run the reminder sender every five minutes (needs the pg_cron and pg_net extensions):
+--   select cron.schedule('send-reminders', '*/5 * * * *', $$
+--     select net.http_post(url := 'https://<project>.supabase.co/functions/v1/send-reminders',
+--                          headers := '{"Authorization": "Bearer <CRON_SECRET>"}'::jsonb)
+--   $$);

@@ -14,6 +14,8 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Push notification handlers (see public/push-handler.js)
+        importScripts: ['/push-handler.js'],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         // Bible books (~13 MB) are cached as they are read, not all at install time
         globIgnores: ['**/data/bible/**'],

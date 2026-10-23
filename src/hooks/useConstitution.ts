@@ -1,31 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import type { ConstitutionData, ConstitutionSection } from '../types';
+import { createJsonResource } from '../lib/jsonResource';
 
-let constitutionCache: ConstitutionData | null = null;
-
-async function loadConstitution(): Promise<ConstitutionData> {
-  if (constitutionCache) return constitutionCache;
-
-  const response = await fetch('/data/constitution.json');
-  if (!response.ok) throw new Error(`Couldn't load constitution (HTTP ${response.status})`);
-  const data: ConstitutionData = await response.json();
-  constitutionCache = data;
-  return data;
-}
+const constitutionResource = createJsonResource<ConstitutionData, ConstitutionData | null>('/data/constitution.json', 'the constitution', d => d);
 
 export function useConstitution() {
-  const [data, setData] = useState<ConstitutionData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadConstitution()
-      .then(setData)
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  return { data, loading, error };
+  return constitutionResource.useResource(null);
 }
 
 export function useConstitutionSearch(query: string) {

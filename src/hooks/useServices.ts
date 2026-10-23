@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { createJsonResource } from '../lib/jsonResource';
 import type { ServiceOrder, ServiceStep, ScriptureReference } from '../types';
 
-let servicesCache: ServiceOrder[] | null = null;
 
 function mapScriptureRef(raw: any): ScriptureReference | null {
   if (!raw) return null;
@@ -42,38 +42,18 @@ function mapStep(raw: any): ServiceStep {
   };
 }
 
-async function loadServices(): Promise<ServiceOrder[]> {
-  if (servicesCache) return servicesCache;
-  
-  const response = await fetch('/data/services.json');
-  if (!response.ok) throw new Error(`Couldn't load services (HTTP ${response.status})`);
-  const data: any[] = await response.json();
-
-  const mapped: ServiceOrder[] = data.map(s => ({
-    id: s.id,
-    displayName: s.displayName ?? s.display_name ?? s.id,
-    day: s.day ?? '',
-    time: s.time ?? '',
-    description: s.description ?? '',
-    steps: (s.steps || []).map(mapStep),
-  }));
-
-  servicesCache = mapped;
-  return mapped;
-}
+const servicesResource = createJsonResource<any[], ServiceOrder[]>('/data/services.json', 'services', data => data.map(s => ({
+  id: s.id,
+  displayName: s.displayName ?? s.display_name ?? s.id,
+  day: s.day ?? '',
+  time: s.time ?? '',
+  description: s.description ?? '',
+  steps: (s.steps || []).map(mapStep),
+})));
+const NO_SERVICES: ServiceOrder[] = [];
 
 export function useServices() {
-  const [services, setServices] = useState<ServiceOrder[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadServices()
-      .then(setServices)
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: services, loading, error } = servicesResource.useResource(NO_SERVICES);
   return { services, loading, error };
 }
 

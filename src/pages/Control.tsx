@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CCCLogo } from '../components/icons/celestial-icons';
-import { useDisplayController, loadOperatorQueue, clearOperatorQueue } from '../hooks/useLiveDisplay';
+import { useDisplayController, loadOperatorQueue, clearOperatorQueue, newRoomCode } from '../hooks/useLiveDisplay';
 import { useHymnSearch } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
@@ -20,7 +20,7 @@ interface HistoryItem {
 export default function Control() {
   usePageView('operator');
   usePageTitle('control');
-  const { sendToDisplay, blankScreen, showLogo } = useDisplayController();
+  const { sendToDisplay, room, setRoom, remoteConnected } = useDisplayController();
   const [displayState, setDisplayState] = useState<DisplayState>({ type: 'blank', content: '' });
   const [history, setHistory] = useState<HistoryItem[]>([]);
   
@@ -144,9 +144,24 @@ export default function Control() {
             </div>
           ))}
         </div>
-        <button 
-          onClick={() => window.open('/display', 'celestialworship-display', 'width=1920,height=1080')}
-          className="ml-4 shrink-0 bg-[var(--color-accent-brand)]/20 text-[var(--color-accent-brand)] border border-[var(--color-accent-brand)]/50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[var(--color-accent-brand)]/40 transition-colors flex items-center gap-2"
+        {/* Another device as the screen: share a room code */}
+        {room ? (
+          <div className="ml-4 shrink-0 flex items-center gap-2 text-xs">
+            <span className={`w-2 h-2 rounded-full ${remoteConnected ? 'bg-emerald-500' : 'bg-gray-500'}`} />
+            <span className="text-[var(--color-text-secondary)]">
+              Screen code <strong className="text-[var(--color-text-primary)] tracking-widest">{room}</strong> · open {window.location.host}/display?room={room}
+            </span>
+            <button onClick={() => setRoom(null)} className="text-[var(--color-text-muted)] hover:text-red-400 font-semibold">Stop</button>
+          </div>
+        ) : (
+          <button onClick={() => setRoom(newRoomCode())}
+                  className="ml-4 shrink-0 px-3 py-2 rounded-lg text-xs font-bold border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+            Use another device as the screen
+          </button>
+        )}
+        <button
+          onClick={() => window.open(room ? `/display?room=${room}` : '/display', 'celestialworship-display', 'width=1920,height=1080')}
+          className="ml-2 shrink-0 bg-[var(--color-accent-brand)]/20 text-[var(--color-accent-brand)] border border-[var(--color-accent-brand)]/50 px-4 py-2 rounded-lg text-sm font-bold hover:bg-[var(--color-accent-brand)]/40 transition-colors flex items-center gap-2"
         >
           <MonitorPlay size={18} className="inline mr-1" /> Open Display Window
         </button>

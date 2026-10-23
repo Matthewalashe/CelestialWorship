@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useDisplayReceiver } from '../hooks/useLiveDisplay';
 
 export default function Display() {
-  const { displayState: state } = useDisplayReceiver();
+  const room = new URLSearchParams(window.location.search).get('room');
+  const { displayState: state, connected } = useDisplayReceiver(room);
   const [logoUrl, setLogoUrl] = useState('/logo.png');
 
   useEffect(() => {
@@ -42,6 +43,11 @@ export default function Display() {
             <img src={logoUrl} alt="Celestial Church of Christ" className="w-64 h-64 object-contain mb-8 z-10 drop-shadow-[0_0_30px_rgba(212,168,67,0.5)]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             <h1 className="text-7xl font-[Outfit] font-bold tracking-widest text-white drop-shadow-2xl z-10 text-center uppercase">CelestialWorship</h1>
             <p className="text-3xl text-[var(--color-accent-gold)] font-medium mt-4 tracking-widest uppercase z-10">Celestial Church of Christ</p>
+            {room && (
+              <p className="text-lg text-white/40 mt-10 z-10 tracking-widest">
+                {connected ? `Screen ${room.toUpperCase()} ready` : `Connecting to ${room.toUpperCase()}…`}
+              </p>
+            )}
           </div>
         )}
 

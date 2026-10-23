@@ -12,6 +12,7 @@ import { useSwipe } from '../hooks/useSwipe';
 import { useFavoriteHymns, recordHymnView } from '../hooks/useFavorites';
 import { displayTitle, stanzaLabel, type HymnLanguage } from '../utils/hymnText';
 import { showToast } from '../components/Toast';
+import { HymnTranslations } from '../components/HymnTranslations';
 import { BookOpen, Moon, X, Tv, Share2, Music2, MonitorSmartphone, Heart, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 
 type LyricsView = 'yo' | 'both' | 'en';
@@ -397,6 +398,8 @@ export default function HymnDetail() {
           />
         ))}
       </article>
+
+      <HymnTranslations hymn={hymn} fontSize={fontSize} />
 
       {/* Bottom bar: previous / share / next */}
       <div className="fixed bottom-[68px] md:bottom-0 left-0 md:left-64 right-0 px-4 py-2.5 backdrop-blur-xl border-t z-10"

@@ -1,31 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { BibleLesson } from '../types';
 import { toISODate } from '../utils/dateUtils';
+import { createJsonResource } from '../lib/jsonResource';
 
-let lessonsCache: BibleLesson[] | null = null;
-
-async function loadLessons(): Promise<BibleLesson[]> {
-  if (lessonsCache) return lessonsCache;
-  
-  const response = await fetch('/data/lessons.json');
-  if (!response.ok) throw new Error(`Couldn't load lessons (HTTP ${response.status})`);
-  const data: BibleLesson[] = await response.json();
-  lessonsCache = data;
-  return data;
-}
+const lessonsResource = createJsonResource<BibleLesson[], BibleLesson[]>('/data/lessons.json', 'lessons', d => d);
+const NO_LESSONS: BibleLesson[] = [];
 
 export function useLessons() {
-  const [lessons, setLessons] = useState<BibleLesson[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadLessons()
-      .then(setLessons)
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false));
-  }, []);
-
+  const { data: lessons, loading, error } = lessonsResource.useResource(NO_LESSONS);
   return { lessons, loading, error };
 }
 
