@@ -35,7 +35,9 @@ drop policy if exists "relations: parish admins" on public.parish_relations;
 create policy "relations: parish admins" on public.parish_relations for all
   using (public.is_parish_admin(parish_id)) with check (public.is_parish_admin(parish_id));
 
-create or replace view public.parish_directory with (security_invoker = true) as
+-- Columns change between versions, which create or replace view does not allow
+drop view if exists public.parish_directory;
+create view public.parish_directory with (security_invoker = true) as
   select id, name, diocese, province, country, state_region, city, address, latitude, longitude, shepherd_name,
          case when contact_public then phone end as phone,
          case when contact_public then email end as email,

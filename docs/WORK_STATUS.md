@@ -63,7 +63,7 @@ Legend: ✅ done · 🔑 built, needs a key, permission or the database switched
 | 51 | Projector operator: better UI and UX | ✅ sources · slides · LIVE and NEXT monitors, keys 1–9, verse ranges, history | Project to screen |
 | 52 | Splash screen and animation | ✅ | First open |
 | 53 | Shepherds/admins claim their listed parish with evidence; on approval it takes their contact and they administer it | ✅ · 🔑 database | Directory → Claim this parish; Moderation |
-| 41 | Commit and deploy | ✅ app deployed to Vercel · 🔑 database migrations and Edge Functions are applied from your Supabase account (SETUP.md §1–2) | |
+| 41 | Commit and deploy | ✅ app on Vercel; all 6 migrations and 11 Edge Functions live on Supabase; reminders scheduled every 5 min; push keys set · 🔑 Paystack keys and plan codes | |
 
 ## Audit items
 

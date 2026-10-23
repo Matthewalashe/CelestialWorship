@@ -192,7 +192,9 @@ create policy "parishes: edit by admins" on public.parishes for update
   using (public.has_parish_role(id, array['media']) or (submitted_by = auth.uid() and status = 'pending'));
 
 -- Keep personal contact out of the public listing unless the parish agreed
-create or replace view public.parish_directory with (security_invoker = true) as
+-- Columns change between versions, which create or replace view does not allow
+drop view if exists public.parish_directory;
+create view public.parish_directory with (security_invoker = true) as
   select id, name, diocese, province, country, state_region, city, address, latitude, longitude, shepherd_name,
          case when contact_public then phone end as phone,
          case when contact_public then email end as email,
@@ -698,7 +700,9 @@ alter table public.parishes add column if not exists social_links jsonb;      --
 alter table public.parishes add column if not exists accepts_prayer_requests boolean not null default true;
 alter table public.parishes add column if not exists accepts_appointments boolean not null default false;
 
-create or replace view public.parish_directory with (security_invoker = true) as
+-- Columns change between versions, which create or replace view does not allow
+drop view if exists public.parish_directory;
+create view public.parish_directory with (security_invoker = true) as
   select id, name, diocese, province, country, state_region, city, address, latitude, longitude, shepherd_name,
          case when contact_public then phone end as phone,
          case when contact_public then email end as email,
