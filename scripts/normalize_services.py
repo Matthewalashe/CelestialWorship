@@ -18,7 +18,41 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PATH = ROOT / 'public' / 'data' / 'services.json'
 KJV = ROOT / 'public' / 'data' / 'bible' / 'en'
-HYMNS = {h['number'] for h in json.loads((ROOT / 'public' / 'data' / 'hymns.json').read_text(encoding='utf-8'))}
+HYMN_DATA = json.loads((ROOT / 'public' / 'data' / 'hymns.json').read_text(encoding='utf-8'))
+HYMNS = {h['number'] for h in HYMN_DATA}
+
+
+def squash(text):
+    """Lowercase letters only, so 'Jerih Moh Yah mah,' matches 'Jerih Moh Yamah'"""
+    import unicodedata
+    text = unicodedata.normalize('NFD', text)
+    return re.sub(r'[^a-z]', '', ''.join(c for c in text if not unicodedata.combining(c)).lower())
+
+
+def words(text):
+    return {w for w in (squash(t) for t in re.split(r'\s+', text)) if len(w) >= 3}
+
+
+# First-stanza vocabulary of every hymn (each language separately), for spotting lyrics quoted in the order
+HYMN_WORDS = []
+for h in HYMN_DATA:
+    for key in ('english_lines', 'yoruba_lines'):
+        lines = (h['verses'][0].get(key) if h['verses'] else None) or []
+        vocab = words(' '.join(lines))
+        if len(vocab) >= 6:
+            HYMN_WORDS.append((vocab, h['number']))
+
+
+def quoted_hymn(text):
+    """The hymn whose first stanza is written out in the step text: most of its words are present,
+    and clearly more than for any other hymn."""
+    body = words(text)
+    scores = sorted(((len(v & body) / len(v), n) for v, n in HYMN_WORDS), reverse=True)
+    if not scores:
+        return None
+    best, number = scores[0]
+    runner_up = next((s for s, n in scores if n != number), 0)
+    return number if best >= 0.7 and best - runner_up >= 0.2 else None
 
 BOOKS = [p.stem for p in KJV.glob('*.json')]
 BOOK_NAMES = {re.sub(r'(\d)', r'\1 ', b).strip(): b for b in BOOKS}  # "1Corinthians" -> "1 Corinthians"
@@ -116,6 +150,12 @@ def main():
                 if m and not slot.get('fixedHymnNumber') and not slot.get('category'):
                     step['hymnSlot'] = {'fixedHymnNumber': int(m.group(1))}
                     stats['fixed_added'] += 1
+                elif not slot.get('fixedHymnNumber'):
+                    # The order writes out a specific hymn's words: that hymn is prescribed, not a free choice
+                    quoted = quoted_hymn(text)
+                    if quoted:
+                        step['hymnSlot'] = {'fixedHymnNumber': quoted}
+                        stats.setdefault('pinned_from_lyrics', []).append(f"{svc['id']} step {step.get('stepNumber')}: hymn {quoted}")
                 fixed = (step.get('hymnSlot') or {}).get('fixedHymnNumber')
                 if fixed and fixed not in HYMNS:
                     stats['unknown_hymns'].append(f"{svc['id']} step {step.get('stepNumber')}: {fixed}")

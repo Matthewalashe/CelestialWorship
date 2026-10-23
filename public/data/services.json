@@ -652,7 +652,7 @@
         ],
         "type": "hymn",
         "hymnSlot": {
-          "category": "processional_or_opening"
+          "fixedHymnNumber": 1
         },
         "scriptureRef": null,
         "scripture_references": [],
@@ -665,7 +665,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense bearer should start to light the candles on hearing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1148,7 +1150,7 @@
         ],
         "type": "hymn",
         "hymnSlot": {
-          "category": "processional_or_opening"
+          "fixedHymnNumber": 1
         },
         "scriptureRef": null,
         "scripture_references": [],
@@ -1161,7 +1163,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense bearer should start light to the candles on hearing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -1644,7 +1648,7 @@
         ],
         "type": "hymn",
         "hymnSlot": {
-          "category": "processional_or_opening"
+          "fixedHymnNumber": 1
         },
         "scriptureRef": null,
         "scripture_references": [],
@@ -1657,7 +1661,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start to light the candles starting from the middle candle, then right to the left as soon they started singing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -2752,7 +2758,7 @@
         ],
         "type": "hymn",
         "hymnSlot": {
-          "category": "processional_or_opening"
+          "fixedHymnNumber": 1
         },
         "scriptureRef": null,
         "scripture_references": [],
@@ -2765,7 +2771,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start to lit the candles on hearing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -3844,7 +3852,9 @@
           "Hymn for lighting candles Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start to lit the candles on hearing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -4322,7 +4332,7 @@
         ],
         "type": "hymn",
         "hymnSlot": {
-          "category": "processional_or_opening"
+          "fixedHymnNumber": 1
         },
         "scriptureRef": null,
         "scripture_references": [],
@@ -4335,7 +4345,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start lit the candles starting from the middle candle, then right to the left as soon they started singing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5382,7 +5394,9 @@
           "Hymn for lighting candles Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start to light the candles on hearing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -5734,7 +5748,9 @@
           "Hymn C.C.C. H.B 58 Sing raise your voices in song Unto the Lord our king That Holy King might redeem us In this His Holy fold That Holy King might redeem us And send His heavenly help To keep us off all sinful deeds And forgive us all our sins. Amen"
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 58
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -6615,7 +6631,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense bearer should start lit the candles starting from the middle candle, then right to the left as soon they started singing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -8353,7 +8371,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense bearer should start lit the candles starting from the middle candle, then right to the left as soon they started singing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false
@@ -8874,7 +8894,9 @@
           "Hymn for lighting the candles: Yarah Rah Sarah, Yah Rah Samahtah Yarah Rah Sarah, Yah Rah Samahtah Kindle the light Divine from Heaven above Kindle the light Divine from Heaven above Amen NB: Incense carrier should start lit the candles starting from the middle candle, then right to the left as soon they started singing Yarah Sarah."
         ],
         "type": "hymn",
-        "hymnSlot": null,
+        "hymnSlot": {
+          "fixedHymnNumber": 2
+        },
         "scriptureRef": null,
         "scripture_references": [],
         "isHeader": false

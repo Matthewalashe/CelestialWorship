@@ -36,6 +36,27 @@ describe('service schedule', () => {
   });
 });
 
+describe('Order of Service data', () => {
+  const services: any[] = read('services.json');
+  const lordsDay = services.find(s => s.id === 'lords_day_service');
+
+  it('pins the processional (hymn 1) and candle-lighting (hymn 2) hymns the order writes out', () => {
+    const fixed = lordsDay.steps.filter((s: any) => s.hymnSlot?.fixedHymnNumber).map((s: any) => s.hymnSlot.fixedHymnNumber);
+    expect(fixed).toContain(1);
+    expect(fixed).toContain(2);
+  });
+
+  it('keeps hymn slots on hymn steps only', () => {
+    for (const svc of services) for (const step of svc.steps) if (step.hymnSlot) expect(step.type, `${svc.id} ${step.stepNumber}`).toBe('hymn');
+  });
+
+  it('links the Bible passages the orders cite', () => {
+    const refs = services.flatMap(s => s.steps.flatMap((st: any) => st.scripture_references ?? []));
+    expect(refs.length).toBeGreaterThan(60);
+    expect(refs.some((r: any) => r.book === 'John' && r.chapter === 14)).toBe(true);
+  });
+});
+
 describe('quiz banks', () => {
   for (const [topic, bank] of Object.entries(QUESTION_BANKS)) {
     it(`${topic}: well-formed questions`, () => {

@@ -144,11 +144,24 @@ export default function ServiceDetail() {
           <span>{service.day}</span>
           {service.time && <><span style={{ color: 'var(--color-text-muted)' }}>•</span><span>{service.time}</span></>}
         </div>
-        {headerStep && (
-          <div className="text-sm italic pl-3 border-l-2" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-accent-gold)' }}>
-            {(headerStep.textLines?.length ? headerStep.textLines : [headerStep.text]).map((line, i) => <p key={i} className={i > 0 ? 'mt-1' : ''}>{line}</p>)}
-          </div>
-        )}
+        {headerStep && (() => {
+          // The title line ("ORDER OF SERVICE ON LORD'S DAY…") is shown as is; the preparation notes after it fold away
+          const text = headerStep.text.trim();
+          const split = text.search(/\b(Note|Important|N\.B)\b/i);
+          const title = split > 0 ? text.slice(0, split).trim() : text.length > 140 ? '' : text;
+          const notes = split > 0 ? text.slice(split).trim() : text.length > 140 ? text : '';
+          return (
+            <div className="text-sm pl-3 border-l-2 space-y-2" style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-accent-gold)' }}>
+              {title && <p className="italic">{title}</p>}
+              {notes && (
+                <details className="print:open">
+                  <summary className="cursor-pointer font-semibold not-italic" style={{ color: 'var(--color-accent-brand)' }}>Before the service — preparation notes</summary>
+                  <p className="mt-2 leading-relaxed whitespace-pre-line">{notes}</p>
+                </details>
+              )}
+            </div>
+          );
+        })()}
         <div className="flex flex-wrap gap-2 mt-4 print:hidden">
           <Link to={`/devotion?service=${service.id}`} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"><Bird size={15} /> Start this service</Link>
           <Link to={`/suggestions?service=${service.id}`} className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5"
