@@ -16,7 +16,7 @@ ROUTES = [
     '/notes?tab=backup', '/constitution', '/our-church', '/profile', '/prayer-requests', '/articles', '/articles/write',
     '/events', '/directory', '/give', '/live', '/quiz', '/quiz?topic=doctrine', '/quiz?topic=hymns&mode=challenge', '/quiz?daily=1', '/maps',
     '/maps?game=journey', '/maps?game=lands', '/maps?game=paul', '/maps?game=letters', '/learn', '/stories', '/stories/bs-01',
-    '/stories/cl-nt-48', '/today', '/studio', '/moderate', '/library', '/structure',
+    '/stories/cl-nt-48', '/today', '/studio', '/moderate', '/library', '/structure', '/install', '/install?device=ios',
     '/people/00000000-0000-0000-0000-000000000000', '/bible/john/3?lang=fr',
     '/parish-admin', '/control', '/display', '/signin', '/nonexistent-page',
     # The same app in the other languages

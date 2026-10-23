@@ -38,7 +38,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         // Bible books (~13 MB) and story pages are cached as they are read, not at install time
         // The sharing image and the map games' data aren't needed to start the app
-        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png', '**/i18n/**', '**/data/parishes_listed.json'],
+        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png', '**/i18n/**', '**/data/parishes_listed.json', '**/screenshots/**'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/data\//],
@@ -96,6 +96,7 @@ export default defineConfig({
         theme_color: '#0A1628',
         background_color: '#0A1628',
         display: 'standalone',
+        id: '/',
         start_url: '/',
         scope: '/',
         orientation: 'any',
@@ -118,7 +119,11 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ],
+        // Android shows these on its install sheet; they are not part of the offline download
         screenshots: [
+          { src: '/screenshots/home.webp', sizes: '720x1560', type: 'image/webp', form_factor: 'narrow', label: 'Today: the verse of the day and today’s services' },
+          { src: '/screenshots/hymn.webp', sizes: '720x1560', type: 'image/webp', form_factor: 'narrow', label: 'The CCC Hymnal in Yorùbá and English' },
+          { src: '/screenshots/bible.webp', sizes: '720x1560', type: 'image/webp', form_factor: 'narrow', label: 'The Bible, KJV and Yorùbá' },
           {
             src: '/og-image.png',
             sizes: '1200x630',

@@ -18,7 +18,7 @@ PAGES = [
     ('/', '1.0', 'daily'), ('/hymns', '0.9', 'weekly'), ('/bible', '0.9', 'monthly'), ('/services', '0.8', 'monthly'),
     ('/devotion', '0.8', 'daily'), ('/lessons', '0.8', 'weekly'), ('/events', '0.7', 'daily'), ('/our-church', '0.7', 'yearly'),
     ('/constitution', '0.6', 'yearly'), ('/quiz', '0.6', 'monthly'), ('/articles', '0.6', 'daily'), ('/directory', '0.6', 'weekly'),
-    ('/live', '0.5', 'daily'), ('/learn', '0.7', 'monthly'), ('/stories', '0.8', 'monthly'), ('/maps', '0.6', 'monthly'),
+    ('/live', '0.5', 'daily'), ('/learn', '0.7', 'monthly'), ('/install', '0.8', 'monthly'), ('/stories', '0.8', 'monthly'), ('/maps', '0.6', 'monthly'),
 ]
 
 

@@ -30,14 +30,22 @@ export function userClient(req: Request): SupabaseClient {
   });
 }
 
-export async function paystack(path: string, init: RequestInit = {}) {
-  const key = Deno.env.get('PAYSTACK_SECRET_KEY');
-  if (!key) throw new Error('PAYSTACK_SECRET_KEY is not set');
-  const res = await fetch(`https://api.paystack.co${path}`, {
+/** Flutterwave v3 API with the platform's secret key. Throws Flutterwave's message on failure. */
+export async function flutterwave(path: string, init: RequestInit = {}) {
+  const key = Deno.env.get('FLUTTERWAVE_SECRET_KEY');
+  if (!key) throw new Error('FLUTTERWAVE_SECRET_KEY is not set');
+  const res = await fetch(`https://api.flutterwave.com/v3${path}`, {
     ...init,
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(init.headers ?? {}) },
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok || body.status === false) throw new Error(body.message ?? `Paystack error ${res.status}`);
+  if (!res.ok || body.status !== 'success') throw new Error(body.message ?? `Flutterwave error ${res.status}`);
   return body.data;
 }
+
+/** The app stores kobo/cents; Flutterwave takes and returns whole units (naira, dollars) */
+export const toMajor = (minor: number) => Number(minor) / 100;
+export const toMinor = (major: number) => Math.round(Number(major) * 100);
+
+/** Our page, where Flutterwave sends the payer back (with ?status=…&tx_ref=…&transaction_id=…) */
+export const appOrigin = () => Deno.env.get('APP_ORIGIN') ?? 'https://celestialworship.vercel.app';

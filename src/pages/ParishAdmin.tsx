@@ -403,7 +403,7 @@ function PlanTab({ parish }: { parish: PrivateParish }) {
   }, [parish.id]);
   useEffect(() => {
     load();
-    // Back from Paystack: the webhook may take a moment
+    // Back from Flutterwave: the webhook may take a moment
     if (params.get('subscribed')) { const t = setTimeout(load, 4000); return () => clearTimeout(t); }
   }, [load, params]);
 
@@ -423,11 +423,20 @@ function PlanTab({ parish }: { parish: PrivateParish }) {
           {PARTNER_FEATURES.map(f => <li key={f} className="text-sm flex gap-2" style={{ color: 'var(--color-text-secondary)' }}><Check size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--color-success)' }} /> {f}</li>)}
         </ul>
         {active && end && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{sub?.status === 'non_renewing' ? tr('Ends') : tr('Renews')}{' '}{tr('on')}{' '}{end}.</p>}
-        {sub?.status === 'past_due' && <p className="text-xs" style={{ color: 'var(--color-warning)' }}>{tr('The last payment failed. Update the card to keep gifts and livestreaming on.')}</p>}
+        {sub?.status === 'past_due' && <p className="text-xs" style={{ color: 'var(--color-warning)' }}>{tr('The last payment failed. Pay again to keep gifts and livestreaming on.')}</p>}
       </div>
 
-      {active && sub ? (
-        <button disabled={busy} onClick={() => go(() => manageSubscription(parish.id))} className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Change card or cancel')}</button>
+      {active && sub && sub.status !== 'past_due' ? (
+        sub.status === 'non_renewing' ? (
+          <button disabled={busy} onClick={() => go(async () => { await manageSubscription(parish.id, 'resume'); showToast(tr('The plan will renew')); load(); })}
+                  className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold">{tr('Keep renewing')}</button>
+        ) : (
+          <button disabled={busy} onClick={() => go(async () => {
+                    if (!(await confirmDialog({ title: tr('Stop the plan renewing?'), message: tr('It keeps working until the end of the period already paid for.'), confirmLabel: tr('Stop renewing'), danger: true }))) return;
+                    await manageSubscription(parish.id, 'cancel'); showToast(tr('The plan will not renew')); load();
+                  })}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Stop renewing')}</button>
+        )
       ) : plans === undefined ? (
         <p className="text-sm animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>
       ) : plans === null || plans.length === 0 ? (
@@ -438,7 +447,7 @@ function PlanTab({ parish }: { parish: PrivateParish }) {
             <button key={p.id} disabled={busy} onClick={() => go(() => subscribe(parish.id, p.id))} className="rounded-2xl border p-4 text-left disabled:opacity-60" style={card}>
               <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{p.interval === 'monthly' ? tr('Monthly') : tr('Yearly')}</span>
               <span className="block text-lg font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-accent-gold)' }}>{planPrice(p)}</span>
-              <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Pay securely with Paystack')}</span>
+              <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Pay securely with Flutterwave')}</span>
             </button>
           ))}
         </div>

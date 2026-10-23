@@ -45,6 +45,8 @@ with sync_playwright() as p:
         pg.wait_for_timeout(300)
         pg.locator('#verse-16').click()
         pg.get_by_role('button', name='Save', exact=True).click()
+        # The verse is written to the device first; the toast confirms it
+        expect(pg.get_by_text('John 3:16 saved')).to_be_visible()
         pg.goto(BASE + '/notes?tab=saved', wait_until='networkidle')
         expect(pg.get_by_text('John 3:16').first).to_be_visible()
         pg.goto(BASE + '/notes?tab=highlights', wait_until='networkidle')

@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton } from './components/SkeletonScreens';
 import Layout from './components/Layout';
@@ -53,6 +53,7 @@ const Learn = React.lazy(() => import('./pages/Learn'));
 const Library = React.lazy(() => import('./pages/Library'));
 const ChurchStructure = React.lazy(() => import('./pages/ChurchStructure'));
 const Person = React.lazy(() => import('./pages/Person'));
+const Install = React.lazy(() => import('./pages/Install'));
 const Stories = React.lazy(() => import('./pages/Stories'));
 const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
@@ -136,6 +137,9 @@ function App() {
             <Route path="/library" element={<Library />} />
             <Route path="/structure" element={<ChurchStructure />} />
             <Route path="/people/:id" element={<Person />} />
+            <Route path="/install" element={<Install />} />
+            <Route path="/download" element={<Navigate to="/install" replace />} />
+            <Route path="/app" element={<Navigate to="/install" replace />} />
             <Route path="/stories" element={<Stories />} />
             <Route path="/stories/:id" element={<StoryDetail />} />
             <Route path="/quiz" element={<Quiz />} />

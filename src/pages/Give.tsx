@@ -52,10 +52,12 @@ export default function Give() {
     parishCanReceive(parishId).then(setCanReceive);
   }, [parishId]);
 
-  // Back from Paystack: confirm the payment on the server
+  // Back from Flutterwave: confirm the payment on the server
   useEffect(() => {
-    const reference = params.get('reference') || params.get('trxref');
+    const reference = params.get('reference') || params.get('tx_ref');
     if (!reference) return;
+    // Closing the checkout comes back as status=cancelled: nothing was charged
+    if (params.get('status') === 'cancelled') { setResult('failed'); return; }
     verifyDonation(reference)
       .then(status => setResult(status))
       .catch(() => setResult('initiated'));
@@ -118,9 +120,9 @@ export default function Give() {
           {result === 'checking' ? tr('Confirming your gift…') : result === 'paid' ? tr('Thank you — God bless you') : result === 'failed' ? tr('The payment didn’t go through') : tr('Waiting for confirmation')}
         </h1>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {result === 'paid' ? tr('“God loveth a cheerful giver.” — 2 Corinthians 9:7. Your receipt is sent to your email by Paystack.')
+          {result === 'paid' ? tr('“God loveth a cheerful giver.” — 2 Corinthians 9:7. Your receipt is sent to your email by Flutterwave.')
             : result === 'failed' ? tr('You were not charged. You can try again.')
-            : result === 'checking' ? tr('This takes a moment.') : tr('If you were charged, your gift will show as paid once Paystack confirms it.')}
+            : result === 'checking' ? tr('This takes a moment.') : tr('If you were charged, your gift will show as paid once Flutterwave confirms it.')}
         </p>
         <button onClick={() => { setResult(null); setParams({}); }} className="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold">{tr('Done')}</button>
       </div>
@@ -190,7 +192,7 @@ export default function Give() {
           <Lock size={16} /> {pledge ? tr('Record pledge') : amountMinor > 0 ? `Give ${money(amountMinor, 'NGN')}` : tr('Give')}
         </button>
         <p className="text-[11px] flex items-start gap-1.5" style={{ color: 'var(--color-text-muted)' }}>
-          <ShieldCheck size={13} className="shrink-0 mt-0.5" />{' '}{tr('Payment is processed securely by Paystack (card, bank transfer or USSD) and goes straight to the parish’s account. Card details never touch this app.')}</p>
+          <ShieldCheck size={13} className="shrink-0 mt-0.5" />{' '}{tr('Payment is processed securely by Flutterwave (card, bank transfer, USSD or mobile money) and goes straight to the parish’s account. Card details never touch this app.')}</p>
       </section>
 
       {user ? history.length > 0 && (

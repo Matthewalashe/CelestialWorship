@@ -27,7 +27,7 @@ Legend: ✅ done · 🔑 built, needs a key, permission or the database switched
 | 14 | Retention | ✅ streaks, continue, daily verse, daily challenge, reminders, follows | Home, Quizzes |
 | 15 | Saves, highlights, drafts, prayers | ✅ My Library, export/import, account backup | Menu → My Library |
 | 16 | Prayer requests | ✅ church / parish / shepherd, moderated, rate-limited | Menu → Prayer requests |
-| 17 | Donations, tithes, offerings through our gateway | ✅ Paystack, parish payout accounts · 🔑 keys | Menu → Give |
+| 17 | Donations, tithes, offerings through our gateway | ✅ Flutterwave, parish payout accounts · 🔑 keys | Menu → Give |
 | 18 | Quizzes: Bible, hymns, Constitution, geography/history, doctrine | ✅ sourced and explained | Learn → Quizzes |
 | 19 | Gamified quizzes | ✅ XP, levels, combos, lives, timer, badges, daily challenge with share grid, opt-in leaderboard · 🔑 database | Learn → Quizzes |
 | 20 | Map games: where Jesus lived, walked, died; Palestine, Judea, Samaria, Egypt; old and new maps as layers; names today; countries in the Bible | ✅ Journey of Jesus, Then & Now, Map Master, Bible Lands Today; Then/Now/Both layers | Learn → Bible maps |
@@ -37,7 +37,7 @@ Legend: ✅ done · 🔑 built, needs a key, permission or the database switched
 | 24 | Churches publish events, take prayer requests and gifts, update address/links/contact, appointments with shepherds and admins | ✅ | Profile → Manage my parish |
 | 25 | Independent shepherds: articles, livestream, prayer, gifts | ✅ ministry pages | Directory → Register your ministry |
 | 26 | Onboard admins, choir, parochial committee, media, shepherds; bank details | ✅ team roles, payout account verified with the bank | Manage → Team, Giving |
-| 27 | Monetise articles, commentaries, livestreams; paid plan required for gifts, monetising and livestreaming | ✅ Partner plan (Paystack subscriptions), enforced by the database; support buttons on articles and broadcasts · 🔑 plan codes and prices | Manage → Plan |
+| 27 | Monetise articles, commentaries, livestreams; paid plan required for gifts, monetising and livestreaming | ✅ Partner plan (Flutterwave subscriptions), enforced by the database; support buttons on articles and broadcasts · 🔑 plan codes and prices | Manage → Plan |
 | 28 | Livestreaming to social media | ✅ channels saved once (YouTube channel auto-live, Facebook, Instagram, TikTok, X, Mixlr); multi-platform broadcasts; schedule; go live + alerts to members and followers; reminders 15 min before; share to WhatsApp/Facebook/X/Telegram; Live page, broadcast page, parish page · 🔑 VAPID for alerts | Manage → Livestream, Studio, Live |
 | 29 | Children’s Bible stories (My Book of Bible Stories style; both sources; pictures) | ✅ 54 new retellings with questions + 82 classic stories (Lathbury, 1898); 134 pictures (Sweet Publishing, CC BY-SA). JW texts, pictures and animations can’t be used (jw.org terms) | Learn → Bible stories |
 | 30 | A standard of principles; find and fix implementation issues | ✅ PRINCIPLES.md; lint, tests and accessibility checks; server-side hardening; https-only links; orphaned code removed | docs/ |
@@ -63,7 +63,7 @@ Legend: ✅ done · 🔑 built, needs a key, permission or the database switched
 | 51 | Projector operator: better UI and UX | ✅ sources · slides · LIVE and NEXT monitors, keys 1–9, verse ranges, history | Project to screen |
 | 52 | Splash screen and animation | ✅ | First open |
 | 53 | Shepherds/admins claim their listed parish with evidence; on approval it takes their contact and they administer it | ✅ · 🔑 database | Directory → Claim this parish; Moderation |
-| 41 | Commit and deploy | ✅ app on Vercel; all 6 migrations and 11 Edge Functions live on Supabase; reminders scheduled every 5 min; push keys set · 🔑 Paystack keys and plan codes | |
+| 41 | Commit and deploy | ✅ app on Vercel; all 6 migrations and 11 Edge Functions live on Supabase; reminders scheduled every 5 min; push keys set · 🔑 Flutterwave keys and plan codes | |
 
 ## Audit items
 

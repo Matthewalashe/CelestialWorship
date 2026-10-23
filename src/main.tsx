@@ -10,6 +10,8 @@ import App from './App'
 import './index.css'
 import { reportError } from './hooks/useAnalytics'
 import { useLanguageVersion } from './i18n'
+// Catches the browser's one-time install offer before any screen asks for it
+import './hooks/usePWAInstall'
 
 window.addEventListener('error', e => reportError(e.error ?? e.message, 'window'))
 window.addEventListener('unhandledrejection', e => reportError(e.reason, 'promise'))

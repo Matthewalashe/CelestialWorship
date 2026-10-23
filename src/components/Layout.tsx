@@ -8,7 +8,7 @@ import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
@@ -55,6 +55,7 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
     items: [
       { path: '/notes', label: 'nav.library', icon: <StickyNote size={20} /> },
       { path: '/profile', label: 'nav.profile', icon: <User size={20} /> },
+      { path: '/install', label: 'nav.install', icon: <Download size={20} /> },
     ],
   },
 ];

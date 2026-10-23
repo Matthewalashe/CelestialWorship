@@ -51,14 +51,14 @@ export async function hasPlan(parishId: string): Promise<boolean> {
   return !error && !!data;
 }
 
-/** Sends the shepherd or admin to Paystack to start the subscription */
+/** Sends the shepherd or admin to Flutterwave to start the subscription */
 export async function subscribe(parishId: string, planId: string) {
   const { authorization_url } = await invoke<{ authorization_url: string }>('subscribe', { parish_id: parishId, plan_id: planId });
   window.location.assign(authorization_url);
 }
 
-/** Paystack's page to change the card or cancel */
-export async function manageSubscription(parishId: string) {
-  const { link } = await invoke<{ link: string }>('manage-subscription', { parish_id: parishId });
-  window.open(link, '_blank', 'noopener');
+/** Stop the plan renewing (it runs to the end of the paid period), or start renewing again */
+export async function manageSubscription(parishId: string, action: 'cancel' | 'resume'): Promise<Subscription['status']> {
+  const { status } = await invoke<{ status: Subscription['status'] }>('manage-subscription', { parish_id: parishId, action });
+  return status;
 }

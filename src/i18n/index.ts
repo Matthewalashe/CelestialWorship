@@ -48,6 +48,7 @@ const STRINGS = {
   'nav.profile': { en: 'Profile & settings', yo: 'Ìwé mi', fr: 'Profil et réglages' },
   'nav.live': { en: 'Livestreams', yo: 'Ní tààrà', fr: 'En direct' },
   'nav.moderate': { en: 'Moderation', yo: 'Àbójútó', fr: 'Modération' },
+  'nav.install': { en: 'Get the app', yo: 'Gba ìṣàfilọ́lẹ̀', fr: 'Installer l’app' },
 
   'home.morning': { en: 'Good Morning', yo: 'Ẹ káàárọ̀', fr: 'Bonjour' },
   'home.afternoon': { en: 'Good Afternoon', yo: 'Ẹ káàsán', fr: 'Bon après-midi' },

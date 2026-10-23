@@ -18,6 +18,7 @@ import { getBibleVersion } from '../data/bibleVersions';
 import { displayTitle } from '../utils/hymnText';
 import { isLiveNow } from '../components/LiveEmbed';
 import { LanguageSwitch } from '../components/LanguageSwitch';
+import { InstallBanner } from '../components/InstallBanner';
 import { listEvents, type ChurchEvent } from '../lib/community';
 import type { BibleLesson } from '../types';
 
@@ -133,6 +134,8 @@ export default function Home() {
           {formatDate(today)}{season.label ? ` · ${season.label}` : ''}
         </p>
       </header>
+
+      <InstallBanner />
 
       {/* Verse of the day */}
       <section aria-labelledby="votd">

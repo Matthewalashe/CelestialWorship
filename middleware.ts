@@ -11,7 +11,7 @@ export const config = {
   matcher: [
     '/articles/:id', '/live/:id', '/hymns/:number', '/stories/bs-:n', '/stories/cl-:rest',
     '/directory/:id', '/bible/:book/:chapter', '/services/:id', '/lessons/:date', '/people/:id',
-    '/library', '/structure', '/directory',
+    '/library', '/structure', '/directory', '/install',
     '/stories', '/learn', '/quiz', '/maps', '/events', '/live', '/articles', '/our-church', '/constitution', '/hymns', '/bible', '/services', '/devotion',
   ],
 };
@@ -38,6 +38,7 @@ const STATIC: Record<string, Meta> = {
   '/hymns': { title: 'CCC Hymnal', description: '457 Celestial Church of Christ hymns in Yorùbá and English, with sol-fa.', kind: 'Hymnal' },
   '/bible': { title: 'Holy Bible', description: 'The King James Bible in English and the Bible in Yorùbá, with highlights, notes and reading plans.', kind: 'Bible' },
   '/services': { title: 'Order of Service', description: 'The liturgy of the Celestial Church of Christ, step by step, with hymns and readings.', kind: 'Service' },
+  '/install': { title: 'Get the app for Android and iPhone', description: 'Install CelestialWorship free on Android or iPhone, straight from the browser: the CCC Hymnal, the Bible, the Order of Service and daily devotion, working offline.', kind: 'Get the app' },
   '/library': { title: 'Library', description: 'Articles and commentaries by shepherds, books and resources for the Celestial Church of Christ.', kind: 'Library' },
   '/structure': { title: 'Ranks, structure & symbols', description: 'The ranks and robes of the Celestial Church of Christ, how the Church is governed, and the meaning of its emblem, altar, candles and colours.', kind: 'Our Church' },
   '/directory': { title: 'Parishes', description: 'Celestial Church of Christ parishes and ministries around the world, by continent, country and state, with addresses and shepherds.', kind: 'Parishes' },

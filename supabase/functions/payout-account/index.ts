@@ -1,7 +1,7 @@
 // POST /functions/v1/payout-account  { parish_id, bank_code, bank_name, account_number }
-// Verifies the account with the bank, then creates or updates the parish's Paystack subaccount
+// Verifies the account with the bank, then creates or updates the parish's Flutterwave subaccount
 // so gifts made through the platform settle straight to the parish.
-import { json, preflight, adminClient, userClient, paystack } from '../_shared/common.ts';
+import { json, preflight, adminClient, userClient, flutterwave } from '../_shared/common.ts';
 
 Deno.serve(async req => {
   const early = preflight(req);
@@ -22,13 +22,15 @@ Deno.serve(async req => {
     if (!allowed) return json({ error: 'Only the parish shepherd or an administrator can set the payout account' }, 403);
 
     const admin = adminClient();
-    const { data: parish } = await admin.from('parishes').select('id, name, email').eq('id', parish_id).single();
+    const { data: parish } = await admin.from('parishes').select('id, name, email, phone').eq('id', parish_id).single();
     if (!parish) return json({ error: 'Parish not found' }, 404);
 
     // 1. Confirm the account exists and get the account holder's name
     let accountName: string;
     try {
-      const resolved = await paystack(`/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`);
+      const resolved = await flutterwave('/accounts/resolve', {
+        method: 'POST', body: JSON.stringify({ account_number: String(account_number), account_bank: String(bank_code) }),
+      });
       accountName = resolved.account_name;
     } catch (e) {
       await admin.from('payout_accounts').upsert({
@@ -38,20 +40,25 @@ Deno.serve(async req => {
       return json({ error: `The bank could not confirm this account: ${(e as Error).message}` }, 422);
     }
 
-    // 2. Create or update the subaccount. PLATFORM_PERCENTAGE is the platform's share (0 = none).
-    const percentage = Number(Deno.env.get('PLATFORM_PERCENTAGE') ?? '0');
-    const { data: existing } = await admin.from('payout_accounts').select('subaccount_code').eq('parish_id', parish_id).maybeSingle();
+    // 2. Create or update the subaccount. Flutterwave needs a phone number for the business.
+    const mobile = (parish.phone ?? '').replace(/[^\d+]/g, '');
+    if (mobile.length < 7) return json({ error: 'Add the parish phone number under Details first — the payment provider needs it' }, 400);
+    // PLATFORM_PERCENTAGE is the platform's share of each gift (0 = none); Flutterwave takes it as a fraction
+    const share = Math.max(0, Number(Deno.env.get('PLATFORM_PERCENTAGE') ?? '0')) / 100;
     const payload = {
-      business_name: parish.name, settlement_bank: bank_code, account_number,
-      percentage_charge: percentage, primary_contact_email: parish.email ?? undefined,
-      description: `CelestialWorship parish ${parish_id}`,
+      account_bank: String(bank_code), account_number: String(account_number), business_name: parish.name,
+      business_email: parish.email ?? undefined, business_mobile: mobile, country: 'NG',
+      split_type: 'percentage', split_value: share,
+      meta: [{ meta_name: 'parish_id', meta_value: parish_id }],
     };
-    const sub = existing?.subaccount_code
-      ? await paystack(`/subaccount/${existing.subaccount_code}`, { method: 'PUT', body: JSON.stringify(payload) })
-      : await paystack('/subaccount', { method: 'POST', body: JSON.stringify(payload) });
+    const { data: existing } = await admin.from('payout_accounts').select('subaccount_id').eq('parish_id', parish_id).maybeSingle();
+    const sub = existing?.subaccount_id
+      ? await flutterwave(`/subaccounts/${existing.subaccount_id}`, { method: 'PUT', body: JSON.stringify(payload) })
+      : await flutterwave('/subaccounts', { method: 'POST', body: JSON.stringify(payload) });
 
     await admin.from('payout_accounts').upsert({
-      parish_id, bank_name, bank_code, account_number, account_name: accountName, subaccount_code: sub.subaccount_code,
+      parish_id, bank_name, bank_code, account_number, account_name: accountName,
+      subaccount_code: sub.subaccount_id, subaccount_id: sub.id,
       status: 'verified', status_message: null, updated_by: user.id, updated_at: new Date().toISOString(),
     });
 

@@ -3,8 +3,8 @@ import { raise, BackendError } from './backend';
 import type { Donation } from './community';
 
 /**
- * Online giving goes through the platform's Paystack account. Each parish's gifts settle
- * to its own bank account through a Paystack subaccount (see supabase/functions).
+ * Online giving goes through the platform's Flutterwave account. Each parish's gifts settle
+ * to its own bank account through a Flutterwave subaccount (see supabase/functions).
  */
 
 export interface Bank { name: string; code: string }
@@ -33,7 +33,7 @@ export async function invoke<T>(name: string, body?: unknown, method: 'GET' | 'P
   return data as T;
 }
 
-export async function listBanks(country = 'nigeria'): Promise<Bank[]> {
+export async function listBanks(country = 'NG'): Promise<Bank[]> {
   const { data, error } = await supabase.functions.invoke(`banks?country=${country}`, { method: 'GET' });
   if (error) throw new BackendError('Couldn’t load the list of banks', true);
   return (data?.banks ?? []) as Bank[];
@@ -57,7 +57,7 @@ export async function parishCanReceive(parishId: string): Promise<boolean> {
   return !!data;
 }
 
-/** Start payment for a recorded gift: sends the giver to Paystack's secure checkout */
+/** Start payment for a recorded gift: sends the giver to Flutterwave's secure checkout */
 export async function payDonation(donation: Donation) {
   const { authorization_url } = await invoke<{ authorization_url: string }>('init-payment', { donation_id: donation.id });
   window.location.assign(authorization_url);

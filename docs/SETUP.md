@@ -25,12 +25,13 @@ the Partner plan, livestreams, pictures and push alerts.
    ```
 3. Auth → Providers: enable Email (and Google if wanted). Set the Site URL to the app's address.
 4. Realtime is used for the operator's "another device as the screen" — it is on by default.
-5. **Partner plan prices** are placeholders (₦5,000 a month, ₦50,000 a year). Create the two plans in
-   the Paystack dashboard (Products → Plans), then:
+5. **Partner plan prices** are placeholders (₦5,000 a month, ₦50,000 a year), in kobo. Set the real ones:
    ```sql
-   update public.plans set amount_minor = 500000, paystack_plan_code = 'PLN_…' where id = 'partner_monthly';
-   update public.plans set amount_minor = 5000000, paystack_plan_code = 'PLN_…' where id = 'partner_yearly';
+   update public.plans set amount_minor = 500000 where id = 'partner_monthly';
+   update public.plans set amount_minor = 5000000 where id = 'partner_yearly';
    ```
+   The matching Flutterwave payment plans are created by the `subscribe` function the first time someone
+   subscribes. To change a price later, also set `flutterwave_plan_id = null` so a new plan is made.
    To give a parish the plan without payment (e.g. the headquarters):
    ```sql
    insert into public.parish_subscriptions (parish_id, plan_id, status, current_period_end)
@@ -42,8 +43,10 @@ the Partner plan, livestreams, pictures and push alerts.
 Deploy everything in `supabase/functions`:
 
 ```sh
-supabase functions deploy banks payout-account init-payment verify-payment paystack-webhook \
-  subscribe manage-subscription live-notify bible-proxy push-subscribe send-reminders
+supabase functions deploy banks payout-account init-payment verify-payment \
+  subscribe manage-subscription live-notify bible-proxy push-subscribe
+# Called by Flutterwave and by the scheduler, which carry their own secrets instead of a user token
+supabase functions deploy flutterwave-webhook send-reminders --no-verify-jwt
 ```
 
 Secrets (`supabase secrets set NAME=value`):
@@ -51,16 +54,19 @@ Secrets (`supabase secrets set NAME=value`):
 | Secret | For |
 |---|---|
 | `APP_ORIGIN` | The app's URL, e.g. `https://celestialworship.vercel.app` |
-| `PAYSTACK_SECRET_KEY` | Gifts and the Partner plan (platform Paystack account) |
-| `PLATFORM_PERCENTAGE` | Platform's share of each gift, e.g. `0` or `2.5` |
-| `PAYSTACK_FEE_BEARER` | `account` (platform pays fees) or `subaccount` (parish pays) |
+| `FLUTTERWAVE_SECRET_KEY` | Gifts and the Partner plan (the platform's Flutterwave account, `FLWSECK-…`) |
+| `FLUTTERWAVE_WEBHOOK_HASH` | Any long random string; the same value goes in Flutterwave → Settings → Webhooks → Secret hash |
+| `PLATFORM_PERCENTAGE` | Platform's share of each gift, e.g. `0` or `2.5` (applied when a parish saves its payout account) |
 | `API_BIBLE_KEY` | NKJV / NLT / AMP / NIV through API.Bible |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | Push reminders and live alerts (`npx web-push generate-vapid-keys`) |
 | `CRON_SECRET` | Any long random string; protects send-reminders |
 
 Then:
-- Paystack dashboard → Settings → Webhooks: `https://<project>.supabase.co/functions/v1/paystack-webhook`
-  (it handles gifts, subscription payments, renewals, failed payments and cancellations).
+- Flutterwave dashboard → Settings → Webhooks: URL `https://<project>.supabase.co/functions/v1/flutterwave-webhook`,
+  the secret hash above, and tick charge completion and subscription cancellation events. It records gifts, the
+  first plan payment, renewals, failed renewals and cancellations, checking each payment with Flutterwave first.
+- Who pays the gateway fee is set in Flutterwave (Settings → Account → who bears the transaction fee).
+- Parishes need a phone number on their page before saving a payout account (Flutterwave requires one).
 - Schedule reminders every 5 minutes (needs pg_cron + pg_net): see the commented `cron.schedule`
   statement at the end of the community migration. The same job announces broadcasts 15 minutes ahead.
 
