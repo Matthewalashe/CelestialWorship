@@ -25,12 +25,12 @@ function at(date: Date, hour = 0, minute = 0): string {
   return d.toISOString();
 }
 
-function builtIn(id: string, title: string, date: Date, description: string, category: ChurchEvent['category'] = 'service', hour?: number, location: string | null = null): ChurchEvent {
+function builtIn(id: string, title: string, date: Date, description: string, category: ChurchEvent['category'] = 'service', hour?: number, location: string | null = null, lastDay?: Date): ChurchEvent {
   return {
     id: `builtin-${id}-${date.getFullYear()}`,
     title, description, category, location,
     starts_at: at(date, hour ?? 0),
-    ends_at: null,
+    ends_at: lastDay ? at(lastDay, 23, 59) : null,
     all_day: hour === undefined,
     parish_id: null, scope: 'church', contact: null, status: 'published', submitted_by: null, builtIn: true,
   };
@@ -52,8 +52,14 @@ export function churchObservances(year: number): ChurchEvent[] {
       'Commemorating the appearance of Holy Mary to the Pastor Founder on 15 July 1977. Kept on the first Friday of July.'),
     builtIn('founding', 'Founding Anniversary', new Date(year, 8, 29),
       'The Celestial Church of Christ came into the world by Divine Order on 29 September 1947 in Porto-Novo.', 'anniversary'),
-    builtIn('christmas-convocation', 'Christmas Convocation', new Date(year, 11, 24),
-      'The annual Christmas Eve pilgrimage and convocation at the Celestial City, Imeko.', 'convention', undefined, 'Celestial City, Imeko, Ogun State'),
+    builtIn('founder-birthday', 'Pastor Founder’s Birthday', new Date(year, 9, 11),
+      `Rev. Samuel Bilewu Joseph Oshoffa, Pastor Founder of the Celestial Church of Christ, was born on 11 October 1909 (${year - 1909} years). Remembered by the whole Church.`, 'anniversary'),
+    builtIn('christmas-convocation', `Imeko ${year} — Christmas Convocation`, new Date(year, 11, 21),
+      'The annual pilgrimage and Christmas convocation at the Celestial City, Imeko, ending with the Christmas service. Dates vary a little each year: confirm with your parish.',
+      'convention', undefined, 'Celestial City, Imeko, Ogun State', new Date(year, 11, 25)),
+    builtIn('pastor-birthday', 'Birthday of the Pastor, Rev. Emmanuel Mobiyina Oshoffa', new Date(year, 11, 25),
+      `Rev. Emmanuel Mobiyina Oshoffa was born on 25 December 1948 (${year - 1948} years) and installed as Pastor in December 2002. Observed by the International Headquarters, Ketu, which recognises him as Pastor and Spiritual Head; other branches of the Church recognise other leaders.`,
+      'anniversary', undefined, 'International Headquarters, Ketu, Lagos'),
     builtIn('christmas', 'Christmas Day', new Date(year, 11, 25), 'The birth of our Lord Jesus Christ. Holy Communion.'),
     builtIn('watchnight', 'Watch-night service', new Date(year, 11, 31), 'Crossing over into the new year in prayer.', 'service', 22),
   ];
@@ -69,7 +75,10 @@ export function downloadIcs(event: ChurchEvent) {
   const escape = (s: string) => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/[,;]/g, m => `\\${m}`);
   const start = event.all_day ? `DTSTART;VALUE=DATE:${dateOnly(event.starts_at)}` : `DTSTART:${stamp(event.starts_at)}`;
   const endIso = event.ends_at ?? new Date(new Date(event.starts_at).getTime() + (event.all_day ? 86_400_000 : 2 * 3_600_000)).toISOString();
-  const end = event.all_day ? `DTEND;VALUE=DATE:${dateOnly(endIso)}` : `DTEND:${stamp(endIso)}`;
+  // All-day DTEND is exclusive: the day after the last day
+  const end = event.all_day
+    ? `DTEND;VALUE=DATE:${dateOnly(event.ends_at ? new Date(new Date(event.ends_at).getTime() + 86_400_000).toISOString() : endIso)}`
+    : `DTEND:${stamp(endIso)}`;
   const lines = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CelestialWorship//Events//EN', 'BEGIN:VEVENT',
     `UID:${event.id}@celestialworship`, `DTSTAMP:${stamp(new Date().toISOString())}`, start, end,

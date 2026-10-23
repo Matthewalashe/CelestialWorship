@@ -102,6 +102,19 @@ describe('church calendar', () => {
     expect(byId['builtin-juvenile-harvest']).toBe('2026-06-07'); // first Sunday of June 2026
     expect(byId['builtin-holy-mary']).toBe('2026-07-03'); // first Friday of July 2026
     expect(byId['builtin-founding']).toBe('2026-09-29');
+    expect(byId['builtin-founder-birthday']).toBe('2026-10-11');
+    expect(byId['builtin-christmas-convocation']).toBe('2026-12-21');
+    expect(byId['builtin-pastor-birthday']).toBe('2026-12-25');
+  });
+
+  it('runs Imeko 2026 from 21 to 25 December and credits the Pastor’s birthday to Ketu', () => {
+    const all = churchObservances(2026);
+    const imeko = all.find(e => e.id === 'builtin-christmas-convocation-2026')!;
+    expect(imeko.title).toBe('Imeko 2026 — Christmas Convocation');
+    expect(toISODate(new Date(imeko.ends_at!))).toBe('2026-12-25');
+    const pastor = all.find(e => e.id === 'builtin-pastor-birthday-2026')!;
+    expect(pastor.description).toContain('International Headquarters, Ketu');
+    expect(pastor.description).toContain('78 years');
   });
 });
 

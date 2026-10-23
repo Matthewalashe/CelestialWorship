@@ -139,7 +139,7 @@ export default function Events() {
   const events = useMemo(() => {
     const years = new Set([range.from.getFullYear(), range.to.getFullYear()]);
     const observances = [...years].flatMap(y => churchObservances(y))
-      .filter(e => new Date(e.starts_at) >= range.from && new Date(e.starts_at) <= range.to);
+      .filter(e => new Date(e.ends_at ?? e.starts_at) >= range.from && new Date(e.starts_at) <= range.to);
     let list = [...observances, ...dbEvents];
     if (scope === 'parish') list = list.filter(e => e.builtIn || (profile.parishId && e.parish_id === profile.parishId));
     // Hide past events in the list view (but keep them in the calendar)
@@ -152,9 +152,14 @@ export default function Events() {
 
   const byDay = useMemo(() => {
     const map = new Map<string, ChurchEvent[]>();
+    // Multi-day events (a convocation, a crusade) show on every day they run, up to a month
     for (const e of events) {
-      const key = toISODate(new Date(e.starts_at));
-      map.set(key, [...(map.get(key) ?? []), e]);
+      const day = new Date(e.starts_at); day.setHours(0, 0, 0, 0);
+      const last = new Date(e.ends_at ?? e.starts_at);
+      for (let i = 0; i < 31 && day <= last; i++, day.setDate(day.getDate() + 1)) {
+        const key = toISODate(day);
+        map.set(key, [...(map.get(key) ?? []), e]);
+      }
     }
     return map;
   }, [events]);
