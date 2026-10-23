@@ -3,7 +3,7 @@
 /* ============================================================
    CelestialWorship — Design System
    Theme: Blue, Gold, White — Light & Dark modes
-   Reader: E-Ink Paper mode (scoped to reading pages)
+   Reader: monochrome reading mode (components/Reader.tsx)
    ============================================================ */
 
 @theme {
@@ -73,112 +73,31 @@
   --color-warning: #F59E0B;
 }
 
-/* ---------- E-Ink Paper Reader (scoped to reading pages) ---------- */
-[data-reader='paper'] {
-  --color-bg-primary: #FAFAFA;
-  --color-bg-secondary: #FFFFFF;
-  --color-bg-card: #FFFFFF;
-  --color-bg-card-hover: #F5F5F5;
-  --color-bg-nav: #FAFAFA;
-  --color-bg-glass: #FAFAFA;
-
-  --color-accent-brand: #000000;
-  --color-accent-brand-light: #333333;
-  --color-accent-brand-dark: #000000;
-  --color-accent-gold: #333333;
-  --color-accent-gold-light: #555555;
-  --color-accent-blue: #000000;
-  --color-accent-blue-light: #333333;
-
-  --color-text-primary: #000000;
-  --color-text-secondary: #333333;
-  --color-text-muted: #888888;
-  --color-text-on-accent: #FFFFFF;
-
-  --color-border: #E8E8E8;
-  --color-border-hover: #CCCCCC;
-  --color-shadow: none;
-
-  font-family: 'Noto Sans', 'Inter', sans-serif !important;
-  background-color: #FAFAFA !important;
-  color: #000000 !important;
-}
-
-[data-reader='paper'] * {
+/* ---------- Reading mode (components/Reader.tsx) ----------
+   A monochrome page like an e-reader: no colour, no motion, no shadows. */
+.reader-frame,
+.reader-frame * {
   transition: none !important;
   animation: none !important;
+  box-shadow: none !important;
   backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
 }
-
-[data-reader='paper'] .card {
-  border: 1px solid #E8E8E8;
-  border-radius: 0.5rem;
-  box-shadow: none !important;
+.reader-frame img { filter: grayscale(1); }
+.reader-frame a { text-decoration: underline; text-underline-offset: 3px; }
+.reader-body p + p { margin-top: 0.6em; }
+.reader-verse {
+  font-size: 0.6em;
+  font-weight: 600;
+  margin-right: 0.25em;
+  color: var(--color-text-muted);
+  font-family: Inter, system-ui, sans-serif;
 }
-
-/* ---------- E-Ink Dimmed Grayscale (Paper Dark) ---------- */
-[data-reader='paper-dark'] {
-  --color-bg-primary: #E8E8E8;
-  --color-bg-secondary: #E0E0E0;
-  --color-bg-card: #E0E0E0;
-  --color-bg-card-hover: #D5D5D5;
-  --color-bg-nav: #E8E8E8;
-  --color-bg-glass: #E8E8E8;
-
-  --color-accent-brand: #1A1A1A;
-  --color-accent-brand-light: #333333;
-  --color-accent-brand-dark: #000000;
-  --color-accent-gold: #333333;
-  --color-accent-gold-light: #555555;
-  --color-accent-blue: #1A1A1A;
-  --color-accent-blue-light: #333333;
-
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #333333;
-  --color-text-muted: #666666;
-  --color-text-on-accent: #E8E8E8;
-
-  --color-border: #333333;
-  --color-border-hover: #555555;
-  --color-shadow: none;
-
-  font-family: 'Noto Sans', 'Inter', sans-serif !important;
-  background-color: #E8E8E8 !important;
-  color: #1A1A1A !important;
-}
-
-[data-reader='paper-dark'] * {
-  transition: none !important;
-  animation: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
-}
-
-[data-reader='paper-dark'] .card {
-  border: 1px solid #333333;
-  border-radius: 0.5rem;
-  box-shadow: none !important;
-}
-
-/* Reader typography — larger, high-legibility */
-[data-reader='paper'] p,
-[data-reader='paper'] span,
-[data-reader='paper-dark'] p,
-[data-reader='paper-dark'] span {
-  font-size: 1.05rem;
-  line-height: 1.75;
-  word-break: keep-all;
-}
-
-/* Reader inverted selection buttons */
-[data-reader='paper'] .reader-btn-active,
-[data-reader='paper-dark'] .reader-btn-active {
-  background-color: #000000 !important;
-  color: #FFFFFF !important;
-  border-color: #000000 !important;
+/* Highlights become a quiet underline on the page */
+.reader-mark {
+  text-decoration: underline;
+  text-decoration-color: var(--color-text-muted);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 /* ---------- Base Styles ---------- */
@@ -344,6 +263,16 @@
   .animate-slide-in-right {
     animation: slideInRight 0.4s ease-out;
   }
+  .animate-bounce-once {
+    animation: bounceOnce 0.7s ease-out;
+  }
+  .animate-burst {
+    opacity: 0;
+    animation: burst 0.9s ease-out;
+  }
+  .animate-shake {
+    animation: shake 0.35s ease-in-out;
+  }
 
   /* Category badge colors */
   .badge {
@@ -364,6 +293,31 @@
 }
 
 /* ---------- Keyframes ---------- */
+@keyframes bounceOnce {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes burst {
+  0% { opacity: 1; transform: rotate(var(--angle)) translateY(0); }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(-48px); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* Motion is optional (PRINCIPLES §4) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

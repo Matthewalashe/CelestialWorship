@@ -59,11 +59,6 @@ export function getHymnUsage(): HymnUsage[] {
   }
 }
 
-/** @deprecated kept for callers that only need numbers */
-export function getRecentlyUsedHymns(): number[] {
-  return getHymnUsage().map(u => u.number);
-}
-
 export function recordHymnUsage(hymnNumbers: number[], date: string = toISODate(new Date())): void {
   try {
     const others = getHymnUsage().filter(u => !(hymnNumbers.includes(u.number) && u.date === date));
@@ -485,26 +480,6 @@ export function planHymns(service: ServiceOrder, allHymns: Hymn[], ctx: MatchCon
     candidates: s.candidates.slice(0, perSlot),
     selected: chosen.get(i) ?? null,
   }));
-}
-
-export function generateHymnPlan(
-  service: ServiceOrder,
-  allHymns: Hymn[],
-  date?: string,
-  lessonRefs: { book: string; chapter: number }[] = [],
-  lessonText: string = ''
-) {
-  const plan = planHymns(service, allHymns, { date, lessonRefs, lessonText }, 10);
-  return {
-    serviceType: service.id,
-    date: date || toISODate(new Date()),
-    slots: plan.map(({ stepNumber, slotName, slot, candidates }) => ({
-      stepNumber,
-      slotName,
-      category: slot.category || null,
-      suggestions: candidates,
-    })),
-  };
 }
 
 export function categoryToSlotName(category: HymnCategory): string {

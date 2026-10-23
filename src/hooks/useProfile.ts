@@ -23,9 +23,6 @@ export const MEMBER_TYPES: Record<MemberType, { label: string; yoruba: string; d
   church_admin: { label: 'Church admin', yoruba: 'Alákòóso ìjọ', description: 'Parish secretary or administrator — verified before you can manage a parish', needsVerification: true },
 };
 
-/** Roles that run a page of their own (a parish, or an independent ministry) */
-export const LEADS_A_PAGE: MemberType[] = ['shepherd', 'independent_shepherd', 'church_admin'];
-
 /** Common forms of address; the field is free text because titles vary between parishes */
 export const CHURCH_TITLE_SUGGESTIONS = [
   'Brother', 'Sister', 'Leader', 'Senior Leader', 'Elder', 'Senior Elder', 'Evangelist', 'Senior Evangelist',

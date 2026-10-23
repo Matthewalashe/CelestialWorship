@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './hooks/useTheme'
 import { AuthProvider } from './hooks/useAuth'
+import { ReaderProvider } from './hooks/useReader'
 import ScrollToTop from './components/ScrollToTop'
 import App from './App'
 import './index.css'
@@ -16,8 +17,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <ScrollToTop />
-          <App />
+          <ReaderProvider>
+            <ScrollToTop />
+            <App />
+          </ReaderProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

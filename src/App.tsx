@@ -39,6 +39,7 @@ const ParishAdmin = React.lazy(() => import('./pages/ParishAdmin'));
 const Give = React.lazy(() => import('./pages/Give'));
 const Live = React.lazy(() => import('./pages/Live'));
 const Quiz = React.lazy(() => import('./pages/Quiz'));
+const MapGames = React.lazy(() => import('./pages/MapGames'));
 const Moderate = React.lazy(() => import('./pages/Moderate'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
@@ -93,6 +94,7 @@ function App() {
             <Route path="/give" element={<Give />} />
             <Route path="/live" element={<Live />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/maps" element={<MapGames />} />
             <Route path="/moderate" element={<Moderate />} />
             <Route path="*" element={<NotFound />} />
           </Route>
@@ -101,7 +103,8 @@ function App() {
       <OfflineIndicator />
       <ToastHost />
       <DialogHost />
-      <SpeedInsights />
+      {/* Vercel serves its script only on deployments */}
+      {!['localhost', '127.0.0.1'].includes(window.location.hostname) && <SpeedInsights />}
     </ErrorBoundary>
   );
 }

@@ -2,6 +2,15 @@
 
 Every feature is built and reviewed against these. Each has a check that can fail a build or a review.
 
+## 0. Liturgy and devotion first
+- **Five tabs, always the same:** Home, Service, Devotion, Hymns, Bible. Everything else lives in one
+  Menu, grouped Worship · Church · Learn · Me. Nothing important is more than two taps away.
+- **Quiet screens.** One primary action per screen; no element that repeats the navigation; secondary
+  features (quizzes, map games, leaderboards) stay inside their own section and never on Home.
+- **Reading is a book.** Bible, hymns and devotion share one "Aa" menu and one reading mode: monochrome
+  paper or night page, book typeface, no colour, motion or chrome.
+- **Fits the screen.** No horizontal scrolling at 360 px; fixed bars never cover content.
+
 ## 1. Faithful and fair content
 - **Scripture is quoted, never paraphrased as if it were Scripture.** Bible text comes from a named
   translation with its licence notice. Retellings (children's stories) are labelled as retellings and

@@ -6,12 +6,6 @@ export function stanzaLines(verse: HymnVerse, lang: HymnLanguage): string[] {
   return lang === 'en' ? verse.englishLines : verse.yorubaLines;
 }
 
-/** Lines in the requested language, falling back to the other one when a stanza has none */
-export function stanzaLinesWithFallback(verse: HymnVerse, lang: HymnLanguage): string[] {
-  const lines = stanzaLines(verse, lang);
-  return lines.length > 0 ? lines : stanzaLines(verse, lang === 'en' ? 'yo' : 'en');
-}
-
 export function firstLine(hymn: Hymn, lang: HymnLanguage): string | null {
   for (const verse of hymn.verses) {
     const line = stanzaLines(verse, lang)[0];

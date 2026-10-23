@@ -1,7 +1,8 @@
 # CelestialWorship — work status
 
-Branch: `audit-fixes`. Not deployed. Tested locally: typecheck, 39 unit tests, 39-route browser
-smoke test (no errors, no horizontal overflow at phone width) and 9 end-to-end flows.
+Branch: `audit-fixes`. Not deployed. Tested locally: typecheck, lint (hooks + accessibility, zero
+warnings), 54 unit tests, 47-route browser smoke test (no errors, no horizontal overflow at phone width)
+and 13 end-to-end flows. Rules every change follows: docs/PRINCIPLES.md.
 
 Legend: ✅ done · 🔑 needs something from you (see docs/SETUP.md)
 
@@ -30,6 +31,14 @@ Legend: ✅ done · 🔑 needs something from you (see docs/SETUP.md)
 | 19 | Auth, onboarding, splash, profile, roles | ✅ incl. independent shepherd; verification by moderators |
 | 20 | Parish/ministry admin portal | ✅ details, team roles (shepherd, admin, parochial committee, media, choir), events, prayer requests, giving, appointments, livestream |
 | 21 | Independent shepherds: articles, livestream, prayer, giving | ✅ ministry pages |
+| 22 | Standard of principles; fix implementation issues | ✅ PRINCIPLES.md, ESLint in the build, accessible dialogs, server-side hardening migration, https-only links, orphaned code removed |
+| 23 | Events: Imeko 2026, Pastor’s birthday | ✅ Imeko 21–25 Dec 2026; Pastor Founder 11 Oct; Rev. E. M. Oshoffa 25 Dec (International HQ, Ketu) |
+| 24 | Gamified quizzes | ✅ XP, levels, combos, lives, timer, badges, daily challenge with share grid, opt-in weekly leaderboard · 🔑 games migration |
+| 25 | Bible map games, old & new maps | ✅ Journey of Jesus, Then & Now, Map Master, Bible Lands Today; parchment / today / both layers |
+| 26 | Liturgy and devotion first; minimal, well-structured UI | ✅ five tabs + Menu, quiet Home, settings in Profile |
+| 27 | Kindle-style paper reading (Bible, hymns, devotion) | ✅ shared Aa menu, paper / night, book typeface, tap to turn |
+| 28 | Children’s Bible stories | ⏳ next |
+| 29 | X-style articles feed | ⏳ next |
 
 ## Audit items
 

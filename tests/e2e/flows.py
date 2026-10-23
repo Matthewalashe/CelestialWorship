@@ -88,7 +88,36 @@ with sync_playwright() as p:
         for _ in range(10):
             pg.get_by_role('radio').first.click()
             pg.get_by_role('button', name='Next question').or_(pg.get_by_role('button', name='See my score')).click()
-        expect(pg.get_by_role('button', name='Another round')).to_be_visible()
+        expect(pg.get_by_role('button', name='Play again')).to_be_visible()
+        expect(pg.get_by_text('XP').first).to_be_visible()
+
+    def daily_challenge(pg):
+        pg.goto(BASE + '/quiz?daily=1', wait_until='networkidle')
+        for _ in range(5):
+            pg.get_by_role('radio').first.click()
+            pg.get_by_role('button', name='Next question').or_(pg.get_by_role('button', name='See my score')).click()
+        expect(pg.get_by_role('button', name='Share')).to_be_visible()
+        pg.goto(BASE + '/quiz', wait_until='networkidle')
+        expect(pg.get_by_text('Done today')).to_be_visible()
+
+    def reading_mode(pg):
+        pg.goto(BASE + '/bible/john/1', wait_until='networkidle')
+        pg.get_by_role('button', name='Reading mode').click()
+        frame = pg.get_by_role('document', name='Reading: John 1')
+        expect(frame).to_be_visible()
+        pg.keyboard.press('ArrowRight')
+        pg.get_by_role('button', name='Chapter 2').last.click()
+        expect(pg.get_by_role('document', name='Reading: John 2')).to_be_visible()
+        pg.goto(BASE + '/hymns/1', wait_until='networkidle')
+        expect(pg.get_by_role('document', name='Reading: 1. ORIN AKOWOLE')).to_be_visible()  # the mode is remembered
+        pg.get_by_role('button', name='Leave reading mode').click()
+        expect(pg.get_by_role('document', name='Reading: 1. ORIN AKOWOLE')).to_have_count(0)
+
+    def menu(pg):
+        pg.goto(BASE + '/', wait_until='networkidle')
+        pg.get_by_role('button', name='Menu').click()
+        pg.get_by_role('link', name='Quizzes & maps').click()
+        expect(pg).to_have_url(BASE + '/quiz')
 
     def devotion(pg):
         pg.goto(BASE + '/devotion?service=morning_service', wait_until='networkidle')
@@ -113,7 +142,7 @@ with sync_playwright() as p:
 
     for name, fn in [('onboarding', onboarding), ('highlight and save verse', highlight_and_save), ('note on a verse', note_on_verse),
                      ('prayer journal', prayer_journal), ('hymn favourite', hymn_favourite), ('hymn search without tone marks', hymn_search),
-                     ('quiz round', quiz_round), ('devotion completion and streak', devotion), ('library backup export', export_backup)]:
+                     ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('devotion completion and streak', devotion), ('library backup export', export_backup)]:
         check(name, fn, page)
 
     browser.close()

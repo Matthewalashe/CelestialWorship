@@ -32,14 +32,3 @@ export function useLessonsByDate(date: string) {
 
   return { lessons: dateLessons, loading, error };
 }
-
-export function useLessonsByMonth(year: number, month: number) {
-  const { lessons, loading, error } = useLessons();
-
-  const monthLessons = useMemo(() => {
-    const prefix = `${year}-${String(month + 1).padStart(2, '0')}`;
-    return lessons.filter(l => l.date.startsWith(prefix));
-  }, [lessons, year, month]);
-
-  return { lessons: monthLessons, loading, error };
-}

@@ -14,7 +14,8 @@ ROUTES = [
     '/hymns?section=easter', '/bible', '/bible/john/3?v=16', '/bible/psalms/23?lang=yo1900', '/bible/genesis/1?lang=yo&sbs=true',
     '/lessons', '/devotion', '/devotion?service=morning_service', '/suggestions', '/notes', '/notes?tab=prayers',
     '/notes?tab=backup', '/constitution', '/our-church', '/profile', '/prayer-requests', '/articles', '/articles/write',
-    '/events', '/directory', '/give', '/live', '/quiz', '/quiz?topic=doctrine', '/quiz?topic=hymns', '/moderate',
+    '/events', '/directory', '/give', '/live', '/quiz', '/quiz?topic=doctrine', '/quiz?topic=hymns&mode=challenge', '/quiz?daily=1', '/maps',
+    '/maps?game=journey', '/maps?game=lands', '/moderate',
     '/parish-admin', '/control', '/display', '/signin', '/nonexistent-page',
 ]
 
@@ -31,7 +32,8 @@ with sync_playwright() as p:
     for route in ROUTES:
         page = ctx.new_page()
         errors, failed = [], []
-        page.on('console', lambda m: errors.append(f'console.{m.type}: {m.text}') if m.type == 'error' else None)
+        # "Failed to load resource" repeats a failed request, which is tracked (with its URL) below
+        page.on('console', lambda m: errors.append(f'console.{m.type}: {m.text}') if m.type == 'error' and not m.text.startswith('Failed to load resource') else None)
         page.on('pageerror', lambda e: errors.append(f'pageerror: {e}'))
         page.on('requestfailed', lambda r: failed.append(f'{r.url} {r.failure}'))
         page.on('response', lambda r: failed.append(f'{r.status} {r.url}') if r.status >= 400 and 'localhost' in r.url else None)

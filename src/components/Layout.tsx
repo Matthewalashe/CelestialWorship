@@ -5,8 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useT, type StringKey } from '../i18n';
 import {
-  Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun, LayoutGrid,
-  HandHeart, PenLine, CalendarDays, MapPin, HandCoins, Radio, GraduationCap, Landmark, User, Gavel,
+  Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun,
+  HandHeart, PenLine, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, Landmark, User, Gavel,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
@@ -18,31 +18,24 @@ interface NavItem {
   icon: ReactNode;
 }
 
+/** The five things people come for: today, the service, devotion, hymns, the Bible */
 const NavItems: NavItem[] = [
   { path: '/', label: 'nav.home', icon: <Home size={20} /> },
   { path: '/services', label: 'nav.services', icon: <Church size={20} /> },
+  { path: '/devotion', label: 'nav.devotion', icon: <Bird size={20} /> },
   { path: '/hymns', label: 'nav.hymns', icon: <Music size={20} /> },
   { path: '/bible', label: 'nav.bible', icon: <BookOpen size={20} /> },
 ];
 
+/** Everything else, in the Menu */
 const MoreGroups: { title: string; items: NavItem[] }[] = [
   {
     title: 'Worship',
     items: [
-      { path: '/devotion', label: 'nav.devotion', icon: <Bird size={20} /> },
       { path: '/lessons', label: 'nav.lessons', icon: <Calendar size={20} /> },
       { path: '/live', label: 'nav.live', icon: <Radio size={20} /> },
       { path: '/suggestions', label: 'nav.selector', icon: <ListMusic size={20} /> },
       { path: '/control', label: 'nav.operator', icon: <MonitorPlay size={20} /> },
-    ],
-  },
-  {
-    title: 'Learn',
-    items: [
-      { path: '/quiz', label: 'nav.quiz', icon: <GraduationCap size={20} /> },
-      { path: '/articles', label: 'nav.articles', icon: <PenLine size={20} /> },
-      { path: '/our-church', label: 'nav.history', icon: <Landmark size={20} /> },
-      { path: '/constitution', label: 'nav.constitution', icon: <ScrollText size={20} /> },
     ],
   },
   {
@@ -55,6 +48,15 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
     ],
   },
   {
+    title: 'Learn',
+    items: [
+      { path: '/our-church', label: 'nav.history', icon: <Landmark size={20} /> },
+      { path: '/constitution', label: 'nav.constitution', icon: <ScrollText size={20} /> },
+      { path: '/articles', label: 'nav.articles', icon: <PenLine size={20} /> },
+      { path: '/quiz', label: 'nav.quiz', icon: <GraduationCap size={20} /> },
+    ],
+  },
+  {
     title: 'Me',
     items: [
       { path: '/notes', label: 'nav.library', icon: <StickyNote size={20} /> },
@@ -63,8 +65,6 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
   },
 ];
 
-const MobilePrimaryPaths = NavItems.map(i => i.path);
-const allMoreItems = MoreGroups.flatMap(g => g.items);
 
 const isActivePath = (pathname: string, path: string) => (path === '/' ? pathname === '/' : pathname.startsWith(path));
 
@@ -78,7 +78,6 @@ export default function Layout() {
 
   useEffect(() => { setMoreOpen(false); }, [location.pathname]);
 
-  const isMoreActive = allMoreItems.some(item => isActivePath(location.pathname, item.path));
   const groups: { title: string; items: NavItem[] }[] = canModerate
     ? [...MoreGroups.slice(0, 3), { title: 'Me', items: [...MoreGroups[3].items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} /> }] }]
     : MoreGroups;
@@ -159,19 +158,16 @@ export default function Layout() {
             <span className="text-base font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>CelestialWorship</span>
           </Link>
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
-              style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-            </button>
             <Link to="/profile" aria-label={t('nav.profile')}
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold"
-                  style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}>
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold"
+                  style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
               {initial ?? <User size={18} />}
             </Link>
+            <button onClick={() => setMoreOpen(true)} aria-expanded={moreOpen} aria-label={t('nav.more')}
+                    className="h-9 pl-2.5 pr-3 rounded-full flex items-center gap-1.5 text-sm font-semibold"
+                    style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+              <Menu size={18} /> {t('nav.more')}
+            </button>
           </div>
         </header>
 
@@ -183,67 +179,56 @@ export default function Layout() {
         </div>
       </main>
 
-      {/* Mobile "More" sheet */}
+      {/* Menu: everything beyond the five tabs */}
       {moreOpen && (
-        <Sheet label="More pages" title="More" onClose={() => setMoreOpen(false)}>
-          <div>
+        <Sheet label={t('nav.more')} onClose={() => setMoreOpen(false)}>
+          <nav aria-label="Menu" className="space-y-4">
             {groups.map(group => (
-              <div key={group.title} className="mb-3">
-                <p className="text-[10px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>{group.title}</p>
-                <div className="grid grid-cols-4 gap-2">
+              <div key={group.title}>
+                <p className="text-[11px] uppercase tracking-wider font-semibold mb-1 px-1" style={{ color: 'var(--color-text-muted)' }}>{group.title}</p>
+                <ul className="grid grid-cols-2 gap-1">
                   {group.items.map(item => {
                     const active = isActivePath(location.pathname, item.path);
                     return (
-                      <NavLink
-                        key={item.path}
-                        to={item.path}
-                        className="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl text-[11px] font-medium text-center leading-tight"
-                        style={{
-                          backgroundColor: active ? 'var(--color-accent-brand)' : 'var(--color-bg-card)',
-                          color: active ? 'var(--color-text-on-accent)' : 'var(--color-text-primary)',
-                        }}
-                      >
-                        {item.icon}
-                        <span>{label(item)}</span>
-                      </NavLink>
+                      <li key={item.path}>
+                        <NavLink to={item.path} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm"
+                                 style={{ backgroundColor: active ? 'var(--color-bg-card)' : 'transparent', color: active ? 'var(--color-accent-brand)' : 'var(--color-text-primary)', fontWeight: active ? 600 : 400 }}>
+                          <span style={{ color: 'var(--color-text-muted)' }}>{item.icon}</span>
+                          <span className="leading-tight">{label(item)}</span>
+                        </NavLink>
+                      </li>
                     );
                   })}
-                </div>
+                </ul>
               </div>
             ))}
-          </div>
+            <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} {theme === 'light' ? 'Dark mode' : 'Light mode'}
+            </button>
+          </nav>
         </Sheet>
       )}
 
       {/* Mobile Bottom Nav */}
       <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 glass-nav z-30 flex items-center justify-around px-2 py-1 pb-safe"
            style={{ height: '68px' }}>
-        {NavItems.filter(item => MobilePrimaryPaths.includes(item.path)).map(item => {
-          const isActive = !moreOpen && isActivePath(location.pathname, item.path);
+        {NavItems.map(item => {
+          const isActive = isActivePath(location.pathname, item.path);
           return (
             <NavLink
               prefetch="intent"
               key={item.path}
               to={item.path}
               end={item.path === '/'}
-              className="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all duration-200"
+              aria-current={isActive ? 'page' : undefined}
+              className="flex flex-col items-center justify-center flex-1 h-14 rounded-xl"
               style={{ color: isActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}
             >
-              <span className={`mb-0.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`}>{item.icon}</span>
-              <span className="text-[10px] font-medium">{t(item.label)}</span>
+              <span className="mb-0.5">{item.icon}</span>
+              <span className={`text-[10px] ${isActive ? 'font-semibold' : 'font-medium'}`}>{t(item.label)}</span>
             </NavLink>
           );
         })}
-        <button
-          onClick={() => setMoreOpen(o => !o)}
-          className="flex flex-col items-center justify-center w-16 h-14 rounded-xl transition-all duration-200"
-          style={{ color: moreOpen || isMoreActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}
-          aria-expanded={moreOpen}
-          aria-label="More pages"
-        >
-          <span className={`mb-0.5 transition-transform duration-200 ${moreOpen || isMoreActive ? 'scale-110' : ''}`}><LayoutGrid size={20} /></span>
-          <span className="text-[10px] font-medium">{t('nav.more')}</span>
-        </button>
       </nav>
     </div>
   );

@@ -57,7 +57,7 @@ export default function Lessons() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-pulse text-[var(--color-text-secondary)]">Loading lessons...</div>
       </div>
     );

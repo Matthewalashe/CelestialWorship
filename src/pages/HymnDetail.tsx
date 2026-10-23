@@ -6,21 +6,19 @@ import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { Hymn, HymnVerse } from '../types';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReaderMode } from '../hooks/useReaderMode';
+import { useReader } from '../hooks/useReader';
+import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { useSwipe } from '../hooks/useSwipe';
 import { useFavoriteHymns, recordHymnView } from '../hooks/useFavorites';
 import { displayTitle, stanzaLabel, type HymnLanguage } from '../utils/hymnText';
 import { showToast } from '../components/Toast';
 import { HymnTranslations } from '../components/HymnTranslations';
-import { BookOpen, Moon, X, Tv, Share2, Music2, MonitorSmartphone, Heart, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Tv, Share2, Music2, Heart, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 
 type LyricsView = 'yo' | 'both' | 'en';
 
 const VIEW_KEY = 'cw-hymn-view';
-const FONT_KEY = 'cw-hymn-font';
-const FONT_MIN = 16;
-const FONT_MAX = 30;
 
 function readStored<T extends string | number>(key: string, fallback: T, valid: (v: string) => boolean): T {
   try {
@@ -79,7 +77,7 @@ function Stanza({
   verse: HymnVerse;
   view: LyricsView;
   isLast: boolean;
-  onDisplay: () => void;
+  onDisplay?: () => void;
 }) {
   const chorus = verse.kind === 'chorus';
   const yo = isLast ? splitAmen(verse.yorubaLines) : { lines: verse.yorubaLines, amen: null };
@@ -132,16 +130,16 @@ function Stanza({
         )}
       </div>
 
-      {/* Send this stanza to the projector (operators) */}
-      <button
+      {/* Send this stanza to the projector (operators; on phones they use the Control page) */}
+      {onDisplay && <button
         onClick={onDisplay}
-        className="absolute -top-1 right-0 p-1.5 rounded-lg transition-opacity opacity-60 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 focus:opacity-100"
+        className="absolute -top-1 right-0 p-1.5 rounded-lg transition-opacity hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus:opacity-100"
         style={{ color: 'var(--color-text-muted)' }}
         aria-label={`Show ${stanzaLabel(verse)} on the display`}
         title="Show on display"
       >
         <Tv size={16} />
-      </button>
+      </button>}
     </section>
   );
 }
@@ -156,23 +154,15 @@ export default function HymnDetail() {
 
   const [view, setViewState] = useState<LyricsView>(() =>
     readStored<LyricsView>(VIEW_KEY, 'yo', v => v === 'yo' || v === 'en' || v === 'both'));
-  const [fontSize, setFontSizeState] = useState<number>(() =>
-    readStored<number>(FONT_KEY, 20, v => Number(v) >= FONT_MIN && Number(v) <= FONT_MAX));
   const [showSolfa, setShowSolfa] = useState(false);
 
   const setView = (v: LyricsView) => { setViewState(v); store(VIEW_KEY, v); };
-  const changeFont = (delta: number) => {
-    setFontSizeState(size => {
-      const next = Math.min(FONT_MAX, Math.max(FONT_MIN, size + delta));
-      store(FONT_KEY, next);
-      return next;
-    });
-  };
 
   const titleLang: HymnLanguage = view === 'en' ? 'en' : 'yo';
   usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${displayTitle(hymn, titleLang)}` : undefined);
 
-  const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
+  const { reading } = useReader();
+  const readingStyle = useReadingStyle();
   const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
   useEffect(() => {
@@ -252,7 +242,7 @@ export default function HymnDetail() {
   const iconButton = 'h-9 min-w-9 px-2 rounded-lg inline-flex items-center justify-center gap-1 text-xs font-medium transition-colors';
 
   return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined} className="p-4 max-w-3xl mx-auto pb-36" {...swipeHandlers}>
+    <div className="p-4 max-w-3xl mx-auto pb-36" {...swipeHandlers}>
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-2 mb-6">
         <button
@@ -271,32 +261,7 @@ export default function HymnDetail() {
           >
             <Heart size={16} fill={favorite ? 'currentColor' : 'none'} />
           </button>
-          <button onClick={() => changeFont(-2)} className={iconButton} style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }} aria-label="Smaller text">A−</button>
-          <button onClick={() => changeFont(2)} className={iconButton} style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }} aria-label="Larger text">A+</button>
-          <button
-            onClick={cycleReaderMode}
-            className={iconButton}
-            style={{
-              backgroundColor: isReaderActive ? 'var(--color-text-primary)' : 'var(--color-bg-card)',
-              color: isReaderActive ? 'var(--color-bg-primary)' : 'var(--color-text-secondary)',
-            }}
-            aria-label="Reading mode"
-            title={readerMode === 'off' ? 'Paper reading mode' : readerMode === 'paper' ? 'Dim paper' : 'Exit reading mode'}
-          >
-            {readerMode === 'off' ? <BookOpen size={16} /> : readerMode === 'paper' ? <Moon size={16} /> : <X size={16} />}
-          </button>
-          {wakeLockSupported && (
-            <button
-              onClick={toggleWakeLock}
-              className={iconButton}
-              style={{ backgroundColor: 'var(--color-bg-card)', color: wakeLockActive ? 'var(--color-accent-gold)' : 'var(--color-text-secondary)' }}
-              aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}
-              aria-pressed={wakeLockActive}
-              title={wakeLockActive ? 'Screen will stay on' : 'Keep screen on'}
-            >
-              <MonitorSmartphone size={16} />
-            </button>
-          )}
+          <ReaderButtons wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }} />
         </div>
       </div>
 
@@ -387,7 +352,7 @@ export default function HymnDetail() {
       )}
 
       {/* Lyrics */}
-      <article className="space-y-7 leading-[1.6]" style={{ fontSize: `${fontSize}px` }}>
+      <article className="space-y-7" style={{ ...readingStyle, lineHeight: 1.6, textAlign: undefined }}>
         {verses.map((verse, idx) => (
           <Stanza
             key={idx}
@@ -399,7 +364,21 @@ export default function HymnDetail() {
         ))}
       </article>
 
-      <HymnTranslations hymn={hymn} fontSize={fontSize} />
+      <HymnTranslations hymn={hymn} fontSize={readingStyle.fontSize as string} />
+
+      {reading && (
+        <ReaderFrame
+          title={`${hymn.number}. ${mainTitle}`}
+          place={hymn.section?.english}
+          prev={prevNumber !== null ? { label: `Hymn ${prevNumber}`, go: () => goTo(prevNumber) } : undefined}
+          next={nextNumber !== null ? { label: `Hymn ${nextNumber}`, go: () => goTo(nextNumber) } : undefined}
+          wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }}
+        >
+          <div className="space-y-7" style={{ lineHeight: 1.6 }}>
+            {verses.map((verse, idx) => <Stanza key={idx} verse={verse} view={view} isLast={idx === verses.length - 1} />)}
+          </div>
+        </ReaderFrame>
+      )}
 
       {/* Bottom bar: previous / share / next */}
       <div className="fixed bottom-[68px] md:bottom-0 left-0 md:left-64 right-0 px-4 py-2.5 backdrop-blur-xl border-t z-10"

@@ -93,14 +93,3 @@ export function useHymn(number: number) {
 
   return { hymn, prevNumber, nextNumber, loading, error };
 }
-
-export function useHymnsByCategory(category: HymnCategory) {
-  const { hymns, loading, error } = useHymns();
-
-  const results = useMemo(
-    () => hymns.filter(h => h.categories.includes(category)),
-    [hymns, category]
-  );
-
-  return { results, loading, error };
-}

@@ -68,17 +68,3 @@ export function DevotionSkeleton() {
     </div>
   );
 }
-
-/** Generic page skeleton */
-export function PageSkeleton() {
-  return (
-    <div className="px-4 py-6 max-w-4xl mx-auto pb-24">
-      <Pulse className="h-8 w-40 mb-4" />
-      <div className="space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Pulse key={i} className="h-20" />
-        ))}
-      </div>
-    </div>
-  );
-}

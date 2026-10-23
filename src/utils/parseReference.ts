@@ -45,16 +45,6 @@ export function parseReference(raw: string): ScriptureReference | null {
 }
 
 /**
- * Format a ScriptureReference back to a display string
- */
-export function formatReference(ref: ScriptureReference): string {
-  if (ref.verseStart === ref.verseEnd) {
-    return `${ref.book} ${ref.chapter}:${ref.verseStart}`;
-  }
-  return `${ref.book} ${ref.chapter}:${ref.verseStart}-${ref.verseEnd}`;
-}
-
-/**
  * Build a URL path for the Bible reader from a reference
  */
 export function referenceToPath(ref: ScriptureReference): string {

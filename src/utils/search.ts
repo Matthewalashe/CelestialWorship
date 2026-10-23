@@ -12,15 +12,6 @@ export function normalizeForSearch(text: string): string {
     .toLowerCase();
 }
 
-/**
- * Simple fuzzy search — matches if all query words appear somewhere in the target string.
- */
-function fuzzyMatch(query: string, target: string): boolean {
-  const words = normalizeForSearch(query).split(/\s+/).filter(Boolean);
-  const normalizedTarget = normalizeForSearch(target);
-  return words.every(word => normalizedTarget.includes(word));
-}
-
 const hymnSearchText = new WeakMap<Hymn, string>();
 
 /** Searchable text for a hymn, built once per hymn */
@@ -70,41 +61,4 @@ export function filterByCategory(hymns: Hymn[], categories: HymnCategory[]): Hym
   return hymns.filter(h =>
     h.categories.some(c => categories.includes(c))
   );
-}
-
-/**
- * Search service orders by name or step text.
- */
-export function searchServices(
-  services: { id: string; displayName: string; description: string }[],
-  query: string
-): typeof services {
-  const trimmed = query.trim();
-  if (!trimmed) return services;
-
-  return services.filter(s => {
-    const searchable = `${s.displayName} ${s.description}`.toLowerCase();
-    return fuzzyMatch(trimmed, searchable);
-  });
-}
-
-/**
- * Highlight matching text in a string (returns HTML with <mark> tags).
- */
-export function highlightMatch(text: string, query: string): string {
-  if (!query.trim()) return text;
-
-  const words = query.trim().split(/\s+/).filter(Boolean);
-  let result = text;
-
-  for (const word of words) {
-    const regex = new RegExp(`(${escapeRegExp(word)})`, 'gi');
-    result = result.replace(regex, '<mark class="bg-amber-500/30 text-white rounded px-0.5">$1</mark>');
-  }
-
-  return result;
-}
-
-function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

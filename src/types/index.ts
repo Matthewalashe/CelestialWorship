@@ -135,11 +135,6 @@ export interface BibleLesson {
 // ---------- Bible ----------
 export type BibleLanguage = 'en' | 'yo';
 
-export const BIBLE_LANGUAGE_LABELS: Record<BibleLanguage, string> = {
-  en: 'English (KJV)',
-  yo: 'Yorùbá (OYCB)',
-};
-
 export interface BibleBook {
   name: string;
   abbreviation: string;
@@ -205,30 +200,6 @@ export interface HymnSuggestion {
   reason: string;
   confidence: 'high' | 'medium' | 'low';
   isAiRefined?: boolean;
-}
-
-export interface HymnPlan {
-  serviceType: string;
-  date: string;
-  slots: {
-    slotName: string;
-    category: HymnCategory;
-    stepNumber: number;
-    suggestions: HymnSuggestion[];
-    selectedHymn: Hymn | null;
-  }[];
-}
-
-// ---------- Topical Breakdown ----------
-export interface TopicalBreakdown {
-  date: string;
-  serviceType: string;
-  firstLessonSummary: string;
-  secondLessonSummary: string | null;
-  connectionTheme: string;
-  keyThemes: string[];
-  isAiGenerated: boolean;
-  reviewStatus: 'draft' | 'approved' | 'rejected';
 }
 
 // ---------- Navigation ----------

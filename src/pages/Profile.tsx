@@ -9,6 +9,7 @@ import { useT, setUILanguage } from '../i18n';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
+import { AppSettings } from '../components/AppSettings';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -177,6 +178,8 @@ export default function Profile() {
           )}
         </section>
       )}
+
+      <AppSettings />
 
       <section className="rounded-2xl border p-4 space-y-2" style={card}>
         {profile.memberType === 'independent_shepherd' ? (

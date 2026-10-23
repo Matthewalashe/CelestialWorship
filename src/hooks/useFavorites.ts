@@ -48,13 +48,3 @@ export function recordHymnView(number: number) {
   const current = readNumbers(RECENT_KEY).filter(n => n !== number);
   writeNumbers(RECENT_KEY, [number, ...current].slice(0, RECENT_LIMIT));
 }
-
-export function useRecentHymns() {
-  const [recent, setRecent] = useState<number[]>(() => readNumbers(RECENT_KEY));
-  useEffect(() => {
-    const sync = () => setRecent(readNumbers(RECENT_KEY));
-    window.addEventListener(CHANGE_EVENT, sync);
-    return () => window.removeEventListener(CHANGE_EVENT, sync);
-  }, []);
-  return recent;
-}

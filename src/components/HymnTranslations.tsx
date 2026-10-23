@@ -31,7 +31,7 @@ function readCache(n: number): Translation[] {
   try { return JSON.parse(localStorage.getItem(cacheKey(n)) || '[]'); } catch { return []; }
 }
 
-export function HymnTranslations({ hymn, fontSize }: { hymn: Hymn; fontSize: number }) {
+export function HymnTranslations({ hymn, fontSize }: { hymn: Hymn; fontSize: number | string }) {
   const { user } = useAuth();
   const [translations, setTranslations] = useState<Translation[]>(() => readCache(hymn.number));
   const [showing, setShowing] = useState<TranslationLanguage | null>(null);

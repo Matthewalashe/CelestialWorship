@@ -75,13 +75,6 @@ export function fromISODate(iso: string): Date {
 }
 
 /**
- * Get the day name from a Date
- */
-export function getDayName(date: Date): string {
-  return date.toLocaleDateString('en-GB', { weekday: 'long' });
-}
-
-/**
  * Check if a date is today
  */
 export function isToday(date: Date): boolean {
@@ -104,29 +97,6 @@ export function getDatesInMonth(year: number, month: number): Date[] {
     d.setDate(d.getDate() + 1);
   }
   return dates;
-}
-
-/**
- * Get the start of the current week (Sunday)
- */
-export function getWeekStart(date: Date): Date {
-  const d = new Date(date);
-  d.setDate(d.getDate() - d.getDay());
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-/**
- * The next N days that have a service besides the daily morning service
- */
-export function getUpcomingServiceDays(from: Date, count: number): Date[] {
-  const result: Date[] = [];
-  const d = new Date(from);
-  for (let i = 0; i < 40 && result.length < count; i++) {
-    if (getServiceTypesForDate(d).some(id => id !== 'morning_service')) result.push(new Date(d));
-    d.setDate(d.getDate() + 1);
-  }
-  return result;
 }
 
 /** Service schedule with times for notification scheduling */

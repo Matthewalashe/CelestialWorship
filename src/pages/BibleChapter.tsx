@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import {
-  BookOpen, Moon, X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2, MonitorSmartphone, Volume2, VolumeX,
+  X, ChevronLeft, ChevronRight, Tv, Bookmark, Share2, Volume2, VolumeX,
   Copy, StickyNote, Image as ImageIcon, Columns2, Highlighter,
 } from 'lucide-react';
 import { useSwipe } from '../hooks/useSwipe';
@@ -12,7 +12,8 @@ import { useSavedPassages, useChapterHighlights, notesApi } from '../hooks/useNo
 import { useBible } from '../hooks/useBible';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReaderMode } from '../hooks/useReaderMode';
+import { useReader } from '../hooks/useReader';
+import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { recordChapterOpened, recordChapterCompleted, useReadingProgress } from '../hooks/useProgress';
 import { HIGHLIGHT_COLORS, type HighlightColor, type Note } from '../types/notes';
@@ -20,15 +21,6 @@ import { showToast } from '../components/Toast';
 import { shareCard } from '../utils/shareCard';
 
 const VERSION_KEY = 'cw-bible-version';
-const FONT_KEY = 'cw-bible-font';
-
-function storedNumber(key: string, fallback: number, min: number, max: number) {
-  try {
-    const n = Number(localStorage.getItem(key));
-    if (n >= min && n <= max) return n;
-  } catch {}
-  return fallback;
-}
 
 /** "3-5,7" style label for a set of verse numbers */
 function formatVerseList(verses: number[]): string {
@@ -115,22 +107,16 @@ export default function BibleChapter() {
   const sideBySide = searchParams.get('sbs') === 'true';
   const secondVersion = getBibleVersion(searchParams.get('with') || companionVersion(version).id);
 
-  const { readerMode, cycleReaderMode, isReaderActive } = useReaderMode();
+  const { reading } = useReader();
+  const readingStyle = useReadingStyle();
   const { isActive: wakeLockActive, isSupported: wakeLockSupported, toggle: toggleWakeLock } = useWakeLock();
 
-  const [fontSize, setFontSizeState] = useState(() => storedNumber(FONT_KEY, 18, 14, 30));
   const [selected, setSelected] = useState<number[]>([]);
   const [showColors, setShowColors] = useState(false);
   const [speakingVerse, setSpeakingVerse] = useState<number | null>(null);
   const [chapterNotes, setChapterNotes] = useState<Note[]>([]);
   const [showNotes, setShowNotes] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
-
-  const setFontSize = (delta: number) => setFontSizeState(s => {
-    const next = Math.min(30, Math.max(14, s + delta));
-    try { localStorage.setItem(FONT_KEY, String(next)); } catch {}
-    return next;
-  });
 
   const updateParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams);
@@ -376,8 +362,7 @@ export default function BibleChapter() {
   const cardStyle = { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' };
 
   return (
-    <div data-reader={readerMode !== 'off' ? readerMode : undefined}
-         className={`${sideBySide ? 'max-w-4xl' : 'max-w-2xl'} mx-auto px-4 py-5 ${selected.length ? 'pb-48' : 'pb-24'}`}
+    <div className={`${sideBySide ? 'max-w-4xl' : 'max-w-2xl'} mx-auto px-4 py-5 ${selected.length ? 'pb-48' : 'pb-24'}`}
          {...swipeHandlers}>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -389,25 +374,12 @@ export default function BibleChapter() {
                   aria-label={speakingVerse !== null ? 'Stop reading' : 'Read aloud'} title={speakingVerse !== null ? 'Stop reading' : 'Read aloud'}>
             {speakingVerse !== null ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
-          <button onClick={() => setFontSize(-2)} className={iconButton} style={cardStyle} aria-label="Smaller text">A−</button>
-          <button onClick={() => setFontSize(2)} className={iconButton} style={cardStyle} aria-label="Larger text">A+</button>
           <button onClick={() => updateParams({ sbs: sideBySide ? null : 'true' })} className={iconButton}
                   style={{ ...cardStyle, color: sideBySide ? 'var(--color-accent-gold)' : cardStyle.color }}
                   aria-pressed={sideBySide} aria-label="Side by side" title="Side by side">
             <Columns2 size={16} />
           </button>
-          <button onClick={cycleReaderMode} className={iconButton}
-                  style={isReaderActive ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-primary)' } : cardStyle}
-                  aria-label="Reading mode" title={readerMode === 'off' ? 'Paper reading mode' : readerMode === 'paper' ? 'Dim paper' : 'Exit reading mode'}>
-            {readerMode === 'off' ? <BookOpen size={16} /> : readerMode === 'paper' ? <Moon size={16} /> : <X size={16} />}
-          </button>
-          {wakeLockSupported && (
-            <button onClick={toggleWakeLock} className={iconButton}
-                    style={{ ...cardStyle, color: wakeLockActive ? 'var(--color-accent-gold)' : cardStyle.color }}
-                    aria-pressed={wakeLockActive} aria-label={wakeLockActive ? 'Allow screen to sleep' : 'Keep screen on'}>
-              <MonitorSmartphone size={16} />
-            </button>
-          )}
+          <ReaderButtons wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }} />
         </div>
       </div>
 
@@ -508,7 +480,7 @@ export default function BibleChapter() {
               <span>{version.abbreviation}</span><span className="pl-6">{secondVersion.abbreviation}</span>
             </div>
           )}
-          <div className="space-y-2 leading-relaxed" style={{ fontSize: `${fontSize}px` }}>
+          <div className="space-y-2" style={readingStyle}>
             {sortedVerses.map(([verseNum, text]) => {
               const num = parseInt(verseNum);
               return (
@@ -550,6 +522,25 @@ export default function BibleChapter() {
           </Link>
         ) : <div />}
       </div>
+
+      {reading && data && (
+        <ReaderFrame
+          title={`${bookInfo.name} ${chapter}`}
+          place={`${version.abbreviation} · Chapter ${chapter} of ${bookInfo.chapters}`}
+          prev={chapter > 1 ? { label: `Chapter ${chapter - 1}`, go: () => navigate(chapterPath(chapter - 1)) } : undefined}
+          next={chapter < bookInfo.chapters ? { label: `Chapter ${chapter + 1}`, go: () => navigate(chapterPath(chapter + 1)) } : undefined}
+          wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }}
+        >
+          <p>
+            {sortedVerses.map(([verseNum, text]) => (
+              <span key={verseNum} className={highlights.has(parseInt(verseNum)) ? 'reader-mark' : undefined}>
+                <sup className="reader-verse">{verseNum}</sup>{text}{' '}
+              </span>
+            ))}
+          </p>
+          <p className="mt-8 text-[11px] leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{data.copyright}</p>
+        </ReaderFrame>
+      )}
 
       {/* Selection action bar */}
       {selected.length > 0 && (

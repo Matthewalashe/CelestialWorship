@@ -153,19 +153,6 @@ function parseHymnLines(lines: string[]): string[] {
 }
 
 /**
- * Get a display icon for a service step type
- */
-export function getStepIcon(type: string): string {
-  switch (type) {
-    case 'hymn': return '🎵';
-    case 'scripture': return '📖';
-    case 'prayer': return '🙏';
-    case 'rubric': return '✦';
-    default: return '';
-  }
-}
-
-/**
  * Get accent color CSS variable for a step type
  */
 export function getStepAccentColor(type: string): string {
