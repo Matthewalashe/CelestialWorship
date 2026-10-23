@@ -11,7 +11,7 @@ import { referenceToPath } from '../utils/parseReference';
 import { parseStepContent, getStepAccentColor, type ContentSegment } from '../utils/contentParser';
 import type { Hymn, HymnCategory } from '../types';
 import { CATEGORY_LABELS } from '../types';
-import { Bird, Music, BookOpen, Moon, Sun, X, ChevronLeft, ChevronRight, ChevronDown, MonitorSmartphone } from 'lucide-react';
+import { Bird, Music, BookOpen, Moon, Sun, X, ChevronDown, MonitorSmartphone } from 'lucide-react';
 import { useWakeLock } from '../hooks/useWakeLock';
 import { recordActivity, recordDevotionPosition, useStreak } from '../hooks/useProgress';
 import { getCandidateHymns } from '../utils/hymnMatcher';

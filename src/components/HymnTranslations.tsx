@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Languages, Plus, X } from 'lucide-react';
+import { Languages, Plus } from 'lucide-react';
 import { supabase } from '../supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useDraft } from '../hooks/useDraft';
@@ -7,6 +7,7 @@ import { raise, errorMessage } from '../lib/backend';
 import { showToast } from './Toast';
 import type { Hymn } from '../types';
 import { stanzaLabel } from '../utils/hymnText';
+import { Sheet } from './Dialog';
 
 /**
  * Egun and French translations of a hymn, contributed by members and published by moderators.
@@ -124,13 +125,8 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
   const inputStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-4 max-h-[92vh] overflow-y-auto space-y-3"
-           style={{ backgroundColor: 'var(--color-bg-secondary)' }} onClick={e => e.stopPropagation()} role="dialog" aria-label="Contribute a translation">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Translate hymn {hymn.number}</h2>
-          <button onClick={onClose} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
-        </div>
+    <Sheet label="Contribute a translation" title={`Translate hymn ${hymn.number}`} onClose={onClose}>
+      <div className="space-y-3">
         <div className="flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }}>
           {(['fr', 'egun'] as const).map(l => (
             <button key={l} onClick={() => draft.setValue({ language: l })} aria-pressed={v.language === l} className="flex-1 py-1.5 rounded-lg text-xs font-semibold"
@@ -157,6 +153,6 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
           Submit for review
         </button>
       </div>
-    </div>
+    </Sheet>
   );
 }

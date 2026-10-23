@@ -255,7 +255,7 @@ export function useNotifications() {
       timersRef.current.forEach(t => clearTimeout(t));
       timersRef.current = [];
     };
-  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders, pushActive]);
+  }, [permission, prefs, pushActive]);
 
   // Re-schedule when app becomes visible (user returns to app)
   useEffect(() => {

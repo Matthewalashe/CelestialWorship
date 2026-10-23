@@ -11,6 +11,7 @@ import { parseReference } from '../utils/parseReference';
 import { Markdown } from '../utils/markdown';
 import { SignInPrompt } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
+import { confirmDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 import { referenceLabel } from './Articles';
 
@@ -186,7 +187,7 @@ export default function ArticleEditor() {
         </button>
         {id && (
           <button onClick={async () => {
-            if (!confirm('Delete this article?')) return;
+            if (!await confirmDialog({ title: 'Delete this article?', message: 'This cannot be undone.', confirmLabel: 'Delete', danger: true })) return;
             try { await deleteArticle(id); draft.clear(); showToast('Deleted'); navigate('/articles?mine=1'); } catch (e) { showToast(errorMessage(e)); }
           }} className="ml-auto px-3 py-2.5 text-sm inline-flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
             <Trash2 size={15} /> Delete

@@ -6,6 +6,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { moderationQueue, moderate, ARTICLE_KINDS } from '../lib/community';
 import { ErrorState } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
+import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 
 type Queue = Awaited<ReturnType<typeof moderationQueue>>;
@@ -67,7 +68,7 @@ export default function Moderate() {
   const decide = async (item: any, approve: boolean) => {
     let update = approve ? APPROVE[section] : REJECT[section];
     if (!approve && section === 'articles') {
-      const note = prompt('Note to the author (why it was not approved)');
+      const note = await promptDialog({ title: 'Not approved', label: 'Note to the author (why it was not approved)', confirmLabel: 'Reject', required: false });
       if (note === null) return;
       update = { ...update, moderation_note: note };
     }

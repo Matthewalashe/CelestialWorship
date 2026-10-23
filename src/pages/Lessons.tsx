@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useLessons } from '../hooks/useLessons';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { getDatesInMonth, formatDate, toISODate } from '../utils/dateUtils';
+import { getDatesInMonth, toISODate } from '../utils/dateUtils';
 import type { BibleLesson } from '../types';
 import { Calendar, BookOpen } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Music, BookOpen, Megaphone, MonitorPlay, Search, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CCCLogo } from '../components/icons/celestial-icons';
 import { useDisplayController, loadOperatorQueue, clearOperatorQueue, newRoomCode } from '../hooks/useLiveDisplay';
@@ -135,7 +135,7 @@ export default function Control() {
         <div className="flex items-center gap-4 flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide">
           <span className="text-xs text-[var(--color-text-secondary)] font-bold uppercase tracking-widest shrink-0">History</span>
           {history.length === 0 && <span className="text-sm text-[var(--color-text-muted)] italic">No items displayed yet</span>}
-          {history.map((item, i) => (
+          {history.map((item) => (
             <div key={item.id} className="flex items-center gap-2 bg-[var(--color-bg-secondary)] px-3 py-1 rounded-md text-xs border border-[var(--color-border)] shrink-0">
               <span className="text-[var(--color-text-muted)]">{item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
               <span className="font-bold text-[var(--color-accent-gold)]">
@@ -634,8 +634,9 @@ function AnnouncementsTab({ updateDisplay }: { updateDisplay: (state: DisplaySta
 
       <div className="bg-[var(--color-bg-card)] p-6 rounded-2xl border border-[var(--color-border)] shadow-sm flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Title (Optional)</label>
+          <label htmlFor="announce-title" className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Title (Optional)</label>
           <input
+            id="announce-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -645,8 +646,9 @@ function AnnouncementsTab({ updateDisplay }: { updateDisplay: (state: DisplaySta
         </div>
         
         <div>
-          <label className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Message Content</label>
+          <label htmlFor="announce-content" className="block text-sm font-bold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Message Content</label>
           <textarea
+            id="announce-content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Type your message here..."

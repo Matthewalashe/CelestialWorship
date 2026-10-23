@@ -4,7 +4,7 @@ import { useDisplayReceiver } from '../hooks/useLiveDisplay';
 export default function Display() {
   const room = new URLSearchParams(window.location.search).get('room');
   const { displayState: state, connected } = useDisplayReceiver(room);
-  const [logoUrl, setLogoUrl] = useState('/logo.png');
+  const logoUrl = '/logo.png';
 
   useEffect(() => {
     document.body.style.backgroundColor = '#000000';

@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { ToastHost } from './components/Toast';
+import { DialogHost } from './components/Dialog';
 
 // Lazy loading pages
 const Home = React.lazy(() => import('./pages/Home'));
@@ -99,6 +100,7 @@ function App() {
       </Suspense>
       <OfflineIndicator />
       <ToastHost />
+      <DialogHost />
       <SpeedInsights />
     </ErrorBoundary>
   );

@@ -5,11 +5,12 @@ import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useT, type StringKey } from '../i18n';
 import {
-  Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun, LayoutGrid, X,
+  Home, Church, Music, BookOpen, Calendar, StickyNote, ScrollText, Bird, ListMusic, MonitorPlay, Moon, Sun, LayoutGrid,
   HandHeart, PenLine, CalendarDays, MapPin, HandCoins, Radio, GraduationCap, Landmark, User, Gavel,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
+import { Sheet } from './Dialog';
 
 interface NavItem {
   path: string;
@@ -184,19 +185,8 @@ export default function Layout() {
 
       {/* Mobile "More" sheet */}
       {moreOpen && (
-        <div className="md:hidden fixed inset-0 z-20 bg-black/50 animate-fade-in" onClick={() => setMoreOpen(false)}>
-          <div
-            role="dialog"
-            aria-label="More pages"
-            className="absolute left-0 right-0 bottom-[68px] rounded-t-2xl p-4 pb-5 animate-slide-up max-h-[75vh] overflow-y-auto"
-            style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-end -mb-2">
-              <button onClick={() => setMoreOpen(false)} className="p-1" style={{ color: 'var(--color-text-muted)' }} aria-label="Close menu">
-                <X size={18} />
-              </button>
-            </div>
+        <Sheet label="More pages" title="More" onClose={() => setMoreOpen(false)}>
+          <div>
             {groups.map(group => (
               <div key={group.title} className="mb-3">
                 <p className="text-[10px] uppercase tracking-wider font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>{group.title}</p>
@@ -222,7 +212,7 @@ export default function Layout() {
               </div>
             ))}
           </div>
-        </div>
+        </Sheet>
       )}
 
       {/* Mobile Bottom Nav */}

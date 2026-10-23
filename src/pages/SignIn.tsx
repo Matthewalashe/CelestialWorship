@@ -131,10 +131,11 @@ export default function SignIn() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div>
-                <label className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
+                <label htmlFor="signin-name" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
                   Display Name
                 </label>
                 <input
+                  id="signin-name"
                   type="text"
                   required
                   value={displayName}
@@ -150,10 +151,11 @@ export default function SignIn() {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
+              <label htmlFor="signin-email" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
                 Email Address
               </label>
               <input
+                id="signin-email"
                 type="email"
                 required
                 value={email}
@@ -168,10 +170,11 @@ export default function SignIn() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
+              <label htmlFor="signin-password" className="block text-sm font-medium mb-1 font-inter" style={{ color: 'var(--color-text-secondary)' }}>
                 Password
               </label>
               <input
+                id="signin-password"
                 type="password"
                 required
                 value={password}

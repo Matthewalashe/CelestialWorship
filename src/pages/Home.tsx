@@ -68,7 +68,7 @@ export default function Home() {
   const today = new Date();
   const todayIso = toISODate(today);
 
-  const verse = useMemo(() => getVerseOfTheDay(today), [todayIso]);
+  const verse = useMemo(() => getVerseOfTheDay(new Date(`${todayIso}T12:00:00`)), [todayIso]);
   const exclamation = getLiturgicalExclamation(today);
   const season = getLiturgicalSeason(today);
   const schedule = getServiceScheduleForDate(today);

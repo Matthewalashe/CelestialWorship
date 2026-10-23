@@ -30,7 +30,7 @@ export function ToastHost() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-xl text-sm font-semibold shadow-lg animate-slide-up max-w-[90vw] text-center"
+      className="fixed top-20 left-1/2 -translate-x-1/2 z-[80] px-4 py-2 rounded-xl text-sm font-semibold shadow-lg animate-slide-up max-w-[90vw] text-center"
       style={{ backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' }}
     >
       {message}

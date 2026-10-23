@@ -43,7 +43,7 @@ export default function Give() {
   const parish = parishes.find(p => p.id === parishId);
   const realParishes = useMemo(() => parishes.filter(p => !p.seed), [parishes]);
 
-  useEffect(() => { if (user?.email && !email) setEmail(user.email); }, [user]);
+  useEffect(() => { if (user?.email) setEmail(current => current || user.email!); }, [user?.email]);
 
   useEffect(() => {
     if (!parishId) { setCanReceive(null); return; }

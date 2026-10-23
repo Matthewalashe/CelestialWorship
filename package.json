@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit -p . && vitest run && vite build",
+    "build": "tsc --noEmit -p . && eslint src --max-warnings 0 && vitest run && vite build",
+    "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit -p .",
     "preview": "vite preview",
     "test": "vitest run",
@@ -13,12 +14,18 @@
     "build:hymns": "python scripts/build_hymns.py --report"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
+    "typescript-eslint": "^8.72.0",
     "vite": "^8.2.0",
     "vite-plugin-pwa": "^1.3.0",
     "vitest": "^3.2.4"

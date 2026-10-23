@@ -25,8 +25,6 @@ export type ContentSegment = InstructionSegment | HymnSegment | ScriptureSegment
 // Common Psalm patterns in CCC liturgy
 const PSALM_PATTERN = /Psalm\s+(\d+)/i;
 const VERSE_NUMBER_PATTERN = /^(\d+)[.):\s]+(.+)/;
-const HYMN_LINE_INDICATORS = ['Amen', 'Hallelujah', 'Halleluyah', 'Hosanna', 'Hossanah'];
-
 /**
  * Parse step text into structured content segments.
  * Splits mixed content (instruction + hymn lyrics + psalm text) into

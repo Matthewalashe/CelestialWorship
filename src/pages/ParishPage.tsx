@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, MapPin, Phone, Mail, Globe, Clock, HandCoins, HandHeart, CalendarClock, Check, Star, Settings } from 'lucide-react';
 import { useParishes } from '../hooks/useParishes';
@@ -14,6 +14,7 @@ import { SignInPrompt } from '../components/CommunityStates';
 import { LiveEmbed, isLiveNow } from '../components/LiveEmbed';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
+import { safeHref } from '../utils/safeUrl';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -40,15 +41,15 @@ function BookAppointment({ parishId }: { parishId: string }) {
   const [mine, setMine] = useState<Appointment[]>([]);
   const [busy, setBusy] = useState(false);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     try {
       const s = await listSlots(parishId);
       setSlots(s);
       setTimes(await availableTimes(s));
       if (user) setMine((await myAppointments()).filter(a => a.parish_id === parishId));
     } catch {}
-  };
-  useEffect(() => { refresh(); }, [parishId, user]);
+  }, [parishId, user]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const hosts = useMemo(() => [...new Map(slots.map(s => [s.host_id, s])).values()], [slots]);
   const shownTimes = times.filter(t => !host || t.slot.host_id === host);
@@ -153,12 +154,12 @@ export default function ParishPage() {
     );
   }
 
-  const mapLink = parish.map_url
+  const mapLink = safeHref(parish.map_url)
     || (parish.latitude && parish.longitude ? `https://www.google.com/maps?q=${parish.latitude},${parish.longitude}`
       : `https://www.google.com/maps/search/${encodeURIComponent([parish.name, parish.address, parish.city, parish.country].filter(Boolean).join(', '))}`);
   const isMine = profile.parishId === parish.id;
   const g = parish.giving_details;
-  const whatsapp = parish.social_links?.whatsapp || (parish.phone ? `https://wa.me/${parish.phone.replace(/[^\d]/g, '')}` : null);
+  const whatsapp = safeHref(parish.social_links?.whatsapp) || (parish.phone ? `https://wa.me/${parish.phone.replace(/[^\d]/g, '')}` : null);
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24 space-y-4">
@@ -187,7 +188,7 @@ export default function ParishPage() {
         </div>
       </header>
 
-      {parish.live_url && <LiveEmbed url={parish.live_url} title={parish.live_title} live={isLiveNow(parish.live_now, parish.live_updated_at)} />}
+      {safeHref(parish.live_url) && <LiveEmbed url={parish.live_url!} title={parish.live_title} live={isLiveNow(parish.live_now, parish.live_updated_at)} />}
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         {parish.address && (
@@ -208,12 +209,12 @@ export default function ParishPage() {
             <Mail size={18} style={{ color: 'var(--color-accent-brand)' }} /> {parish.email}
           </a>
         )}
-        {parish.website && (
-          <a href={parish.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm" style={{ color: 'var(--color-text-primary)' }}>
-            <Globe size={18} style={{ color: 'var(--color-accent-brand)' }} /> {parish.website.replace(/^https?:\/\//, '')}
+        {safeHref(parish.website) && (
+          <a href={safeHref(parish.website)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm" style={{ color: 'var(--color-text-primary)' }}>
+            <Globe size={18} style={{ color: 'var(--color-accent-brand)' }} /> {parish.website!.replace(/^https?:\/\//, '')}
           </a>
         )}
-        {parish.social_links && Object.entries(parish.social_links).filter(([k]) => k !== 'whatsapp').map(([k, url]) => (
+        {parish.social_links && Object.entries(parish.social_links).filter(([k, url]) => k !== 'whatsapp' && safeHref(url)).map(([k, url]) => (
           <a key={k} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm capitalize" style={{ color: 'var(--color-text-primary)' }}>
             <Globe size={18} style={{ color: 'var(--color-accent-brand)' }} /> {k}
           </a>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Plus, MapPin, X, Church } from 'lucide-react';
+import { Search, Plus, MapPin, Church } from 'lucide-react';
 import { useParishes, useParishSubmission, type ParishSubmission } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
 import { useProfile } from '../hooks/useProfile';
@@ -8,6 +8,8 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { SignInPrompt } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
+import { Sheet } from '../components/Dialog';
+import { normalizeLinks } from '../utils/safeUrl';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -36,12 +38,13 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
     if (!valid) return;
     setBusy(true);
     try {
+      const urls = normalizeLinks({ website: v.website, map_url: v.map_url }, { website: 'Website', map_url: 'Map link' });
       const row: ParishSubmission = {
         kind: v.kind,
         name: v.name.trim(), diocese: v.diocese.trim() || null, province: v.province.trim() || null, country: v.country.trim(),
         state_region: v.state_region.trim() || null, city: v.city.trim() || null, address: v.address.trim() || null,
         latitude: null, longitude: null, shepherd_name: v.shepherd_name.trim() || null, phone: v.phone.trim() || null,
-        email: v.email.trim() || null, website: v.website.trim() || null, map_url: v.map_url.trim() || null,
+        email: v.email.trim() || null, website: urls.website, map_url: urls.map_url,
         service_times: v.sundayTime ? [{ service: 'lords_day_service', day: 'Sunday', time: v.sundayTime }] : null,
         giving_details: null, contact_public: v.contact_public,
       };
@@ -59,13 +62,8 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-4 max-h-[92vh] overflow-y-auto space-y-3"
-           style={{ backgroundColor: 'var(--color-bg-secondary)' }} onClick={e => e.stopPropagation()} role="dialog" aria-label="Add a parish">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{v.kind === 'ministry' ? 'Register your ministry' : 'Add a parish'}</h2>
-          <button onClick={onClose} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
-        </div>
+    <Sheet label={v.kind === 'ministry' ? 'Register your ministry' : 'Add a parish'} onClose={onClose}>
+      <div className="space-y-3">
         {!signedIn ? <SignInPrompt message="Sign in to add a parish to the directory." /> : (
           <>
             <div className="flex rounded-xl p-0.5 border" style={{ borderColor: 'var(--color-border)' }}>
@@ -107,7 +105,7 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
           </>
         )}
       </div>
-    </div>
+    </Sheet>
   );
 }
 

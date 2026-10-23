@@ -495,7 +495,12 @@ export default function Suggestions() {
                 >
                   {/* Slot header */}
                   <div
+                    role="button"
+                    tabIndex={isLocked ? -1 : 0}
+                    aria-expanded={isExpanded}
+                    aria-disabled={isLocked}
                     onClick={() => !isLocked && setExpandedSlot(isExpanded ? null : idx)}
+                    onKeyDown={e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (!isLocked) setExpandedSlot(isExpanded ? null : idx); } }}
                     className={`w-full p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${!isLocked ? 'cursor-pointer hover:bg-[var(--color-bg-card-hover)]' : ''} rounded-2xl transition-colors`}
                   >
                     <div className="flex items-center gap-3">
@@ -673,7 +678,11 @@ export default function Suggestions() {
                     }`}
                   >
                     <div
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isExpanded}
                       onClick={() => setExpandedSlot(isExpanded ? null : globalIdx)}
+                      onKeyDown={e => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setExpandedSlot(isExpanded ? null : globalIdx); } }}
                       className="w-full p-4 flex items-center justify-between cursor-pointer hover:bg-[var(--color-bg-card-hover)] rounded-2xl transition-colors"
                     >
                       <div className="flex items-center gap-3">

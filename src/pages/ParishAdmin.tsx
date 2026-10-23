@@ -7,14 +7,16 @@ import {
   TEAM_ROLES, FULL_ADMIN_ROLES, type TeamRole,
   myAdminParishes, getParishPrivate, updateParish, listParishAdmins, addParishAdmin, removeParishAdmin,
   parishPrayerRequests, parishDonations, parishEvents, setEventStatus, listSlots, saveSlot, deleteSlot,
-  parishAppointments, updateAppointment, type AppointmentSlot, type Appointment, type ParishAdmin as ParishAdminRow,
+  parishAppointments, updateAppointment, type AppointmentSlot, type Appointment,
 } from '../lib/parishAdmin';
 import { moderate, DONATION_PURPOSES, type SharedPrayerRequest, type Donation, type ChurchEvent } from '../lib/community';
 import type { Parish, GivingDetails, ServiceTime } from '../hooks/useParishes';
 import { SignInPrompt, ErrorState } from '../components/CommunityStates';
 import { listBanks, getPayoutAccount, savePayoutAccount, type Bank, type PayoutAccount } from '../lib/payments';
 import { showToast } from '../components/Toast';
+import { confirmDialog, promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
+import { normalizeLinks } from '../utils/safeUrl';
 
 type Tab = 'details' | 'live' | 'team' | 'events' | 'prayers' | 'giving' | 'appointments';
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
@@ -61,11 +63,13 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
   const save = async () => {
     setBusy(true);
     try {
+      const urls = normalizeLinks({ map_url: p.map_url, website: p.website }, { map_url: 'Map link', website: 'Website' });
+      const social = normalizeLinks(Object.fromEntries(Object.entries(links).filter(([, v]) => v)));
       await updateParish(p.id, {
         name: p.name, diocese: p.diocese, province: p.province, country: p.country, state_region: p.state_region, city: p.city,
-        address: p.address, map_url: p.map_url, shepherd_name: p.shepherd_name, phone: p.phone, email: p.email, website: p.website,
+        address: p.address, map_url: urls.map_url, shepherd_name: p.shepherd_name, phone: p.phone, email: p.email, website: urls.website,
         contact_public: p.contact_public, service_times: times.filter(t => t.time), giving_details: giving.note ? { note: giving.note } : null,
-        social_links: Object.fromEntries(Object.entries(links).filter(([, v]) => v)),
+        social_links: social as Record<string, string>,
         accepts_prayer_requests: p.accepts_prayer_requests, accepts_appointments: p.accepts_appointments,
       });
       showToast('Saved');
@@ -164,7 +168,8 @@ function LiveTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () => vo
   const [title, setTitle] = useState(parish.live_title ?? '');
   const go = async (liveNow: boolean) => {
     try {
-      await updateParish(parish.id, { live_url: url.trim() || null, live_title: title.trim() || null, live_now: liveNow });
+      const { live_url } = normalizeLinks({ live_url: url }, { live_url: 'Livestream link' });
+      await updateParish(parish.id, { live_url, live_title: title.trim() || null, live_now: liveNow });
       showToast(liveNow ? 'You are live — it shows on the Live page' : 'Saved');
       onSaved();
     } catch (e) {
@@ -214,7 +219,7 @@ function TeamTab({ parishId }: { parishId: string }) {
               <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{TEAM_ROLES[a.role]?.label ?? a.role}{a.verified ? '' : ' · awaiting verification'}</span>
             </span>
             {a.user_id !== user?.id && (
-              <button onClick={async () => { if (confirm('Remove this administrator?')) { try { await removeParishAdmin(parishId, a.user_id); load(); } catch (e) { showToast(errorMessage(e)); } } }}
+              <button onClick={async () => { if (await confirmDialog({ title: 'Remove this person from the team?', confirmLabel: 'Remove', danger: true })) { try { await removeParishAdmin(parishId, a.user_id); load(); } catch (e) { showToast(errorMessage(e)); } } }}
                       aria-label="Remove" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={16} /></button>
             )}
           </li>
@@ -255,7 +260,7 @@ function EventsTab({ parishId }: { parishId: string }) {
               <span className="block text-[11px] capitalize" style={{ color: 'var(--color-text-muted)' }}>{e.status}</span>
             </span>
             {e.status === 'pending' && <button onClick={async () => { await setEventStatus(e.id, 'published'); load(); }} className="text-xs font-semibold" style={{ color: 'var(--color-success)' }}>Publish</button>}
-            {e.status === 'published' && <button onClick={async () => { if (confirm('Mark as cancelled?')) { await setEventStatus(e.id, 'cancelled'); load(); } }} className="text-xs font-semibold" style={{ color: 'var(--color-warning)' }}>Cancel</button>}
+            {e.status === 'published' && <button onClick={async () => { if (await confirmDialog({ title: 'Cancel this event?', message: 'It will show as cancelled on the calendar.', confirmLabel: 'Cancel event', danger: true })) { await setEventStatus(e.id, 'cancelled'); load(); } }} className="text-xs font-semibold" style={{ color: 'var(--color-warning)' }}>Cancel</button>}
           </li>
         ))}
         {events.length === 0 && <p className="text-sm text-center py-6" style={{ color: 'var(--color-text-muted)' }}>No events yet.</p>}
@@ -434,7 +439,12 @@ function AppointmentsTab({ parishId }: { parishId: string }) {
 
   const upcoming = bookings.filter(b => new Date(b.ends_at) > new Date() && ['requested', 'confirmed'].includes(b.status));
   const decide = async (b: Appointment, status: Appointment['status']) => {
-    const note = status === 'declined' ? prompt('A short note for the member (optional)') ?? '' : '';
+    let note = '';
+    if (status === 'declined') {
+      const answer = await promptDialog({ title: 'Decline appointment', label: 'A short note for the member (optional)', confirmLabel: 'Decline', required: false });
+      if (answer === null) return;
+      note = answer;
+    }
     try { await updateAppointment(b.id, { status, host_note: note || b.host_note }); load(); } catch (e) { showToast(errorMessage(e)); }
   };
 

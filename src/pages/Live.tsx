@@ -4,13 +4,14 @@ import { Radio } from 'lucide-react';
 import { useParishes } from '../hooks/useParishes';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { LiveEmbed, isLiveNow } from '../components/LiveEmbed';
+import { safeHref } from '../utils/safeUrl';
 
 export default function Live() {
   usePageTitle('live', 'Live services');
   const { parishes, loading, backendReady, refresh } = useParishes();
 
   const { live, channels } = useMemo(() => {
-    const withStreams = parishes.filter(p => p.live_url);
+    const withStreams = parishes.filter(p => safeHref(p.live_url));
     return {
       live: withStreams.filter(p => isLiveNow(p.live_now, p.live_updated_at)),
       channels: withStreams.filter(p => !isLiveNow(p.live_now, p.live_updated_at)),

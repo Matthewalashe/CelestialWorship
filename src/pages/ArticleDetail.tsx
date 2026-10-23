@@ -11,6 +11,7 @@ import { Markdown } from '../utils/markdown';
 import { referenceLabel, ReferenceIcon } from './Articles';
 import { ErrorState, type Loadable } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
+import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 import { referenceToPath } from '../utils/parseReference';
 
@@ -86,7 +87,7 @@ export default function ArticleDetail() {
   };
 
   const report = async () => {
-    const reason = prompt('What is wrong with this article?');
+    const reason = await promptDialog({ title: 'Report this article', label: 'What is wrong with it?' });
     if (!reason?.trim()) return;
     try { await reportContent('article', article.id, reason.trim()); showToast('Thank you — a moderator will look at it'); }
     catch (e) { showToast(errorMessage(e)); }

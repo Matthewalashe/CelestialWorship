@@ -13,6 +13,7 @@ import {
 import { PRAYER_CATEGORY_LABELS, type PrayerCategory } from '../types/notes';
 import { SignInPrompt, ErrorState, type Loadable } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
+import { confirmDialog, promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
@@ -93,7 +94,7 @@ export default function PrayerRequests() {
   };
 
   const report = async (r: SharedPrayerRequest) => {
-    const reason = prompt('What is wrong with this request?');
+    const reason = await promptDialog({ title: 'Report this request', label: 'What is wrong with it?' });
     if (!reason?.trim()) return;
     try { await reportContent('prayer_request', r.id, reason.trim()); showToast('Thank you — a moderator will look at it'); }
     catch (e) { showToast(errorMessage(e)); }
@@ -227,7 +228,7 @@ export default function PrayerRequests() {
                     )}
                     {answering !== r.id && (
                       <button onClick={async () => {
-                        if (!confirm('Delete this request?')) return;
+                        if (!await confirmDialog({ title: 'Delete this request?', confirmLabel: 'Delete', danger: true })) return;
                         try { await deletePrayerRequest(r.id); load(); } catch (e) { showToast(errorMessage(e)); }
                       }} className="inline-flex items-center gap-1 ml-auto" style={{ color: 'var(--color-text-muted)' }}><Trash2 size={13} /> Delete</button>
                     )}

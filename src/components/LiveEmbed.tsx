@@ -1,4 +1,5 @@
 import { ExternalLink, Radio } from 'lucide-react';
+import { safeHref } from '../utils/safeUrl';
 
 /** YouTube video/live IDs from the URL shapes people paste */
 export function youTubeId(url: string): string | null {
@@ -24,6 +25,7 @@ export function isLiveNow(liveNow?: boolean, updatedAt?: string | null): boolean
 
 export function LiveEmbed({ url, title, live }: { url: string; title?: string | null; live: boolean }) {
   const id = youTubeId(url);
+  if (!safeHref(url)) return null;
   return (
     <div className="rounded-2xl overflow-hidden border" style={{ borderColor: live ? '#EF4444' : 'var(--color-border)' }}>
       {id ? (

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  Search, Plus, Trash2, X, Heart, Check, Pin, PinOff, BookOpen, Music, Download, Upload, Cloud, HandHeart, StickyNote,
+  Search, Plus, Trash2, Heart, Check, Pin, PinOff, BookOpen, Music, Download, Upload, Cloud, HandHeart, StickyNote,
   Bookmark, Highlighter, FileText,
 } from 'lucide-react';
 import { useNotes, useSavedPassages, usePrayers, useAllHighlights, exportLibrary, importLibrary, librarySize } from '../hooks/useNotes';
@@ -10,11 +10,13 @@ import { useCloudBackup } from '../hooks/useCloudBackup';
 import { recordActivity } from '../hooks/useProgress';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { showToast } from '../components/Toast';
+import { confirmDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 import {
   NOTE_TAG_COLORS, NOTE_TAG_LABELS, PASSAGE_CATEGORY_LABELS, PASSAGE_CATEGORY_COLORS, PRAYER_CATEGORY_LABELS, HIGHLIGHT_COLORS,
   type Note, type NoteTag, type NoteLink, type PassageCategory, type PrayerCategory,
 } from '../types/notes';
+import { Sheet } from '../components/Dialog';
 
 type Tab = 'notes' | 'saved' | 'highlights' | 'prayers' | 'drafts' | 'backup';
 
@@ -76,14 +78,8 @@ function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLin
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
-      <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-4 max-h-[92vh] overflow-y-auto"
-           style={{ backgroundColor: 'var(--color-bg-secondary)' }} onClick={e => e.stopPropagation()}
-           role="dialog" aria-label={note ? 'Edit note' : 'New note'}>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{note ? 'Edit note' : 'New note'}</h2>
-          <button onClick={onClose} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
-        </div>
+    <Sheet label={note ? 'Edit note' : 'New note'} onClose={onClose}>
+      <div>
         {effectiveLink && (
           <Link to={linkPath(effectiveLink)} className="inline-flex items-center gap-1 text-xs font-semibold mb-3 px-2 py-1 rounded-lg"
                 style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-accent-brand)' }}>
@@ -121,7 +117,7 @@ function NoteEditor({ note, link, onClose }: { note: Note | null; link?: NoteLin
           </div>
         </div>
       </div>
-    </div>
+    </Sheet>
   );
 }
 
@@ -195,7 +191,7 @@ function NotesTab({ openId, startNew, newLink, onEditorClosed }: {
                 <span>{formatWhen(n.updatedAt)}</span>
                 {n.link && <Link to={linkPath(n.link)} className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{linkLabel(n.link)}</Link>}
                 {n.tags.map(t => <span key={t} style={{ color: NOTE_TAG_COLORS[t] }}>#{NOTE_TAG_LABELS[t]}</span>)}
-                <button onClick={async () => { if (confirm('Delete this note?')) { await deleteNote(n.id); showToast('Note deleted'); } }}
+                <button onClick={async () => { if (await confirmDialog({ title: 'Delete this note?', confirmLabel: 'Delete', danger: true })) { await deleteNote(n.id); showToast('Note deleted'); } }}
                         className="ml-auto p-1" aria-label="Delete note"><Trash2 size={14} /></button>
               </div>
             </li>
@@ -411,7 +407,7 @@ function PrayersTab() {
                           className="inline-flex items-center gap-1 font-semibold" style={{ color: 'var(--color-success)' }}>
                     <Check size={13} /> {p.isAnswered ? 'Not answered yet' : 'Answered'}
                   </button>
-                  <button onClick={() => { if (confirm('Delete this prayer?')) deletePrayer(p.id); }} className="ml-auto p-1" aria-label="Delete">
+                  <button onClick={async () => { if (await confirmDialog({ title: 'Delete this prayer?', confirmLabel: 'Delete', danger: true })) deletePrayer(p.id); }} className="ml-auto p-1" aria-label="Delete">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -464,8 +460,9 @@ function BackupTab() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [count, setCount] = useState<number | null>(null);
   const cloud = useCloudBackup();
+  const { fetchLastBackup } = cloud;
 
-  useEffect(() => { librarySize().then(setCount); cloud.fetchLastBackup(); }, [cloud.fetchLastBackup]);
+  useEffect(() => { librarySize().then(setCount); fetchLastBackup(); }, [fetchLastBackup]);
 
   const download = async () => {
     const data = await exportLibrary();

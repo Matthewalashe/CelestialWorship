@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Plus, MapPin, CalendarPlus, X, Church, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, MapPin, CalendarPlus, Church, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useParishes } from '../hooks/useParishes';
@@ -12,6 +12,7 @@ import { toISODate } from '../utils/dateUtils';
 import { SignInPrompt } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
 import { errorMessage, BackendError } from '../lib/backend';
+import { Sheet } from '../components/Dialog';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -66,13 +67,8 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center" onClick={onClose}>
-      <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-4 max-h-[92vh] overflow-y-auto space-y-3"
-           style={{ backgroundColor: 'var(--color-bg-secondary)' }} onClick={e => e.stopPropagation()} role="dialog" aria-label="Add an event">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Add an event</h2>
-          <button onClick={onClose} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
-        </div>
+    <Sheet label="Add an event" onClose={onClose}>
+      <div className="space-y-3">
         <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder="Event name" maxLength={140} className={inputClass} style={inputStyle} />
         <div className="grid grid-cols-2 gap-2">
           <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Date
@@ -100,7 +96,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
           Submit event
         </button>
       </div>
-    </div>
+    </Sheet>
   );
 }
 
@@ -277,13 +273,9 @@ export default function Events() {
       )}
 
       {open && (
-        <div className="fixed inset-0 z-40 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => setOpen(null)}>
-          <div className="w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-5 max-h-[85vh] overflow-y-auto" style={{ backgroundColor: 'var(--color-bg-secondary)' }}
-               onClick={ev => ev.stopPropagation()} role="dialog" aria-label={open.title}>
-            <div className="flex items-start justify-between gap-3">
-              <span className="text-[10px] uppercase font-bold tracking-wider" style={{ color: CATEGORY_COLORS[open.category] }}>{EVENT_CATEGORIES[open.category]}</span>
-              <button onClick={() => setOpen(null)} aria-label="Close" style={{ color: 'var(--color-text-muted)' }}><X size={20} /></button>
-            </div>
+        <Sheet label={open.title} onClose={() => setOpen(null)}
+               title={<span className="text-[10px] uppercase font-bold tracking-wider" style={{ color: CATEGORY_COLORS[open.category] }}>{EVENT_CATEGORIES[open.category]}</span>}>
+          <div>
             <h3 className="text-xl font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-text-primary)' }}>{open.title}</h3>
             {open.status === 'cancelled' && <p className="text-sm font-semibold mt-1" style={{ color: 'var(--color-warning)' }}>Cancelled</p>}
             <p className="text-sm mt-3 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><Clock size={15} /> {formatWhen(open)}
@@ -298,7 +290,7 @@ export default function Events() {
               <CalendarPlus size={16} /> Add to my calendar
             </button>
           </div>
-        </div>
+        </Sheet>
       )}
 
       {submitting && user && <SubmitEvent onClose={() => setParams({})} onDone={() => { setParams({}); load(); }} />}
