@@ -162,9 +162,26 @@ with sync_playwright() as p:
         content = Path(d.value.path()).read_text(encoding='utf-8')
         assert 'Healing for Mama' in content and 'John' in content, 'backup is missing items'
 
+    def splash(pg):
+        # Test browsers skip the splash unless asked; a person opening the app sees it once per visit
+        pg.goto(BASE + '/?splash', wait_until='domcontentloaded')
+        expect(pg.locator('.splash')).to_be_visible()
+        pg.locator('.splash').click()
+        expect(pg.locator('.splash')).to_have_count(0)
+
+    def language_on_home(pg):
+        pg.goto(BASE + '/today', wait_until='networkidle')
+        pg.get_by_role('group', name='App language').get_by_role('button', name='Français').click()
+        expect(pg.get_by_text('Verset du jour')).to_be_visible()
+        pg.get_by_role('group', name='Langue de l’application').get_by_role('button', name='Yorùbá').click()
+        expect(pg.get_by_text('Ẹsẹ Ọjọ́ Òní')).to_be_visible()
+        pg.get_by_role('button', name='English').first.click()
+        expect(pg.get_by_text('Verse of the Day')).to_be_visible()
+
     for name, fn in [('onboarding', onboarding), ('highlight and save verse', highlight_and_save), ('note on a verse', note_on_verse),
                      ('prayer journal', prayer_journal), ('hymn favourite', hymn_favourite), ('hymn search without tone marks', hymn_search),
-                     ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('children’s stories', stories), ('music on and off', music), ('devotion completion and streak', devotion), ('library backup export', export_backup)]:
+                     ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('children’s stories', stories), ('music on and off', music), ('devotion completion and streak', devotion), ('library backup export', export_backup),
+                     ('splash', splash), ('language switch on Home', language_on_home)]:
         check(name, fn, page)
 
     browser.close()

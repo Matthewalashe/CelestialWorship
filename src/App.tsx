@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { BibleSkeleton, HymnsSkeleton, DevotionSkeleton } from './components/SkeletonScreens';
@@ -8,6 +8,7 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { ToastHost } from './components/Toast';
 import { DialogHost } from './components/Dialog';
 import { useIsDesktop } from './hooks/useMediaQuery';
+import { Splash } from './components/Splash';
 import { tr } from './i18n';
 
 /** On a computer the app opens in Studio; on a phone, at Today */
@@ -68,7 +69,29 @@ const LoadingFallback = () => (
   </div>
 );
 
+const SPLASH_KEY = 'cw-splash-seen';
+// Once per page load: the app is drawn again when the language changes
+let splashShown = false;
+
+/** The splash opens the app once per visit — not on the projector screens, nor for test browsers (unless ?splash) */
+function shouldSplash(): boolean {
+  if (splashShown) return false;
+  try {
+    if (new URLSearchParams(window.location.search).has('splash')) return true;
+    if (/^\/(display|control)(\/|$)/.test(window.location.pathname) || navigator.webdriver) return false;
+    return !sessionStorage.getItem(SPLASH_KEY);
+  } catch {
+    return false;
+  }
+}
+
 function App() {
+  const [splash, setSplash] = useState(shouldSplash);
+  const endSplash = useCallback(() => {
+    splashShown = true;
+    try { sessionStorage.setItem(SPLASH_KEY, '1'); } catch {}
+    setSplash(false);
+  }, []);
   return (
     <ErrorBoundary>
       <Suspense fallback={<LoadingFallback />}>
@@ -122,6 +145,8 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+      {/* Drawn over the app, which loads underneath */}
+      {splash && <Splash onDone={endSplash} />}
       <OfflineIndicator />
       <ToastHost />
       <DialogHost />

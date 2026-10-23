@@ -17,8 +17,10 @@ export const config = {
 };
 
 const SITE = 'CelestialWorship';
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://cwguzsvmghowmnfkovyx.supabase.co';
-const SUPABASE_ANON = process.env.VITE_SUPABASE_ANON_KEY
+// Printable ASCII only: a pasted value can carry an invisible byte-order mark
+const clean = (v: string | undefined) => v?.replace(/[^\x21-\x7E]/g, '') || undefined;
+const SUPABASE_URL = clean(process.env.VITE_SUPABASE_URL) || 'https://cwguzsvmghowmnfkovyx.supabase.co';
+const SUPABASE_ANON = clean(process.env.VITE_SUPABASE_ANON_KEY)
   || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN3Z3V6c3ZtZ2hvd21uZmtvdnl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzAzNTUsImV4cCI6MjEwMjIwNjM1NX0.dgRxebcfnTK7-IHwE2Zqwh09OE4DoEZnLbRxDr7fswg';
 
 interface Meta { title: string; description: string; image?: string; kind?: string; type?: string; jsonLd?: object }

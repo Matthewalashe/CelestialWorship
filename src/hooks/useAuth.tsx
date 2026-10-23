@@ -40,7 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loadProfile = useCallback(async (u: User | null) => {
     if (!u) { setProfile(null); return; }
     // The profiles table is created by the migrations; without it everyone is a member
-    const { data } = await supabase.from('profiles').select('id, display_name, role, parish_id').eq('id', u.id).maybeSingle();
+    let { data } = await supabase.from('profiles').select('id, display_name, role, parish_id').eq('id', u.id).maybeSingle();
+    // An account made before its profile could be created gets one now
+    if (!data && !(await supabase.rpc('ensure_profile')).error) {
+      ({ data } = await supabase.from('profiles').select('id, display_name, role, parish_id').eq('id', u.id).maybeSingle());
+    }
     setProfile(data
       ? (data as Profile)
       : { id: u.id, display_name: (u.user_metadata?.display_name as string) ?? null, role: 'member', parish_id: null });

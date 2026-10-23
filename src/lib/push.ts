@@ -8,7 +8,7 @@ import { readLocalProfile } from '../hooks/useProfile';
  * to reminders that fire only while it is open.
  */
 
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+const VAPID_PUBLIC_KEY = (import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined)?.replace(/[^\x21-\x7E]/g, '') || undefined;
 
 export const pushConfigured = !!VAPID_PUBLIC_KEY && typeof window !== 'undefined' && 'PushManager' in window;
 

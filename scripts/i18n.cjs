@@ -19,7 +19,7 @@ const SKIP = [/__tests__/, /[\\/]i18n[\\/]/, /\.test\./];
 const CONTENT = /[\\/]src[\\/]data[\\/]|hymnMatcher|churchCalendar/;
 
 // Attributes that people read
-const ATTRS = new Set(['placeholder', 'title', 'aria-label', 'alt', 'label', 'subtitle', 'description', 'hint', 'message', 'confirmLabel', 'emptyText']);
+const ATTRS = new Set(['placeholder', 'title', 'aria-label', 'alt', 'label', 'more', 'subtitle', 'description', 'hint', 'message', 'confirmLabel', 'emptyText']);
 // Fields of data objects that end up on screen as {item.title} etc.
 const FIELDS = new Set(['title', 'text', 'label', 'description', 'subtitle', 'hint', 'blurb', 'summary']);
 // Calls whose first argument is shown

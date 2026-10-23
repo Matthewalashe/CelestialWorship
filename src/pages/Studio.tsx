@@ -21,6 +21,7 @@ import type { Hymn } from '../types';
 import type { Parish } from '../hooks/useParishes';
 import { tr } from '../i18n';
 import { useHymnContext } from '../hooks/useHymnContext';
+import { LanguageSwitch } from '../components/LanguageSwitch';
 
 /**
  * Studio — the desktop workspace for media teams, livestreamers and choirs:
@@ -109,6 +110,7 @@ export default function Studio() {
           {services.map(s => <option key={s.id} value={s.id}>{s.displayName}{schedule.some(x => x.id === s.id) ? tr(' (today)') : ''}</option>)}
         </select>
         <div className="ml-auto flex items-center gap-2">
+          <LanguageSwitch />
           <button onClick={() => { display.blankScreen(); setLive(null); }} className="h-9 px-3 rounded-lg text-sm inline-flex items-center gap-1.5 border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }} title={tr('Blank screen (B)')}><EyeOff size={15} />{' '}{tr('Blank')}</button>
           <button onClick={() => { display.showLogo(); setLive(null); }} className="h-9 px-3 rounded-lg text-sm inline-flex items-center gap-1.5 border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}><ImageIcon size={15} />{' '}{tr('Logo')}</button>
           <button onClick={openScreen} className="h-9 px-3 rounded-lg text-sm font-semibold inline-flex items-center gap-1.5" style={{ backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}><Tv size={15} />{' '}{tr('Open screen')}</button>

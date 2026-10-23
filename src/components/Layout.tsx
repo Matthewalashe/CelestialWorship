@@ -3,16 +3,17 @@ import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
-import { useT, type StringKey, tr, UI_LANGUAGES, setUILanguage } from '../i18n';
+import { useT, type StringKey, tr } from '../i18n';
 import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Languages,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
+import { LanguageSwitch } from './LanguageSwitch';
 
 interface NavItem {
   path: string;
@@ -77,7 +78,7 @@ const isActivePath = (pathname: string, path: string) =>
 export default function Layout() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
-  const { t, lang } = useT();
+  const { t } = useT();
   const { canModerate } = useAuth();
   const { profile } = useProfile();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -220,15 +221,7 @@ export default function Layout() {
             <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
               {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} {theme === 'light' ? tr('Dark mode') : tr('Light mode')}
             </button>
-            <div role="group" aria-label={tr('App language')} className="flex flex-wrap items-center gap-1.5 px-1">
-              <Languages size={16} aria-hidden style={{ color: 'var(--color-text-muted)' }} />
-              {UI_LANGUAGES.map(l => (
-                <button key={l.id} onClick={() => setUILanguage(l.id)} aria-pressed={lang === l.id} lang={l.htmlLang}
-                        className="px-3 py-1.5 rounded-full text-xs font-semibold border"
-                        style={lang === l.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' }
-                                             : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>{l.name}</button>
-              ))}
-            </div>
+            <div className="px-1"><LanguageSwitch full /></div>
           </nav>
         </Sheet>
       )}

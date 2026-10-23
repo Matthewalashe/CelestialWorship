@@ -8,7 +8,6 @@ import { useParishes, parishLabel } from '../hooks/useParishes';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAuth } from '../hooks/useAuth';
 import { BIBLE_VERSIONS } from '../data/bibleVersions';
-import { Splash } from '../components/Splash';
 
 const STEPS = ['welcome', 'language', 'about', 'parish', 'reminders', 'account'] as const;
 type Step = typeof STEPS[number];
@@ -52,8 +51,6 @@ export default function Onboarding() {
     try { return localStorage.getItem('cw-bible-version') || contentDefaults().bibleVersion; } catch { return 'en'; }
   });
 
-  // The splash opens a first visit only
-  const [splash, setSplash] = useState(() => step === 'welcome');
   const index = STEPS.indexOf(step);
   const update = (u: Partial<MemberProfile>) => setDraft(d => ({ ...d, ...u }));
 
@@ -93,8 +90,6 @@ export default function Onboarding() {
     setHymnView(contentDefaults(l).hymnView);
     setBibleVersion(contentDefaults(l).bibleVersion);
   };
-
-  if (splash) return <Splash onDone={() => setSplash(false)} />;
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--color-bg-primary)' }}>

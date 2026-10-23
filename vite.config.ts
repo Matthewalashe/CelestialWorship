@@ -2,14 +2,33 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { Plugin } from 'vite';
+
+/** The data files stay readable in the repository and ship without their indentation (about 300 kB less to install) */
+function minifyData(files: string[]): Plugin {
+  return {
+    name: 'cw-minify-data',
+    apply: 'build',
+    writeBundle(options) {
+      for (const f of files) {
+        const path = resolve(options.dir ?? 'dist', f);
+        if (existsSync(path)) writeFileSync(path, JSON.stringify(JSON.parse(readFileSync(path, 'utf-8'))));
+      }
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    minifyData(['data/hymns.json', 'data/services.json', 'data/lessons.json', 'data/constitution.json']),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'logo.png'],
+      // The file pattern below already takes the icons and the logo; listing them again sent them twice
+      includeManifestIcons: false,
       workbox: {
         skipWaiting: true,
         clientsClaim: true,

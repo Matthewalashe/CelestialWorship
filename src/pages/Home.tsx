@@ -17,6 +17,7 @@ import { getVerseOfTheDay } from '../data/dailyVerses';
 import { getBibleVersion } from '../data/bibleVersions';
 import { displayTitle } from '../utils/hymnText';
 import { isLiveNow } from '../components/LiveEmbed';
+import { LanguageSwitch } from '../components/LanguageSwitch';
 import { listEvents, type ChurchEvent } from '../lib/community';
 import type { BibleLesson } from '../types';
 
@@ -124,6 +125,7 @@ export default function Home() {
     <div className="px-4 py-6 pb-24 space-y-8 max-w-2xl mx-auto">
       {/* Greeting */}
       <header>
+        <div className="flex justify-end mb-3"><LanguageSwitch /></div>
         <h1 className="text-2xl font-[Outfit] font-bold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
           <span style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</span> {greeting}
         </h1>
@@ -154,7 +156,7 @@ export default function Home() {
 
       {/* Today: services and devotion */}
       <section>
-        <SectionTitle to="/services" more="All services">{t('home.todaysServices')}</SectionTitle>
+        <SectionTitle to="/services" more={tr('All services')}>{t('home.todaysServices')}</SectionTitle>
         <div className="rounded-2xl overflow-hidden" style={card}>
           {schedule.map((s, i) => (
             <Link key={s.id} to={`/services/${s.id}`} className="flex items-center gap-3 px-4 py-3" style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
@@ -178,7 +180,7 @@ export default function Home() {
 
       {(todayLessons.length > 0 || tomorrowLessons.length > 0) && (
         <section className="space-y-2">
-          <SectionTitle to="/lessons" more="Calendar">{tr('Bible lessons')}</SectionTitle>
+          <SectionTitle to="/lessons" more={tr('Calendar')}>{tr('Bible lessons')}</SectionTitle>
           {todayLessons.length > 0 && <ReadingsCard lessons={todayLessons} title={tr('Today’s readings')} />}
           {tomorrowLessons.length > 0 && <ReadingsCard lessons={tomorrowLessons} title={tr('Prepare for Sunday')} />}
         </section>
