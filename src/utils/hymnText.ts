@@ -1,3 +1,4 @@
+import { tr } from '../i18n';
 import type { Hymn, HymnVerse } from '../types';
 
 export type HymnLanguage = 'en' | 'yo';
@@ -24,8 +25,9 @@ export function displayTitle(hymn: Hymn, lang: HymnLanguage): string {
 }
 
 export function stanzaLabel(verse: HymnVerse, lang: HymnLanguage = 'en'): string {
-  if (verse.kind === 'chorus') return lang === 'yo' ? 'Ègbè' : 'Chorus';
-  return lang === 'yo' ? `Ẹsẹ ${verse.number ?? ''}`.trim() : `Verse ${verse.number ?? ''}`.trim();
+  // English labels follow the app language (French readers see "Couplet 1", "Refrain")
+  if (verse.kind === 'chorus') return lang === 'yo' ? 'Ègbè' : tr('Chorus');
+  return lang === 'yo' ? `Ẹsẹ ${verse.number ?? ''}`.trim() : `${tr('Verse')} ${verse.number ?? ''}`.trim();
 }
 
 export interface HymnSlide {

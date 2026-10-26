@@ -106,7 +106,7 @@ export default function Bible() {
           <span>
             <span className="block text-[10px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{tr('Continue reading')}</span>
             <span className="block font-semibold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>
-              {continueBook.name} {last.chapter} · {getBibleVersion(last.versionId).abbreviation}
+              {tr(continueBook.name)} {last.chapter} · {getBibleVersion(last.versionId).abbreviation}
             </span>
           </span>
           <ChevronRight size={20} style={{ color: 'var(--color-accent-brand)' }} />
@@ -118,7 +118,7 @@ export default function Bible() {
         <select value={versionId} onChange={e => chooseVersion(e.target.value)} aria-label={tr('Bible version')}
                 className="flex-1 min-w-0 h-10 px-3 rounded-xl text-sm font-semibold border"
                 style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
-          {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation}: {v.name}{v.preview ? tr(' (preview)') : ''}</option>)}
+          {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation}: {tr(v.name)}{v.preview ? tr(' (preview)') : ''}</option>)}
         </select>
         {version.source.kind === 'local' && (
           offlineVersions.includes(version.id) ? (
@@ -172,11 +172,11 @@ export default function Bible() {
         {filteredBooks.map(book => {
           const read = completedInBook(book.name);
           return (
-            <li key={book.name}>
+            <li key={tr(book.name)}>
               <Link to={`/bible/${slugOf(book.name)}/1?lang=${versionId}`}
                     className="block p-3 rounded-xl border h-full"
                     style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
-                <span className="block font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{book.name}</span>
+                <span className="block font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(book.name)}</span>
                 <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
                   {book.chapters}{' '}{tr('chapter')}{book.chapters > 1 ? 's' : ''} · {book.testament === 'OT' ? tr('Old') : tr('New')}{' '}{tr('Testament')}</span>
                 {read > 0 && (

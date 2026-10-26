@@ -47,7 +47,7 @@ export default function LessonDetail() {
         </h1>
         {firstLesson.occasion && (
           <div className="mt-2 inline-block px-3 py-1 rounded-full bg-[var(--color-accent-gold)]/20 text-[var(--color-accent-gold)] text-sm font-medium">
-            ✦ {firstLesson.occasion}
+            ✦ {tr(firstLesson.occasion)}
           </div>
         )}
       </div>
@@ -68,7 +68,7 @@ export default function LessonDetail() {
 
             {lesson.occasion && lessons.length > 1 && (
               <div className="text-sm font-medium text-[var(--color-accent-gold)] mb-3">
-                {lesson.occasion}
+                {tr(lesson.occasion)}
               </div>
             )}
 
@@ -119,7 +119,7 @@ export default function LessonDetail() {
               to={`/services/${svc.id}`}
               className="px-3 py-2 rounded-lg bg-[var(--color-bg-card)] border border-[var(--color-border)] text-sm text-[var(--color-text-primary)] hover:border-[var(--color-accent-gold)]/50 transition-colors"
             >
-              {svc.icon} {svc.name}
+              {svc.icon} {tr(svc.name)}
             </Link>
           ))}
         </div>

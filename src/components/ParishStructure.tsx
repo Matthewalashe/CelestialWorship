@@ -49,7 +49,7 @@ export function ParishStructureCard({ parish, onSaved }: { parish: Parish; onSav
       </div>
       <label className="block text-xs" style={muted}>{tr('Answers to (headquarters, circuit, province…)')}<select value={v.parent_id} onChange={e => setV({ ...v, parent_id: e.target.value })} className={`${field} mt-1`} style={fieldStyle}>
           <option value=""></option>
-          {real.filter(p => p.level && p.level !== 'parish').map(p => <option key={p.id} value={p.id}>{p.name} ({tr(PARISH_LEVELS[p.level!])})</option>)}
+          {real.filter(p => p.level && p.level !== 'parish').map(p => <option key={p.id} value={p.id}>{tr(p.name)} ({tr(PARISH_LEVELS[p.level!])})</option>)}
         </select>
       </label>
       <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -74,7 +74,7 @@ export function ParishStructureCard({ parish, onSaved }: { parish: Parish; onSav
         <div className="flex gap-2">
           <select value={adding} onChange={e => setAdding(e.target.value)} aria-label={tr('Parish to add')} className={field} style={fieldStyle}>
             <option value="">{tr('Add a parish…')}</option>
-            {real.filter(p => !relations.some(r => r.related_id === p.id)).map(p => <option key={p.id} value={p.id}>{p.name}{p.city ? `, ${p.city}` : ''}</option>)}
+            {real.filter(p => !relations.some(r => r.related_id === p.id)).map(p => <option key={p.id} value={p.id}>{tr(p.name)}{p.city ? `, ${p.city}` : ''}</option>)}
           </select>
           {(['sister', 'branch'] as const).map(rel => (
             <button key={rel} disabled={!adding} onClick={async () => { try { await addRelation(parish.id, adding, rel); setAdding(''); loadRelations(); } catch (e) { showToast(errorMessage(e)); } }}

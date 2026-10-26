@@ -135,7 +135,7 @@ export default function Hymns() {
                 ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
                 : { color: 'var(--color-text-secondary)' }}
             >
-              {label}
+              {tr(label)}
             </button>
           ))}
         </div>
@@ -223,7 +223,7 @@ export default function Hymns() {
               color: letter === l ? 'var(--color-text-on-accent)' : 'var(--color-text-secondary)',
               borderColor: 'var(--color-border)',
             }}
-            aria-label={`Hymns starting with ${l}`}
+            aria-label={`${tr('Hymns starting with')} ${l}`}
             aria-pressed={letter === l}
           >
             {l}
@@ -237,7 +237,7 @@ export default function Hymns() {
             onClick={() => jumpToNumber(n)}
             className="px-2.5 h-7 rounded-md text-[11px] font-semibold border"
             style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)', borderColor: 'var(--color-border)' }}
-            aria-label={`Jump to hymn ${n}`}
+            aria-label={`${tr('Jump to hymn')} ${n}`}
           >
             {n}
           </button>
@@ -246,7 +246,7 @@ export default function Hymns() {
 
       <div className="flex justify-between items-center mt-4 mb-2">
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {hymns.length === total ? `${total} hymns` : `${hymns.length} of ${total} hymns`}
+          {hymns.length === total ? `${total} ${tr('hymns')}` : `${hymns.length} ${tr('of')} ${total} ${tr('hymns')}`}
         </p>
         {hasFilters && (
           <button onClick={clearAll} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Clear filters')}</button>
@@ -281,7 +281,7 @@ export default function Hymns() {
                       <span className="block text-sm truncate" style={{ color: 'var(--color-text-secondary)' }} lang="en">{secondary}</span>
                     )}
                     <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
-                      {[hymn.section?.english, category ? CATEGORY_LABELS[category] : null].filter(Boolean).join(' · ')}
+                      {[tr(hymn.section?.english), category ? tr(CATEGORY_LABELS[category]) : null].filter(Boolean).join(' · ')}
                     </span>
                   </span>
                   {favorites.includes(hymn.number) && <Heart size={14} className="shrink-0" fill="#EF4444" color="#EF4444" />}

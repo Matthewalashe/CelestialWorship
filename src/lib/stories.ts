@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createJsonResource } from './jsonResource';
+import { getUILanguage } from '../i18n';
 
 /** Children's Bible stories (scripts/build_stories.py → public/data/stories) */
 
@@ -9,6 +10,8 @@ export interface Story extends Omit<StoryCard, 'image'> {
   image: { src: string; source: string } | null;
   paragraphs: string[];
   questions: string[];
+  /** The language the words are in */
+  lang?: string;
 }
 
 const index = createJsonResource<{ collections: StoryCollection[] }, StoryCollection[]>('/data/stories/index.json', 'the stories', d => d.collections);
@@ -21,9 +24,12 @@ export function useStory(id: string | undefined) {
     if (!id || !/^[a-z0-9-]+$/.test(id)) { setError('Story not found'); return; }
     let cancelled = false;
     setStory(null); setError(null);
-    fetch(`/data/stories/${id}.json`)
-      .then(r => (r.ok ? r.json() : Promise.reject(new Error('Story not found'))))
-      .then(s => { if (!cancelled) setStory(s); })
+    const lang = getUILanguage();
+    // In Yorùbá or French, the translated words over the English story (pictures and references stay)
+    const translated = lang === 'en' ? Promise.resolve(null)
+      : fetch(`/data/stories/${lang}/${id}.json`).then(r => (r.ok ? r.json() : null)).catch(() => null);
+    Promise.all([fetch(`/data/stories/${id}.json`).then(r => (r.ok ? r.json() : Promise.reject(new Error('Story not found')))), translated])
+      .then(([s, t]) => { if (!cancelled) setStory(t ? { ...s, ...t, lang } : { ...s, lang: 'en' }); })
       .catch(e => { if (!cancelled) setError(e.message); });
     return () => { cancelled = true; };
   }, [id]);

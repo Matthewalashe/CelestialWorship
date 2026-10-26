@@ -243,7 +243,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
           : <div className="h-full rounded-full transition-all" style={{ width: `${((index + (answered ? 1 : 0)) / questions.length) * 100}%`, backgroundColor: 'var(--color-accent-gold)' }} />}
       </div>
 
-      <h2 className="text-xl font-bold font-[Outfit] leading-snug mb-5" style={{ color: 'var(--color-text-primary)' }}>{q.question}</h2>
+      <h2 className="text-xl font-bold font-[Outfit] leading-snug mb-5" style={{ color: 'var(--color-text-primary)' }}>{tr(q.question)}</h2>
       <div className="space-y-2 relative" role="radiogroup" aria-label={tr('Answers')}>
         {gain !== null && gain > 0 && <span className="absolute -top-8 right-0 text-lg font-black animate-slide-up" style={{ color: 'var(--color-accent-gold)' }} aria-hidden>+{gain}</span>}
         {q.options.map((opt, i) => {
@@ -272,7 +272,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
           <p className="font-semibold mb-1" style={{ color: chosen === q.answer ? 'var(--color-success)' : 'var(--color-warning)' }}>
             {chosen === q.answer ? tr('Correct!') : chosen === -1 ? `Time’s up, the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
           </p>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{q.explanation}</p>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(q.explanation)}</p>
           <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}<SourceLink source={q.source} /></p>
           <button onClick={next} className="btn-primary w-full mt-4 py-3 rounded-xl text-sm font-semibold">
             {mode === 'challenge' && lives <= 0 ? tr('See my score') : index + 1 < questions.length ? tr('Next question') : tr('See my score')}

@@ -40,7 +40,7 @@ export function LevelBar({ xp, compact = false }: { xp: number; compact?: boolea
       </div>
       {!compact && (
         <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
-          <em>{lv.verse}</em>{lv.next && ` · ${lv.next.xp - xp} XP to ${lv.next.title}`}
+          <em>{lv.verse}</em>{lv.next && ` · ${lv.next.xp - xp} XP to ${tr(lv.next.title)}`}
         </p>
       )}
     </div>
@@ -102,7 +102,7 @@ export function BadgeShelf({ earned }: { earned: string[] }) {
         const has = earned.includes(b.id);
         return (
           <li key={b.id} className="rounded-xl p-2 text-center border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: has ? 'var(--color-accent-gold)' : 'var(--color-border)' }}
-              title={b.description}>
+              title={tr(b.description)}>
             <span className="text-2xl block" aria-hidden style={{ filter: has ? undefined : 'grayscale(1)', opacity: has ? 1 : 0.4 }}>{b.icon}</span>
             <span className="block text-[11px] font-semibold leading-tight mt-1" style={{ color: has ? 'var(--color-text-primary)' : 'var(--color-text-muted)' }}>{tr(b.title)}</span>
             <span className="sr-only">{has ? tr('Earned') : tr('Not yet earned')}: {tr(b.description)}</span>

@@ -527,7 +527,7 @@ function Empty({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="text-center py-12 px-6" style={{ color: 'var(--color-text-muted)' }}>
       <div className="inline-flex mb-3 opacity-60">{icon}</div>
-      <p className="text-sm max-w-sm mx-auto">{text}</p>
+      <p className="text-sm max-w-sm mx-auto">{tr(text)}</p>
     </div>
   );
 }

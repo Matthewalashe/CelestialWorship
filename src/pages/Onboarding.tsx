@@ -157,7 +157,7 @@ export default function Onboarding() {
                 { icon: <Bird size={20} />, label: 'Daily devotion' },
                 { icon: <WifiOff size={20} />, label: 'Works offline' },
               ].map(f => (
-                <div key={f.label} className="p-3 rounded-2xl flex items-center gap-2 text-sm font-medium" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
+                <div key={tr(f.label)} className="p-3 rounded-2xl flex items-center gap-2 text-sm font-medium" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
                   <span style={{ color: 'var(--color-accent-brand)' }}>{f.icon}</span>{tr(f.label)}
                 </div>
               ))}
@@ -182,7 +182,7 @@ export default function Onboarding() {
               <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>{tr('App language')}</p>
               <div className="grid grid-cols-2 gap-2">
                 {UI_LANGUAGES.map(l => (
-                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={l.name} subtitle={l.beta ? tr('Being translated: English fills the gaps') : l.english} />
+                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={tr(l.name)} subtitle={l.beta ? tr('Being translated: English fills the gaps') : l.english} />
                 ))}
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function Onboarding() {
               <div className="space-y-2">
                 {BIBLE_VERSIONS.map(v => (
                   <Choice key={v.id} selected={bibleVersion === v.id} onClick={() => setBibleVersion(v.id)}
-                          title={`${v.abbreviation}${v.id === 'en' ? ' (recommended)' : ''}`} subtitle={v.preview ? `${v.name}, preview, part of the Bible` : v.name} />
+                          title={`${v.abbreviation}${v.id === 'en' ? ' (recommended)' : ''}`} subtitle={v.preview ? `${tr(v.name)}, preview, part of the Bible` : v.name} />
                 ))}
               </div>
             </div>
@@ -219,8 +219,8 @@ export default function Onboarding() {
               <div className="space-y-2 mt-1">
                 {(Object.keys(MEMBER_TYPES) as MemberType[]).map(type => (
                   <Choice key={type} selected={draft.memberType === type} onClick={() => update({ memberType: type })}
-                          title={lang === 'yo' ? `${MEMBER_TYPES[type].yoruba} · ${MEMBER_TYPES[type].label}` : MEMBER_TYPES[type].label}
-                          subtitle={MEMBER_TYPES[type].description} />
+                          title={lang === 'yo' ? `${MEMBER_TYPES[type].yoruba} · ${tr(MEMBER_TYPES[type].label)}` : MEMBER_TYPES[type].label}
+                          subtitle={tr(MEMBER_TYPES[type].description)} />
                 ))}
               </div>
               {MEMBER_TYPES[draft.memberType].needsVerification && (
@@ -264,7 +264,7 @@ export default function Onboarding() {
               {matchingParishes.map(p => (
                 <Choice key={p.id} selected={!notListed && draft.parishName === p.name && (draft.parishId === p.id || p.seed === true)}
                         onClick={() => { setNotListed(false); update({ parishId: p.seed ? null : p.id, parishName: p.name, country: p.country, stateRegion: p.state_region ?? '' }); }}
-                        title={p.name} subtitle={[p.city, p.state_region, p.country].filter(Boolean).join(', ')} />
+                        title={tr(p.name)} subtitle={[p.city, p.state_region, p.country].filter(Boolean).join(', ')} />
               ))}
             </div>
             {!notListed ? (
@@ -279,7 +279,7 @@ export default function Onboarding() {
             ) : (
               <div className="rounded-2xl border p-4 space-y-3" style={{ borderColor: 'var(--color-accent-brand)' }}>
                 <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Your parish')}</p>
-                <input value={missing.name} onChange={e => updateMissing({ name: e.target.value })} placeholder={tr('Parish name, e.g. CCC Mercy Land Parish')}
+                <input value={tr(missing.name)} onChange={e => updateMissing({ name: e.target.value })} placeholder={tr('Parish name, e.g. CCC Mercy Land Parish')}
                        className={inputClass} style={inputStyle} aria-label={tr('Parish name')} />
                 <LocationPicker value={missing} onChange={updateMissing} inputClass={inputClass} inputStyle={inputStyle} />
                 <input value={missing.shepherd_name} onChange={e => updateMissing({ shepherd_name: e.target.value })} placeholder={tr('Shepherd in charge (optional)')}

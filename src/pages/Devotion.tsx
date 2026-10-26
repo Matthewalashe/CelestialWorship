@@ -268,7 +268,7 @@ export default function Devotion() {
           <div className="max-w-xl mx-auto">
             <button onClick={() => { setShowResumePrompt(false); setIsStarted(true); }} disabled={!selectedService || !steps.length}
                     className="btn-primary w-full py-4 rounded-2xl font-bold text-base shadow-lg disabled:opacity-50">
-              {tr('Begin')}{' '}{selectedService?.displayName ?? tr('Devotion')}
+              {tr('Begin')}{' '}{tr(selectedService?.displayName) ?? tr('Devotion')}
             </button>
           </div>
         </div>
@@ -345,7 +345,7 @@ export default function Devotion() {
       {hymnOpen && <HymnPanel hymn={hymnOpen} step={currentStep + 1} onClose={() => setHymnOpen(null)} />}
       {passageOpen && <PassagePanel reference={passageOpen} step={currentStep + 1} onClose={() => setPassageOpen(null)} />}
       {pickerCategory && (
-        <Sheet label={CATEGORY_LABELS[pickerCategory]} onClose={() => setPickerCategory(null)}>
+        <Sheet label={tr(CATEGORY_LABELS[pickerCategory])} onClose={() => setPickerCategory(null)}>
           <ul className="space-y-1.5">
             {suggest(pickerCategory).map(h => (
               <li key={h.number}>

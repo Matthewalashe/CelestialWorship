@@ -187,7 +187,7 @@ export default function PrayerRequests() {
                 )}
                 <div className="flex flex-wrap items-center gap-3 mt-3 text-xs" style={{ color: 'var(--color-text-muted)' }}>
                   <span>{r.is_anonymous ? tr('A Celestian') : r.display_name ?? tr('A Celestian')} · {timeAgo(r.created_at)}</span>
-                  {r.category && <span>{PRAYER_CATEGORY_LABELS[r.category as PrayerCategory] ?? r.category}</span>}
+                  {r.category && <span>{tr(PRAYER_CATEGORY_LABELS[r.category as PrayerCategory] ?? r.category)}</span>}
                   {r.visibility !== 'church' && <span>{r.visibility === 'parish' ? tr('Parish') : tr('Shepherd')}</span>}
                   <span className="ml-auto flex items-center gap-3">
                     {r.status !== 'pending' && (

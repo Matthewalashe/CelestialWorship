@@ -215,7 +215,7 @@ export default function SignIn() {
                 className="text-sm hover:underline transition-colors"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                &larr; Back to Home
+                {tr('← Back to Home')}
               </Link>
             </div>
           </div>

@@ -35,24 +35,24 @@ function Ladder({ title, ranks }: { title: string; ranks: Rank[] }) {
       <h3 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>{title}</h3>
       <ol className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
         {ranks.map((r, i) => (
-          <li key={r.name} style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
+          <li key={tr(r.name)} style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
             <button onClick={() => setOpen(open === i ? null : i)} aria-expanded={open === i} className="w-full flex items-center gap-3 px-3 py-2 text-left">
               <span className="w-6 text-right text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>{r.order}</span>
               <Robe r={r} />
               <span className="flex-1 min-w-0">
-                <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{r.name}</span>
+                <span className="block text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(r.name)}</span>
                 <span className="block text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-                  {r.line === 'prophet' ? tr('Prophet line') : r.line === 'leader' ? tr('Leader line') : tr('Both lines')}{r.note ? ` · ${r.note}` : ''}
+                  {r.line === 'prophet' ? tr('Prophet line') : r.line === 'leader' ? tr('Leader line') : tr('Both lines')}{r.note ? ` · ${tr(r.note)}` : ''}
                 </span>
               </span>
               <ChevronDown size={16} className={`shrink-0 transition-transform ${open === i ? 'rotate-180' : ''}`} style={{ color: 'var(--color-text-muted)' }} />
             </button>
             {open === i && (
               <dl className="px-4 pb-3 pl-[4.75rem] text-xs grid grid-cols-[auto_1fr] gap-x-3 gap-y-1" style={{ color: 'var(--color-text-secondary)' }}>
-                <dt className="font-semibold">{tr('Garment')}</dt><dd>{r.garment}</dd>
-                {r.loins && <><dt className="font-semibold">{tr('Loins')}</dt><dd>{r.loins}</dd></>}
-                {r.crosses && <><dt className="font-semibold">{tr('Crosses')}</dt><dd>{r.crosses}</dd></>}
-                {r.strands && <><dt className="font-semibold">{tr('Strands')}</dt><dd>{r.strands}</dd></>}
+                <dt className="font-semibold">{tr('Garment')}</dt><dd>{tr(r.garment)}</dd>
+                {r.loins && <><dt className="font-semibold">{tr('Loins')}</dt><dd>{tr(r.loins)}</dd></>}
+                {r.crosses && <><dt className="font-semibold">{tr('Crosses')}</dt><dd>{tr(r.crosses)}</dd></>}
+                {r.strands && <><dt className="font-semibold">{tr('Strands')}</dt><dd>{tr(r.strands)}</dd></>}
               </dl>
             )}
           </li>
@@ -102,7 +102,7 @@ export default function ChurchStructure() {
                 <div className="rounded-2xl p-3.5" style={{ backgroundColor: 'var(--color-bg-card)' }}>
                   <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{h.level}</p>
                   <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{h.who}</p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{h.detail} <span className="whitespace-nowrap">({h.source})</span></p>
+                  <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr(h.detail)} <span className="whitespace-nowrap">({h.source})</span></p>
                 </div>
               </li>
             ))}
@@ -117,7 +117,7 @@ export default function ChurchStructure() {
           {ASSETS.map(a => {
             const Art = ART_FOR[a.title];
             return (
-            <li key={a.title} className={`rounded-2xl p-4 space-y-3 ${a.title === 'Colours' ? 'sm:col-span-2' : ''}`} style={{ backgroundColor: 'var(--color-bg-card)' }}>
+            <li key={tr(a.title)} className={`rounded-2xl p-4 space-y-3 ${a.title === 'Colours' ? 'sm:col-span-2' : ''}`} style={{ backgroundColor: 'var(--color-bg-card)' }}>
               {Art && <Art />}
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(a.title)}</p>
               <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr(a.text)}</p>

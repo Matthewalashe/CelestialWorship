@@ -197,7 +197,7 @@ export default function Lessons() {
                   </div>
                   {lesson.occasion && (
                     <div className="text-sm font-medium text-[var(--color-accent-gold)] mt-1">
-                      ✦ {lesson.occasion}
+                      ✦ {tr(lesson.occasion)}
                     </div>
                   )}
                   <div className="mt-2 space-y-1">

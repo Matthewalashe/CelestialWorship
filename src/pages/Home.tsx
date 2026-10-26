@@ -130,7 +130,7 @@ export default function Home() {
             <div>
               <p className={`${label} opacity-80`}>{t('home.todaysServices')}</p>
               <p className="text-xl font-bold font-[Outfit] mt-1">{serviceName(next.id)}</p>
-              <p className="text-sm opacity-80 mt-0.5 inline-flex items-center gap-1.5"><Clock size={14} /> {formatServiceTime(next.hour, next.minute)}</p>
+              <p className="text-sm opacity-80 mt-0.5 inline-flex items-center gap-1.5"><Clock size={14} /> {tr(formatServiceTime(next.hour, next.minute))}</p>
             </div>
           ) : null}
           <div className="flex gap-2">

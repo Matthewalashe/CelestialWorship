@@ -15,7 +15,7 @@ describe('translation catalogs', () => {
           if (en.includes(mark)) expect(t, `${en} → ${t}`).toContain(mark);
         }
         // References and numbers stay the same; clock times, ordinals and "3ce" (three times) may be written in words
-        const words = /\d+(?:[.:]\d+)?\s*(?:am|pm)\b|\b12 midnight|\d+\s*(?:st|nd|rd|th|ce)\b/gi;
+        const words = /\d+(?:[.:]\d+)?\s*(?:a\.?m\b\.?|p\.?m\b\.?|noon)|\b12 midnight|\d+\s*(?:st|nd|rd|th|ce)\b/gi;
         for (const n of en.replace(words, '').match(/\d+/g) ?? []) expect(t, `${en} → ${t}`).toContain(n);
       }
     }

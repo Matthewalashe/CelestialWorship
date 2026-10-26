@@ -55,7 +55,7 @@ export function MusicSettings({ onClose }: { onClose: () => void }) {
         <label className="block text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('Volume')}<input type="range" min={0.05} max={1} step={0.05} value={volume} onChange={e => setVolume(Number(e.target.value))} className="w-full mt-1" />
         </label>
         {now && (
-          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{tr('Now:')}{' '}<b>{tr(now.title)}</b><br />{now.detail}{now.page && <> · <a href={now.page} target="_blank" rel="noopener noreferrer" className="underline">{tr('source')}</a></>}
+          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>{tr('Now:')}{' '}<b>{tr(now.title)}</b><br />{tr(now.detail)}{now.page && <> · <a href={now.page} target="_blank" rel="noopener noreferrer" className="underline">{tr('source')}</a></>}
           </p>
         )}
       </div>

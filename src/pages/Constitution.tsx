@@ -214,7 +214,7 @@ export default function Constitution() {
             border: '1px solid var(--color-border)',
           }}
         >
-          {meta.note}
+          {tr(meta.note)}
         </div>
       )}
     </div>

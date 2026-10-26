@@ -16,7 +16,7 @@ export default function StoryDetail() {
   const navigate = useNavigate();
   const readingStyle = useReadingStyle();
   const [speaking, setSpeaking] = useState(false);
-  usePageTitle('story', story ? `${story.title}: Bible stories` : 'Bible stories');
+  usePageTitle('story', story ? `${tr(story.title)}: Bible stories` : 'Bible stories');
 
   useEffect(() => { if (story) markStoryRead(story.id); }, [story]);
   useEffect(() => () => { window.speechSynthesis?.cancel(); }, [id]);
@@ -38,7 +38,7 @@ export default function StoryDetail() {
     if (!synth) return;
     if (speaking) { synth.cancel(); setSpeaking(false); return; }
     const u = new SpeechSynthesisUtterance([story.title, ...story.paragraphs].join('\n\n'));
-    u.lang = 'en-GB'; u.rate = 0.9;
+    u.lang = story.lang === 'yo' ? 'yo-NG' : story.lang === 'fr' ? 'fr-FR' : 'en-GB'; u.rate = 0.9;
     u.onend = () => setSpeaking(false);
     u.onerror = () => setSpeaking(false);
     synth.cancel(); window.dispatchEvent(new Event('cw-speech-start')); synth.speak(u);
@@ -58,7 +58,7 @@ export default function StoryDetail() {
   );
 
   return (
-    <article className="px-4 py-5 max-w-2xl mx-auto pb-24">
+    <article className="px-4 py-5 max-w-2xl mx-auto pb-24" lang={story?.lang}>
       <div className="flex items-center gap-2 mb-4">
         <Link to={`/stories${collection ? `?c=${collection.id}` : ''}`} className="text-sm flex-1" style={{ color: 'var(--color-text-secondary)' }}>‹ {collection?.title ?? tr('Bible stories')}</Link>
         {'speechSynthesis' in window && (
@@ -72,7 +72,7 @@ export default function StoryDetail() {
 
       {story.image && (
         <figure className="rounded-2xl overflow-hidden mb-5" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-          <img src={story.image.src} alt={story.title} width={640} height={480} className="w-full h-auto" />
+          <img src={story.image.src} alt={tr(story.title)} width={640} height={480} className="w-full h-auto" />
         </figure>
       )}
       <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--color-accent-gold)' }}>{tr('Story')}{' '}{story.number}</p>
@@ -97,7 +97,7 @@ export default function StoryDetail() {
       )}
 
       {reading && (
-        <ReaderFrame title={story.title} place={`Story ${story.number} · ${story.ref}`}
+        <ReaderFrame title={tr(story.title)} place={`Story ${story.number} · ${story.ref}`}
                      prev={prev ? { label: prev.title, go: () => navigate(`/stories/${prev.id}`) } : undefined}
                      next={next ? { label: next.title, go: () => navigate(`/stories/${next.id}`) } : undefined}>
           {story.image && <img src={story.image.src} alt="" className="w-full h-auto rounded-lg mb-6" />}

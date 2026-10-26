@@ -300,7 +300,7 @@ export function BibleMap({
 
         {/* Labels */}
         {old && regions.map(r => label(r.name.toUpperCase(), r.at, 10, { color: c.regionText, spacing: 2, key: `rl-${r.id}` }))}
-        {old && region === 'holyland' && OLD_MAP_LABELS.map(l => label(l.name, proj(l.at), l.kind === 'sea' ? 11 : 10, { italic: true, color: l.kind === 'sea' ? '#5B6B70' : c.text, spacing: 1, key: `ol-${l.name}` }))}
+        {old && region === 'holyland' && OLD_MAP_LABELS.map(l => label(l.name, proj(l.at), l.kind === 'sea' ? 11 : 10, { italic: true, color: l.kind === 'sea' ? '#5B6B70' : c.text, spacing: 1, key: `ol-${tr(l.name)}` }))}
         {countryLabels.map(k => label(k.name, k.label as [number, number], layer === 'both' ? 9 : 11, { weight: 600, color: layer === 'both' ? '#B91C1C' : c.text, key: `cl-${k.id}` }))}
 
         {/* The journey so far */}
@@ -330,7 +330,7 @@ export function BibleMap({
         {[{ icon: <Plus size={16} />, label: 'Zoom in', act: () => zoomAt(1 / 1.6) },
           { icon: <Minus size={16} />, label: 'Zoom out', act: () => zoomAt(1.6) },
           { icon: <Maximize2 size={14} />, label: 'Whole map', act: () => full && setView(full) }].map(b => (
-          <button key={b.label} onClick={b.act} aria-label={b.label} className="w-9 h-9 rounded-lg shadow flex items-center justify-center"
+          <button key={tr(b.label)} onClick={b.act} aria-label={tr(b.label)} className="w-9 h-9 rounded-lg shadow flex items-center justify-center"
                   style={{ backgroundColor: 'rgba(255,255,255,0.92)', color: '#1F2937' }}>{b.icon}</button>
         ))}
       </div>

@@ -36,8 +36,8 @@ function RefLink({ refs }: { refs: string }) {
 function PlaceFacts({ place }: { place: BiblePlace }) {
   return (
     <div className="text-sm space-y-1" style={{ color: 'var(--color-text-secondary)' }}>
-      <p><span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{place.name}</span>{' '}{tr('→ today')}{' '}<span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{place.today}</span>, {place.country}{place.traditional ? tr(' (traditional site)') : ''}</p>
-      <p>{place.note}</p>
+      <p><span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(place.name)}</span>{' '}{tr('→ today')}{' '}<span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{place.today}</span>, {place.country}{place.traditional ? tr(' (traditional site)') : ''}</p>
+      <p>{tr(place.note)}</p>
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read:')}{' '}<RefLink refs={place.refs} /></p>
     </div>
   );
@@ -115,7 +115,7 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
             <button key={o.id} role="radio" aria-checked={guess?.[0] === o.lon && guess?.[1] === o.lat} disabled={checked}
                     onClick={() => setGuess([o.lon, o.lat])} className="w-full text-left p-3 rounded-xl border-2 text-sm"
                     style={{ ...card, borderColor: guess?.[0] === o.lon && guess?.[1] === o.lat ? 'var(--color-accent-brand)' : 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-              {o.name}
+              {tr(o.name)}
             </button>
           ))}
         </div>
@@ -169,7 +169,7 @@ function PaulLetterList() {
           return (
             <li key={l.letter} className="py-2.5 text-sm" style={{ borderColor: 'var(--color-border)' }}>
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{l.letter} <span className="font-normal text-xs" style={{ color: 'var(--color-text-muted)' }}>· <RefLink refs={l.ref} /></span></p>
-              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('To')}{' '}{l.to}. <b>{pl.name}</b>{' '}{tr('today')}{' '}{pl.today}, {pl.country}.</p>
+              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('To')}{' '}{l.to}. <b>{tr(pl.name)}</b>{' '}{tr('today')}{' '}{pl.today}, {pl.country}.</p>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Written from')}{' '}{l.from}, {l.when}.</p>
             </li>
           );
@@ -229,7 +229,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
         <span>{combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} · </span>}{xp}{' '}{tr('XP')}</span>
       </div>
       <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
-        {q.reverse ? <>{tr('Which Bible place is')}{' '}<em>{q.place.today}</em> ({q.place.country}{tr(') today?')}</> : <>{tr('What is')}{' '}<em>{q.place.name}</em>{' '}{tr('called today?')}</>}
+        {q.reverse ? <>{tr('Which Bible place is')}{' '}<em>{q.place.today}</em> ({q.place.country}{tr(') today?')}</> : <>{tr('What is')}{' '}<em>{tr(q.place.name)}</em>{' '}{tr('called today?')}</>}
       </p>
       <div className="space-y-2" role="radiogroup">
         {q.options.map(o => {
@@ -247,7 +247,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
         <div className="space-y-3 animate-slide-up" aria-live="polite">
           <BibleMap region={q.place.map} layer={layer} height="35vh" focus={q.place.map === 'holyland' ? [q.place.lon, q.place.lat, 1.6] : [q.place.lon, q.place.lat, 18]}
                     pins={[{ at: [q.place.lon, q.place.lat], kind: 'answer', label: layer === 'now' ? q.place.today : q.place.name }]} />
-          <PlaceFacts place={q.place} />
+          <PlaceFacts place={tr(q.place)} />
           <button onClick={next} className="btn-primary w-full py-3 rounded-xl text-sm font-semibold">{k + 1 < round.length ? tr('Next') : tr('See my score')}</button>
         </div>
       )}
@@ -323,7 +323,7 @@ function Master({ layer }: { layer: MapLayer }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-sm font-bold" style={{ color: 'var(--color-text-primary)' }}>
-        <span aria-live="polite">{tr('Find:')}{' '}<span style={{ color: 'var(--color-accent-brand)' }}>{target?.name}</span></span>
+        <span aria-live="polite">{tr('Find:')}{' '}<span style={{ color: 'var(--color-accent-brand)' }}>{tr(target?.name)}</span></span>
         <span style={{ color: left <= 10 ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>{left}s</span>
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
@@ -383,7 +383,7 @@ function Lands({ layer }: { layer: MapLayer }) {
         <span>{k + 1} / {round.length}</span>
         <span>{combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} · </span>}{xp}{' '}{tr('XP')}</span>
       </div>
-      <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Where is')}{' '}<em>{land.name}</em>{' '}{tr('today?')}</p>
+      <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Where is')}{' '}<em>{tr(land.name)}</em>{' '}{tr('today?')}</p>
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Also:')}{' '}{land.aka}</p>
       {listMode ? (
         <div className="grid grid-cols-2 gap-2">
@@ -403,7 +403,7 @@ function Lands({ layer }: { layer: MapLayer }) {
       {answered && (
         <div className="p-4 rounded-2xl space-y-2 animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
           <p className="font-semibold" style={{ color: ok ? 'var(--color-success)' : 'var(--color-warning)' }}>{ok ? tr('Correct!') : `It’s ${land.answer}.`}</p>
-          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{land.note}</p>
+          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr(land.note)}</p>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read:')}{' '}<RefLink refs={land.refs} /></p>
           <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{k + 1 < round.length ? tr('Next') : tr('See my score')}</button>
         </div>

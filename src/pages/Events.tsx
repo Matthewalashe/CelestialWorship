@@ -71,7 +71,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
   return (
     <Sheet label={tr('Add an event')} onClose={onClose}>
       <div className="space-y-3">
-        <input value={v.title} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('Event name')} maxLength={140} className={inputClass} style={inputStyle} />
+        <input value={tr(v.title)} onChange={e => draft.setValue({ title: e.target.value })} placeholder={tr('Event name')} maxLength={140} className={inputClass} style={inputStyle} />
         <div className="grid grid-cols-2 gap-2">
           <label className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Date')}<input type="date" value={v.date} onChange={e => draft.setValue({ date: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
           </label>
@@ -84,7 +84,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
           {(Object.keys(EVENT_CATEGORIES) as EventCategory[]).map(c => <option key={c} value={c}>{tr(EVENT_CATEGORIES[c])}</option>)}
         </select>
         <input value={v.location} onChange={e => draft.setValue({ location: e.target.value })} placeholder={profile.parishName || tr('Venue')} className={inputClass} style={inputStyle} />
-        <textarea value={v.description} onChange={e => draft.setValue({ description: e.target.value })} rows={3} maxLength={4000}
+        <textarea value={tr(v.description)} onChange={e => draft.setValue({ description: e.target.value })} rows={3} maxLength={4000}
                   placeholder={tr('Details, programme, dress code, what to bring')} className={inputClass} style={inputStyle} />
         <input value={v.contact} onChange={e => draft.setValue({ contact: e.target.value })} placeholder={tr('Contact for enquiries (optional)')} className={inputClass} style={inputStyle} />
         <select value={v.scope} onChange={e => draft.setValue({ scope: e.target.value as 'church' | 'parish' })} className={inputClass} style={inputStyle} aria-label={tr('Who is it for')}>
@@ -276,7 +276,7 @@ export default function Events() {
       )}
 
       {open && (
-        <Sheet label={open.title} onClose={() => setOpen(null)}
+        <Sheet label={tr(open.title)} onClose={() => setOpen(null)}
                title={<span className="text-[10px] uppercase font-bold tracking-wider" style={{ color: CATEGORY_COLORS[open.category] }}>{tr(EVENT_CATEGORIES[open.category])}</span>}>
           <div>
             <h3 className="text-xl font-bold font-[Outfit] mt-1" style={{ color: 'var(--color-text-primary)' }}>{tr(open.title)}</h3>

@@ -1,0 +1,144 @@
+{
+"bs-01": {
+ "yo": {"title": "Ọlọ́run dá ohun gbogbo", "paragraphs": [
+  "Ní ìgbà láéláé, kò sí oòrùn, kò sí òṣùpá. Kò sí igi, kò sí ẹyẹ, kò sì sí ènìyàn. Ọlọ́run nìkan ló wà. Nígbà náà ni Ọlọ́run bẹ̀rẹ̀ sí dá nǹkan.",
+  "Lákọ̀ọ́kọ́, Ọlọ́run wí pé, “Kí ìmọ́lẹ̀ kí ó wà,” ìmọ́lẹ̀ sì wà. Lẹ́yìn náà Ó dá ojú ọ̀run, ilẹ̀ gbígbẹ àti òkun. Ó dá koríko àti igi, àti òdòdó aláwọ̀ oríṣiríṣi.",
+  "Ọlọ́run fi oòrùn sí ojú ọ̀run láti máa tàn ní ọ̀sán, àti òṣùpá àti ìràwọ̀ láti máa tàn ní òru. Ó fi ẹja kún inú òkun, ó sì fi ẹyẹ kún ojú ọ̀run. Ó dá kìnnìún àti ọ̀dọ́ àgùntàn, erin àti èèrà kékeré.",
+  "Ní ìkẹyìn, Ọlọ́run dá ọkùnrin àti obìnrin. Ó dá wọn láti jẹ́ ọ̀rẹ́ Rẹ̀ àti láti máa tọ́jú gbogbo ohun tí Ó ti dá. Ọlọ́run wo gbogbo rẹ̀, ó sì dára gidigidi.",
+  "Nígbà tí o bá wo ojú ọ̀run, tàbí òdòdó kan, tàbí ẹyẹ kékeré kan, kí ni ó ń sọ fún ọ nípa Ọlọ́run?"],
+  "questions": ["Ta ni ó dá oòrùn, òṣùpá àti ìràwọ̀?", "Kí ni Ọlọ́run dá ní ìkẹyìn?", "Kí ni Ọlọ́run sọ nípa gbogbo ohun tí Ó dá?"]},
+ "fr": {"title": "Dieu fait toutes choses", "paragraphs": [
+  "Il y a très, très longtemps, il n’y avait ni soleil ni lune. Il n’y avait ni arbres, ni oiseaux, ni personnes. Il n’y avait que Dieu. Alors Dieu se mit à créer.",
+  "D’abord Dieu dit : « Que la lumière soit ! » Et la lumière fut. Puis Il fit le ciel, la terre ferme et la mer. Il fit l’herbe et les arbres, et des fleurs de toutes les couleurs.",
+  "Dieu plaça le soleil dans le ciel pour briller le jour, et la lune et les étoiles pour briller la nuit. Il remplit la mer de poissons et le ciel d’oiseaux. Il fit les lions et les agneaux, les éléphants et les toutes petites fourmis.",
+  "Pour finir, Dieu fit un homme et une femme. Il les fit pour être Ses amis et prendre soin de tout ce qu’Il avait fait. Dieu regarda tout cela, et c’était très bon.",
+  "Quand tu regardes le ciel, une fleur ou un petit oiseau, que te disent-ils de Dieu ?"],
+  "questions": ["Qui a fait le soleil, la lune et les étoiles ?", "Qu’est-ce que Dieu a fait en dernier ?", "Qu’a dit Dieu de tout ce qu’Il avait fait ?"]}
+},
+"bs-02": {
+ "yo": {"title": "Ọgbà tó lẹ́wà", "paragraphs": [
+  "Ọlọ́run dá ọgbà kan tó lẹ́wà tí a ń pè ní Édẹ́nì. Odò tó mọ́ kedere ń ṣàn láàárín rẹ̀, àwọn igi tí ó kún fún èso dáradára láti jẹ sì hù níbẹ̀.",
+  "Ọlọ́run mú erùpẹ̀ ilẹ̀, ó sì mọ ọkùnrin àkọ́kọ́. Lẹ́yìn náà Ó mí sí i, ọkùnrin náà sì di alààyè. Orúkọ rẹ̀ ni Ádámù.",
+  "Ádámù sọ gbogbo ẹranko ní orúkọ. Ṣùgbọ́n kò sí ọ̀kan nínú wọn tí ó jẹ́ olùrànlọ́wọ́ tí ó yẹ fún un. Nítorí náà Ọlọ́run dá obìnrin kan, ó sì mú un wá sọ́dọ̀ Ádámù. Inú Ádámù dùn gidigidi. Orúkọ rẹ̀ ni Éfà.",
+  "Ọlọ́run sọ fún wọn pé wọ́n lè jẹ nínú èso gbogbo igi inú ọgbà àyàfi ẹyọ kan. Igi kan yẹn jẹ́ ti Ọlọ́run, wọn kò sì gbọdọ̀ fọwọ́ kàn án. Ṣé ìwọ ìbá fẹ́ gbé nínú irú ọgbà bẹ́ẹ̀?"],
+  "questions": ["Kí ni orúkọ ọgbà Ọlọ́run?", "Báwo ni Ọlọ́run ṣe dá ọkùnrin àkọ́kọ́?", "Igi wo ni Ádámù àti Éfà kò gbọdọ̀ jẹ nínú rẹ̀?"]},
+ "fr": {"title": "Un beau jardin", "paragraphs": [
+  "Dieu fit un beau jardin appelé Éden. Des rivières limpides le traversaient, et des arbres y poussaient, pleins de bons fruits à manger.",
+  "Dieu prit de la poussière du sol et forma le premier homme. Puis Il souffla en lui, et l’homme devint vivant. Il s’appelait Adam.",
+  "Adam donna un nom à tous les animaux. Mais aucun n’était une aide qui lui convienne. Alors Dieu fit une femme et l’amena à Adam. Adam fut très heureux. Elle s’appelait Ève.",
+  "Dieu leur dit qu’ils pouvaient manger de tous les arbres du jardin sauf un. Cet arbre-là était à Dieu, et ils devaient le laisser. Aurais-tu aimé vivre dans un jardin pareil ?"],
+  "questions": ["Comment s’appelait le jardin de Dieu ?", "Comment Dieu a-t-Il fait le premier homme ?", "De quel arbre Adam et Ève ne devaient-ils pas manger ?"]}
+},
+"bs-03": {
+ "yo": {"title": "Àṣìṣe àkọ́kọ́", "paragraphs": [
+  "Ní ọjọ́ kan, ejò bá Éfà sọ̀rọ̀. Ó sọ fún un pé Ọlọ́run ń fi ohun rere kan pamọ́ fún un. Ó wí pé, “Jẹ èso náà, ìwọ yóò sì dàbí Ọlọ́run.”",
+  "Éfà wo èso náà. Ó dára lójú gan-an. Ó mú díẹ̀, ó jẹ ẹ́, ó sì fún Ádámù, òun náà sì jẹ ẹ́.",
+  "Lójú ẹsẹ̀, ojú tì wọ́n. Nígbà tí Ọlọ́run ń rìn bọ̀ nínú ọgbà, wọ́n fara pamọ́ sáàárín àwọn igi. Wọn kò gbọ́ ti Ọlọ́run, nísinsìnyí wọ́n ní láti kúrò nínú ọgbà tó lẹ́wà náà.",
+  "Inú Ádámù àti Éfà bàjẹ́. Ṣùgbọ́n síbẹ̀, Ọlọ́run dá aṣọ fún wọn láti wọ̀, Ó sì ṣèlérí pé ní ọjọ́ kan, Ẹnì kan yóò wá láti tún ohun tí ó ti bàjẹ́ ṣe. Ṣé o mọ ẹni tí Ẹni náà jẹ́?"],
+  "questions": ["Kí ni ejò sọ fún Éfà?", "Kí nìdí tí Ádámù àti Éfà fi fara pamọ́?", "Kí ni Ọlọ́run ṣèlérí kódà lẹ́yìn tí wọ́n ṣàìgbọràn?"]},
+ "fr": {"title": "Le premier mauvais choix", "paragraphs": [
+  "Un jour, un serpent parla à Ève. Il lui dit que Dieu lui cachait quelque chose de bon. « Mange le fruit, dit-il, et tu seras comme Dieu. »",
+  "Ève regarda le fruit. Il avait l’air si bon ! Elle en prit, en mangea, et en donna à Adam, qui en mangea aussi.",
+  "Aussitôt ils eurent honte. Quand Dieu vint se promener dans le jardin, ils se cachèrent parmi les arbres. Ils n’avaient pas écouté Dieu, et maintenant ils devaient quitter le beau jardin.",
+  "Adam et Ève étaient tristes. Mais même alors, Dieu leur fit des vêtements, et Il promit qu’un jour Quelqu’un viendrait réparer ce qui s’était mal passé. Sais-tu qui est ce Quelqu’un ?"],
+  "questions": ["Qu’a dit le serpent à Ève ?", "Pourquoi Adam et Ève se sont-ils cachés ?", "Qu’a promis Dieu même après leur désobéissance ?"]}
+},
+"bs-04": {
+ "yo": {"title": "Nóà kan ọkọ̀ ńlá", "paragraphs": [
+  "Lẹ́yìn ọ̀pọ̀ ọdún, ènìyàn pọ̀ lórí ilẹ̀ ayé. Ṣùgbọ́n ọ̀pọ̀ nínú wọn jẹ́ ènìyàn búburú àti aláìláàánú. Inú Ọlọ́run bàjẹ́ láti rí ìwà búburú tó pọ̀ tó bẹ́ẹ̀.",
+  "Ọkùnrin rere kan wà, Nóà. Ó ń bá Ọlọ́run rìn. Ọlọ́run sọ fún Nóà pé, “Fi igi góférì kan ọkọ̀ fún ara rẹ.” Ọkọ̀ náà jẹ́ ọkọ̀ ojú omi tó tóbi gan-an. Ọlọ́run sọ pé ìkún omi ńlá ń bọ̀.",
+  "Nóà àti àwọn ọmọkùnrin rẹ̀ ṣiṣẹ́ fún ìgbà pípẹ́. Àwọn ènìyàn ń fi wọ́n rẹ́rìn-ín, ṣùgbọ́n Nóà ń bá a lọ ní ṣíṣe ìgbọràn sí Ọlọ́run. Nígbà tí ọkọ̀ náà parí, àwọn ẹranko wọlé ní méjì-méjì, àwọn kan sì ní méje-méje.",
+  "Nóà àti ìdílé rẹ̀ wọlé, Ọlọ́run sì ti ilẹ̀kùn. Lẹ́yìn náà òjò bẹ̀rẹ̀. Òjò rọ̀ fún ogójì ọ̀sán àti ogójì òru, ṣùgbọ́n gbogbo ẹni tí ó wà nínú ọkọ̀ wà láìléwu."],
+  "questions": ["Kí nìdí tí inú Ọlọ́run fi bàjẹ́ nípa àwọn ènìyàn ayé?", "Kí ni Ọlọ́run sọ fún Nóà pé kí ó kàn?", "Ta ni ó ti ilẹ̀kùn ọkọ̀ náà?"]},
+ "fr": {"title": "Noé construit un grand bateau", "paragraphs": [
+  "Après bien des années, il y avait beaucoup de gens sur la terre. Mais la plupart étaient méchants et durs. Dieu était attristé de voir tant de mal.",
+  "Il y avait un homme bon, Noé. Il marchait avec Dieu. Dieu dit à Noé : « Fais-toi une arche. » Une arche, c’est un très grand bateau. Dieu dit qu’un grand déluge allait venir.",
+  "Noé et ses fils travaillèrent longtemps. Les gens se moquaient d’eux, mais Noé continuait d’obéir à Dieu. Quand l’arche fut finie, les animaux vinrent deux par deux, et certains sept par sept.",
+  "Noé et sa famille entrèrent, et Dieu ferma la porte. Puis la pluie commença. Il plut quarante jours et quarante nuits, mais tous ceux qui étaient dans l’arche étaient en sécurité."],
+  "questions": ["Pourquoi Dieu était-Il attristé à cause des gens de la terre ?", "Qu’est-ce que Dieu a demandé à Noé de construire ?", "Qui a fermé la porte de l’arche ?"]}
+},
+"bs-05": {
+ "yo": {"title": "Ìlérí òṣùmàrè", "paragraphs": [
+  "Omi bo gbogbo ayé. Ọkọ̀ náà ń léfòó lọ. Níkẹyìn òjò dá, ọkọ̀ náà sì dúró lórí òkè kan.",
+  "Nóà rán àdàbà kan jáde. Ní ìgbà àkọ́kọ́, ó padà wá nítorí kò rí ibi ìsinmi. Ní ìgbà tó tẹ̀lé e, ó padà wá pẹ̀lú ewé ólífì tútù lẹ́nu rẹ̀! Ilẹ̀ ti ń gbẹ.",
+  "Nígbà tí Ọlọ́run sọ fún wọn, Nóà àti ìdílé rẹ̀ àti gbogbo ẹranko jáde kúrò nínú ọkọ̀. Ohun àkọ́kọ́ tí Nóà ṣe ni láti dúpẹ́ lọ́wọ́ Ọlọ́run.",
+  "Lẹ́yìn náà Ọlọ́run fi òṣùmàrè sí ojú ọ̀run. Ó ṣèlérí pé Òun kò ní fi ìkún omi bo gbogbo ayé mọ́ láé. Nígbà tí o bá rí òṣùmàrè, o lè rántí pé Ọlọ́run máa ń mú ìlérí Rẹ̀ ṣẹ."],
+  "questions": ["Kí ni àdàbà mú padà wá sí ọkọ̀?", "Kí ni Nóà kọ́kọ́ ṣe nígbà tí ó jáde?", "Kí ni òṣùmàrè ń rán wa létí?"]},
+ "fr": {"title": "La promesse de l’arc-en-ciel", "paragraphs": [
+  "L’eau couvrit toute la terre. L’arche flottait toujours plus loin. Enfin la pluie s’arrêta et l’arche se posa sur une montagne.",
+  "Noé lâcha une colombe. La première fois, elle revint, car elle ne trouvait pas où se poser. La fois suivante, elle revint avec une feuille d’olivier toute fraîche dans le bec ! La terre séchait.",
+  "Quand Dieu le leur dit, Noé, sa famille et tous les animaux sortirent de l’arche. La première chose que fit Noé fut de remercier Dieu.",
+  "Puis Dieu mit un arc-en-ciel dans le ciel. Il promit de ne plus jamais envoyer de déluge pour couvrir toute la terre. Quand tu vois un arc-en-ciel, tu peux te souvenir que Dieu tient Ses promesses."],
+  "questions": ["Qu’a rapporté la colombe à l’arche ?", "Qu’a fait Noé en premier en sortant ?", "De quoi l’arc-en-ciel nous fait-il souvenir ?"]}
+},
+"bs-06": {
+ "yo": {"title": "Ilé ìṣọ́ gíga", "paragraphs": [
+  "Lẹ́yìn ìkún omi, èdè kan ṣoṣo ni gbogbo ènìyàn ayé ń sọ. Àwọn ènìyàn kan wí pé, “Ẹ jẹ́ kí a kọ́ ìlú kan àti ilé ìṣọ́ kan tí orí rẹ̀ kan ọ̀run, kí a lè sọ orúkọ wa di ńlá.”",
+  "Wọ́n gbéraga. Wọ́n fẹ́ di ẹni ńlá láìsí Ọlọ́run. Nítorí náà Ọlọ́run da èdè wọn rú. Lójijì, ọkùnrin kan kò lè gbọ́ ohun tí ẹnì kejì ń sọ mọ́!",
+  "Wọn kò lè ṣiṣẹ́ pọ̀ mọ́, wọ́n sì dá kíkọ́ ilé dúró. Àwọn ènìyàn náà tú ká lọ sí ilẹ̀ ọ̀tọ̀ọ̀tọ̀, ìdílé kọ̀ọ̀kan pẹ̀lú èdè tirẹ̀. A ń pe ìlú náà ní Bábélì.",
+  "Ọlọ́run fẹ́ kí a máa ṣiṣẹ́ pọ̀, ṣùgbọ́n kí a ṣe é fún Òun, kì í ṣe láti fi ṣe àṣehàn. Kí ló dé tí o rò pé ìgbéraga kò dára?"],
+  "questions": ["Kí nìdí tí àwọn ènìyàn fi fẹ́ kọ́ ilé ìṣọ́ náà?", "Kí ni Ọlọ́run ṣe sí èdè wọn?", "Kí ni orúkọ ìlú náà?"]},
+ "fr": {"title": "La haute tour", "paragraphs": [
+  "Après le déluge, tout le monde sur la terre parlait une seule langue. Des gens dirent : « Bâtissons-nous une ville et une tour dont le sommet touche au ciel, et faisons-nous un nom. »",
+  "Ils étaient orgueilleux. Ils voulaient être grands sans Dieu. Alors Dieu confondit leur langue. Tout à coup, un homme ne comprenait plus ce que disait son voisin !",
+  "Ils ne pouvaient plus travailler ensemble, et ils cessèrent de bâtir. Les gens partirent vers différents pays, chaque famille avec sa propre langue. La ville fut appelée Babel.",
+  "Dieu veut que nous travaillions ensemble, mais pour Lui, pas pour nous montrer. Pourquoi penses-tu que l’orgueil n’est pas bon ?"],
+  "questions": ["Pourquoi les gens voulaient-ils bâtir la tour ?", "Qu’a fait Dieu à leur langue ?", "Comment s’appelait la ville ?"]}
+},
+"bs-07": {
+ "yo": {"title": "Ábúráhámù gbẹ́kẹ̀lé Ọlọ́run", "paragraphs": [
+  "Ábúrámù ń gbé ní ìlú kan tí a ń pè ní Úrì. Ní ọjọ́ kan Ọlọ́run sọ fún un pé, “Jáde kúrò ní ilẹ̀ rẹ… sí ilẹ̀ tí èmi ó fi hàn ọ́.”",
+  "Ábúrámù kò mọ ibi tí ó ń lọ. Ṣùgbọ́n ó gbẹ́kẹ̀lé Ọlọ́run. Ó kó àgọ́ rẹ̀, àgùntàn rẹ̀ àti ràkúnmí rẹ̀ jọ, ó sì gbéra pẹ̀lú Sáráì aya rẹ̀ àti Lọ́ọ̀tì ọmọ arákùnrin rẹ̀.",
+  "Wọ́n rin ìrìn àjò tó jìn gan-an títí wọ́n fi dé ilẹ̀ Kénáánì. Níbẹ̀ ni Ọlọ́run ti ṣèlérí pé, “Irú-ọmọ rẹ ni èmi ó fi ilẹ̀ yìí fún.” Ọlọ́run tún ṣèlérí pé nínú rẹ̀ ni a ó ti bùkún fún gbogbo ìdílé ayé.",
+  "Lẹ́yìn náà Ọlọ́run yí orúkọ rẹ̀ padà sí Ábúráhámù, tí ó túmọ̀ sí “baba ọ̀pọ̀lọpọ̀.” Ṣé ó rọrùn láti gbẹ́kẹ̀lé Ọlọ́run nígbà tí o kò mọ ohun tí yóò ṣẹlẹ̀ tẹ̀lé e?"],
+  "questions": ["Ibo ni Ábúrámù ń gbé tẹ́lẹ̀?", "Ṣé Ábúrámù mọ ibi tí ó ń lọ?", "Ilẹ̀ wo ni Ọlọ́run ṣèlérí láti fún un?"]},
+ "fr": {"title": "Abraham fait confiance à Dieu", "paragraphs": [
+  "Abram habitait une ville appelée Ur. Un jour Dieu lui dit : « Va-t’en de ton pays… dans le pays que je te montrerai. »",
+  "Abram ne savait pas où il allait. Mais il faisait confiance à Dieu. Il plia ses tentes, prit ses moutons et ses chameaux, et partit avec sa femme Saraï et son neveu Lot.",
+  "Ils voyagèrent très loin, jusqu’au pays de Canaan. Là, Dieu promit : « Je donnerai ce pays à ta postérité. » Dieu promit aussi que toutes les familles de la terre seraient bénies en lui.",
+  "Plus tard, Dieu changea son nom en Abraham, qui veut dire « père d’une multitude ». Est-ce facile de faire confiance à Dieu quand on ne sait pas ce qui va arriver ?"],
+  "questions": ["Où Abram habitait-il au début ?", "Abram savait-il où il allait ?", "Quel pays Dieu a-t-Il promis de lui donner ?"]}
+},
+"bs-08": {
+ "yo": {"title": "Ọmọ fún Sárà", "paragraphs": [
+  "Ábúráhámù àti Sárà ti darúgbó gan-an, wọn kò sì ní ọmọ. Ṣùgbọ́n Ọlọ́run ti ṣèlérí ọmọkùnrin kan fún wọn.",
+  "Ní ọjọ́ kan tí ooru mú, àlejò mẹ́ta wá sí àgọ́ Ábúráhámù. Ọ̀kan nínú wọn sọ pé ní irú àkókò yìí ní ọdún tí ń bọ̀, Sárà yóò bí ọmọkùnrin kan. Sárà ń gbọ́ láti ẹ̀yìn ilẹ̀kùn àgọ́, ó sì rẹ́rìn-ín. Ó rò pé òun ti dàgbà jù!",
+  "Ṣùgbọ́n àlejò náà wí pé, “Ohun kan ha ṣòro jù fún OLÚWA bí?”",
+  "Ó sì ṣẹlẹ̀ gẹ́lẹ́ bí Ọlọ́run ti sọ. Sárà bí ọmọkùnrin kan, wọ́n sì sọ ọ́ ní Ísáákì, tí ó túmọ̀ sí “ẹ̀rín.” Sárà wí pé, “Ọlọ́run ti pa mí lẹ́rìn-ín.” Ní àkókò yìí, ó ń rẹ́rìn-ín nítorí inú rẹ̀ dùn gidigidi."],
+  "questions": ["Kí nìdí tí Sárà fi kọ́kọ́ rẹ́rìn-ín?", "Ìbéèrè wo ni àlejò náà bèèrè?", "Kí ni orúkọ Ísáákì túmọ̀ sí?"]},
+ "fr": {"title": "Un bébé pour Sara", "paragraphs": [
+  "Abraham et Sara étaient très âgés, et ils n’avaient pas d’enfants. Mais Dieu leur avait promis un fils.",
+  "Un jour de grande chaleur, trois visiteurs vinrent à la tente d’Abraham. L’un d’eux dit qu’à la même époque l’année suivante, Sara aurait un petit garçon. Sara écoutait derrière la porte de la tente, et elle rit. Elle se trouvait bien trop vieille !",
+  "Mais le visiteur dit : « Y a-t-il rien qui soit étonnant de la part de l’Éternel ? »",
+  "Et tout arriva comme Dieu l’avait dit. Sara eut un petit garçon, et ils l’appelèrent Isaac, ce qui veut dire « rire ». Sara dit : « Dieu m’a fait un sujet de rire. » Cette fois, elle riait parce qu’elle était si heureuse."],
+  "questions": ["Pourquoi Sara a-t-elle ri au début ?", "Quelle question le visiteur a-t-il posée ?", "Que veut dire le nom Isaac ?"]}
+},
+"bs-09": {
+ "yo": {"title": "Àlá Jékọ́bù nípa àkàbà", "paragraphs": [
+  "Ísáákì dàgbà, ó sì bí ìbejì ọkùnrin, Ísọ̀ àti Jékọ́bù. Jékọ́bù ní láti kúrò nílé, kí ó sì rìnrìn àjò lọ sí ọ̀nà jíjìn.",
+  "Ní òru ọjọ́ kan, Jékọ́bù dá wà. Ó dùbúlẹ̀ láti sùn, ó sì fi òkúta ṣe ìrọ̀rí. Ó sì lá àlá ìyanu kan.",
+  "Ó rí àkàbà kan tí ó dé ilẹ̀ ayé, tí orí rẹ̀ sì kan ọ̀run, àwọn áńgẹ́lì sì ń gòkè, wọ́n sì ń sọ̀kalẹ̀ lórí rẹ̀. OLÚWA dúró lókè rẹ̀, Ó sì wí pé, “Èmi wà pẹ̀lú rẹ, èmi ó sì pa ọ́ mọ́ ní ibi gbogbo tí ìwọ ń lọ.”",
+  "Nígbà tí Jékọ́bù jí, ó wí pé, “Nítòótọ́ OLÚWA wà ní ibí yìí; èmi kò sì mọ̀.” Ó sọ ibẹ̀ ní Bẹ́tẹ́lì, tí ó túmọ̀ sí “ilé Ọlọ́run.” Ṣé o rántí pé Ọlọ́run wà pẹ̀lú rẹ náà, kódà ní òru?"],
+  "questions": ["Kí ni Jékọ́bù fi ṣe ìrọ̀rí?", "Kí ni ó rí nínú àlá rẹ̀?", "Kí ni Ọlọ́run ṣèlérí fún Jékọ́bù?"]},
+ "fr": {"title": "Le rêve de Jacob et l’échelle", "paragraphs": [
+  "Isaac grandit et eut des fils jumeaux, Ésaü et Jacob. Jacob dut quitter la maison et voyager très loin.",
+  "Une nuit, Jacob était tout seul. Il se coucha pour dormir avec une pierre pour oreiller. Et il fit un rêve merveilleux.",
+  "Il vit une échelle qui allait de la terre jusqu’au ciel, et des anges qui y montaient et descendaient. En haut se tenait l’Éternel, qui dit : « Je suis avec toi, je te garderai partout où tu iras. »",
+  "Quand Jacob se réveilla, il dit : « Certainement, l’Éternel est en ce lieu, et moi, je ne le savais pas ! » Il appela ce lieu Béthel, qui veut dire « maison de Dieu ». Te souviens-tu que Dieu est avec toi aussi, même la nuit ?"],
+  "questions": ["Qu’est-ce que Jacob a utilisé comme oreiller ?", "Qu’a-t-il vu dans son rêve ?", "Qu’est-ce que Dieu a promis à Jacob ?"]}
+},
+"bs-10": {
+ "yo": {"title": "Jósẹ́fù àti ẹ̀wù rẹ̀", "paragraphs": [
+  "Jékọ́bù ní ọmọkùnrin méjìlá. Ó fẹ́ràn Jósẹ́fù ju àwọn yòókù lọ, ó sì fún un ní ẹ̀wù aláràbarà. Àwọn arákùnrin Jósẹ́fù jowú.",
+  "Jósẹ́fù lá àlá pé ní ọjọ́ kan, ìdílé rẹ̀ yóò tẹrí ba fún un. Nígbà tí ó sọ fún wọn, àwọn arákùnrin rẹ̀ túbọ̀ kórìíra rẹ̀.",
+  "Ní ọjọ́ kan, Jósẹ́fù lọ wo àwọn arákùnrin rẹ̀ ní pápá. Nígbà tí wọ́n rí i tí ó ń bọ̀, wọ́n wí pé, “Alálàá ń bọ̀!” Wọ́n jù ú sínú kòtò gbígbẹ. Lẹ́yìn náà wọ́n tà á fún àwọn oníṣòwò tí ń lọ sí Íjíbítì.",
+  "Àwọn arákùnrin náà ri ẹ̀wù Jósẹ́fù bọ inú ẹ̀jẹ̀, wọ́n sì fi hàn baba wọn. Jékọ́bù rò pé ẹranko búburú ti pa Jósẹ́fù, ó sì sọkún gidigidi. Ṣùgbọ́n Ọlọ́run kò gbàgbé Jósẹ́fù."],
+  "questions": ["Ẹ̀bùn wo ni Jékọ́bù fún Jósẹ́fù?", "Kí nìdí tí inú àwọn arákùnrin fi ru?", "Ibo ni àwọn oníṣòwò mú Jósẹ́fù lọ?"]},
+ "fr": {"title": "Joseph et son manteau", "paragraphs": [
+  "Jacob avait douze fils. Il aimait Joseph plus que les autres, et il lui donna un manteau de plusieurs couleurs. Les frères de Joseph étaient jaloux.",
+  "Joseph fit des rêves où un jour sa famille se prosternerait devant lui. Quand il les leur raconta, ses frères le haïrent encore plus.",
+  "Un jour, Joseph alla voir ses frères dans les champs. Quand ils le virent arriver, ils dirent : « Voici le faiseur de songes ! » Ils le jetèrent dans une citerne vide. Puis ils le vendirent à des marchands qui allaient en Égypte.",
+  "Les frères trempèrent le manteau de Joseph dans du sang et le montrèrent à leur père. Jacob crut qu’une bête sauvage avait tué Joseph, et il pleura beaucoup. Mais Dieu n’avait pas oublié Joseph."],
+  "questions": ["Quel cadeau Jacob a-t-il fait à Joseph ?", "Pourquoi les frères étaient-ils en colère ?", "Où les marchands ont-ils emmené Joseph ?"]}
+}
+}

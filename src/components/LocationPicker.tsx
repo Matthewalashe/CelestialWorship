@@ -127,7 +127,7 @@ export function LocationPicker({ value, onChange, inputClass, inputStyle, requir
           {results.map((p, i) => (
             <li key={i}>
               <button type="button" onClick={() => { applyPlace(p, true); setZoom(17); setCenter({ lat: p.lat, lng: p.lng }); setResults([]); }}
-                      className="w-full text-left px-3 py-2" style={{ color: 'var(--color-text-secondary)' }}>{p.label}</button>
+                      className="w-full text-left px-3 py-2" style={{ color: 'var(--color-text-secondary)' }}>{tr(p.label)}</button>
             </li>
           ))}
         </ul>

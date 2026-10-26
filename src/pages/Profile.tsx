@@ -137,14 +137,14 @@ export default function Profile() {
             <option value="">{draft.parishName && !chosenParish ? `${draft.parishName} (not in the directory)` : tr('Choose your parish')}</option>
             {byCountry.map(([country, list]) => (
               <optgroup key={country} label={country}>
-                {list.map(p => <option key={p.id} value={p.id}>{p.name}{p.city ? `, ${p.city}` : ''}</option>)}
+                {list.map(p => <option key={p.id} value={p.id}>{tr(p.name)}{p.city ? `, ${p.city}` : ''}</option>)}
               </optgroup>
             ))}
           </select>
         </Field>
         {leads && chosenParish && (
           <div className="rounded-xl p-3 flex items-center gap-3" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
-            <p className="flex-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>{tr('Do you lead or administer')}{' '}{chosenParish.name}{tr('? Claim it with evidence to run its page and keep its details right.')}</p>
+            <p className="flex-1 text-xs" style={{ color: 'var(--color-text-secondary)' }}>{tr('Do you lead or administer')}{' '}{tr(chosenParish.name)}{tr('? Claim it with evidence to run its page and keep its details right.')}</p>
             <button onClick={() => setClaiming(true)} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">{tr('Claim it')}</button>
           </div>
         )}
@@ -164,7 +164,7 @@ export default function Profile() {
         <Field label={tr('App language')}>
           <select value={lang} onChange={e => { const l = e.target.value as UILanguage; chooseLanguage(l); update({ preferredLanguage: l }); }}
                   className={inputClass} style={inputStyle}>
-            {UI_LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.beta ? `${l.name} (${tr('being translated')})` : l.name}</option>)}
+            {UI_LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.beta ? `${tr(l.name)} (${tr('being translated')})` : l.name}</option>)}
           </select>
         </Field>
         <button onClick={onSave} disabled={!dirty || syncing} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50">

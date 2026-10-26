@@ -136,7 +136,7 @@ function Stanza({
         onClick={onDisplay}
         className="absolute -top-1 right-0 p-1.5 rounded-lg transition-opacity hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus:opacity-100"
         style={{ color: 'var(--color-text-muted)' }}
-        aria-label={`Show ${stanzaLabel(verse)} on the display`}
+        aria-label={`${tr('Show on the display')}: ${stanzaLabel(verse)}`}
         title={tr('Show on display')}
       >
         <Tv size={16} />
@@ -285,7 +285,7 @@ export default function HymnDetail() {
               className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full border"
               style={{ color: 'var(--color-text-secondary)', borderColor: 'var(--color-border)' }}
             >
-              {hymn.section.english}
+              {tr(hymn.section.english)}
             </Link>
           )}
           {hymn.categories.map(cat => {
@@ -298,7 +298,7 @@ export default function HymnDetail() {
                 // Text stays readable; the category's colour marks the border
                 style={{ color: 'var(--color-text-secondary)', borderColor: color, backgroundColor: `${color}11` }}
               >
-                {CATEGORY_LABELS[cat] || cat}
+                {tr(CATEGORY_LABELS[cat] || cat)}
               </Link>
             );
           })}
@@ -319,7 +319,7 @@ export default function HymnDetail() {
                 ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }
                 : { color: 'var(--color-text-secondary)' }}
             >
-              {label}
+              {tr(label)}
             </button>
           ))}
         </div>
@@ -368,7 +368,7 @@ export default function HymnDetail() {
       {reading && (
         <ReaderFrame
           title={`${hymn.number}. ${mainTitle}`}
-          place={hymn.section?.english}
+          place={tr(hymn.section?.english)}
           prev={prevNumber !== null ? { label: `Hymn ${prevNumber}`, go: () => goTo(prevNumber) } : undefined}
           next={nextNumber !== null ? { label: `Hymn ${nextNumber}`, go: () => goTo(nextNumber) } : undefined}
           wakeLock={{ supported: wakeLockSupported, active: wakeLockActive, toggle: toggleWakeLock }}

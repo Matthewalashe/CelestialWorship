@@ -31,7 +31,7 @@ export default function Stories() {
           </button>
         ))}
       </div>
-      <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>{active.about}</p>
+      <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>{tr(active.about)}</p>
 
       {parts.filter(p => p.items.length).map(({ part, items }) => (
         <section key={part} className="mt-6">
@@ -55,7 +55,7 @@ export default function Stories() {
         </section>
       ))}
 
-      <p className="text-[11px] mt-8" style={{ color: 'var(--color-text-muted)' }}>{active.credit}</p>
+      <p className="text-[11px] mt-8" style={{ color: 'var(--color-text-muted)' }}>{tr(active.credit)}</p>
     </div>
   );
 }
