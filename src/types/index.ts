@@ -34,20 +34,21 @@ export const CATEGORY_LABELS: Record<HymnCategory, string> = {
   christ_the_king: 'Christ the King',
 };
 
+/** One quiet tone for every category: the label says what it is */
 export const CATEGORY_COLORS: Record<HymnCategory, string> = {
-  forgiveness_of_sins: '#8B5CF6',      // Purple
-  processional_or_opening: '#D4A843',  // Gold
-  lighting_of_candles: '#F59E0B',      // Amber
-  sanctification: '#10B981',           // Emerald
-  thanksgiving: '#06B6D4',             // Cyan
-  praise_or_glory: '#F97316',          // Orange
-  holy_spirit_or_power: '#EF4444',     // Red
-  mercy_or_blessing: '#3B82F6',        // Blue
-  recessional_or_closing: '#6366F1',   // Indigo
-  evangelism: '#EC4899',               // Pink
-  faith_and_trust: '#14B8A6',          // Teal
-  healing: '#22C55E',                  // Green
-  christ_the_king: '#D4A843',          // Gold
+  forgiveness_of_sins: 'var(--color-text-muted)',
+  processional_or_opening: 'var(--color-text-muted)',
+  lighting_of_candles: 'var(--color-text-muted)',
+  sanctification: 'var(--color-text-muted)',
+  thanksgiving: 'var(--color-text-muted)',
+  praise_or_glory: 'var(--color-text-muted)',
+  holy_spirit_or_power: 'var(--color-text-muted)',
+  mercy_or_blessing: 'var(--color-text-muted)',
+  recessional_or_closing: 'var(--color-text-muted)',
+  evangelism: 'var(--color-text-muted)',
+  faith_and_trust: 'var(--color-text-muted)',
+  healing: 'var(--color-text-muted)',
+  christ_the_king: 'var(--color-text-muted)',
 };
 
 // ---------- Hymn Stanza (structured) ----------

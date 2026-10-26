@@ -18,7 +18,7 @@ export function isLiveNow(liveNow?: boolean, updatedAt?: string | null): boolean
 export function LivePlayer({ embed, destinations, title, live }: { embed: string | null; destinations: Destination[]; title: string; live: boolean }) {
   const links = destinations.filter(d => safeHref(d.url));
   return (
-    <div className="rounded-2xl overflow-hidden border" style={{ borderColor: live ? '#EF4444' : 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+    <div className="rounded-2xl overflow-hidden border" style={{ borderColor: live ? 'var(--color-error)' : 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
       {embed && (
         <div className="relative w-full bg-black" style={{ paddingTop: '56.25%' }}>
           <iframe className="absolute inset-0 w-full h-full" src={embed} title={title}
@@ -27,7 +27,7 @@ export function LivePlayer({ embed, destinations, title, live }: { embed: string
         </div>
       )}
       <div className="px-4 py-3 flex items-center gap-2">
-        {live ? <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: '#EF4444' }}><Radio size={14} />{' '}{tr('LIVE')}</span>
+        {live ? <span className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--color-error)' }}><Radio size={14} />{' '}{tr('LIVE')}</span>
               : <Radio size={14} style={{ color: 'var(--color-text-muted)' }} />}
         <span className="flex-1 truncate text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{title}</span>
       </div>

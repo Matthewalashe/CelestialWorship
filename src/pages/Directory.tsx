@@ -155,7 +155,7 @@ function ParishCard({ p, onClaim, away }: { p: Parish; onClaim: () => void; away
         {p.name}
         {p.kind === 'ministry' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-gold)' }}>{tr('Ministry')}</span>}
         {p.level && p.level !== 'parish' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-brand)' }}>{tr(PARISH_LEVELS[p.level])}</span>}
-        {p.live_now && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: '#EF4444' }}>{tr('● Live')}</span>}
+        {p.live_now && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-error)' }}>{tr('● Live')}</span>}
       </span>
       {away && <span className="block text-[11px] font-semibold mt-0.5" style={{ color: 'var(--color-accent-gold)' }}>{away}</span>}
       {p.address && <span className="block text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>{p.address}</span>}

@@ -38,7 +38,7 @@ export default function Person() {
   return (
     <div className="max-w-2xl mx-auto pb-24">
       <div className="relative w-full aspect-[3/1] sm:rounded-b-2xl overflow-hidden"
-           style={{ background: person.banner_url ? undefined : 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
+           style={{ background: person.banner_url ? undefined : 'var(--color-bg-card-hover)' }}>
         {person.banner_url && <img src={person.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover" />}
       </div>
       <div className="px-4 -mt-10">

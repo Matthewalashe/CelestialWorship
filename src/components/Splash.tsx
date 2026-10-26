@@ -17,7 +17,7 @@ export function Splash({ onDone }: { onDone: () => void }) {
 
   return (
     <button onClick={onDone} aria-label={tr('Continue')} className={`splash fixed inset-0 z-[90] w-full h-full flex flex-col items-center justify-center overflow-hidden text-white ${leaving ? 'splash-leave' : ''}`}
-            style={{ background: 'radial-gradient(ellipse at 50% 38%, #2D4BD8 0%, #13265C 55%, #0A1628 100%)' }}>
+            style={{ backgroundColor: '#172C6B' }}>
       {/* rays of light */}
       <span aria-hidden className="splash-rays absolute w-[160vmax] h-[160vmax]" />
       {/* soft glow */}

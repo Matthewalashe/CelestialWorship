@@ -17,12 +17,10 @@ import { tr, useT } from '../i18n';
  * Hymns and Bible passages open in a panel over the step, so the worshipper never loses their place.
  */
 
+// Who leads in the Church's blue; everyone else in the quiet tone
 const WHO_COLOURS: Record<string, string> = {
   conductor: 'var(--color-accent-brand)',
-  congregation: 'var(--color-success)',
-  all: 'var(--color-success)',
-  shepherd: 'var(--color-accent-gold)',
-  preacher: 'var(--color-accent-gold)',
+  shepherd: 'var(--color-accent-brand)',
 };
 
 export function Who({ who }: { who?: string }) {

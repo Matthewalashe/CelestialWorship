@@ -22,9 +22,11 @@ const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--colo
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
 const inputStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
 
+// Services in the Church's blue; everything else one quiet tone
 const CATEGORY_COLORS: Record<EventCategory, string> = {
-  service: '#3B82F6', social: '#EC4899', youth: '#8B5CF6', harvest: '#F59E0B', anniversary: '#D4A843', convention: '#14B8A6',
-  crusade: '#EF4444', wedding: '#F472B6', memorial: '#64748B', meeting: '#22C55E', other: '#94A3B8',
+  service: 'var(--color-accent-brand)', social: 'var(--color-text-muted)', youth: 'var(--color-text-muted)', harvest: 'var(--color-accent-gold)',
+  anniversary: 'var(--color-accent-gold)', convention: 'var(--color-accent-brand)', crusade: 'var(--color-text-muted)', wedding: 'var(--color-text-muted)',
+  memorial: 'var(--color-text-muted)', meeting: 'var(--color-text-muted)', other: 'var(--color-text-muted)',
 };
 
 function formatWhen(e: ChurchEvent): string {

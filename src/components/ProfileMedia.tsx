@@ -41,7 +41,7 @@ export function ProfileMedia() {
   return (
     <div className="relative mb-12">
       <div className="relative w-full aspect-[3/1] rounded-2xl overflow-hidden"
-           style={{ background: profile.bannerUrl ? undefined : 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
+           style={{ background: profile.bannerUrl ? undefined : 'var(--color-bg-card-hover)' }}>
         {profile.bannerUrl && <img src={profile.bannerUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
         {signedIn && (
           <button onClick={() => bannerInput.current?.click()} disabled={busy !== null} aria-label={tr('Change banner')}

@@ -148,7 +148,7 @@ export default function Hymns() {
           <input
             type="search"
             inputMode="search"
-            placeholder={tr('Number, title or words from the hymn…')}
+            placeholder={tr('Number, title or words…')}
             value={searchTerm}
             onChange={e => setSearchTerm(sanitizeSearchInput(e.target.value))}
             className="w-full rounded-xl py-3.5 pl-11 pr-10 text-base border focus:outline-none transition-colors"

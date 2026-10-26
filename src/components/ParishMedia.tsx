@@ -77,7 +77,7 @@ export function ParishMediaManager({ parish, onSaved }: { parish: Parish & { log
     <div className="space-y-4">
       <div className="rounded-2xl border p-4 space-y-3" style={card}>
         <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Logo and cover')}</p>
-        <div className="relative w-full aspect-[8/3] rounded-xl overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
+        <div className="relative w-full aspect-[8/3] rounded-xl overflow-hidden" style={{ background: 'var(--color-bg-card-hover)' }}>
           {parish.cover_url && <img src={parish.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />}
           {parish.logo_url && <img src={parish.logo_url} alt="" className="absolute left-3 bottom-3 w-16 h-16 rounded-xl object-cover border-2 border-white" />}
         </div>

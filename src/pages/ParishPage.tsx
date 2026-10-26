@@ -175,7 +175,7 @@ export default function ParishPage() {
         <ChevronLeft size={16} />{' '}{tr('Parishes')}</Link>
 
       {(parish.cover_url || parish.logo_url) && (
-        <div className="relative w-full aspect-[8/3] rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-accent-brand), var(--color-accent-gold))' }}>
+        <div className="relative w-full aspect-[8/3] rounded-2xl overflow-hidden" style={{ background: 'var(--color-bg-card-hover)' }}>
           {parish.cover_url && <img src={parish.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />}
           {parish.logo_url && <img src={parish.logo_url} alt="" className="absolute left-3 bottom-3 w-16 h-16 rounded-xl object-cover border-2 border-white" />}
         </div>

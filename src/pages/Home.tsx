@@ -115,11 +115,11 @@ export default function Home() {
       {/* The one thing to do */}
       <section className="space-y-3">
         {liveNow.length > 0 && (
-          <Link to="/live" className="flex items-center gap-2 text-sm font-semibold" style={{ color: '#DC2626' }}>
+          <Link to="/live" className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--color-error)' }}>
             <Radio size={16} /> {tr('Live')} · <span className="truncate" style={{ color: 'var(--color-text-primary)' }}>{liveNow.map(p => p.name).join(' · ')}</span>
           </Link>
         )}
-        <div className="rounded-3xl p-6 space-y-5 text-white" style={{ background: 'linear-gradient(135deg, var(--color-accent-brand), color-mix(in srgb, var(--color-accent-brand) 70%, #0A1628))' }}>
+        <div className="rounded-3xl p-6 space-y-5 text-white" style={{ backgroundColor: 'var(--color-accent-brand)' }}>
           {devotion ? (
             <div>
               <p className={`${label} opacity-80`}>{tr('Continue devotion')}</p>

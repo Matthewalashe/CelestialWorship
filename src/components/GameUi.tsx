@@ -36,7 +36,7 @@ export function LevelBar({ xp, compact = false }: { xp: number; compact?: boolea
       </div>
       <div className="h-2 rounded-full overflow-hidden mt-1.5" style={{ backgroundColor: 'var(--color-bg-secondary)' }}
            role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(lv.progress * 100)} aria-label={tr('Progress to the next level')}>
-        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${lv.progress * 100}%`, background: 'linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-brand))' }} />
+        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${lv.progress * 100}%`, background: 'var(--color-accent-brand)' }} />
       </div>
       {!compact && (
         <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>

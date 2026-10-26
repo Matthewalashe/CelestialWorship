@@ -63,7 +63,7 @@ export default function LeafletMap({ markers = [], selected, onSelect, pin, onPi
     const colour = brand();
     for (const p of markers) {
       const on = p.id === selected;
-      const mk = L.marker([p.lat, p.lng], { icon: pinIcon(on ? '#D97706' : colour, on ? 34 : 26, on), title: p.title, keyboard: true, zIndexOffset: on ? 1000 : 0 });
+      const mk = L.marker([p.lat, p.lng], { icon: pinIcon(on ? '#7A6224' : colour, on ? 34 : 26, on), title: p.title, keyboard: true, zIndexOffset: on ? 1000 : 0 });
       mk.on('click', () => handlers.current.onSelect?.(p.id));
       mk.addTo(g);
     }
