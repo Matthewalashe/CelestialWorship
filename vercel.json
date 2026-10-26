@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!api/|data/|i18n/|qr/|assets/|leaders/|stories/[^/]+\\.webp|logo|pwa-|favicon|og-|icons|sw|workbox|manifest|registerSW|push-handler|robots|sitemap).*)",
+      "source": "/((?!api/|data/|i18n/|qr/|assets/|leaders/|symbols/|stories/[^/]+\\.webp|logo|pwa-|favicon|og-|icons|sw|workbox|manifest|registerSW|push-handler|robots|sitemap).*)",
       "destination": "/index.html"
     }
   ],

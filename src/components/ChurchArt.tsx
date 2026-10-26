@@ -2,78 +2,82 @@ import { useState } from 'react';
 import { tr } from '../i18n';
 
 /**
- * Illustrations for "Symbols & practice": the altar, the white garment, candles, holy water and the
- * colours of the robes. Drawn simply, in the theme's colours. The emblem is the Church's own artwork:
- * place the official file at public/emblem.png (or .svg) and it appears; nothing is drawn in its place.
+ * "Symbols & practice": real photographs of Celestians at worship (Wikimedia Commons, credited with their
+ * licences), and a drawing of the altar until a photograph of a parish altar is added. The emblem is the
+ * Church's own artwork: place the official file at public/emblem.png (or .svg) and it appears.
  */
 
 const frame = 'w-full h-auto rounded-2xl';
 const ink = 'var(--color-text-primary)';
 const paper = 'var(--color-bg-primary)';
-const gold = '#C9A227';
+const gold = '#B08D2E';
 
-export function AltarArt() {
+interface PhotoInfo { src: string; alt: string; caption: string; credit: string; license: string; source: string }
+
+function Photo({ p }: { p: PhotoInfo }) {
   return (
-    <svg viewBox="0 0 320 180" className={frame} role="img" aria-label={tr('The altar faces east, behind a rail, with the cross and white candles')} style={{ backgroundColor: paper }}>
-      {/* East: the light the altar faces */}
-      <defs>
-        <radialGradient id="east" cx="50%" cy="10%" r="70%"><stop offset="0" stopColor={gold} stopOpacity="0.35" /><stop offset="1" stopColor={gold} stopOpacity="0" /></radialGradient>
-      </defs>
-      <rect width="320" height="180" fill="url(#east)" />
-      <text x="160" y="18" textAnchor="middle" fontSize="11" fontWeight="700" fill={gold} letterSpacing="3">{tr('EAST')}</text>
-      {/* Cross */}
-      <path d="M160 34v52M144 48h32" stroke={ink} strokeWidth="5" strokeLinecap="round" />
-      {/* Altar table, white cloth */}
-      <rect x="70" y="90" width="180" height="34" rx="4" fill="#FFFFFF" stroke={ink} strokeWidth="2.5" />
-      <path d="M70 100h180" stroke={ink} strokeWidth="1.2" opacity="0.4" />
-      {/* Candles: white only */}
-      {[92, 120, 200, 228].map(x => (
-        <g key={x}>
-          <rect x={x - 4} y="62" width="8" height="28" rx="1.5" fill="#FFFFFF" stroke={ink} strokeWidth="2" />
-          <path d={`M${x} 48c4 5 5 8 5 10a5 5 0 0 1-10 0c0-2 1-5 5-10Z`} fill={gold} />
-        </g>
-      ))}
-      {/* The rail that separates the altar area */}
-      <path d="M24 150h272" stroke={ink} strokeWidth="3" strokeLinecap="round" />
-      {Array.from({ length: 12 }, (_, i) => 36 + i * 22.5).map(x => <path key={x} d={`M${x} 150v20`} stroke={ink} strokeWidth="2" strokeLinecap="round" />)}
-      <path d="M24 170h272" stroke={ink} strokeWidth="3" strokeLinecap="round" />
-    </svg>
+    <figure className="space-y-1.5">
+      <img src={p.src} alt={tr(p.alt)} loading="lazy" decoding="async" className="w-full h-auto rounded-2xl" style={{ backgroundColor: paper }} />
+      <figcaption className="text-[11px] leading-snug" style={{ color: 'var(--color-text-muted)' }}>
+        {tr(p.caption)} · {tr('Photo')}: <a href={p.source} target="_blank" rel="noopener noreferrer" className="underline">{p.credit}</a>, {p.license}
+      </figcaption>
+    </figure>
+  );
+}
+
+const PHOTOS: Record<string, PhotoInfo> = {
+  sutanaMen: { src: '/symbols/sutana-men.jpg', alt: 'Men in plain white sutanas praying with their hands together',
+    caption: 'The white sutana, plain, without decoration. Pilgrimage at Seme, 2013', credit: 'Live.philips', license: 'CC BY-SA 3.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Praying_member.jpg' },
+  sutanaWomen: { src: '/symbols/sutana-women.jpg', alt: 'Women and children in white sutanas and white caps',
+    caption: 'Women and children in the white sutana and cap, at a baptism in Cotonou', credit: 'Ferdinand Reus', license: 'CC BY-SA 2.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Benin_baptism1.jpg' },
+  candles: { src: '/symbols/candles.jpg', alt: 'Worshippers in white praising with raised hands, holding white candles',
+    caption: 'White candles only, held in worship', credit: 'Aimtoba', license: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Celestialnism_03.jpg' },
+  holyWater: { src: '/symbols/holy-water.jpg', alt: 'A white basin of water with lit white candles standing in it, beside bowls of sugar and salt',
+    caption: 'A basin of water with lit white candles, sanctified and used in the service, here for a naming ceremony', credit: 'Ovigbedigitals', license: 'CC BY-SA 4.0',
+    source: 'https://commons.wikimedia.org/wiki/File:Materials_used_for_naming_naming_ceremony_in_the_Celestial_Church_of_Christ.jpg' },
+};
+
+/** A drawing for now: the altar faces east behind its rail, with seven candle stands */
+export function AltarArt() {
+  const stands = Array.from({ length: 7 }, (_, i) => 70 + i * 30);
+  return (
+    <figure className="space-y-1.5">
+      <svg viewBox="0 0 320 190" className={frame} role="img" aria-label={tr('The altar faces east, behind a rail, with seven candle stands')} style={{ backgroundColor: paper }}>
+        <text x="160" y="16" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--color-text-muted)" letterSpacing="3">{tr('EAST')}</text>
+        {/* Seven candle stands with white candles */}
+        {stands.map(x => (
+          <g key={x}>
+            <path d={`M${x} 26c3.5 4.5 4.5 7 4.5 9a4.5 4.5 0 0 1-9 0c0-2 1-4.5 4.5-9Z`} fill={gold} />
+            <rect x={x - 3.5} y="40" width="7" height="22" rx="1.2" fill="#FFFFFF" stroke={ink} strokeWidth="1.6" />
+            <path d={`M${x - 8} 63h16M${x} 63v34M${x - 9} 97h18`} stroke={ink} strokeWidth="2" strokeLinecap="round" fill="none" />
+          </g>
+        ))}
+        {/* Altar table with its white cloth */}
+        <rect x="52" y="98" width="216" height="34" rx="3" fill="#FFFFFF" stroke={ink} strokeWidth="2.5" />
+        <path d="M52 108h216" stroke={ink} strokeWidth="1.2" opacity="0.35" />
+        {/* The rail that separates the altar area */}
+        <path d="M20 160h280" stroke={ink} strokeWidth="3" strokeLinecap="round" />
+        {Array.from({ length: 13 }, (_, i) => 30 + i * 21.7).map(x => <path key={x} d={`M${x} 160v20`} stroke={ink} strokeWidth="2" strokeLinecap="round" />)}
+        <path d="M20 180h280" stroke={ink} strokeWidth="3" strokeLinecap="round" />
+      </svg>
+      <figcaption className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('A drawing. A photograph of a parish altar will take its place.')}</figcaption>
+    </figure>
   );
 }
 
 export function SutanaArt() {
-  return (
-    <svg viewBox="0 0 320 180" className={frame} role="img" aria-label={tr('The white garment (sutana)')} style={{ backgroundColor: paper }}>
-      <path d="M140 22h40l34 16 22 62-20 8-18-40 6 104H116l6-104-18 40-20-8 22-62Z" fill="#FFFFFF" stroke={ink} strokeWidth="3" strokeLinejoin="round" />
-      <path d="M148 22a12 12 0 0 0 24 0" fill="none" stroke={ink} strokeWidth="3" />
-      <path d="M160 48v26M150 58h20" stroke={gold} strokeWidth="5" strokeLinecap="round" />
-      <text x="160" y="176" textAnchor="middle" fontSize="11" fill="var(--color-text-muted)">{tr('Worn barefoot within the church')}</text>
-    </svg>
-  );
+  return <div className="grid sm:grid-cols-2 gap-3"><Photo p={PHOTOS.sutanaMen} /><Photo p={PHOTOS.sutanaWomen} /></div>;
 }
 
 export function CandlesArt() {
-  return (
-    <svg viewBox="0 0 320 180" className={frame} role="img" aria-label={tr('White candles only')} style={{ backgroundColor: paper }}>
-      {[70, 125, 180, 235].map((x, i) => (
-        <g key={x}>
-          <ellipse cx={x + 7} cy="58" rx="16" ry="20" fill={gold} opacity="0.18" />
-          <path d={`M${x + 7} 36c6 7 8 11 8 14a8 8 0 0 1-16 0c0-3 2-7 8-14Z`} fill={gold} />
-          <rect x={x} y="64" width="14" height={80 - i * 8} rx="2" fill="#FFFFFF" stroke={ink} strokeWidth="2.5" />
-        </g>
-      ))}
-      <path d="M50 150h220" stroke={ink} strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
+  return <Photo p={PHOTOS.candles} />;
 }
 
 export function HolyWaterArt() {
-  return (
-    <svg viewBox="0 0 320 180" className={frame} role="img" aria-label={tr('Holy water by the door')} style={{ backgroundColor: paper }}>
-      <path d="M160 26s-46 50-46 84a46 46 0 0 0 92 0c0-34-46-84-46-84Z" fill="#DBEAFE" stroke={ink} strokeWidth="3" />
-      <path d="M160 86v46M142 104h36" stroke="#1D4ED8" strokeWidth="5" strokeLinecap="round" />
-    </svg>
-  );
+  return <Photo p={PHOTOS.holyWater} />;
 }
 
 const COLOURS: { name: string; hex: string; meaning: string }[] = [
