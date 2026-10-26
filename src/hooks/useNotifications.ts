@@ -1,14 +1,23 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getServiceScheduleForDate, toISODate } from '../utils/dateUtils';
+import { getServiceScheduleForDate, toISODate, hourlyPrayersForDate, hourLabel, HOURLY_PRAYER_HOURS } from '../utils/dateUtils';
+import { tr } from '../i18n';
 import { pushConfigured, syncPushSubscription, removePushSubscription } from '../lib/push';
 
 const PREFS_KEY = 'cw-notification-prefs';
 const SCHEDULED_KEY = 'cw-scheduled-notifications';
 
-interface NotificationPrefs {
+export interface NotificationPrefs {
   enabled: boolean;
   serviceReminders: boolean;
   devotionReminders: boolean;
+  /** The hourly prayers (Àdúrà Wákàtí) */
+  hourlyPrayers: boolean;
+  /** Which of 9, 12, 15 and 18 */
+  hourlyHours: number[];
+  /** Personal or family devotion: every hour, even when a service is held then */
+  hourlyAtHome: boolean;
+  /** Like an alarm: stays on screen and keeps buzzing until it is opened */
+  hourlyAlarm: boolean;
 }
 
 interface ScheduledNotification {
@@ -18,6 +27,8 @@ interface ScheduledNotification {
   body: string;
   tag: string;
   icon: string;
+  url?: string;
+  alarm?: boolean;
 }
 
 /** Local time of the daily devotion reminder */
@@ -32,6 +43,10 @@ const defaultPrefs: NotificationPrefs = {
   enabled: false,
   serviceReminders: true,
   devotionReminders: true,
+  hourlyPrayers: false,
+  hourlyHours: HOURLY_PRAYER_HOURS,
+  hourlyAtHome: false,
+  hourlyAlarm: false,
 };
 
 function getPrefs(): NotificationPrefs {
@@ -60,7 +75,7 @@ function saveScheduledNotifications(items: ScheduledNotification[]) {
   localStorage.setItem(SCHEDULED_KEY, JSON.stringify(items));
 }
 
-async function showNotification(title: string, body: string, tag: string, icon?: string) {
+async function showNotification(title: string, body: string, tag: string, icon?: string, url = '/', alarm = false) {
   try {
     const registration = await navigator.serviceWorker?.ready;
     if (registration) {
@@ -69,9 +84,9 @@ async function showNotification(title: string, body: string, tag: string, icon?:
         tag,
         icon: icon || '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
-        vibrate: [200, 100, 200],
-        data: { url: '/' },
-        requireInteraction: false,
+        vibrate: alarm ? [600, 300, 600, 300, 600, 300, 600] : [200, 100, 200],
+        data: { url },
+        requireInteraction: alarm,
         silent: false,
       } as NotificationOptions & { vibrate?: number[] });
       return true;
@@ -107,6 +122,24 @@ function buildSchedule(prefs: NotificationPrefs): ScheduledNotification[] {
           body: 'Good morning! Start your day with the Word of God.',
           tag: `devotion-${dateStr}`,
           icon: '/pwa-192x192.png',
+        });
+      }
+    }
+
+    if (prefs.hourlyPrayers) {
+      for (const hour of hourlyPrayersForDate(date, prefs.hourlyAtHome).filter(h => prefs.hourlyHours.includes(h))) {
+        const at = new Date(date);
+        at.setHours(hour, 0, 0, 0);
+        if (at.getTime() <= now.getTime()) continue;
+        notifications.push({
+          id: `hourly-${hour}-${dateStr}`,
+          fireAt: at.getTime(),
+          title: `${tr('Hourly prayer')} · ${tr(hourLabel(hour))}`,
+          body: tr('Àdúrà Wákàtí: a hymn, prayer, the Bible, silent prayer, a closing hymn and prayer.'),
+          tag: `hourly-${hour}-${dateStr}`,
+          icon: '/pwa-192x192.png',
+          url: '/devotion?service=hourly_prayer',
+          alarm: prefs.hourlyAlarm,
         });
       }
     }
@@ -166,8 +199,12 @@ export function useNotifications() {
       serviceReminders: prefs.serviceReminders,
       devotionReminder: prefs.devotionReminders,
       devotionHour: DEVOTION_REMINDER_HOUR,
+      hourlyPrayers: prefs.hourlyPrayers,
+      hourlyHours: prefs.hourlyHours,
+      hourlyAtHome: prefs.hourlyAtHome,
+      hourlyAlarm: prefs.hourlyAlarm,
     }).then(setPushActive);
-  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders]);
+  }, [permission, prefs.enabled, prefs.serviceReminders, prefs.devotionReminders, prefs.hourlyPrayers, prefs.hourlyHours, prefs.hourlyAtHome, prefs.hourlyAlarm]);
 
   // Request permission
   const requestPermission = useCallback(async () => {
@@ -206,6 +243,15 @@ export function useNotifications() {
     savePrefs(newPrefs);
   }, [prefs]);
 
+  // The hourly prayer settings, changed together or one at a time
+  const setHourly = useCallback((u: Partial<Pick<NotificationPrefs, 'hourlyPrayers' | 'hourlyHours' | 'hourlyAtHome' | 'hourlyAlarm'>>) => {
+    setPrefs(prev => {
+      const next = { ...prev, ...u };
+      savePrefs(next);
+      return next;
+    });
+  }, []);
+
   // Schedule notifications using setTimeout
   useEffect(() => {
     // Clear any existing timers
@@ -228,7 +274,7 @@ export function useNotifications() {
       if (delay <= 0) {
         // Already past, fire immediately if within last 5 minutes
         if (delay > -5 * 60 * 1000) {
-          showNotification(notification.title, notification.body, notification.tag, notification.icon);
+          showNotification(notification.title, notification.body, notification.tag, notification.icon, notification.url, notification.alarm);
           newFired.push(notification);
         }
         continue;
@@ -236,7 +282,7 @@ export function useNotifications() {
 
       // Schedule future notification
       const timer = setTimeout(() => {
-        showNotification(notification.title, notification.body, notification.tag, notification.icon);
+        showNotification(notification.title, notification.body, notification.tag, notification.icon, notification.url, notification.alarm);
         // Mark as fired
         const current = getScheduledNotifications();
         current.push(notification);
@@ -277,5 +323,6 @@ export function useNotifications() {
     requestPermission,
     toggleServiceReminders,
     toggleDevotionReminders,
+    setHourly,
   };
 }

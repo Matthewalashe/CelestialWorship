@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { BookOpen, Music, Bird, ChevronRight, Share2, Radio, Clock } from 'lucide-react';
+import { BookOpen, Music, Bird, ChevronRight, Radio, Clock } from 'lucide-react';
 import { useLessons } from '../hooks/useLessons';
 import { useHymns } from '../hooks/useHymns';
 import { useServices } from '../hooks/useServices';
@@ -10,10 +10,11 @@ import { hasOnboarded } from '../hooks/useProfile';
 import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useT, tr } from '../i18n';
-import { getServiceScheduleForDate, formatDate, toISODate, formatServiceTime } from '../utils/dateUtils';
+import { getServiceScheduleForDate, formatDate, toISODate, formatServiceTime, hourlyPrayersForDate } from '../utils/dateUtils';
 import { getLiturgicalExclamation, getLiturgicalSeason } from '../utils/liturgical';
 import { churchObservances } from '../utils/churchCalendar';
 import { getVerseOfTheDay } from '../data/dailyVerses';
+import { VerseOfTheDay } from '../components/VerseOfTheDay';
 import { getBibleVersion } from '../data/bibleVersions';
 import { displayTitle } from '../utils/hymnText';
 import { isLiveNow } from '../components/LiveEmbed';
@@ -41,7 +42,10 @@ export default function Home() {
   const verse = useMemo(() => getVerseOfTheDay(new Date(`${todayIso}T12:00:00`)), [todayIso]);
   const exclamation = getLiturgicalExclamation(today);
   const season = getLiturgicalSeason(today);
-  const schedule = getServiceScheduleForDate(today);
+  // Today's services, with the hourly prayers they leave free (every hour for those who pray at home)
+  const atHome = (() => { try { return !!JSON.parse(localStorage.getItem('cw-notification-prefs') || '{}').hourlyAtHome; } catch { return false; } })();
+  const schedule = [...getServiceScheduleForDate(today), ...hourlyPrayersForDate(today, atHome).map(h => ({ id: 'hourly_prayer', hour: h, minute: 0 }))]
+    .sort((a, b) => a.hour * 60 + a.minute - (b.hour * 60 + b.minute));
 
   const { lessons } = useLessons();
   const { hymns } = useHymns();
@@ -83,19 +87,13 @@ export default function Home() {
 
   const liveNow = parishes.filter(p => p.live_url && isLiveNow(p.live_now, p.live_updated_at));
   const lastHymn = hymns.find(h => h.number === Number(JSON.parse((() => { try { return localStorage.getItem('cw-recent-viewed-hymns') || '[]'; } catch { return '[]'; } })())[0]));
-  const serviceName = (id: string) => services.find(s => s.id === id)?.displayName ?? id.replace(/_/g, ' ');
+  const serviceName = (id: string) => tr(services.find(s => s.id === id)?.displayName ?? id.replace(/_/g, ' '));
 
   // The next service today (or the first, once they have all begun)
   const minutesNow = hour * 60 + today.getMinutes();
   const next = schedule.find(s => s.hour * 60 + s.minute >= minutesNow - 30) ?? schedule[0];
 
   if (!hasOnboarded()) return <Navigate to="/welcome" replace />;
-
-  const shareVerse = async () => {
-    const text = `“${verse.text}” — ${verse.reference} (KJV)`;
-    if (navigator.share) { try { await navigator.share({ title: verse.reference, text, url: `${window.location.origin}${verse.path}` }); return; } catch {} }
-    try { await navigator.clipboard.writeText(text); } catch {}
-  };
 
   // Something to pick up again, when there is no devotion in progress
   const resume = progress.last
@@ -168,17 +166,7 @@ export default function Home() {
 
       <InstallBanner />
 
-      {/* Verse of the day */}
-      <section aria-labelledby="votd" className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 id="votd" className={label} style={{ color: 'var(--color-accent-gold)' }}>{t('home.verseOfDay')}</h2>
-          <button onClick={shareVerse} className="p-2 -m-2 rounded-lg" aria-label={tr('Share the verse')} style={muted}><Share2 size={16} /></button>
-        </div>
-        <Link to={verse.path} className="block">
-          <p className="text-[1.35rem] leading-relaxed" style={{ color: 'var(--color-text-primary)', fontFamily: 'Literata, Georgia, serif' }}>“{tr(verse.text)}”</p>
-          <p className="text-sm font-semibold mt-3" style={{ color: 'var(--color-text-secondary)' }}>{verse.reference}</p>
-        </Link>
-      </section>
+      <VerseOfTheDay verse={verse} />
 
       {/* Readings */}
       {readings.length > 0 && (

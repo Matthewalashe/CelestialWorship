@@ -39,6 +39,31 @@ function occursOn(s: ScheduledService, date: Date): boolean {
   return s.when.includes(date.getDay());
 }
 
+/** The hourly prayers (Àdúrà Wákàtí), after the morning service: 9am, 12 noon, 3pm and 6pm */
+export const HOURLY_PRAYER_HOURS = [9, 12, 15, 18];
+
+/** About how long a service lasts, in minutes (others: 2 hours) */
+const SERVICE_LENGTH: Record<string, number> = { lords_day_service: 180 };
+
+/**
+ * The hours of prayer kept on a date. A service takes the place of an hourly prayer that falls during it,
+ * or that comes less than 90 minutes before it starts (people are on their way) — except at home, in
+ * personal or family devotion, where every hour is kept.
+ */
+export function hourlyPrayersForDate(date: Date, atHome = false): number[] {
+  if (atHome) return HOURLY_PRAYER_HOURS;
+  const services = getServiceScheduleForDate(date).filter(s => s.id !== 'morning_service');
+  return HOURLY_PRAYER_HOURS.filter(h => !services.some(s => {
+    const start = s.hour * 60 + s.minute, at = h * 60;
+    return (at >= start && at < start + (SERVICE_LENGTH[s.id] ?? 120)) || (start > at && start < at + 90);
+  }));
+}
+
+/** "12 noon", "3 PM" */
+export function hourLabel(hour: number): string {
+  return hour === 12 ? '12 noon' : `${hour % 12 || 12} ${hour < 12 ? 'AM' : 'PM'}`;
+}
+
 /** Service ids held on a date, in time order */
 export function getServiceTypesForDate(date: Date): string[] {
   return getServiceScheduleForDate(date).map(s => s.id);

@@ -7,12 +7,16 @@ import { moderationQueue, moderate, ARTICLE_KINDS } from '../lib/community';
 import { ErrorState } from '../components/CommunityStates';
 import { showToast } from '../components/Toast';
 import { ModerationExtras } from '../components/ModerationExtras';
+import { ParishLeads } from '../components/ParishLeads';
+import { parishLeads } from '../lib/parishLeads';
 import { promptDialog } from '../components/Dialog';
 import { errorMessage } from '../lib/backend';
 import { tr } from '../i18n';
 
 type Queue = Awaited<ReturnType<typeof moderationQueue>>;
 type Section = keyof Queue;
+/** Suggested parishes have their own list (lib/parishLeads) */
+type Tab = Section | 'leads';
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: 'verifications', label: 'Role verifications' },
@@ -57,9 +61,13 @@ export default function Moderate() {
   const { canModerate, loading } = useAuth();
   const [queue, setQueue] = useState<Queue | null>(null);
   const [error, setError] = useState<unknown>(null);
-  const [section, setSection] = useState<Section>('verifications');
+  const [tab, setTab] = useState<Tab>('verifications');
+  const [leads, setLeads] = useState<any[]>([]);
 
-  const load = useCallback(() => moderationQueue().then(setQueue).catch(setError), []);
+  const load = useCallback(() => {
+    parishLeads().then(setLeads).catch(() => setLeads([]));
+    return moderationQueue().then(setQueue).catch(setError);
+  }, []);
   useEffect(() => { if (canModerate) load(); }, [canModerate, load]);
 
   if (loading) return null;
@@ -67,6 +75,7 @@ export default function Moderate() {
   if (error) return <ErrorState error={error} onRetry={load} />;
   if (!queue) return <p className="text-center py-16 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>;
 
+  const section: Section = tab === 'leads' ? 'parishes' : tab;
   const decide = async (item: any, approve: boolean) => {
     let update = approve ? APPROVE[section] : REJECT[section];
     if (!approve && section === 'articles') {
@@ -90,15 +99,16 @@ export default function Moderate() {
       <h1 className="text-2xl font-bold font-[Outfit] mb-4" style={{ color: 'var(--color-text-primary)' }}>{tr('Moderation')}</h1>
       <ModerationExtras />
       <div className="flex gap-1 overflow-x-auto hide-scrollbar mb-5" role="tablist">
-        {SECTIONS.map(s => (
-          <button key={s.id} role="tab" aria-selected={section === s.id} onClick={() => setSection(s.id)}
+        {[...SECTIONS.map(s => ({ id: s.id as Tab, label: s.label, count: (queue[s.id] as any[]).length })),
+          { id: 'leads' as Tab, label: 'Suggested parishes', count: leads.length }].map(s => (
+          <button key={s.id} role="tab" aria-selected={tab === s.id} onClick={() => setTab(s.id)}
                   className="px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap"
-                  style={section === s.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
-            {tr(s.label)} ({(queue[s.id] as any[]).length})
+                  style={tab === s.id ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
+            {tr(s.label)} ({s.count})
           </button>
         ))}
       </div>
-      {items.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('Nothing waiting.')}</p> : (
+      {tab === 'leads' ? <ParishLeads leads={leads} onDone={load} /> : items.length === 0 ? <p className="text-center py-10 text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('Nothing waiting.')}</p> : (
         <ul className="space-y-3">
           {items.map(item => {
             const s = summary(section, item);

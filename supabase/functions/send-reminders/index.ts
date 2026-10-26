@@ -1,9 +1,9 @@
 // POST /functions/v1/send-reminders — run every 5 minutes by pg_cron (see the migration).
-// Sends "service in 30 / 10 minutes" and the morning devotion reminder, in each
+// Sends "service in 30 / 10 minutes", the morning devotion reminder and the hourly prayers, in each
 // subscriber's own time zone. Requires VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT, CRON_SECRET.
 import webpush from 'npm:web-push@3.6.7';
 import { json, adminClient } from '../_shared/common.ts';
-import { SERVICE_SCHEDULE, localParts, occursOn } from '../_shared/schedule.ts';
+import { SERVICE_SCHEDULE, localParts, occursOn, hourlyPrayersOn, hourLabel } from '../_shared/schedule.ts';
 import { pushToParishAudience } from '../_shared/push.ts';
 
 const WINDOW = 5; // minutes between runs
@@ -24,7 +24,7 @@ Deno.serve(async req => {
 
   for (const sub of subs ?? []) {
     const p = localParts(now, sub.timezone || 'Africa/Lagos');
-    const due: { key: string; title: string; body: string; url: string }[] = [];
+    const due: { key: string; title: string; body: string; url: string; alarm?: boolean }[] = [];
 
     if (sub.preferences?.serviceReminders !== false) {
       for (const s of SERVICE_SCHEDULE) {
@@ -47,6 +47,19 @@ Deno.serve(async req => {
       const at = (sub.preferences?.devotionHour ?? 7) * 60;
       if (p.minutes >= at && p.minutes < at + WINDOW) {
         due.push({ key: `devotion-${p.iso}`, title: 'Daily Devotion', body: 'Start your day with the Word of God.', url: '/devotion' });
+      }
+    }
+
+    const prefs = sub.preferences ?? {};
+    if (prefs.hourlyPrayers) {
+      const chosen: number[] = Array.isArray(prefs.hourlyHours) ? prefs.hourlyHours : [9, 12, 15, 18];
+      for (const hour of hourlyPrayersOn(p, !!prefs.hourlyAtHome).filter(h => chosen.includes(h))) {
+        const at = hour * 60;
+        if (p.minutes >= at && p.minutes < at + WINDOW) {
+          due.push({ key: `hourly-${hour}-${p.iso}`, title: `Hourly prayer · ${hourLabel(hour)}`,
+                     body: 'Àdúrà Wákàtí: a hymn, prayer, the Bible, silent prayer, a closing hymn and prayer.',
+                     url: '/devotion?service=hourly_prayer', alarm: !!prefs.hourlyAlarm });
+        }
       }
     }
 

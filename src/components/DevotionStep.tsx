@@ -6,6 +6,9 @@ import { PRAYERS, LORDS_DAY_OFFERINGS, WHO_LABELS } from '../data/prayers';
 import { Sheet } from './Dialog';
 import { PassageText } from './PassageText';
 import { displayTitle, stanzaLabel } from '../utils/hymnText';
+import { getVerseOfTheDay } from '../data/dailyVerses';
+import { parseReference } from '../utils/parseReference';
+import { Link } from 'react-router-dom';
 import { tr, useT } from '../i18n';
 
 /*
@@ -244,6 +247,27 @@ export function StepBlocks({ step, lessons, isLordsDay, suggest, onOpenHymn, onO
                 </div>
               </div>
             );
+          case 'reading': {
+            const verse = getVerseOfTheDay();
+            const at = parseReference(verse.reference);
+            // Today's verse with the verses around it, so there is a short passage to read
+            const ref: ScriptureReference | null = at ? { ...at, raw: verse.reference, verseStart: Math.max(1, at.verseStart - 2), verseEnd: at.verseStart + 3 } : null;
+            return (
+              <div key={i} className="rounded-2xl p-5 space-y-3" style={card}>
+                <div className="flex items-center gap-2"><Who who="reader" /><span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Read from the Bible')}</span></div>
+                {ref ? (
+                  <>
+                    <p className="text-sm" style={muted}>{tr('Today’s verse, with the verses around it — or read a passage you have chosen.')}</p>
+                    <button onClick={() => onOpenPassage(ref)} className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-xl border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
+                      <BookOpen size={15} /> {verse.reference}
+                    </button>
+                    <PassageText reference={ref} defaultOpen compact />
+                  </>
+                ) : <p className="text-sm" style={muted}>{tr('Read a passage you have chosen.')}</p>}
+                <Link to="/bible" className="text-xs font-semibold inline-block" style={{ color: 'var(--color-accent-gold)' }}>{tr('Choose another passage')}</Link>
+              </div>
+            );
+          }
           case 'lesson': {
             const ref = lessons.map(l => (b.which === 1 ? l.firstLesson : l.secondLesson)).find(Boolean) ?? null;
             return (
@@ -270,7 +294,6 @@ export function StepBlocks({ step, lessons, isLordsDay, suggest, onOpenHymn, onO
                       <li key={j} className="flex items-baseline gap-3">
                         <span className="text-xs font-bold w-4" style={{ color: 'var(--color-accent-gold)' }}>{j + 1}</span>
                         <span className="flex-1" style={{ color: 'var(--color-text-primary)' }}>{lang === 'yo' ? o.yo : lang === 'fr' ? o.fr : o.en}</span>
-                        <span className="text-xs" style={muted}>{lang === 'yo' ? o.en : o.yo}</span>
                       </li>
                     ))}
                   </ol>

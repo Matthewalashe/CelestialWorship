@@ -1,0 +1,897 @@
+{
+ "listed-austria-vienna-emmanuel-parish": {
+  "lat": 48.209182,
+  "lng": 16.326487,
+  "precision": "address"
+ },
+ "listed-austria-vienna-new-covenant-parish": {
+  "lat": 48.201183,
+  "lng": 16.325454,
+  "precision": "address"
+ },
+ "listed-austria-vienna-vienna-parish-1": {
+  "lat": 48.212498,
+  "lng": 16.391212,
+  "precision": "address"
+ },
+ "listed-belgium-antwerp-fear-not-in-the-arms-of-jesus-parish": {
+  "lat": 51.22111,
+  "lng": 4.399708,
+  "precision": "town"
+ },
+ "listed-belgium-brussels-covenant-parish-diocesan-hq-belgium": {
+  "lat": 50.842158,
+  "lng": 4.33484,
+  "precision": "address"
+ },
+ "listed-belgium-brussels-jehovah-jireh-parish": {
+  "lat": 50.848425,
+  "lng": 4.341871,
+  "precision": "address"
+ },
+ "listed-belgium-brussels-promise-of-god-parish": {
+  "lat": 50.839816,
+  "lng": 4.326997,
+  "precision": "address"
+ },
+ "listed-belgium-deurne-mountain-of-salvation-parish": {
+  "lat": 51.235618,
+  "lng": 4.452339,
+  "precision": "address"
+ },
+ "listed-canada-brampton-zion-parish": {
+  "lat": 43.755752,
+  "lng": -79.709253,
+  "precision": "address"
+ },
+ "listed-canada-scarborough-altar-of-life-parish": {
+  "lat": 43.772974,
+  "lng": -79.257648,
+  "precision": "town"
+ },
+ "listed-canada-scarborough-the-truth-god-parish": {
+  "lat": 43.772974,
+  "lng": -79.257648,
+  "precision": "town"
+ },
+ "listed-canada-toronto-ayo-parish": {
+  "lat": 43.66536,
+  "lng": -79.48139,
+  "precision": "address"
+ },
+ "listed-canada-toronto-imole-ayo-parish": {
+  "lat": 43.653482,
+  "lng": -79.383935,
+  "precision": "town"
+ },
+ "listed-canada-toronto-olajuwon-parish": {
+  "lat": 43.653482,
+  "lng": -79.383935,
+  "precision": "town"
+ },
+ "listed-canada-toronto-ontario-parish-1": {
+  "lat": 43.689678,
+  "lng": -79.49759,
+  "precision": "address"
+ },
+ "listed-france-aubervilliers-paroisse-m-re-de-france-jerusalem-parish": {
+  "lat": 48.913667,
+  "lng": 2.397328,
+  "precision": "address"
+ },
+ "listed-germany-b-ttelborn-love-faith-parish": {
+  "lat": 49.898365,
+  "lng": 8.518745,
+  "precision": "address"
+ },
+ "listed-germany-bremen-redemption-parish": {
+  "lat": 53.075449,
+  "lng": 8.798113,
+  "precision": "address"
+ },
+ "listed-germany-frankfurt-am-main-luli-parish": {
+  "lat": 50.119336,
+  "lng": 8.562777,
+  "precision": "address"
+ },
+ "listed-germany-herzogenrath-amazing-grace-parish": {
+  "lat": 50.876643,
+  "lng": 6.100842,
+  "precision": "address"
+ },
+ "listed-germany-munich-mother-parish-1-munich": {
+  "lat": 48.178293,
+  "lng": 11.404379,
+  "precision": "address"
+ },
+ "listed-germany-stuttgart-stuttgart-parish": {
+  "lat": 48.793444,
+  "lng": 9.184813,
+  "precision": "address"
+ },
+ "listed-ireland-mullingar-luli-parish": {
+  "lat": 53.519746,
+  "lng": -7.347851,
+  "precision": "address"
+ },
+ "listed-italy-baranzate-mt-shiloh-parish": {
+  "lat": 45.522103,
+  "lng": 9.119602,
+  "precision": "address"
+ },
+ "listed-italy-brescia-ileri-oluwa-parish": {
+  "lat": 45.582951,
+  "lng": 10.231784,
+  "precision": "address"
+ },
+ "listed-italy-castel-volturno-anu-oluwa-parish": {
+  "lat": 41.034313,
+  "lng": 13.940835,
+  "precision": "town"
+ },
+ "listed-italy-rome-rome-parish-headquarters-italy": {
+  "lat": 41.843873,
+  "lng": 12.595749,
+  "precision": "address"
+ },
+ "listed-italy-verona-promised-land-parish": {
+  "lat": 45.442498,
+  "lng": 10.985738,
+  "precision": "town"
+ },
+ "listed-italy-vicenza-blessing-parish": {
+  "lat": 45.521867,
+  "lng": 11.511582,
+  "precision": "address"
+ },
+ "listed-libya-tripoli-messiah-parish-1": {
+  "lat": 32.896672,
+  "lng": 13.177792,
+  "precision": "town"
+ },
+ "listed-netherlands-amsterdam-covenant-parish-1-mother-parish-holland": {
+  "lat": 52.37308,
+  "lng": 4.892453,
+  "precision": "town"
+ },
+ "listed-netherlands-amsterdam-holy-mary-parish": {
+  "lat": 52.37308,
+  "lng": 4.892453,
+  "precision": "town"
+ },
+ "listed-nigeria-ajegunle-ojo-road-i-parish": {
+  "lat": 6.448156,
+  "lng": 3.33351,
+  "precision": "town"
+ },
+ "listed-nigeria-akoka-holy-cross-redemption-parish-1": {
+  "lat": 6.528477,
+  "lng": 3.384371,
+  "precision": "address"
+ },
+ "listed-nigeria-akoka-student-parish-unilag": {
+  "lat": 6.528736,
+  "lng": 3.39056,
+  "precision": "town"
+ },
+ "listed-nigeria-ibadan-oluwaseyi-parish": {
+  "lat": 7.378368,
+  "lng": 3.897233,
+  "precision": "town"
+ },
+ "listed-nigeria-ikeja-calvary-parish-1": {
+  "lat": 6.601627,
+  "lng": 3.351598,
+  "precision": "town"
+ },
+ "listed-nigeria-ikeja-orisun-abiye-parish": {
+  "lat": 6.601627,
+  "lng": 3.351598,
+  "precision": "town"
+ },
+ "listed-nigeria-ikorodu-odun-ayo-parish": {
+  "lat": 6.619123,
+  "lng": 3.504127,
+  "precision": "town"
+ },
+ "listed-nigeria-ile-ife-student-parish-oau": {
+  "lat": 7.517618,
+  "lng": 4.538024,
+  "precision": "address"
+ },
+ "listed-nigeria-itire-itura-parish": {
+  "lat": 6.508136,
+  "lng": 3.330049,
+  "precision": "town"
+ },
+ "listed-nigeria-ogba-ikeja-2-parish": {
+  "lat": 6.637663,
+  "lng": 3.318881,
+  "precision": "address"
+ },
+ "listed-nigeria-ogba-jedidah-parish-1": {
+  "lat": 6.632608,
+  "lng": 3.340775,
+  "precision": "town"
+ },
+ "listed-nigeria-ogudu-bethel-land-central-parish": {
+  "lat": 6.577498,
+  "lng": 3.386288,
+  "precision": "town"
+ },
+ "listed-nigeria-osogbo-wakati-igbala-parish-8": {
+  "lat": 7.758322,
+  "lng": 4.575045,
+  "precision": "address"
+ },
+ "listed-nigeria-satellite-town-satellite-parish": {
+  "lat": 6.449741,
+  "lng": 3.255841,
+  "precision": "town"
+ },
+ "listed-nigeria-somolu-abiodun-parish": {
+  "lat": 6.536069,
+  "lng": 3.381303,
+  "precision": "address"
+ },
+ "listed-nigeria-surulere-ayilara-parish": {
+  "lat": 6.508834,
+  "lng": 3.360852,
+  "precision": "address"
+ },
+ "listed-nigeria-yaba-national-headquarters-nigeria-diocese": {
+  "lat": 6.506821,
+  "lng": 3.375488,
+  "precision": "town"
+ },
+ "listed-south-africa-cape-town-cape-town-parish": {
+  "lat": -33.92883,
+  "lng": 18.41722,
+  "precision": "town"
+ },
+ "listed-south-africa-durban-durban-parish-1": {
+  "lat": -29.861815,
+  "lng": 31.009909,
+  "precision": "town"
+ },
+ "listed-south-africa-johannesburg-christ-ambassador-central-parish": {
+  "lat": -26.205,
+  "lng": 28.049722,
+  "precision": "town"
+ },
+ "listed-south-africa-johannesburg-deliverance-parish": {
+  "lat": -26.205,
+  "lng": 28.049722,
+  "precision": "town"
+ },
+ "listed-south-africa-johannesburg-jesus-is-lord-parish": {
+  "lat": -26.205,
+  "lng": 28.049722,
+  "precision": "town"
+ },
+ "listed-south-africa-johannesburg-voice-of-the-lord-parish": {
+  "lat": -26.205,
+  "lng": 28.049722,
+  "precision": "town"
+ },
+ "listed-south-africa-pretoria-comfort-parish": {
+  "lat": -25.745928,
+  "lng": 28.18791,
+  "precision": "town"
+ },
+ "listed-south-africa-pretoria-genesis-parish": {
+  "lat": -25.745928,
+  "lng": 28.18791,
+  "precision": "town"
+ },
+ "listed-south-africa-pretoria-pretoria-parish-1-southern-africa-diocesan-hq": {
+  "lat": -25.745928,
+  "lng": 28.18791,
+  "precision": "town"
+ },
+ "listed-spain-alcorc-n-district-hq-spain": {
+  "lat": 40.337593,
+  "lng": -3.81374,
+  "precision": "address"
+ },
+ "listed-spain-san-fernando-de-henares-canaan-land-parish-district-hq": {
+  "lat": 40.424855,
+  "lng": -3.535037,
+  "precision": "town"
+ },
+ "listed-togo-lom-lom-jerimoyama-parish": {
+  "lat": 6.130419,
+  "lng": 1.215829,
+  "precision": "town"
+ },
+ "listed-united-kingdom-barking-hope-parish": {
+  "lat": 51.540268,
+  "lng": 0.079324,
+  "precision": "town"
+ },
+ "listed-united-kingdom-glasgow-glasgow-parish": {
+  "lat": 55.861155,
+  "lng": -4.250169,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-alafia-parish": {
+  "lat": 51.465003,
+  "lng": -0.102867,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-ase-oluwa-parish": {
+  "lat": 51.465482,
+  "lng": -0.036785,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-battersea-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-clapham-parish": {
+  "lat": 51.466338,
+  "lng": -0.101787,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-east-london-oluwaseyi-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-edward-street-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-elephant-castle-parish": {
+  "lat": 51.483699,
+  "lng": -0.072582,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-founders-parish": {
+  "lat": 51.517668,
+  "lng": -0.066965,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-hephzibah-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-ibukun-oluwa-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-middlesex-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-national-headquarters-uk": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-new-stamford-hill-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-noah-s-ark-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-north-london-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-okiki-imole-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-praise-creation-parish-yin-oluwa": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-rehoboth-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-revelation-parish": {
+  "lat": 51.507446,
+  "lng": -0.127765,
+  "precision": "town"
+ },
+ "listed-united-kingdom-london-salvation-parish": {
+  "lat": 51.527506,
+  "lng": -0.05592,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-seventh-year-parish": {
+  "lat": 51.55185,
+  "lng": 0.050768,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-st-michael-parish": {
+  "lat": 51.5777,
+  "lng": -0.231414,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-unity-parish": {
+  "lat": 51.546007,
+  "lng": -0.050851,
+  "precision": "address"
+ },
+ "listed-united-kingdom-london-white-city-parish": {
+  "lat": 51.52491,
+  "lng": -0.055185,
+  "precision": "address"
+ },
+ "listed-united-kingdom-manchester-manchester-parish": {
+  "lat": 53.513533,
+  "lng": -2.230891,
+  "precision": "address"
+ },
+ "listed-united-states-atlanta-ayo-oluwa-parish": {
+  "lat": 33.719737,
+  "lng": -84.417961,
+  "precision": "address"
+ },
+ "listed-united-states-aurora-miracle-parish": {
+  "lat": 39.620027,
+  "lng": -104.72178,
+  "precision": "address"
+ },
+ "listed-united-states-aurora-st-paul-parish": {
+  "lat": 39.740144,
+  "lng": -104.873338,
+  "precision": "town"
+ },
+ "listed-united-states-baltimore-baltimore-parish": {
+  "lat": 39.290882,
+  "lng": -76.610759,
+  "precision": "town"
+ },
+ "listed-united-states-baltimore-divine-restoration-parish": {
+  "lat": 39.290882,
+  "lng": -76.610759,
+  "precision": "town"
+ },
+ "listed-united-states-bloomington-celestial-sanctum-parish": {
+  "lat": 34.059228,
+  "lng": -117.402968,
+  "precision": "town"
+ },
+ "listed-united-states-brooklyn-ileri-oluwa-parish": {
+  "lat": 40.652601,
+  "lng": -73.949721,
+  "precision": "town"
+ },
+ "listed-united-states-brooklyn-jerih-mohamah-parish": {
+  "lat": 40.673127,
+  "lng": -73.904529,
+  "precision": "address"
+ },
+ "listed-united-states-brooklyn-miracle-parish": {
+  "lat": 40.649562,
+  "lng": -73.915372,
+  "precision": "address"
+ },
+ "listed-united-states-brooklyn-new-york-parish": {
+  "lat": 40.694553,
+  "lng": -73.90966,
+  "precision": "address"
+ },
+ "listed-united-states-brooklyn-thy-will-be-done-parish": {
+  "lat": 40.574736,
+  "lng": -73.998613,
+  "precision": "address"
+ },
+ "listed-united-states-browns-summit-garden-of-prayer-parish": {
+  "lat": 36.212635,
+  "lng": -79.713641,
+  "precision": "town"
+ },
+ "listed-united-states-calumet-city-chicago-one-parish": {
+  "lat": 41.612151,
+  "lng": -87.528422,
+  "precision": "address"
+ },
+ "listed-united-states-capitol-heights-new-jerusalem-parish": {
+  "lat": 38.884991,
+  "lng": -76.913477,
+  "precision": "town"
+ },
+ "listed-united-states-capitol-heights-ona-ara-parish": {
+  "lat": 38.873971,
+  "lng": -76.929193,
+  "precision": "address"
+ },
+ "listed-united-states-capitol-heights-oschoffa-parish": {
+  "lat": 38.868361,
+  "lng": -76.891111,
+  "precision": "address"
+ },
+ "listed-united-states-carpentersville-prince-of-peace-parish": {
+  "lat": 42.11751,
+  "lng": -88.257796,
+  "precision": "address"
+ },
+ "listed-united-states-chicago-bilewu-oshoffa-parish": {
+  "lat": 42.019372,
+  "lng": -87.701262,
+  "precision": "address"
+ },
+ "listed-united-states-chicago-holy-jerusalem-parish": {
+  "lat": 41.773293,
+  "lng": -87.607355,
+  "precision": "address"
+ },
+ "listed-united-states-chicago-oshoffa-parish": {
+  "lat": 41.955884,
+  "lng": -87.707226,
+  "precision": "address"
+ },
+ "listed-united-states-chicago-st-michael-parish": {
+  "lat": 41.769005,
+  "lng": -87.588232,
+  "precision": "address"
+ },
+ "listed-united-states-cypress-hills-queens-parish": {
+  "lat": 40.677048,
+  "lng": -73.891247,
+  "precision": "town"
+ },
+ "listed-united-states-dallas-covenant-parish": {
+  "lat": 32.805487,
+  "lng": -96.877044,
+  "precision": "address"
+ },
+ "listed-united-states-darby-jehovah-jireh-parish": {
+  "lat": 39.918444,
+  "lng": -75.259026,
+  "precision": "town"
+ },
+ "listed-united-states-davie-7-alleluyah-parish-bethel-of-florida": {
+  "lat": 26.062866,
+  "lng": -80.233104,
+  "precision": "town"
+ },
+ "listed-united-states-decatur-christ-gospel-parish": {
+  "lat": 30.873661,
+  "lng": -84.574095,
+  "precision": "town"
+ },
+ "listed-united-states-detroit-way-of-peace-parish": {
+  "lat": 42.432621,
+  "lng": -83.024317,
+  "precision": "address"
+ },
+ "listed-united-states-district-heights-ire-akari-parish": {
+  "lat": 38.862208,
+  "lng": -76.881521,
+  "precision": "town"
+ },
+ "listed-united-states-district-heights-victory-parish-praise-and-worship-center": {
+  "lat": 38.856095,
+  "lng": -76.902326,
+  "precision": "address"
+ },
+ "listed-united-states-essex-rehoboth-parish": {
+  "lat": 39.309152,
+  "lng": -76.448508,
+  "precision": "address"
+ },
+ "listed-united-states-ewing-voice-of-grace-parish": {
+  "lat": 40.268811,
+  "lng": -74.80069,
+  "precision": "town"
+ },
+ "listed-united-states-far-rockaway-calvary-parish": {
+  "lat": 40.605382,
+  "lng": -73.755133,
+  "precision": "town"
+ },
+ "listed-united-states-far-rockaway-rock-of-ages-parish": {
+  "lat": 40.602359,
+  "lng": -73.754906,
+  "precision": "address"
+ },
+ "listed-united-states-framingham-new-jerusalem-parish": {
+  "lat": 42.277318,
+  "lng": -71.41659,
+  "precision": "town"
+ },
+ "listed-united-states-gardena-hephzibah-beulah-parish": {
+  "lat": 33.88156,
+  "lng": -118.293588,
+  "precision": "town"
+ },
+ "listed-united-states-gardena-oschoffa-parish": {
+  "lat": 33.910334,
+  "lng": -118.300472,
+  "precision": "address"
+ },
+ "listed-united-states-grand-prairie-dallas-metro-parish": {
+  "lat": 32.738107,
+  "lng": -97.046383,
+  "precision": "address"
+ },
+ "listed-united-states-grand-prairie-holy-cross-parish": {
+  "lat": 32.724522,
+  "lng": -97.01566,
+  "precision": "address"
+ },
+ "listed-united-states-hempstead-israel-parish": {
+  "lat": 40.698023,
+  "lng": -73.623621,
+  "precision": "address"
+ },
+ "listed-united-states-hollywood-gethsemane-parish": {
+  "lat": 25.998892,
+  "lng": -80.198988,
+  "precision": "address"
+ },
+ "listed-united-states-houston-deliverance-parish": {
+  "lat": 29.758938,
+  "lng": -95.367697,
+  "precision": "town"
+ },
+ "listed-united-states-houston-ileri-oluwa-parish": {
+  "lat": 29.758938,
+  "lng": -95.367697,
+  "precision": "town"
+ },
+ "listed-united-states-houston-pentecostal-parish": {
+  "lat": 29.689014,
+  "lng": -95.593076,
+  "precision": "address"
+ },
+ "listed-united-states-houston-salvation-parish": {
+  "lat": 29.758938,
+  "lng": -95.367697,
+  "precision": "town"
+ },
+ "listed-united-states-houston-stafford-parish": {
+  "lat": 29.758938,
+  "lng": -95.367697,
+  "precision": "town"
+ },
+ "listed-united-states-hyattsville-castle-of-christ-parish": {
+  "lat": 38.952944,
+  "lng": -76.940865,
+  "precision": "town"
+ },
+ "listed-united-states-hyattsville-luli-parish": {
+  "lat": 38.917227,
+  "lng": -76.920011,
+  "precision": "address"
+ },
+ "listed-united-states-hyde-park-covenant-parish": {
+  "lat": 42.261761,
+  "lng": -71.118265,
+  "precision": "address"
+ },
+ "listed-united-states-indianapolis-central-parish": {
+  "lat": 39.768333,
+  "lng": -86.15835,
+  "precision": "town"
+ },
+ "listed-united-states-indianapolis-indianapolis-parish": {
+  "lat": 39.739059,
+  "lng": -86.241037,
+  "precision": "address"
+ },
+ "listed-united-states-irving-miracle-and-healing-parish": {
+  "lat": 32.829518,
+  "lng": -96.944218,
+  "precision": "town"
+ },
+ "listed-united-states-irvington-the-revivalist-parish": {
+  "lat": 40.722529,
+  "lng": -74.217088,
+  "precision": "address"
+ },
+ "listed-united-states-jacksonville-jacksonville-parish": {
+  "lat": 30.328407,
+  "lng": -81.572078,
+  "precision": "address"
+ },
+ "listed-united-states-los-angeles-amazing-grace-parish": {
+  "lat": 33.976861,
+  "lng": -118.308863,
+  "precision": "address"
+ },
+ "listed-united-states-los-angeles-comforter-parish": {
+  "lat": 34.053692,
+  "lng": -118.242768,
+  "precision": "town"
+ },
+ "listed-united-states-los-angeles-ebenezer-parish": {
+  "lat": 33.957304,
+  "lng": -118.278305,
+  "precision": "address"
+ },
+ "listed-united-states-los-angeles-los-angeles-parish": {
+  "lat": 34.053692,
+  "lng": -118.242768,
+  "precision": "town"
+ },
+ "listed-united-states-los-angeles-sanctuary-of-the-lord-parish": {
+  "lat": 33.974599,
+  "lng": -118.276669,
+  "precision": "address"
+ },
+ "listed-united-states-miami-el-shaddai-parish": {
+  "lat": 25.774157,
+  "lng": -80.193597,
+  "precision": "town"
+ },
+ "listed-united-states-miami-miami-parish": {
+  "lat": 25.80865,
+  "lng": -80.207223,
+  "precision": "address"
+ },
+ "listed-united-states-miracle-parish": {
+  "lat": 38.912638,
+  "lng": -76.889892,
+  "precision": "address"
+ },
+ "listed-united-states-newark-jericho-parish": {
+  "lat": 40.7111,
+  "lng": -74.224826,
+  "precision": "address"
+ },
+ "listed-united-states-newark-lord-s-deliverance-parish": {
+  "lat": 40.73191,
+  "lng": -74.202689,
+  "precision": "address"
+ },
+ "listed-united-states-newark-new-jersey-parish": {
+  "lat": 40.735657,
+  "lng": -74.172367,
+  "precision": "town"
+ },
+ "listed-united-states-newark-oluwaseyi-parish": {
+  "lat": 40.755634,
+  "lng": -74.197376,
+  "precision": "address"
+ },
+ "listed-united-states-north-miami-ileri-ayo-st-peters-parish": {
+  "lat": 25.912295,
+  "lng": -80.181456,
+  "precision": "address"
+ },
+ "listed-united-states-oakland-oakland-parish": {
+  "lat": 37.828773,
+  "lng": -122.260908,
+  "precision": "address"
+ },
+ "listed-united-states-orlando-heavenly-grace-orlando-parish": {
+  "lat": 28.542122,
+  "lng": -81.379045,
+  "precision": "address"
+ },
+ "listed-united-states-philadelphia-covenant-of-god-parish": {
+  "lat": 39.931812,
+  "lng": -75.225606,
+  "precision": "address"
+ },
+ "listed-united-states-philadelphia-garden-of-comfort-parish": {
+  "lat": 39.916385,
+  "lng": -75.238094,
+  "precision": "address"
+ },
+ "listed-united-states-philadelphia-imole-ayo-parish": {
+  "lat": 39.952724,
+  "lng": -75.163526,
+  "precision": "town"
+ },
+ "listed-united-states-philadelphia-philly-one-parish": {
+  "lat": 39.958462,
+  "lng": -75.243655,
+  "precision": "address"
+ },
+ "listed-united-states-philadelphia-power-of-prayer-parish": {
+  "lat": 40.013497,
+  "lng": -75.086389,
+  "precision": "address"
+ },
+ "listed-united-states-providence-providence-parish": {
+  "lat": 41.805739,
+  "lng": -71.413606,
+  "precision": "address"
+ },
+ "listed-united-states-raleigh-crown-covenant-raleigh-parish": {
+  "lat": 35.771409,
+  "lng": -78.594224,
+  "precision": "address"
+ },
+ "listed-united-states-riverdale-peace-of-christ-parish": {
+  "lat": 38.9628,
+  "lng": -76.916395,
+  "precision": "address"
+ },
+ "listed-united-states-smyrna-north-atlanta-parish": {
+  "lat": 33.8925,
+  "lng": -84.50178,
+  "precision": "address"
+ },
+ "listed-united-states-south-holland-holy-raphael-parish": {
+  "lat": 41.597183,
+  "lng": -87.61613,
+  "precision": "address"
+ },
+ "listed-united-states-south-ozone-park-winners-parish": {
+  "lat": 40.670104,
+  "lng": -73.819023,
+  "precision": "town"
+ },
+ "listed-united-states-st-louis-st-savior-parish": {
+  "lat": 38.723689,
+  "lng": -90.30839,
+  "precision": "address"
+ },
+ "listed-united-states-st-paul-minnesota-parish": {
+  "lat": 44.970319,
+  "lng": -93.137393,
+  "precision": "address"
+ },
+ "listed-united-states-st-paul-st-michael-parish": {
+  "lat": 44.968951,
+  "lng": -93.066119,
+  "precision": "address"
+ },
+ "listed-united-states-staten-island-staten-island-parish": {
+  "lat": 40.626384,
+  "lng": -74.076789,
+  "precision": "address"
+ },
+ "listed-united-states-tampa-tampa-parish-1": {
+  "lat": 27.968369,
+  "lng": -82.42247,
+  "precision": "address"
+ },
+ "listed-united-states-washington-majemu-parish": {
+  "lat": 38.92052,
+  "lng": -76.977626,
+  "precision": "address"
+ },
+ "listed-united-states-washington-washington-metro-parish-national-hq": {
+  "lat": 38.965021,
+  "lng": -77.009366,
+  "precision": "address"
+ },
+ "listed-united-states-wilmington-divine-parish": {
+  "lat": 39.738331,
+  "lng": -75.552747,
+  "precision": "town"
+ },
+ "seed-celestial-city": {
+  "lat": 7.668951,
+  "lng": 2.860216,
+  "precision": "town"
+ },
+ "seed-diocesan-hq": {
+  "lat": 6.493601,
+  "lng": 3.382464,
+  "precision": "town"
+ },
+ "seed-international-hq": {
+  "lat": 6.603138,
+  "lng": 3.415437,
+  "precision": "place"
+ },
+ "seed-supreme-hq": {
+  "lat": 6.499072,
+  "lng": 2.625336,
+  "precision": "town"
+ }
+}

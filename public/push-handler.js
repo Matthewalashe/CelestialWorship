@@ -10,6 +10,9 @@ self.addEventListener('push', event => {
     icon: '/pwa-192x192.png',
     badge: '/pwa-192x192.png',
     data: { url: data.url || '/' },
+    // An hourly prayer set as an alarm stays until it is opened
+    requireInteraction: !!data.alarm,
+    vibrate: data.alarm ? [600, 300, 600, 300, 600, 300, 600] : [200, 100, 200],
   }));
 });
 

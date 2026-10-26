@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Music, BookOpen, Bird, WifiOff, Search, Check, Bell, ChevronLeft, ShieldCheck } from 'lucide-react';
+import { Music, BookOpen, Bird, WifiOff, Search, Check, Bell, ChevronLeft, ShieldCheck, Plus } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import { useT, setUILanguage, contentDefaults, UI_LANGUAGES, type UILanguage, tr } from '../i18n';
 import { useProfile, MEMBER_TYPES, CHURCH_TITLE_SUGGESTIONS, MINISTRY_SUGGESTIONS, type MemberType, type MemberProfile } from '../hooks/useProfile';
@@ -8,12 +8,24 @@ import { useParishes, parishLabel } from '../hooks/useParishes';
 import { useNotifications } from '../hooks/useNotifications';
 import { useAuth } from '../hooks/useAuth';
 import { BIBLE_VERSIONS } from '../data/bibleVersions';
+import { LocationPicker, type Location } from '../components/LocationPicker';
+import { suggestParish } from '../lib/parishLeads';
+import { HourlyPrayerSettings } from '../components/HourlyPrayerSettings';
 
 const STEPS = ['welcome', 'language', 'about', 'parish', 'reminders', 'account'] as const;
 type Step = typeof STEPS[number];
 
 const inputClass = 'w-full rounded-xl px-3 py-3 text-sm border outline-none';
 const inputStyle = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
+
+/** A parish that isn't in the directory yet, described in full so it can be added */
+interface MissingParish extends Location {
+  name: string; shepherd_name: string; phone: string; email: string; sunday_time: string; notes: string;
+}
+const NO_PARISH: MissingParish = {
+  name: '', address: '', city: '', state_region: '', country: '', latitude: null, longitude: null,
+  shepherd_name: '', phone: '', email: '', sunday_time: '', notes: '',
+};
 
 function Choice({ selected, onClick, title, subtitle }: { selected: boolean; onClick: () => void; title: string; subtitle?: string }) {
   return (
@@ -44,6 +56,10 @@ export default function Onboarding() {
   const [step, setStep] = useState<Step>(() => (STEPS.includes(params.get('step') as Step) ? params.get('step') as Step : 'welcome'));
   const [draft, setDraft] = useState<MemberProfile>(profile);
   const [parishQuery, setParishQuery] = useState('');
+  const [notListed, setNotListed] = useState(false);
+  const [missing, setMissing] = useState<MissingParish>(() => ({ ...NO_PARISH, country: profile.country, state_region: profile.stateRegion }));
+  const [sentMissing, setSentMissing] = useState('');
+  const updateMissing = (u: Partial<MissingParish>) => setMissing(m => ({ ...m, ...u }));
   const [hymnView, setHymnView] = useState<'yo' | 'both' | 'en'>(() => {
     try { return (localStorage.getItem('cw-hymn-view') as 'yo' | 'both' | 'en') || contentDefaults().hymnView; } catch { return 'yo'; }
   });
@@ -67,13 +83,34 @@ export default function Onboarding() {
         localStorage.setItem('cw-bible-version', bibleVersion);
       } catch {}
     }
+    let saving = draft;
+    if (step === 'parish' && notListed && missing.name.trim().length >= 3) {
+      // Their parish, as they described it, goes to the moderators to be added to the directory
+      saving = { ...draft, parishId: null, parishName: missing.name.trim(), country: missing.country.trim() || draft.country, stateRegion: missing.state_region.trim() || draft.stateRegion };
+      setDraft(saving);
+      const key = JSON.stringify(missing);
+      if (missing.country.trim() && key !== sentMissing) {
+        const t = (s: string) => s.trim() || null;
+        await suggestParish({
+          name: missing.name.trim(), country: missing.country.trim(), state_region: t(missing.state_region), city: t(missing.city),
+          address: t(missing.address), latitude: missing.latitude, longitude: missing.longitude, shepherd_name: t(missing.shepherd_name),
+          phone: t(missing.phone), email: t(missing.email), sunday_time: /^\d{2}:\d{2}$/.test(missing.sunday_time) ? missing.sunday_time : null,
+          contact_name: t(draft.displayName), notes: t(missing.notes),
+        });
+        setSentMissing(key);
+      }
+    }
     if (index < STEPS.length - 1) {
-      await save({ ...draft });
+      await save({ ...saving });
       setStep(STEPS[index + 1]);
       window.scrollTo(0, 0);
     } else {
       await finish();
     }
+  };
+
+  const back = () => {
+    if (index > 0) { setStep(STEPS[index - 1]); window.scrollTo(0, 0); }
   };
 
   const finish = async () => {
@@ -96,7 +133,7 @@ export default function Onboarding() {
       {/* Progress */}
       {step !== 'welcome' && (
         <div className="flex items-center gap-3 px-4 pt-4">
-          <button onClick={() => setStep(STEPS[index - 1])} aria-label={t('common.back')} className="p-1" style={{ color: 'var(--color-text-secondary)' }}>
+          <button onClick={back} aria-label={t('common.back')} className="p-1" style={{ color: 'var(--color-text-secondary)' }}>
             <ChevronLeft size={22} />
           </button>
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)' }}>
@@ -225,22 +262,41 @@ export default function Onboarding() {
             </div>
             <div className="space-y-2">
               {matchingParishes.map(p => (
-                <Choice key={p.id} selected={draft.parishId === p.id}
-                        onClick={() => update({ parishId: p.seed ? null : p.id, parishName: p.name, country: p.country, stateRegion: p.state_region ?? '' })}
+                <Choice key={p.id} selected={!notListed && draft.parishName === p.name && (draft.parishId === p.id || p.seed === true)}
+                        onClick={() => { setNotListed(false); update({ parishId: p.seed ? null : p.id, parishName: p.name, country: p.country, stateRegion: p.state_region ?? '' }); }}
                         title={p.name} subtitle={[p.city, p.state_region, p.country].filter(Boolean).join(', ')} />
               ))}
             </div>
-            <div className="rounded-2xl border p-4 space-y-2" style={{ borderColor: 'var(--color-border)' }}>
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Parish not listed?')}</p>
-              <input value={draft.parishId ? '' : draft.parishName} onChange={e => update({ parishId: null, parishName: e.target.value })}
-                     placeholder={tr('Type your parish name')} className={inputClass} style={inputStyle} />
-              <div className="grid grid-cols-2 gap-2">
-                <input value={draft.country} onChange={e => update({ country: e.target.value })} placeholder={tr('Country')} className={inputClass} style={inputStyle} autoComplete="country-name" />
-                <input value={draft.stateRegion} onChange={e => update({ stateRegion: e.target.value })} placeholder={tr('State / region')} className={inputClass} style={inputStyle} />
+            {!notListed ? (
+              <button onClick={() => setNotListed(true)} className="w-full p-4 rounded-2xl border-2 border-dashed text-left flex items-center gap-3"
+                      style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+                <Plus size={18} style={{ color: 'var(--color-accent-brand)' }} aria-hidden />
+                <span className="flex-1">
+                  <span className="block font-semibold">{tr('Parish not listed?')}</span>
+                  <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr('Tell us where it is and we’ll add it to the directory — or skip.')}</span>
+                </span>
+              </button>
+            ) : (
+              <div className="rounded-2xl border p-4 space-y-3" style={{ borderColor: 'var(--color-accent-brand)' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Your parish')}</p>
+                <input value={missing.name} onChange={e => updateMissing({ name: e.target.value })} placeholder={tr('Parish name, e.g. CCC Mercy Land Parish')}
+                       className={inputClass} style={inputStyle} aria-label={tr('Parish name')} />
+                <LocationPicker value={missing} onChange={updateMissing} inputClass={inputClass} inputStyle={inputStyle} />
+                <input value={missing.shepherd_name} onChange={e => updateMissing({ shepherd_name: e.target.value })} placeholder={tr('Shepherd in charge (optional)')}
+                       className={inputClass} style={inputStyle} />
+                <div className="grid grid-cols-2 gap-2">
+                  <input value={missing.phone} onChange={e => updateMissing({ phone: e.target.value })} placeholder={tr('Parish phone')} className={inputClass} style={inputStyle} inputMode="tel" />
+                  <input value={missing.email} onChange={e => updateMissing({ email: e.target.value })} placeholder={tr('Parish email')} className={inputClass} style={inputStyle} inputMode="email" />
+                </div>
+                <label className="text-xs block" style={{ color: 'var(--color-text-muted)' }}>{tr('Sunday service time')}
+                  <input type="time" value={missing.sunday_time} onChange={e => updateMissing({ sunday_time: e.target.value })} className={`${inputClass} mt-1`} style={inputStyle} />
+                </label>
+                <textarea value={missing.notes} onChange={e => updateMissing({ notes: e.target.value })} rows={2} maxLength={500}
+                          placeholder={tr('Anything else that helps find it (optional)')} className={inputClass} style={inputStyle} />
+                <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('A moderator checks it before it appears in the directory. Contact details stay private until the parish agrees to show them.')}</p>
+                <button onClick={() => setNotListed(false)} className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('Cancel')}</button>
               </div>
-              <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Shepherds and church admins can add their parish to the directory from')}{' '}<span className="font-semibold">{tr('Parishes → Add a parish')}</span>.
-              </p>
-            </div>
+            )}
           </div>
         )}
 
@@ -253,6 +309,9 @@ export default function Onboarding() {
                 <div className="space-y-2">
                   <Choice selected={notifications.prefs.serviceReminders} onClick={notifications.toggleServiceReminders} title={tr('Service reminders')} subtitle={tr('30 and 10 minutes before each service')} />
                   <Choice selected={notifications.prefs.devotionReminders} onClick={notifications.toggleDevotionReminders} title={tr('Morning devotion')} subtitle={tr('Every day at 7:00 AM')} />
+                  <div className="rounded-2xl border px-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+                    <HourlyPrayerSettings notif={notifications} />
+                  </div>
                 </div>
               ) : notifications.permission === 'denied' ? (
                 <p className="text-sm p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>{tr('Notifications are blocked for this site. You can allow them later in your browser settings.')}</p>
@@ -284,8 +343,14 @@ export default function Onboarding() {
           </div>
         )}
 
-        <div className="mt-auto pt-8">
-          <button onClick={next} className="btn-primary w-full py-3.5 rounded-2xl text-base font-bold">
+        <div className="mt-auto pt-8 flex gap-3">
+          {step !== 'welcome' && (
+            <button onClick={back} className="flex-1 py-3.5 rounded-2xl text-base font-semibold border inline-flex items-center justify-center gap-1"
+                    style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
+              <ChevronLeft size={18} aria-hidden />{t('common.back')}
+            </button>
+          )}
+          <button onClick={next} className="btn-primary flex-[2] py-3.5 rounded-2xl text-base font-bold">
             {step === 'welcome' ? t('onboarding.getStarted') : step === 'account' ? t('onboarding.finish') : t('common.next')}
           </button>
         </div>

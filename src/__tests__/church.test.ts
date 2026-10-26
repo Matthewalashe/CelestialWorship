@@ -97,10 +97,15 @@ describe('the Order of Service as worshippers follow it (devotion.json)', () => 
   const orders: Record<string, { steps: { n: number; kind: string; title: string; blocks: { kind: string; [k: string]: unknown }[] }[] }> = read('data/devotion.json');
   const lords = orders.lords_day_service.steps;
 
+  it('keeps the hourly prayer in its six parts', () => {
+    expect(orders.hourly_prayer.steps.map(s => s.title)).toEqual(['Opening hymn', 'Prayer', 'Bible reading', 'Silent prayer', 'Closing hymn', 'Closing prayer']);
+  });
+
   it('has every service, each step with something to do', () => {
-    expect(Object.keys(orders)).toHaveLength(21);
+    expect(Object.keys(orders)).toHaveLength(22);
     for (const [id, svc] of Object.entries(orders)) {
-      expect(svc.steps.length, id).toBeGreaterThan(10);
+      // The hourly prayer is short by nature
+      expect(svc.steps.length, id).toBeGreaterThan(id === 'hourly_prayer' ? 5 : 10);
       for (const s of svc.steps) {
         expect(s.blocks.length, `${id} ${s.n}`).toBeGreaterThan(0);
         expect(s.title.trim(), `${id} ${s.n}`).toBeTruthy();

@@ -2,12 +2,14 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { tr } from '../i18n';
 
-export const NEW_ORIGIN = 'https://celestialworship.online';
+import { NEW_ORIGIN } from '../lib/moveHome';
+
+export { NEW_ORIGIN };
 const OLD_HOSTS = ['celestialworship.vercel.app'];
 
 /**
- * Shown only on the old address. Notes, highlights and prayers are kept per web address, so
- * people are asked to carry them over (account backup or backup file) before opening the new one.
+ * Shown on the old address only when a library is too large to carry over in the link (lib/moveHome),
+ * so people move it themselves with a backup before opening the new address.
  */
 export function MovedNotice() {
   if (!OLD_HOSTS.includes(window.location.hostname)) return null;

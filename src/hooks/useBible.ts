@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getBibleVersion, USFM_CODES, type BibleVersion } from '../data/bibleVersions';
 import { resolveBookName } from '../data/bibleBooks';
+import { contentDefaults } from '../i18n';
 
 export interface BibleChapterData {
   book: string;
@@ -80,6 +81,11 @@ async function fetchApiChapter(version: BibleVersion & { source: { kind: 'api'; 
   if (Object.keys(verses).length === 0) return null;
   reportFums(json?.meta?.fumsId);
   return { book, chapter, verses, versionId: version.id, copyright: json?.data?.copyright || version.copyright };
+}
+
+/** The Bible version the reader chose, or the one that goes with the app language */
+export function preferredBibleVersion(): string {
+  try { return localStorage.getItem('cw-bible-version') || contentDefaults().bibleVersion; } catch { return contentDefaults().bibleVersion; }
 }
 
 /**

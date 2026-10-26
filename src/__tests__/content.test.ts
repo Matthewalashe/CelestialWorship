@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { SERVICE_SCHEDULE, getServiceTypesForDate, formatServiceTime } from '../utils/dateUtils';
+import { SERVICE_SCHEDULE, getServiceTypesForDate, formatServiceTime, hourlyPrayersForDate } from '../utils/dateUtils';
 import { QUESTION_BANKS } from '../data/quizzes';
 import { shuffleOptions, seededShuffle } from '../utils/quiz';
 import { churchObservances } from '../utils/churchCalendar';
@@ -28,6 +28,14 @@ describe('service schedule', () => {
     expect(getServiceTypesForDate(new Date(2026, 5, 14))).toEqual(['morning_service', 'lords_day_service', 'evening_service_lords_day']);
     expect(getServiceTypesForDate(new Date(2026, 5, 17))).toEqual(['morning_service', 'seekers_service', 'mercy_day_service']);
     expect(getServiceTypesForDate(new Date(2026, 5, 19))).toEqual(['morning_service', 'prophets_prophetess_dreamers', 'power_day_service']);
+  });
+
+  it('keeps the hourly prayers a service does not cover', () => {
+    expect(hourlyPrayersForDate(new Date(2026, 5, 15))).toEqual([9, 12, 15, 18]); // Monday
+    expect(hourlyPrayersForDate(new Date(2026, 5, 14))).toEqual([15]); // Sunday: Lord's Day 10am–1pm, Evening 6pm
+    expect(hourlyPrayersForDate(new Date(2026, 5, 17))).toEqual([12, 15]); // Wednesday: Seekers 9am, Mercy Day 6pm
+    expect(hourlyPrayersForDate(new Date(2026, 5, 19))).toEqual([9, 15]); // Friday: Prophets 12 noon, Power Day 6pm
+    expect(hourlyPrayersForDate(new Date(2026, 5, 14), true)).toEqual([9, 12, 15, 18]); // at home, every hour
   });
 
   it('holds New Moon on the first Thursday only', () => {

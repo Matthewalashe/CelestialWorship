@@ -22,6 +22,8 @@ export type Block =
   | { kind: 'passage'; ref: string; book: string; chapter: number; verseStart: number; verseEnd: number; name?: string }
   | { kind: 'psalm_choice'; refs: string[] }
   | { kind: 'lesson'; which: 1 | 2 }
+  /** A Bible reading of the reader's choosing; today's verse is offered */
+  | { kind: 'reading' }
   | { kind: 'offering'; parts: boolean }
   | { kind: 'list'; items: { text: string; who?: Who }[] };
 

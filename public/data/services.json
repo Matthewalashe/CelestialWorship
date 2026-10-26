@@ -221,6 +221,91 @@
     ]
   },
   {
+    "id": "hourly_prayer",
+    "displayName": "Hourly Prayer",
+    "day": "Daily",
+    "time": "9 AM · 12 noon · 3 PM · 6 PM",
+    "description": "Àdúrà Wákàtí: a short prayer at 9am, 12 noon, 3pm and 6pm.",
+    "steps": [
+      {
+        "stepNumber": 1,
+        "text": "Opening hymn (any)",
+        "text_lines": [
+          "Opening hymn (any)"
+        ],
+        "type": "hymn",
+        "hymnSlot": {
+          "category": "processional_or_opening"
+        },
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      },
+      {
+        "stepNumber": 2,
+        "text": "Prayer: thanksgiving, sanctification, blessing and mercy",
+        "text_lines": [
+          "Prayer: thanksgiving, sanctification, blessing and mercy"
+        ],
+        "type": "prayer",
+        "hymnSlot": null,
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      },
+      {
+        "stepNumber": 3,
+        "text": "Bible reading",
+        "text_lines": [
+          "Bible reading"
+        ],
+        "type": "scripture",
+        "hymnSlot": null,
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      },
+      {
+        "stepNumber": 4,
+        "text": "Silent prayer",
+        "text_lines": [
+          "Silent prayer"
+        ],
+        "type": "prayer",
+        "hymnSlot": null,
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      },
+      {
+        "stepNumber": 5,
+        "text": "Closing hymn",
+        "text_lines": [
+          "Closing hymn"
+        ],
+        "type": "hymn",
+        "hymnSlot": {
+          "category": "recessional_or_closing"
+        },
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      },
+      {
+        "stepNumber": 6,
+        "text": "Closing prayer",
+        "text_lines": [
+          "Closing prayer"
+        ],
+        "type": "prayer",
+        "hymnSlot": null,
+        "scriptureRef": null,
+        "scripture_references": [],
+        "isHeader": false
+      }
+    ]
+  },
+  {
     "id": "seekers_service",
     "displayName": "Seekers Service",
     "day": "Wednesday",

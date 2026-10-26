@@ -114,7 +114,8 @@ export default function Devotion() {
     if (isStarted) saveDevotionState({ currentStep, selectedServiceId, isStarted });
   }, [currentStep, selectedServiceId, isStarted]);
 
-  const todayServiceIds = useMemo(() => getServiceTypesForDate(new Date()), []);
+  // The hourly prayer is offered every day, after the services held today
+  const todayServiceIds = useMemo(() => [...getServiceTypesForDate(new Date()), 'hourly_prayer'], []);
   const activeId = selectedServiceId || todayServiceIds[0];
   const selectedService = useMemo(() => services.find(s => s.id === activeId) || null, [services, activeId]);
   const order = selectedService ? orders[selectedService.id] : undefined;

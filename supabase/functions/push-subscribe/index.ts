@@ -35,6 +35,10 @@ Deno.serve(async req => {
         serviceReminders: prefs.serviceReminders !== false,
         devotionReminder: prefs.devotionReminder !== false,
         devotionHour: Number.isInteger(prefs.devotionHour) && prefs.devotionHour >= 0 && prefs.devotionHour < 24 ? prefs.devotionHour : 7,
+        hourlyPrayers: prefs.hourlyPrayers === true,
+        hourlyHours: Array.isArray(prefs.hourlyHours) ? prefs.hourlyHours.filter((h: unknown) => [9, 12, 15, 18].includes(h as number)) : [9, 12, 15, 18],
+        hourlyAtHome: prefs.hourlyAtHome === true,
+        hourlyAlarm: prefs.hourlyAlarm === true,
       },
       updated_at: new Date().toISOString(),
     });

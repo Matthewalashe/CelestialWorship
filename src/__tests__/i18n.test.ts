@@ -47,12 +47,10 @@ describe('tr()', () => {
     expect(contentDefaults('yo')).toEqual({ bibleVersion: 'yo', hymnView: 'yo' });
   });
 
-  it('keeps Egun as Egun, with English where a word is not yet translated', async () => {
+  it('gives French to anyone who had chosen Egun, until its translation is ready', async () => {
     localStorage.setItem('cw-ui-language', 'egun');
     vi.resetModules();
-    const { tr, getUILanguage, translate } = await import('../i18n');
-    expect(getUILanguage()).toBe('egun');
-    expect(tr('Hymn lyrics')).toBe('Hymn lyrics');
-    expect(translate('nav.home')).toBe('Home');
+    const { getUILanguage } = await import('../i18n');
+    expect(getUILanguage()).toBe('fr');
   });
 });

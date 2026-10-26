@@ -18,7 +18,11 @@ function urlBase64ToUint8Array(base64: string): Uint8Array {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-export interface PushPreferences { serviceReminders: boolean; devotionReminder: boolean; devotionHour: number }
+export interface PushPreferences {
+  serviceReminders: boolean; devotionReminder: boolean; devotionHour: number;
+  /** The hourly prayers (Àdúrà Wákàtí): which hours, every hour at home, and alarm-like */
+  hourlyPrayers: boolean; hourlyHours: number[]; hourlyAtHome: boolean; hourlyAlarm: boolean;
+}
 
 /** Subscribe this device (or refresh its preferences). Returns false when push isn't available. */
 export async function syncPushSubscription(prefs: PushPreferences): Promise<boolean> {

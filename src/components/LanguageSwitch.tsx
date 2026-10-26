@@ -2,7 +2,7 @@ import { Languages } from 'lucide-react';
 import { UI_LANGUAGES, setUILanguage, useT, tr } from '../i18n';
 import { useProfile } from '../hooks/useProfile';
 
-const SHORT: Record<string, string> = { en: 'EN', yo: 'YO', fr: 'FR', egun: 'EG' };
+const SHORT: Record<string, string> = { en: 'EN', yo: 'YO', fr: 'FR' };
 
 /** The app's language, one tap away. `full` shows the languages' own names (for the menu). */
 export function LanguageSwitch({ full = false }: { full?: boolean }) {

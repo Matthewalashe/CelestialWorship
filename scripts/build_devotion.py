@@ -677,6 +677,31 @@ def name_readings(sid, st, lines):
         st['blocks'].append(block)
 
 
+# The hourly prayers (Àdúrà Wákàtí): not in the service guide, written from the Church's practice. Parishes pray
+# at 9am, 12 noon, 3pm and 6pm after the morning service; a service held at that hour takes its place.
+HOURLY_PRAYER = {
+    'intro': [
+        {'kind': 'note', 'text': 'Prayed at 9am, 12 noon, 3pm and 6pm, after the morning service. When a service is held at that hour, the service takes its place — except in personal or family devotion.'},
+    ],
+    'steps': [
+        {'kind': 'hymn', 'title': 'Opening hymn', 'source': '1', 'hymnSlot': {'category': 'processional_or_opening'},
+         'blocks': [{'kind': 'hymn', 'label': 'Any hymn'}]},
+        {'kind': 'prayer', 'title': 'Prayer', 'source': '2',
+         'blocks': [{'kind': 'act', 'who': 'conductor', 'text': 'Prays in three parts'},
+                    {'kind': 'list', 'items': [{'text': 'Thanksgiving: thank God for the day so far'},
+                                               {'text': 'Sanctification: ask Him to cleanse and keep you holy'},
+                                               {'text': 'Blessing and mercy: ask for His blessing and mercy on you, your family, the Church and the world'}]}]},
+        {'kind': 'reading', 'title': 'Bible reading', 'source': '3', 'blocks': [{'kind': 'reading'}]},
+        {'kind': 'prayer', 'title': 'Silent prayer', 'source': '4',
+         'blocks': [{'kind': 'act', 'who': 'all', 'text': 'Pray silently, each for their own heart’s desire'}]},
+        {'kind': 'hymn', 'title': 'Closing hymn', 'source': '5', 'hymnSlot': {'category': 'recessional_or_closing'},
+         'blocks': [{'kind': 'hymn', 'label': 'Closing'}]},
+        {'kind': 'prayer', 'title': 'Closing prayer', 'source': '6',
+         'blocks': [{'kind': 'act', 'who': 'conductor', 'text': 'Closes in prayer'}, {'kind': 'say', 'who': 'all', 'text': 'Amen.'}]},
+    ],
+}
+
+
 def main():
     guide = guide_services()
     out, report = {}, ['# Devotion build report', '']
@@ -726,6 +751,7 @@ def main():
                     flags.append(f"- {sid} step {n} ({b['ref']}): no holy name in the guide")
         out[sid] = {'intro': intro_blocks(data['intro']), 'steps': steps}
         report.append(f"## {sid} — {len(data['steps'])} guide steps → {len(steps)} devotion steps")
+    out['hourly_prayer'] = {'intro': HOURLY_PRAYER['intro'], 'steps': [dict(st, n=n) for n, st in enumerate(HOURLY_PRAYER['steps'], 1)]}
     OUT.write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     names = {}
     for sid, svc in out.items():

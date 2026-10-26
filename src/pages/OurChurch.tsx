@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { ScrollText, Handshake, Scale, Target, ExternalLink, GraduationCap } from 'lucide-react';
+import { ScrollText, Handshake, Scale, Target, ExternalLink, GraduationCap, Crown } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { TIMELINE, COMMON_GROUND, POINTS_OF_DIFFERENCE, APP_POSITION, VISION, MISSION, SOURCES } from '../data/churchHistory';
 import { tr } from '../i18n';
+import { FOUNDER, PASTOR, PAST_PASTORS, GOVERNING_BODIES, type Leader } from '../data/churchLeaders';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 
@@ -11,6 +12,33 @@ function SectionTitle({ icon, children }: { icon: React.ReactNode; children: Rea
     <h2 className="flex items-center gap-2 text-lg font-bold font-[Outfit] mb-3" style={{ color: 'var(--color-text-primary)' }}>
       <span style={{ color: 'var(--color-accent-gold)' }}>{icon}</span>{children}
     </h2>
+  );
+}
+
+/** A leader with a photograph (credited) or their initials */
+function LeaderCard({ leader, large = false }: { leader: Leader; large?: boolean }) {
+  const initials = leader.name.replace(/^Rev\.\s*/, '').split(/\s+/).map(w => w[0]).filter(c => /[A-Z]/.test(c)).slice(0, 2).join('');
+  return (
+    <figure className="rounded-2xl border overflow-hidden" style={card}>
+      {leader.photo ? (
+        <img src={leader.photo.src} alt={leader.photo.alt} loading="lazy" decoding="async"
+             className={`w-full object-cover ${large ? 'aspect-[4/5]' : 'aspect-square'}`} style={{ backgroundColor: 'var(--color-bg-secondary)' }} />
+      ) : (
+        <div className="w-full aspect-[3/1] flex items-center justify-center text-2xl font-bold font-[Outfit]"
+             style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent-gold) 14%, transparent)', color: 'var(--color-accent-gold)' }} aria-hidden>{initials}</div>
+      )}
+      <figcaption className="p-4 space-y-1">
+        <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{tr(leader.role)}</p>
+        <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{leader.name}</p>
+        <p className="text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>{leader.years}</p>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{leader.detail}</p>
+        {leader.photo && (
+          <p className="text-[10px] pt-1" style={{ color: 'var(--color-text-muted)' }}>
+            {leader.photo.caption ? `${tr(leader.photo.caption)} · ` : ''}{tr('Photo')}: <a href={leader.photo.source} target="_blank" rel="noopener noreferrer" className="underline">{leader.photo.credit}</a>, {leader.photo.license}
+          </p>
+        )}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -36,6 +64,27 @@ export default function OurChurch() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <SectionTitle icon={<Crown size={20} />}>{tr('Leadership')}</SectionTitle>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <LeaderCard leader={FOUNDER} large />
+          <LeaderCard leader={PASTOR} large />
+        </div>
+        <h3 className="text-xs uppercase tracking-wider font-bold pt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Past Pastors')}</h3>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {PAST_PASTORS.map(l => <LeaderCard key={l.name} leader={l} />)}
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 pt-2">
+          {GOVERNING_BODIES.map(b => (
+            <div key={b.name} className="rounded-2xl border p-4" style={card}>
+              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(b.name)}</p>
+              <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{b.detail}</p>
+              <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{b.source}</p>
+            </div>
+          ))}
         </div>
       </section>
 

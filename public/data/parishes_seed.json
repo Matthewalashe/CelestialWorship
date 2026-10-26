@@ -8,14 +8,15 @@
     "state_region": "Ouémé",
     "city": "Porto-Novo",
     "address": "Porto-Novo, Republic of Benin",
-    "latitude": null,
-    "longitude": null,
+    "latitude": 6.499072,
+    "longitude": 2.625336,
     "shepherd_name": null,
     "phone": null,
     "email": null,
     "website": null,
     "service_times": null,
-    "giving_details": null
+    "giving_details": null,
+    "geo_precision": "town"
   },
   {
     "id": "seed-international-hq",
@@ -26,14 +27,15 @@
     "state_region": "Lagos",
     "city": "Ketu, Lagos",
     "address": "Mission House, Ketu, Lagos State, Nigeria",
-    "latitude": null,
-    "longitude": null,
+    "latitude": 6.603138,
+    "longitude": 3.415437,
     "shepherd_name": null,
     "phone": null,
     "email": null,
     "website": "https://celestialchurch.com",
     "service_times": null,
-    "giving_details": null
+    "giving_details": null,
+    "geo_precision": "place"
   },
   {
     "id": "seed-diocesan-hq",
@@ -44,14 +46,15 @@
     "state_region": "Lagos",
     "city": "Makoko, Yaba, Lagos",
     "address": "12/15 Church Street, Makoko, Yaba, Lagos State, Nigeria",
-    "latitude": null,
-    "longitude": null,
+    "latitude": 6.493601,
+    "longitude": 3.382464,
     "shepherd_name": null,
     "phone": null,
     "email": null,
     "website": null,
     "service_times": null,
-    "giving_details": null
+    "giving_details": null,
+    "geo_precision": "town"
   },
   {
     "id": "seed-celestial-city",
@@ -62,13 +65,14 @@
     "state_region": "Ogun",
     "city": "Imeko",
     "address": "Imeko, Imeko-Afon, Ogun State, Nigeria",
-    "latitude": null,
-    "longitude": null,
+    "latitude": 7.668951,
+    "longitude": 2.860216,
     "shepherd_name": null,
     "phone": null,
     "email": null,
     "website": null,
     "service_times": null,
-    "giving_details": null
+    "giving_details": null,
+    "geo_precision": "town"
   }
 ]

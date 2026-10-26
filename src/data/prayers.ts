@@ -37,7 +37,10 @@ export const PRAYERS: Record<PrayerRef, { title: string; en: string; yo: string;
   },
 };
 
-/** The collection on the Lord's Day is given in five parts; at other services it is one offering */
+/**
+ * The collection on the Lord's Day is given in five parts; at other services it is one offering.
+ * Each language uses its own words: the Yorùbá names in Yorùbá, the English names translated for French and others.
+ */
 export const LORDS_DAY_OFFERINGS: { en: string; yo: string; fr: string }[] = [
   { en: 'General offering', yo: 'Owó Igbá', fr: 'Offrande générale' },
   { en: 'Evangelism giving', yo: 'Ìrìn Àjò', fr: 'Don pour l’évangélisation' },

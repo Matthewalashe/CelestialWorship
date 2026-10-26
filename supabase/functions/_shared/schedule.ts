@@ -42,3 +42,19 @@ export function occursOn(s: ScheduledService, p: { month: number; day: number; w
   }
   return s.when.includes(p.weekday);
 }
+
+// The hourly prayers (Àdúrà Wákàtí). Keep in step with hourlyPrayersForDate in src/utils/dateUtils.ts.
+export const HOURLY_PRAYER_HOURS = [9, 12, 15, 18];
+const SERVICE_LENGTH: Record<string, number> = { lords_day_service: 180 };
+
+/** Hours of prayer kept on a day: a service covers one that falls in it or comes under 90 minutes before it (not at home) */
+export function hourlyPrayersOn(p: { month: number; day: number; weekday: number }, atHome = false): number[] {
+  if (atHome) return HOURLY_PRAYER_HOURS;
+  const services = SERVICE_SCHEDULE.filter(s => s.id !== 'morning_service' && occursOn(s, p));
+  return HOURLY_PRAYER_HOURS.filter(h => !services.some(s => {
+    const start = s.hour * 60 + s.minute, at = h * 60;
+    return (at >= start && at < start + (SERVICE_LENGTH[s.id] ?? 120)) || (start > at && start < at + 90);
+  }));
+}
+
+export const hourLabel = (hour: number) => (hour === 12 ? '12 noon' : `${hour % 12 || 12} ${hour < 12 ? 'AM' : 'PM'}`);

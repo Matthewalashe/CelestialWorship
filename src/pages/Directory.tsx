@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, Plus, MapPin, Church, Phone, Mail, User as UserIcon, ChevronRight } from 'lucide-react';
+import { Search, Plus, MapPin, Church, Phone, Mail, User as UserIcon, ChevronRight, List, Map as MapIcon, LocateFixed } from 'lucide-react';
 import { useParishes, useParishSubmission, continentOf, PARISH_LEVELS, type ParishSubmission, type Parish, type ParishLevel } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
 import { useProfile } from '../hooks/useProfile';
@@ -12,6 +12,9 @@ import { Sheet } from '../components/Dialog';
 import { normalizeLinks } from '../utils/safeUrl';
 import { ClaimParish } from '../components/ClaimParish';
 import { tr } from '../i18n';
+import { LocationPicker } from '../components/LocationPicker';
+import { MapView } from '../components/MapView';
+import { currentPosition, distanceKm, hasPoint } from '../lib/geo';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -20,14 +23,14 @@ const inputStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'v
 interface ParishDraft {
   kind: 'parish' | 'ministry';
   name: string; diocese: string; province: string; country: string; state_region: string; city: string; address: string;
-  map_url: string; shepherd_name: string; phone: string; email: string; website: string; contact_public: boolean; sundayTime: string;
+  latitude: number | null; longitude: number | null; shepherd_name: string; phone: string; email: string; website: string; contact_public: boolean; sundayTime: string;
   level: ParishLevel; ownership: 'community' | 'private'; affiliated: boolean; affiliation: string;
   /** Independent shepherds: own the ministry, or support it */
   relationship: 'owner' | 'supporting';
 }
 
 const EMPTY: ParishDraft = {
-  kind: 'parish', name: '', diocese: '', province: '', country: '', state_region: '', city: '', address: '', map_url: '', shepherd_name: '',
+  kind: 'parish', name: '', diocese: '', province: '', country: '', state_region: '', city: '', address: '', latitude: null, longitude: null, shepherd_name: '',
   phone: '', email: '', website: '', contact_public: false, sundayTime: '10:00',
   level: 'parish', ownership: 'community', affiliated: true, affiliation: '', relationship: 'owner',
 };
@@ -46,13 +49,13 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
     if (!valid) return;
     setBusy(true);
     try {
-      const urls = normalizeLinks({ website: v.website, map_url: v.map_url }, { website: 'Website', map_url: 'Map link' });
+      const urls = normalizeLinks({ website: v.website }, { website: 'Website' });
       const row: ParishSubmission = {
         kind: v.kind,
         name: v.name.trim(), diocese: v.diocese.trim() || null, province: v.province.trim() || null, country: v.country.trim(),
         state_region: v.state_region.trim() || null, city: v.city.trim() || null, address: v.address.trim() || null,
-        latitude: null, longitude: null, shepherd_name: v.shepherd_name.trim() || null, phone: v.phone.trim() || null,
-        email: v.email.trim() || null, website: urls.website, map_url: urls.map_url,
+        latitude: v.latitude, longitude: v.longitude, geo_precision: v.latitude != null ? 'address' : undefined, shepherd_name: v.shepherd_name.trim() || null, phone: v.phone.trim() || null,
+        email: v.email.trim() || null, website: urls.website, map_url: null,
         service_times: v.sundayTime ? [{ service: 'lords_day_service', day: 'Sunday', time: v.sundayTime }] : null,
         giving_details: null, contact_public: v.contact_public,
         level: v.kind === 'ministry' ? 'parish' : v.level, ownership: v.ownership, affiliated: v.affiliated,
@@ -99,15 +102,11 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
             <input value={v.name} onChange={e => draft.setValue({ name: e.target.value })}
                    placeholder={v.kind === 'ministry' ? tr('Ministry name') : tr('Parish name, e.g. CCC Mercy Land Parish')}
                    className={inputClass} style={inputStyle} />
+            <LocationPicker value={v} onChange={u => draft.setValue(u)} inputClass={inputClass} inputStyle={inputStyle} requireCity />
             <div className="grid grid-cols-2 gap-2">
-              <input value={v.country} onChange={e => draft.setValue({ country: e.target.value })} placeholder={tr('Country')} className={inputClass} style={inputStyle} />
-              <input value={v.state_region} onChange={e => draft.setValue({ state_region: e.target.value })} placeholder={tr('State / region')} className={inputClass} style={inputStyle} />
-              <input value={v.city} onChange={e => draft.setValue({ city: e.target.value })} placeholder={tr('Town / city')} className={inputClass} style={inputStyle} />
               <input value={v.province} onChange={e => draft.setValue({ province: e.target.value })} placeholder={tr('Province (optional)')} className={inputClass} style={inputStyle} />
+              <input value={v.diocese} onChange={e => draft.setValue({ diocese: e.target.value })} placeholder={tr('Diocese / district (optional)')} className={inputClass} style={inputStyle} />
             </div>
-            <input value={v.diocese} onChange={e => draft.setValue({ diocese: e.target.value })} placeholder={tr('Diocese / district (optional)')} className={inputClass} style={inputStyle} />
-            <input value={v.address} onChange={e => draft.setValue({ address: e.target.value })} placeholder={tr('Street address')} className={inputClass} style={inputStyle} />
-            <input value={v.map_url} onChange={e => draft.setValue({ map_url: e.target.value })} placeholder={tr('Google Maps link (optional)')} className={inputClass} style={inputStyle} inputMode="url" />
             <input value={v.shepherd_name} onChange={e => draft.setValue({ shepherd_name: e.target.value })}
                    placeholder={v.kind === 'ministry' ? tr('Your name and title') : tr('Shepherd in charge (optional)')} className={inputClass} style={inputStyle} />
             <div className="grid grid-cols-2 gap-2">
@@ -149,7 +148,7 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
 }
 
 /** One parish: its address, contact and shepherd at a glance */
-function ParishCard({ p, onClaim }: { p: Parish; onClaim: () => void }) {
+function ParishCard({ p, onClaim, away }: { p: Parish; onClaim: () => void; away?: string }) {
   const body = (
     <>
       <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>
@@ -158,6 +157,7 @@ function ParishCard({ p, onClaim }: { p: Parish; onClaim: () => void }) {
         {p.level && p.level !== 'parish' && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: 'var(--color-accent-brand)' }}>{tr(PARISH_LEVELS[p.level])}</span>}
         {p.live_now && <span className="ml-2 text-[10px] uppercase font-bold" style={{ color: '#EF4444' }}>{tr('● Live')}</span>}
       </span>
+      {away && <span className="block text-[11px] font-semibold mt-0.5" style={{ color: 'var(--color-accent-gold)' }}>{away}</span>}
       {p.address && <span className="block text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>{p.address}</span>}
       {p.shepherd_name && <span className="flex items-center gap-1 text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}><UserIcon size={11} /> {p.shepherd_name}</span>}
       {(p.affiliation || p.ownership === 'private') && (
@@ -213,6 +213,10 @@ export default function Directory() {
   const [country, setCountry] = useState('');
   const [kind, setKind] = useState<'all' | 'parish' | 'ministry'>('all');
 
+  const [view, setView] = useState<'list' | 'map'>(() => (params.get('view') === 'map' ? 'map' : 'list'));
+  const [me, setMe] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
   const [continent, setContinent] = useState('');
   const [state, setState] = useState('');
   const continents = useMemo(() => [...new Set(parishes.map(continentOf))].sort(), [parishes]);
@@ -238,6 +242,24 @@ export default function Directory() {
     }
     return [...out.entries()].sort(([a], [b]) => a.localeCompare(b));
   }, [filtered]);
+  // Nearest first once the reader has shared where they are
+  const nearest = useMemo(() => (me ? filtered.filter(hasPoint).map(p => ({ p, km: distanceKm(me, { lat: p.latitude!, lng: p.longitude! }) })).sort((a, b) => a.km - b.km) : []), [filtered, me]);
+  const markers = useMemo(() => filtered.filter(hasPoint).map(p => ({
+    id: p.id, lat: p.latitude!, lng: p.longitude!, title: p.geo_precision === 'town' ? `${p.name} (${tr('approximate')})` : p.name,
+  })), [filtered]);
+  const pickedParish = picked ? filtered.find(p => p.id === picked) : undefined;
+  const nearMe = async () => {
+    setLocating(true);
+    try {
+      setMe(await currentPosition());
+      setContinent(''); setCountry(''); setState('');
+    } catch (e) {
+      showToast(errorMessage(e));
+    } finally {
+      setLocating(false);
+    }
+  };
+
   const claimId = params.get('claim');
   const claim = claimId ? parishes.find(p => p.id === claimId) : undefined;
 
@@ -275,7 +297,8 @@ export default function Directory() {
           </select>
         )}
       </div>
-      <div className="flex rounded-xl p-0.5 border mb-4 w-fit" style={card}>
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="flex rounded-xl p-0.5 border w-fit" style={card}>
         {(['all', 'parish', 'ministry'] as const).map(k => (
           <button key={k} onClick={() => setKind(k)} aria-pressed={kind === k} className="px-3 py-1.5 rounded-lg text-xs font-semibold"
                   style={kind === k ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
@@ -283,6 +306,44 @@ export default function Directory() {
           </button>
         ))}
       </div>
+      <div className="flex rounded-xl p-0.5 border w-fit ml-auto" style={card} role="group" aria-label={tr('Show as')}>
+        {(['list', 'map'] as const).map(k => (
+          <button key={k} onClick={() => setView(k)} aria-pressed={view === k} className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1"
+                  style={view === k ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : { color: 'var(--color-text-secondary)' }}>
+            {k === 'list' ? <List size={13} aria-hidden /> : <MapIcon size={13} aria-hidden />}{k === 'list' ? tr('List') : tr('Map')}
+          </button>
+        ))}
+      </div>
+      <button onClick={nearMe} disabled={locating} className="px-3 py-2 rounded-xl text-xs font-semibold border inline-flex items-center gap-1 disabled:opacity-50"
+              style={{ ...card, color: 'var(--color-accent-brand)' }}>
+        <LocateFixed size={13} aria-hidden /> {locating ? tr('Finding you…') : tr('Near me')}
+      </button>
+      </div>
+
+      {view === 'map' && (
+        <div className="mb-6 space-y-3">
+          <MapView label={tr('Map of parishes')} markers={markers} selected={picked} onSelect={setPicked} me={me}
+                   center={me && !picked ? me : null} zoom={me ? 11 : 4} className="h-[60vh] min-h-80" />
+          <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+            {markers.length}{' '}{tr('of')}{' '}{filtered.length}{' '}{tr('on the map. Parishes add their exact place when they claim their entry.')}
+          </p>
+          {pickedParish && <ParishCard p={pickedParish} onClaim={() => setParams({ claim: pickedParish.id })} />}
+        </div>
+      )}
+
+      {me && nearest.length > 0 && (
+        <section className="mb-6" aria-label={tr('Nearest to you')}>
+          <h2 className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Nearest to you')}</h2>
+          <ul className="space-y-2">
+            {nearest.slice(0, 5).map(({ p, km }) => (
+              <li key={p.id}>
+                <ParishCard p={p} onClaim={() => setParams({ claim: p.id })}
+                            away={`${p.geo_precision === 'town' ? '≈ ' : ''}${km < 1 ? `${Math.round(km * 1000)} m` : `${km < 10 ? km.toFixed(1) : Math.round(km)} km`} ${tr('away')}`} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {!backendReady && (
         <p className="text-xs mb-3 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Showing the headquarters and the parishes from the Church’s public list. Parishes registered in the app appear once the online directory is set up.')}</p>

@@ -15,7 +15,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SHEET = ROOT / 'data-src' / 'i18n_review' / 'egun.csv'
-CATALOG = ROOT / 'public' / 'i18n' / 'egun.json'
+CATALOG = ROOT / "public" / "i18n" / "egun.json"  # created on the first import; add egun to UI_LANGUAGES when it is ready
 
 
 def load(path):

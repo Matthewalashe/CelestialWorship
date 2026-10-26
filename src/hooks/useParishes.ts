@@ -26,6 +26,8 @@ export interface Parish {
   address: string | null;
   latitude: number | null;
   longitude: number | null;
+  /** For parishes placed by the app: how close the point is ('town' = only the town is known) */
+  geo_precision?: 'address' | 'place' | 'town';
   shepherd_name: string | null;
   phone: string | null;
   email: string | null;
@@ -55,6 +57,12 @@ export interface Parish {
   affiliated?: boolean;
   affiliation?: string | null;
   continent?: string | null;
+  /** Written by the parish: who they are, when they began, the languages they worship in */
+  about?: string | null;
+  founded_year?: number | null;
+  worship_languages?: string[] | null;
+  /** Holds the hourly prayers (Àdúrà Wákàtí) at 9am, 12 noon, 3pm and 6pm */
+  hourly_prayers?: boolean;
   /** From the Church's archived public list, not yet claimed by the parish */
   listing?: { source: string; url: string };
   /** Seed entries (headquarters) shipped with the app */
@@ -83,7 +91,7 @@ function loadListed(): Promise<Parish[]> {
   if (!listedPromise) {
     listedPromise = fetch('/data/parishes_listed.json')
       .then(r => (r.ok ? r.json() : []))
-      .then((rows: Parish[]) => rows.map(p => ({ ...p, seed: true, latitude: null, longitude: null, diocese: null, province: null, website: null, service_times: null, giving_details: null })))
+      .then((rows: Parish[]) => rows.map(p => ({ ...p, seed: true, latitude: p.latitude ?? null, longitude: p.longitude ?? null, diocese: null, province: null, website: null, service_times: null, giving_details: null })))
       .catch(() => []);
   }
   return listedPromise;

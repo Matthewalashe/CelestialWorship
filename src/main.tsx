@@ -10,6 +10,7 @@ import App from './App'
 import './index.css'
 import { reportError } from './hooks/useAnalytics'
 import { useLanguageVersion } from './i18n'
+import { settleHome } from './lib/moveHome'
 // Catches the browser's one-time install offer before any screen asks for it
 import './hooks/usePWAInstall'
 
@@ -21,20 +22,24 @@ function Localised() {
   return <App key={useLanguageVersion()} />
 }
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <ThemeProvider>
-        <AuthProvider>
-          <ReaderProvider>
-            <MusicProvider>
-              <ScrollToTop />
-              <Localised />
-            </MusicProvider>
-          </ReaderProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
-)
+// On the old address the page moves to celestialworship.online first, bringing the reader's things with it
+settleHome().then(leaving => { if (!leaving) render() })
 
+function render() {
+  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <ThemeProvider>
+          <AuthProvider>
+            <ReaderProvider>
+              <MusicProvider>
+                <ScrollToTop />
+                <Localised />
+              </MusicProvider>
+            </ReaderProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </BrowserRouter>
+    </React.StrictMode>,
+  )
+}

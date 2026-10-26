@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, MapPin, Phone, Mail, Globe, Clock, HandCoins, HandHeart, CalendarClock, Check, Star, Settings } from 'lucide-react';
+import { ChevronLeft, MapPin, Phone, Mail, Globe, Clock, HandCoins, HandHeart, CalendarClock, Check, Star, Settings, Navigation } from 'lucide-react';
 import { useParishes } from '../hooks/useParishes';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../hooks/useAuth';
@@ -20,6 +20,8 @@ import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
 import { safeHref } from '../utils/safeUrl';
 import { tr } from '../i18n';
+import { MapView } from '../components/MapView';
+import { hasPoint } from '../lib/geo';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -158,8 +160,10 @@ export default function ParishPage() {
     );
   }
 
+  const point = hasPoint(parish) ? { lat: parish.latitude!, lng: parish.longitude! } : null;
+  const directions = point ? `https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}` : null;
   const mapLink = safeHref(parish.map_url)
-    || (parish.latitude && parish.longitude ? `https://www.google.com/maps?q=${parish.latitude},${parish.longitude}`
+    || (point ? `https://www.google.com/maps?q=${point.lat},${point.lng}`
       : `https://www.google.com/maps/search/${encodeURIComponent([parish.name, parish.address, parish.city, parish.country].filter(Boolean).join(', '))}`);
   const isMine = profile.parishId === parish.id;
   const g = parish.giving_details;
@@ -199,7 +203,34 @@ export default function ParishPage() {
       </header>
 
       <ParishLive parishId={parish.id} parish={parish} />
+
+      {(parish.about || parish.founded_year || parish.worship_languages?.length || parish.hourly_prayers) && (
+        <section className="space-y-2">
+          {parish.about && <p className="text-[15px] leading-relaxed whitespace-pre-line" style={{ color: 'var(--color-text-primary)' }}>{parish.about}</p>}
+          <p className="text-xs flex flex-wrap gap-x-3 gap-y-1" style={{ color: 'var(--color-text-muted)' }}>
+            {parish.founded_year && <span>{tr('Founded')} {parish.founded_year}</span>}
+            {parish.worship_languages?.length ? <span>{tr('Worship in')} {parish.worship_languages.map(l => tr(l)).join(', ')}</span> : null}
+            {parish.hourly_prayers && <span>{tr('Hourly prayers at 9am, 12 noon, 3pm and 6pm')}</span>}
+          </p>
+        </section>
+      )}
+
       <ParishGallery parishId={parish.id} />
+
+      {point && (
+        <section className="space-y-2">
+          <MapView label={`${tr('Map')}: ${parish.name}`} markers={[{ id: parish.id, lat: point.lat, lng: point.lng, title: parish.name }]}
+                   selected={parish.id} zoom={parish.geo_precision === 'town' ? 12 : 16} className="h-56" />
+          <div className="flex items-center gap-3">
+            {parish.geo_precision === 'town' && <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Approximate — the town only. The parish can place its exact pin when it claims this page.')}</span>}
+            {directions && parish.geo_precision !== 'town' && (
+              <a href={directions} target="_blank" rel="noopener noreferrer" className="ml-auto btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5">
+                <Navigation size={15} aria-hidden /> {tr('Directions')}
+              </a>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         {parish.address && (

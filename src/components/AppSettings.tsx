@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useNotifications } from '../hooks/useNotifications';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { ReaderSettingsSheet } from './Reader';
+import { HourlyPrayerSettings } from './HourlyPrayerSettings';
 import { tr } from '../i18n';
 
 /** One place for how the app looks and when it reminds you */
@@ -55,6 +56,7 @@ export function AppSettings() {
               </label>
             </>
           )}
+          <HourlyPrayerSettings notif={notif} />
         </div>
       )}
 

@@ -24,6 +24,9 @@ import {
 import { PARTNER_FEATURES, listPlans, getSubscription, hasPlan, subscribe, manageSubscription, planPrice, type Plan, type Subscription } from '../lib/plan';
 import { ShareRow } from '../components/ShareRow';
 import { ParishMediaManager } from '../components/ParishMedia';
+import { LocationPicker } from '../components/LocationPicker';
+
+const WORSHIP_LANGUAGES = ['English', 'Yorùbá', 'French', 'Egun', 'Igbo', 'Hausa', 'Twi', 'Ewe'];
 import { ParishStructureCard, ShepherdClaimsCard } from '../components/ParishStructure';
 import { tr } from '../i18n';
 
@@ -74,11 +77,13 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
   const save = async () => {
     setBusy(true);
     try {
-      const urls = normalizeLinks({ map_url: p.map_url, website: p.website }, { map_url: 'Map link', website: 'Website' });
+      const urls = normalizeLinks({ website: p.website }, { website: 'Website' });
       const social = normalizeLinks(Object.fromEntries(Object.entries(links).filter(([, v]) => v)));
       await updateParish(p.id, {
         name: p.name, diocese: p.diocese, province: p.province, country: p.country, state_region: p.state_region, city: p.city,
-        address: p.address, map_url: urls.map_url, shepherd_name: p.shepherd_name, phone: p.phone, email: p.email, website: urls.website,
+        address: p.address, latitude: p.latitude, longitude: p.longitude, geo_precision: p.latitude != null ? 'address' : undefined,
+        about: p.about?.trim() || null, founded_year: p.founded_year || null, worship_languages: p.worship_languages?.length ? p.worship_languages : null,
+        hourly_prayers: !!p.hourly_prayers, shepherd_name: p.shepherd_name, phone: p.phone, email: p.email, website: urls.website,
         contact_public: p.contact_public, service_times: times.filter(t => t.time), giving_details: giving.note ? { note: giving.note } : null,
         social_links: social as Record<string, string>,
         accepts_prayer_requests: p.accepts_prayer_requests, accepts_appointments: p.accepts_appointments,
@@ -107,11 +112,47 @@ function DetailsTab({ parish, onSaved }: { parish: PrivateParish; onSaved: () =>
       <section className="rounded-2xl border p-4 space-y-3" style={card}>
         {text('name', 'Name')}
         <div className="grid grid-cols-2 gap-2">{text('diocese', 'Diocese / district')}{text('province', 'Province')}</div>
-        <div className="grid grid-cols-2 gap-2">{text('country', 'Country')}{text('state_region', 'State / region')}</div>
-        {text('city', 'Town / city')}
-        {text('address', 'Address')}
-        {text('map_url', 'Map link (Google Maps)', 'url')}
         {text('shepherd_name', p.kind === 'ministry' ? 'Shepherd' : 'Shepherd in charge')}
+      </section>
+
+      <section className="rounded-2xl border p-4 space-y-3" style={card}>
+        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('Where it is')}</h3>
+        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Write the full address and place the pin on the church, so members find it on the map and get directions.')}</p>
+        <LocationPicker
+          value={{ address: p.address ?? '', city: p.city ?? '', state_region: p.state_region ?? '', country: p.country ?? '', latitude: p.latitude, longitude: p.longitude }}
+          onChange={u => set({ ...u, ...('address' in u ? { address: u.address || null } : {}), ...('city' in u ? { city: u.city || null } : {}),
+                               ...('state_region' in u ? { state_region: u.state_region || null } : {}) })}
+          inputClass={inputClass} inputStyle={inputStyle} requireCity />
+      </section>
+
+      <section className="rounded-2xl border p-4 space-y-3" style={card}>
+        <h3 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('About the parish')}</h3>
+        <Field label={tr('Who you are, your history, what visitors should know')}>
+          <textarea value={p.about ?? ''} onChange={e => set({ about: e.target.value })} rows={5} maxLength={4000} className={inputClass} style={inputStyle} />
+        </Field>
+        <Field label={tr('Year founded')}>
+          <input type="number" min={1947} max={new Date().getFullYear()} value={p.founded_year ?? ''} onChange={e => set({ founded_year: e.target.value ? Number(e.target.value) : null })}
+                 inputMode="numeric" className={inputClass} style={inputStyle} />
+        </Field>
+        <fieldset>
+          <legend className="text-xs font-semibold mb-1" style={{ color: 'var(--color-text-muted)' }}>{tr('Languages of worship')}</legend>
+          <div className="flex flex-wrap gap-1.5">
+            {WORSHIP_LANGUAGES.map(l => {
+              const on = (p.worship_languages ?? []).includes(l);
+              return (
+                <button key={l} type="button" aria-pressed={on} onClick={() => set({ worship_languages: on ? (p.worship_languages ?? []).filter(x => x !== l) : [...(p.worship_languages ?? []), l] })}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold border"
+                        style={on ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' } : { borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
+                  {tr(l)}
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
+        <label className="flex items-start gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          <input type="checkbox" className="mt-1" checked={!!p.hourly_prayers} onChange={e => set({ hourly_prayers: e.target.checked })} />
+          {tr('We hold the hourly prayers (Àdúrà Wákàtí) at 9am, 12 noon, 3pm and 6pm')}</label>
+        <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Pictures, videos, the logo and the cover photo are under the Media tab.')}</p>
       </section>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>

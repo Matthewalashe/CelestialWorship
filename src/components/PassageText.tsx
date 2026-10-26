@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
-import { loadChapter } from '../hooks/useBible';
+import { loadChapter, preferredBibleVersion as preferredVersion } from '../hooks/useBible';
 import { referenceToPath } from '../utils/parseReference';
 import type { ScriptureReference } from '../types';
-import { contentDefaults, tr } from '../i18n';
-
-function preferredVersion(): string {
-  try { return localStorage.getItem('cw-bible-version') || contentDefaults().bibleVersion; } catch { return 'en'; }
-}
+import { tr } from '../i18n';
 
 /**
  * A Bible passage shown in place (in the Order of Service, Devotion…), collapsed by default

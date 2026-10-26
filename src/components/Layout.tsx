@@ -15,6 +15,7 @@ import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
 import { LanguageSwitch } from './LanguageSwitch';
 import { MovedNotice } from './MovedNotice';
+import { sendWaitingParishLeads } from '../lib/parishLeads';
 
 interface NavItem {
   path: string;
@@ -89,6 +90,8 @@ export default function Layout() {
   const studio = desktop && (location.pathname === '/' || location.pathname === '/studio');
 
   useEffect(() => { setMoreOpen(false); }, [location.pathname]);
+  // A parish described while offline goes once the app is open again
+  useEffect(() => { sendWaitingParishLeads(); }, []);
 
   const groups: { title: string; items: NavItem[] }[] = canModerate
     ? MoreGroups.map(g => (g.title === 'Me' ? { ...g, items: [...g.items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} /> }] } : g))
