@@ -54,6 +54,9 @@ const Library = React.lazy(() => import('./pages/Library'));
 const ChurchStructure = React.lazy(() => import('./pages/ChurchStructure'));
 const Person = React.lazy(() => import('./pages/Person'));
 const Install = React.lazy(() => import('./pages/Install'));
+const ParishSpace = React.lazy(() => import('./pages/ParishSpace'));
+const SharedRoster = React.lazy(() => import('./pages/Shared').then(m => ({ default: m.SharedRoster })));
+const SharedPost = React.lazy(() => import('./pages/Shared').then(m => ({ default: m.SharedPost })));
 const Stories = React.lazy(() => import('./pages/Stories'));
 const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
@@ -138,6 +141,9 @@ function App() {
             <Route path="/structure" element={<ChurchStructure />} />
             <Route path="/people/:id" element={<Person />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/space" element={<ParishSpace />} />
+            <Route path="/roster/:token" element={<SharedRoster />} />
+            <Route path="/shared/:token" element={<SharedPost />} />
             <Route path="/download" element={<Navigate to="/install" replace />} />
             <Route path="/app" element={<Navigate to="/install" replace />} />
             <Route path="/stories" element={<Stories />} />

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { MEN_RANKS, WOMEN_RANKS, HIERARCHY, ASSETS, type Rank } from '../data/ranks';
+import { ART_FOR } from '../components/ChurchArt';
 import { tr } from '../i18n';
 
 /** A small robe in the rank's colours: robe, cross-bar strands and loins */
@@ -112,14 +113,18 @@ export default function ChurchStructure() {
       )}
 
       {tab === 'symbols' && (
-        <ul className="mt-5 grid sm:grid-cols-2 gap-3">
-          {ASSETS.map(a => (
-            <li key={a.title} className="rounded-2xl p-4" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+        <ul className="mt-5 grid sm:grid-cols-2 gap-4">
+          {ASSETS.map(a => {
+            const Art = ART_FOR[a.title];
+            return (
+            <li key={a.title} className={`rounded-2xl p-4 space-y-3 ${a.title === 'Colours' ? 'sm:col-span-2' : ''}`} style={{ backgroundColor: 'var(--color-bg-card)' }}>
+              {Art && <Art />}
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(a.title)}</p>
               <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr(a.text)}</p>
               <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}{a.source}</p>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

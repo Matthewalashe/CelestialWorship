@@ -115,5 +115,18 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.celestialworship.online"
+        }
+      ],
+      "destination": "https://celestialworship.online/$1",
+      "permanent": true
+    }
   ]
 }

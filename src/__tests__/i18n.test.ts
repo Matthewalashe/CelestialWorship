@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const catalog = (l: string): Record<string, string> => JSON.parse(readFileSync(resolve(__dirname, '../../public/i18n', `${l}.json`), 'utf-8'));
-const fr = catalog('fr'), yo = catalog('yo'), egun = catalog('egun');
+const fr = catalog('fr'), yo = catalog('yo');
 
 describe('translation catalogs', () => {
   it('keep the shape of each string: leading punctuation, arrows and numbers', () => {
-    for (const cat of [fr, yo, egun]) {
+    for (const cat of [fr, yo]) {
       for (const [en, t] of Object.entries(cat)) {
         expect(t.trim(), en).toBeTruthy();
         // Pieces that sit next to other text keep their joining mark
@@ -28,18 +28,18 @@ describe('translation catalogs', () => {
 
 describe('tr()', () => {
   beforeAll(() => {
-    const store = new Map<string, string>([['cw-ui-language', 'egun'], ['cw-i18n-egun', JSON.stringify(egun)], ['cw-i18n-fr', JSON.stringify(fr)]]);
+    // Someone who had chosen Gungbe (no longer offered) is moved to French
+    const store = new Map<string, string>([['cw-ui-language', 'egun'], ['cw-i18n-fr', JSON.stringify(fr)]]);
     vi.stubGlobal('localStorage', { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v), removeItem: (k: string) => store.delete(k) });
     vi.stubGlobal('window', { addEventListener() {}, removeEventListener() {}, dispatchEvent() { return true; } });
     vi.stubGlobal('document', { documentElement: { lang: 'en' } });
     vi.stubGlobal('fetch', () => Promise.resolve({ ok: false }));
   });
 
-  it('uses Gungbe, then French, then English', async () => {
+  it('translates from the catalog and passes everything else through', async () => {
     vi.resetModules();
     const { tr, getUILanguage, contentDefaults } = await import('../i18n');
-    expect(getUILanguage()).toBe('egun');
-    expect(tr('Bible')).toBe('Biblu');
+    expect(getUILanguage()).toBe('fr');
     expect(tr('Hymn lyrics')).toBe(fr['Hymn lyrics']);
     expect(tr('A string nobody wrote')).toBe('A string nobody wrote');
     expect(tr(42)).toBe(42);

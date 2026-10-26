@@ -20,7 +20,7 @@ ROUTES = [
     '/people/00000000-0000-0000-0000-000000000000', '/bible/john/3?lang=fr',
     '/parish-admin', '/control', '/display', '/signin', '/nonexistent-page',
     # The same app in the other languages
-    '/@fr', '/learn@fr', '/structure@fr', '/directory@yo', '/services/lords_day_service@yo', '/profile@egun', '/welcome@fr',
+    '/@fr', '/learn@fr', '/structure@fr', '/directory@yo', '/services/lords_day_service@yo', '/profile@fr', '/devotion?service=lords_day_service@yo', '/welcome@fr',
 ]
 # "Something went wrong" in each language
 CRASH = ('Something went wrong', 'Une erreur s’est produite', 'Nǹkan kan ṣẹlẹ̀ tí kò tọ́')

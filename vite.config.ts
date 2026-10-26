@@ -14,7 +14,10 @@ function minifyData(files: string[]): Plugin {
     writeBundle(options) {
       for (const f of files) {
         const path = resolve(options.dir ?? 'dist', f);
-        if (existsSync(path)) writeFileSync(path, JSON.stringify(JSON.parse(readFileSync(path, 'utf-8'))));
+        if (!existsSync(path)) continue;
+        // text_lines repeats text in every step of the Order of Service; the app rebuilds it from text
+        const drop = (key: string, value: unknown) => (key === 'text_lines' ? undefined : value);
+        writeFileSync(path, JSON.stringify(JSON.parse(readFileSync(path, 'utf-8')), f.endsWith('services.json') ? drop : undefined));
       }
     },
   };
@@ -24,7 +27,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    minifyData(['data/hymns.json', 'data/services.json', 'data/lessons.json', 'data/constitution.json']),
+    minifyData(['data/hymns.json', 'data/services.json', 'data/lessons.json', 'data/constitution.json', 'data/devotion.json']),
     VitePWA({
       registerType: 'autoUpdate',
       // The file pattern below already takes the icons and the logo; listing them again sent them twice

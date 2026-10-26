@@ -46,7 +46,7 @@ export interface MemberProfile {
   phone: string;
   phonePublic: boolean;
   birthday: string; // YYYY-MM-DD or ''
-  preferredLanguage: 'en' | 'yo' | 'fr' | 'egun';
+  preferredLanguage: 'en' | 'yo' | 'fr';
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   onboardedAt: string | null;
   /** Profile photo and banner (set through lib/media.ts) */

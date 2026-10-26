@@ -1,33 +1,31 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * Interface language: English, Yorùbá, French and Gungbe (Egun / Ogu).
+ * Interface language: English, Yorùbá and French.
  *
  * The app's own words are written in English and translated through catalogs keyed by the
  * English text (public/i18n/<lang>.json). `tr('Save')` returns the word in the chosen
- * language, or the English if there's no translation yet. Gungbe falls back to French,
- * then English. Content (hymns, Bible, devotion) has its own language choices, which start
+ * language, or the English if there's no translation yet. Content (hymns, Bible, devotion) has its own language choices, which start
  * from this one. Translations should be reviewed by native speakers; corrections welcome.
  *
  * scripts/i18n.cjs wraps new text in tr() and lists strings that still need translating.
  */
 
-export type UILanguage = 'en' | 'yo' | 'fr' | 'egun';
+export type UILanguage = 'en' | 'yo' | 'fr';
 
 export const UI_LANGUAGES: { id: UILanguage; name: string; english: string; htmlLang: string; beta?: boolean }[] = [
   { id: 'en', name: 'English', english: 'English', htmlLang: 'en' },
   { id: 'yo', name: 'Yorùbá', english: 'Yoruba', htmlLang: 'yo' },
-  { id: 'egun', name: 'Gungbe (Egun)', english: 'Egun (Ogu)', htmlLang: 'guw', beta: true },
   { id: 'fr', name: 'Français', english: 'French', htmlLang: 'fr' },
 ];
 
-type Entry = { en: string; yo: string; fr: string; egun?: string };
+type Entry = { en: string; yo: string; fr: string };
 
 const STRINGS = {
-  'nav.home': { en: 'Home', yo: 'Ilé', fr: 'Accueil', egun: 'Whé' },
+  'nav.home': { en: 'Home', yo: 'Ilé', fr: 'Accueil' },
   'nav.services': { en: 'Service', yo: 'Ìsìn', fr: 'Culte' },
-  'nav.hymns': { en: 'Hymnal', yo: 'Orin', fr: 'Cantiques', egun: 'Ohàn' },
-  'nav.bible': { en: 'Bible', yo: 'Bíbélì', fr: 'Bible', egun: 'Biblu' },
+  'nav.hymns': { en: 'Hymnal', yo: 'Orin', fr: 'Cantiques' },
+  'nav.bible': { en: 'Bible', yo: 'Bíbélì', fr: 'Bible' },
   'nav.more': { en: 'Menu', yo: 'Àkójọ', fr: 'Menu' },
   'nav.lessons': { en: 'Bible lessons', yo: 'Ẹ̀kọ́ Bíbélì', fr: 'Leçons bibliques' },
   'nav.devotion': { en: 'Devotion', yo: 'Ìfọkànsìn', fr: 'Dévotion' },
@@ -49,6 +47,7 @@ const STRINGS = {
   'nav.live': { en: 'Livestreams', yo: 'Ní tààrà', fr: 'En direct' },
   'nav.moderate': { en: 'Moderation', yo: 'Àbójútó', fr: 'Modération' },
   'nav.install': { en: 'Get the app', yo: 'Gba ìṣàfilọ́lẹ̀', fr: 'Installer l’app' },
+  'nav.space': { en: 'Parish space', yo: 'Ààyè ìjọ', fr: 'Espace paroissial' },
 
   'home.morning': { en: 'Good Morning', yo: 'Ẹ káàárọ̀', fr: 'Bonjour' },
   'home.afternoon': { en: 'Good Afternoon', yo: 'Ẹ káàsán', fr: 'Bon après-midi' },
@@ -92,15 +91,17 @@ export type StringKey = keyof typeof STRINGS;
 
 const KEY = 'cw-ui-language';
 const CHANGE_EVENT = 'cw-ui-language-changed';
-const isLang = (v: unknown): v is UILanguage => v === 'en' || v === 'yo' || v === 'fr' || v === 'egun';
+const isLang = (v: unknown): v is UILanguage => v === 'en' || v === 'yo' || v === 'fr';
+// Gungbe (Egun) was offered for a while with French filling its gaps; those readers now get French
+const known = (v: unknown): UILanguage | null => (v === 'egun' ? 'fr' : isLang(v) ? v : null);
 
 export function getUILanguage(): UILanguage {
   try {
-    const stored = localStorage.getItem(KEY);
-    if (isLang(stored)) return stored;
+    const stored = known(localStorage.getItem(KEY));
+    if (stored) return stored;
     // The language saved with the profile (read directly: the profile module uses this one)
-    const fromProfile = JSON.parse(localStorage.getItem('cw-profile') || '{}').preferredLanguage;
-    if (isLang(fromProfile)) return fromProfile;
+    const fromProfile = known(JSON.parse(localStorage.getItem('cw-profile') || '{}').preferredLanguage);
+    if (fromProfile) return fromProfile;
     const nav = (navigator.language || 'en').toLowerCase();
     return nav.startsWith('yo') ? 'yo' : nav.startsWith('fr') ? 'fr' : 'en';
   } catch {
@@ -116,8 +117,7 @@ const CACHE = (l: UILanguage) => `cw-i18n-${l}`;
 let current: UILanguage = 'en';
 let version = 0;
 
-/** Gungbe uses the French catalog where it has no word yet */
-const chain = (l: UILanguage): UILanguage[] => (l === 'egun' ? ['egun', 'fr'] : l === 'en' ? [] : [l]);
+const chain = (l: UILanguage): UILanguage[] => (l === 'en' ? [] : [l]);
 
 function fromCache(l: UILanguage) {
   if (catalogs[l]) return;
@@ -180,7 +180,6 @@ export function tr<T>(text: T): T {
 
 export function translate(key: StringKey, lang: UILanguage = current): string {
   const e: Entry = STRINGS[key];
-  if (lang === 'egun') return e.egun ?? e.fr ?? e.en;
   return e[lang] ?? e.en;
 }
 
@@ -211,6 +210,5 @@ export function useT() {
 export function contentDefaults(lang: UILanguage = current): { bibleVersion: string; hymnView: 'yo' | 'both' | 'en' } {
   if (lang === 'yo') return { bibleVersion: 'yo', hymnView: 'yo' };
   if (lang === 'fr') return { bibleVersion: 'fr', hymnView: 'both' };
-  if (lang === 'egun') return { bibleVersion: 'fr', hymnView: 'yo' };
   return { bibleVersion: 'en', hymnView: 'both' };
 }

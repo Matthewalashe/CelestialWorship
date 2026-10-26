@@ -8,7 +8,7 @@ import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
@@ -48,6 +48,7 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
       { path: '/events', label: 'nav.events', icon: <CalendarDays size={20} /> },
       { path: '/prayer-requests', label: 'nav.prayer', icon: <HandHeart size={20} /> },
       { path: '/directory', label: 'nav.directory', icon: <MapPin size={20} /> },
+      { path: '/space', label: 'nav.space', icon: <MessagesSquare size={20} /> },
       { path: '/give', label: 'nav.give', icon: <HandCoins size={20} /> },
     ],
   },
@@ -144,7 +145,7 @@ export default function Layout() {
                   key={item.path}
                   to={item.path}
                   className="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm"
-                  style={({ isActive }) => ({ color: isActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)', fontWeight: isActive ? 600 : 400 })}
+                  style={({ isActive }) => ({ backgroundColor: isActive ? 'var(--color-accent-brand)' : 'transparent', color: isActive ? 'var(--color-text-on-accent)' : 'var(--color-text-muted)', fontWeight: isActive ? 600 : 400 })}
                 >
                   {item.icon}
                   <span>{label(item)}</span>
@@ -212,8 +213,8 @@ export default function Layout() {
                     return (
                       <li key={item.path}>
                         <NavLink to={item.path} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm"
-                                 style={{ backgroundColor: active ? 'var(--color-bg-card)' : 'transparent', color: active ? 'var(--color-accent-brand)' : 'var(--color-text-primary)', fontWeight: active ? 600 : 400 }}>
-                          <span style={{ color: 'var(--color-text-muted)' }}>{item.icon}</span>
+                                 style={{ backgroundColor: active ? 'var(--color-accent-brand)' : 'transparent', color: active ? 'var(--color-text-on-accent)' : 'var(--color-text-primary)', fontWeight: active ? 600 : 400 }}>
+                          <span style={{ color: active ? 'inherit' : 'var(--color-text-muted)' }}>{item.icon}</span>
                           <span className="leading-tight">{label(item)}</span>
                         </NavLink>
                       </li>
@@ -245,7 +246,11 @@ export default function Layout() {
               className="flex flex-col items-center justify-center flex-1 h-14 rounded-xl"
               style={{ color: isActive ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}
             >
-              <span className="mb-0.5">{item.icon}</span>
+              {/* Active: a solid pill behind the icon */}
+              <span className="mb-0.5 h-7 w-12 grid place-items-center rounded-full transition-colors"
+                    style={isActive ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : undefined}>
+                {item.icon}
+              </span>
               <span className={`text-[10px] ${isActive ? 'font-semibold' : 'font-medium'}`}>{t(item.label)}</span>
             </NavLink>
           );

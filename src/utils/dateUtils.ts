@@ -51,7 +51,7 @@ export function getServiceTypesForDate(date: Date): string[] {
 function dateLocale(): string {
   try {
     const l = localStorage.getItem('cw-ui-language');
-    return l === 'yo' ? 'yo-NG' : l === 'fr' ? 'fr-FR' : l === 'egun' ? 'fr-BJ' : 'en-GB';
+    return l === 'yo' ? 'yo-NG' : l === 'fr' ? 'fr-FR' : 'en-GB';
   } catch {
     return 'en-GB';
   }

@@ -92,3 +92,60 @@ describe('French Bible (Louis Segond 1910)', () => {
     expect(john.chapters[2].verses[15].text).toMatch(/^Car Dieu a tant aimé le monde/);
   });
 });
+
+describe('the Order of Service as worshippers follow it (devotion.json)', () => {
+  const orders: Record<string, { steps: { n: number; kind: string; title: string; blocks: { kind: string; [k: string]: unknown }[] }[] }> = read('data/devotion.json');
+  const lords = orders.lords_day_service.steps;
+
+  it('has every service, each step with something to do', () => {
+    expect(Object.keys(orders)).toHaveLength(21);
+    for (const [id, svc] of Object.entries(orders)) {
+      expect(svc.steps.length, id).toBeGreaterThan(10);
+      for (const s of svc.steps) {
+        expect(s.blocks.length, `${id} ${s.n}`).toBeGreaterThan(0);
+        expect(s.title.trim(), `${id} ${s.n}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('keeps the hymn and the psalm reading of the Lord’s Day as separate steps', () => {
+    const hymn = lords.findIndex(s => s.kind === 'hymn' && /forgiveness of sins/i.test(s.title));
+    expect(hymn).toBeGreaterThan(-1);
+    expect(lords[hymn + 1].kind).toBe('psalm');
+    expect(lords[hymn + 1].title).toBe('Psalm 118');
+  });
+
+  it('calls the holy name before each psalm the guide names it for', () => {
+    const psalm = (ref: string) => lords.flatMap(s => s.blocks).find(b => b.kind === 'psalm' && b.ref === ref) as { name?: string; verses: string[] } | undefined;
+    expect(psalm('Psalm 51')?.name).toBe('Eyiba');
+    expect(psalm('Psalm 24')?.name).toBe('Jehovah Ramah');
+    expect(psalm('Psalm 72')?.name).toBe('Jehovah Lass');
+    expect(psalm('Psalm 51')?.verses.length).toBe(19);
+  });
+
+  it('writes the Lord’s Prayer, Gloria and the Creed out in full, never by name only', () => {
+    const named = lords.filter(s => /^(The Lord's Prayer|Gloria|The Creed)$/.test(s.title));
+    expect(named.length).toBeGreaterThan(5);
+    for (const s of named) expect(s.blocks.some(b => b.kind === 'prayer'), s.title).toBe(true);
+  });
+
+  it('gives the Lord’s Day offering in its five parts, and other services one offering', () => {
+    const offering = lords.flatMap(s => s.blocks).find(b => b.kind === 'offering');
+    expect(offering?.parts).toBe(true);
+    const others = Object.entries(orders).filter(([id]) => id !== 'lords_day_service').flatMap(([, s]) => s.steps.flatMap(st => st.blocks)).filter(b => b.kind === 'offering');
+    for (const o of others) expect(o.parts).toBe(false);
+  });
+
+  it('gives the hymnal number for songs quoted in the order', () => {
+    const songs = lords.flatMap(s => s.blocks).filter(b => b.kind === 'song') as { title: string; hymn?: number }[];
+    expect(songs.find(s => /processional/i.test(s.title))?.hymn).toBe(1);
+    expect(songs.find(s => /lighting the candles/i.test(s.title))?.hymn).toBe(2);
+    expect(songs.find(s => /Yah Raman/i.test(s.title))?.hymn).toBe(3);
+  });
+
+  it('shows no bracketed asides in what is read aloud', () => {
+    for (const svc of Object.values(orders)) for (const s of svc.steps) for (const b of s.blocks) {
+      if (typeof b.text === 'string') expect(b.text, s.title).not.toMatch(/\[[^\]]*\]/);
+    }
+  });
+});

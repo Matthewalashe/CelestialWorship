@@ -4,7 +4,7 @@ import { useLessonsByDate } from '../hooks/useLessons';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { referenceToPath } from '../utils/parseReference';
 import { BookOpen, Clock, Moon, Flame, Sun, Zap } from 'lucide-react';
-import { CCCLogo, MemberInPrayer } from '../components/icons/celestial-icons';
+import { Altar, Kneeling } from '../components/icons/celestial-icons';
 import { tr } from '../i18n';
 
 export default function LessonDetail() {
@@ -132,13 +132,13 @@ function getDayServices(day: string): { id: string; name: string; icon: ReactEle
   switch (day?.toLowerCase()) {
     case 'sunday':
       return [
-        { id: 'lords_day_service', name: "Lord's Day Service", icon: <CCCLogo size={16} /> },
+        { id: 'lords_day_service', name: "Lord's Day Service", icon: <Altar size={16} /> },
         { id: 'evening_service_lords_day', name: 'Evening Service', icon: <Moon size={16} /> },
       ];
     case 'wednesday':
       return [
         { id: 'seekers_service', name: 'Seekers Service', icon: <Flame size={16} /> },
-        { id: 'mercy_day_service', name: 'Mercy Day Service', icon: <MemberInPrayer size={16} /> },
+        { id: 'mercy_day_service', name: 'Mercy Day Service', icon: <Kneeling size={16} /> },
       ];
     case 'friday':
       return [

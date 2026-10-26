@@ -15,7 +15,7 @@ async function requireUser() {
   return data.user;
 }
 
-export type TeamRole = 'shepherd' | 'admin' | 'parochial_committee' | 'media' | 'choir' | 'editor';
+export type TeamRole = 'shepherd' | 'admin' | 'parochial_committee' | 'media' | 'choir' | 'editor' | 'minister' | 'member';
 
 export const TEAM_ROLES: Record<TeamRole, { label: string; can: string }> = {
   shepherd: { label: 'Shepherd', can: 'Everything, plus prayer requests addressed to the shepherd' },
@@ -24,6 +24,8 @@ export const TEAM_ROLES: Record<TeamRole, { label: string; can: string }> = {
   media: { label: 'Media', can: 'Livestream and events' },
   choir: { label: 'Choir', can: 'Events (rehearsals, programmes)' },
   editor: { label: 'Editor', can: 'Events' },
+  minister: { label: 'Minister', can: 'The parish space and rosters: ministers at services (conductor, readers, incense bearer…)' },
+  member: { label: 'Member', can: 'The parish space: reads and posts, sees rosters' },
 };
 
 export const FULL_ADMIN_ROLES: TeamRole[] = ['shepherd', 'admin'];

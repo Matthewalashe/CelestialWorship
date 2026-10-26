@@ -145,7 +145,9 @@ with sync_playwright() as p:
 
     def devotion(pg):
         pg.goto(BASE + '/devotion?service=morning_service', wait_until='networkidle')
-        pg.get_by_role('button', name='Begin Devotion').click()
+        # The Begin button stays in reach at the foot of the screen, named after the chosen service
+        pg.get_by_role('button', name='Begin Morning Service').click()
+        expect(pg.get_by_text('Step 1 of')).to_be_visible()
         for _ in range(40):
             done = pg.get_by_role('button', name='✓ Complete')
             if done.count():
@@ -163,6 +165,23 @@ with sync_playwright() as p:
             pg.get_by_role('button', name='Download backup file').click()
         content = Path(d.value.path()).read_text(encoding='utf-8')
         assert 'Healing for Mama' in content and 'John' in content, 'backup is missing items'
+
+    def devotion_parts_and_panels(pg):
+        pg.goto(BASE + '/devotion?service=lords_day_service', wait_until='networkidle')
+        pg.get_by_role('button', name="Begin Lord's Day Service").click()
+        # Step 3: the processional hymn — its hymnal number opens over the step, and back again
+        pg.get_by_role('button', name='Choose a step').click()
+        pg.locator('[role=dialog] ol li button').nth(2).click()
+        pg.get_by_role('button', name='Hymn 1').first.click()
+        expect(pg.get_by_role('button', name='Back to step 3')).to_be_visible()
+        pg.get_by_role('button', name='Back to step 3').click()
+        expect(pg.get_by_text('Step 3 of')).to_be_visible()
+        # Step 8: Psalm 51, with its holy name, the Bible at the top, and how it is done set apart
+        pg.get_by_role('button', name='Choose a step').click()
+        pg.locator('[role=dialog] ol li button').nth(7).click()
+        expect(pg.get_by_text('Eyiba', exact=True).first).to_be_visible()
+        expect(pg.get_by_role('button', name='Open in the Bible')).to_be_visible()
+        expect(pg.get_by_role('complementary', name='How it is done')).to_be_attached()
 
     def splash(pg):
         # Test browsers skip the splash unless asked; a person opening the app sees it once per visit
@@ -183,7 +202,7 @@ with sync_playwright() as p:
     for name, fn in [('onboarding', onboarding), ('highlight and save verse', highlight_and_save), ('note on a verse', note_on_verse),
                      ('prayer journal', prayer_journal), ('hymn favourite', hymn_favourite), ('hymn search without tone marks', hymn_search),
                      ('quiz round', quiz_round), ('daily challenge', daily_challenge), ('reading mode', reading_mode), ('menu', menu), ('children’s stories', stories), ('music on and off', music), ('devotion completion and streak', devotion), ('library backup export', export_backup),
-                     ('splash', splash), ('language switch on Home', language_on_home)]:
+                     ('devotion parts and panels', devotion_parts_and_panels), ('splash', splash), ('language switch on Home', language_on_home)]:
         check(name, fn, page)
 
     browser.close()
