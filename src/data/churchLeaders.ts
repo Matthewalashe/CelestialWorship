@@ -50,6 +50,6 @@ export const GOVERNING_BODIES: { name: string; detail: string; source: string }[
     detail: 'Governs the Church under the ultimate authority of the Pastor: the Pastor (Chairman), the Head of the Diocese and his Deputy, the other members of the Board of Trustees, and members the Pastor co-opts. It interprets the doctrine and the Constitution.',
     source: 'Constitution, clauses 156, 157, 183' },
   { name: 'Board of Trustees',
-    detail: 'Holds the Church’s property and prepared the Constitution for the Pastor-in-Council. Members are appointed by the Pastor.',
-    source: 'Constitution (1980), preface' },
+    detail: 'Seven members, appointed by the Pastor. It holds the Church’s property and prepared the Constitution for the Pastor-in-Council.',
+    source: 'Constitution (1980), preface; clause 200' },
 ];

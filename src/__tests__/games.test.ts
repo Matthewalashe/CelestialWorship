@@ -4,6 +4,11 @@ import { PLACES, JESUS_JOURNEY, PAUL_JOURNEY, PAUL_LETTERS, BIBLE_LANDS, NT_REGI
 import { dailyQuestions } from '../pages/Quiz';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { SPREAD, ANCIENT_NAMES } from '../data/christianity';
+import { POSTCARDS } from '../lib/postcards';
+import { QUESTION_BANKS } from '../data/quizzes';
+import { QUIZ_MORE } from '../data/quizMore';
+import { TRIVIA } from '../data/trivia';
 
 const store: Record<string, string> = {};
 beforeEach(() => {
@@ -57,29 +62,39 @@ describe('rounds and the daily challenge', () => {
 });
 
 describe('Bible lands data', () => {
-  const holyland = JSON.parse(readFileSync(join(__dirname, '../../public/data/maps/holyland.json'), 'utf-8'));
-  const world = JSON.parse(readFileSync(join(__dirname, '../../public/data/maps/world.json'), 'utf-8'));
+  const countries = JSON.parse(readFileSync(join(__dirname, '../../public/data/maps/countries.json'), 'utf-8'));
+  const iso3 = new Set(countries.features.map((f: any) => f.properties.iso3));
+  // The Holy Land atlas: the Nile Delta and Sinai to Damascus; the world atlas: Rome to Persia
+  const inside = (p: { lon: number; lat: number }, region: 'holyland' | 'world') => (region === 'holyland'
+    ? p.lon >= 30.5 && p.lon <= 37.5 && p.lat >= 27.5 && p.lat <= 34
+    : p.lon >= 8 && p.lon <= 62 && p.lat >= 12 && p.lat <= 46);
 
   it('has unique places inside their map', () => {
     expect(new Set(PLACES.map(p => p.id)).size).toBe(PLACES.length);
-    for (const p of PLACES) {
-      const m = p.map === 'holyland' ? holyland : world;
-      const x = (p.lon - m.projection.west) * m.projection.k * m.projection.cos;
-      const y = (m.projection.north - p.lat) * m.projection.k;
-      expect(x >= 0 && x <= m.width && y >= 0 && y <= m.height, `${p.id} is off the ${p.map} map`).toBe(true);
-    }
+    for (const p of PLACES) expect(inside(p, p.map), `${p.id} is off the ${p.map} map`).toBe(true);
   });
   it('every journey stop and Bible land points to real data', () => {
     for (const s of [...JESUS_JOURNEY, ...PAUL_JOURNEY, ...PAUL_LETTERS]) expect(placeById(s.placeId), s.placeId).toBeTruthy();
-    // Paul's journey stays on the world map
-    for (const s of PAUL_JOURNEY) {
-      const pl = placeById(s.placeId)!;
-      const x = (pl.lon - world.projection.west) * world.projection.k * world.projection.cos;
-      expect(x >= 0 && x <= world.width, s.placeId).toBe(true);
-    }
+    for (const s of PAUL_JOURNEY) expect(inside(placeById(s.placeId)!, 'world'), s.placeId).toBe(true);
     expect(new Set(PAUL_LETTERS.map(l => l.letter)).size).toBe(13);
-    const ids = new Set(world.countries.map((c: any) => c.id));
-    for (const l of BIBLE_LANDS) for (const c of l.countries) expect(ids.has(c), `${l.name}: ${c}`).toBe(true);
+    for (const l of BIBLE_LANDS) for (const c of l.countries) expect(iso3.has(c), `${l.name}: ${c}`).toBe(true);
+  });
+  it('tells the story of the Church in order, with postcards to collect', () => {
+    expect(SPREAD.length).toBeGreaterThanOrEqual(15);
+    expect(new Set(SPREAD.map(s => s.id)).size).toBe(SPREAD.length);
+    for (const s of SPREAD) expect(s.story && s.why && s.didYouKnow, s.id).toBeTruthy();
+    const ids = new Set(POSTCARDS.map(p => p.id));
+    const PHOTOS = JSON.parse(readFileSync(join(__dirname, '../../public/data/postcards.json'), 'utf-8'));
+    for (const id of Object.keys(PHOTOS)) expect(ids.has(id), `photo for unknown postcard ${id}`).toBe(true);
+    for (const a of ANCIENT_NAMES) expect(countries.features.some((f: any) => f.properties.iso2 === a.iso2), a.iso2).toBe(true);
+  });
+  it('gives every quiz question something more to learn, and trivia an answer', () => {
+    for (const [topic, qs] of Object.entries(QUESTION_BANKS)) {
+      if (topic === 'trivia') continue;
+      for (const q of qs) expect(QUIZ_MORE[q.id], q.id).toBeTruthy();
+    }
+    for (const t of TRIVIA) expect(t.explain && t.source, t.id).toBeTruthy();
+    expect(QUESTION_BANKS.trivia.length).toBe(TRIVIA.length);
   });
   it('places regions on the holy land map', () => {
     for (const r of NT_REGIONS) expect(r.ring.length).toBeGreaterThan(5);

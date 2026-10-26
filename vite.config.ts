@@ -41,7 +41,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
         // Bible books (~13 MB) and story pages are cached as they are read, not at install time
         // The sharing image and the map games' data aren't needed to start the app
-        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png', '**/i18n/**', '**/data/parishes_listed.json', '**/screenshots/**', '**/data/stories/*/bs-*.json', '**/assets/LeafletMap-*'], // the map code: maps need the internet anyway
+        globIgnores: ['**/data/bible/**', '**/data/stories/bs-*.json', '**/data/stories/cl-*.json', '**/data/maps/**', '**/og-image.png', '**/i18n/**', '**/data/parishes_listed.json', '**/screenshots/**', '**/data/stories/*/bs-*.json', '**/assets/LeafletMap-*', '**/assets/LeafletAtlas-*', '**/assets/leaflet-*', '**/assets/MapGames-*', '**/data/maps/countries.json'], // the map code: maps need the internet anyway
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/data\//],

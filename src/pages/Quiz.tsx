@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { GraduationCap, Check, X, ChevronRight, Timer, BookOpen, Map as MapIcon, CalendarCheck, Share2, Heart } from 'lucide-react';
+import { GraduationCap, Check, X, ChevronRight, Timer, BookOpen, Map as MapIcon, CalendarCheck, Share2, Heart, Lightbulb, Music, ScrollText, Bird, HelpCircle, RefreshCw } from 'lucide-react';
 import { QUIZ_TOPICS, QUESTION_BANKS, type QuizTopic, type QuizQuestion } from '../data/quizzes';
+import { QUIZ_MORE } from '../data/quizMore';
+import { FACTS } from '../data/trivia';
 import { buildRound, buildHymnRound, readQuizProgress, saveQuizResult, seededShuffle, shuffleOptions } from '../utils/quiz';
 import {
   ANSWER_MS, answerPoints, comboMultiplier, recordRound, recordDaily, dailySeed, dailyDoneToday, dailyShareText,
@@ -42,6 +44,31 @@ export function dailyQuestions(date = new Date()): QuizQuestion[] {
 
 // ── Home ─────────────────────────────────────────────────────
 
+const TOPIC_ICONS: Record<QuizTopic, React.ReactNode> = {
+  bible: <BookOpen size={20} />, geography: <MapIcon size={20} />, doctrine: <Bird size={20} />,
+  constitution: <ScrollText size={20} />, hymns: <Music size={20} />, trivia: <HelpCircle size={20} />,
+};
+
+/** A fact a day, and more on request */
+function DidYouKnow() {
+  const today = Math.floor(Date.now() / 86_400_000);
+  const [k, setK] = useState(today);
+  const f = FACTS[((k % FACTS.length) + FACTS.length) % FACTS.length];
+  return (
+    <section className="p-4 rounded-2xl border space-y-2" style={card} aria-live="polite">
+      <div className="flex items-center gap-2">
+        <Lightbulb size={18} style={{ color: 'var(--color-accent-gold)' }} aria-hidden />
+        <h2 className="font-semibold flex-1" style={{ color: 'var(--color-text-primary)' }}>{tr('Did you know?')}</h2>
+        <button onClick={() => setK(x => x + 1)} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: 'var(--color-accent-brand)' }}>
+          <RefreshCw size={13} aria-hidden /> {tr('Another')}</button>
+      </div>
+      <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(f.title)}</p>
+      <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(f.fact)}</p>
+      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read it')}: <SourceLink source={f.source} /></p>
+    </section>
+  );
+}
+
 function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => void }) {
   const game = useGameState();
   const progress = readQuizProgress();
@@ -52,7 +79,7 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24 space-y-6">
       <div>
         <h1 className="text-2xl font-bold font-[Outfit] flex items-center gap-2 mb-1" style={{ color: 'var(--color-text-primary)' }}>
-          <GraduationCap size={24} style={{ color: 'var(--color-accent-gold)' }} /> Quizzes & games
+          <GraduationCap size={24} style={{ color: 'var(--color-accent-gold)' }} /> {tr('Quizzes & games')}
         </h1>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Learn as you play: every answer explains itself and shows you where to read more.')}</p>
       </div>
@@ -74,6 +101,8 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
           : <button onClick={() => onPlay('daily', 'daily')} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold">{tr('Play')}</button>}
       </div>
 
+      <DidYouKnow />
+
       {/* Topics */}
       <ul className="space-y-3">
         {(Object.keys(QUIZ_TOPICS) as QuizTopic[]).map(t => {
@@ -83,7 +112,7 @@ function Home({ onPlay }: { onPlay: (topic: QuizTopic | 'daily', mode: Mode) => 
           return (
             <li key={t} className="rounded-2xl border overflow-hidden" style={card}>
               <button onClick={() => setPicked(open ? null : t)} aria-expanded={open} className="w-full text-left p-4 flex items-center gap-4">
-                <span className="text-3xl" aria-hidden>{QUIZ_TOPICS[t].icon}</span>
+                <span className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-accent-brand)' }} aria-hidden>{TOPIC_ICONS[t]}</span>
                 <span className="flex-1 min-w-0">
                   <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(QUIZ_TOPICS[t].title)}</span>
                   <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr(QUIZ_TOPICS[t].description)}</span>
@@ -259,7 +288,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
           return (
             <button key={i} role="radio" aria-checked={isChosen} onClick={() => choose(i)} disabled={answered}
                     className={`w-full text-left p-4 rounded-2xl border-2 flex items-center gap-3 transition-colors ${answered && isChosen && !isAnswer ? 'animate-shake' : ''}`} style={style}>
-              <span className="flex-1">{opt}</span>
+              <span className="flex-1">{tr(opt)}</span>
               {answered && isAnswer && <Check size={18} style={{ color: 'var(--color-success)' }} />}
               {answered && isChosen && !isAnswer && <X size={18} style={{ color: 'var(--color-warning)' }} />}
             </button>
@@ -268,15 +297,38 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
       </div>
 
       {answered && (
-        <div className="mt-5 p-4 rounded-2xl animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
-          <p className="font-semibold mb-1" style={{ color: chosen === q.answer ? 'var(--color-success)' : 'var(--color-warning)' }}>
-            {chosen === q.answer ? tr('Correct!') : chosen === -1 ? `Time’s up, the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
-          </p>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(q.explanation)}</p>
-          <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}<SourceLink source={q.source} /></p>
-          <button onClick={next} className="btn-primary w-full mt-4 py-3 rounded-xl text-sm font-semibold">
+        <div className="mt-5 rounded-2xl overflow-hidden animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
+          <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            {chosen === q.answer ? <Check size={18} style={{ color: 'var(--color-success)' }} aria-hidden /> : <X size={18} style={{ color: 'var(--color-warning)' }} aria-hidden />}
+            <p className="font-semibold" style={{ color: chosen === q.answer ? 'var(--color-success)' : 'var(--color-warning)' }}>
+              {chosen === q.answer ? tr('Correct!') : chosen === -1 ? tr('Time’s up') : tr('Not quite')}
+            </p>
+          </div>
+          <dl className="px-4 py-3 space-y-3 text-sm">
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('The answer')}</dt>
+              <dd className="font-semibold mt-0.5" style={{ color: 'var(--color-text-primary)' }}>{tr(q.options[q.answer])}</dd>
+            </div>
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('Why')}</dt>
+              <dd className="leading-relaxed mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr(q.explanation)}</dd>
+            </div>
+            <div>
+              <dt className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr('Read it')}</dt>
+              <dd className="mt-0.5"><SourceLink source={q.source} /></dd>
+            </div>
+          </dl>
+          {QUIZ_MORE[q.id] && (
+            <div className="mx-4 mb-3 p-3 rounded-xl flex gap-2.5 text-sm" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+              <Lightbulb size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-gold)' }} aria-hidden />
+              <p><span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Did you know?')}</span>{' '}<span style={{ color: 'var(--color-text-secondary)' }}>{tr(QUIZ_MORE[q.id])}</span></p>
+            </div>
+          )}
+          <div className="px-4 pb-4">
+          <button onClick={next} className="btn-primary w-full mt-1 py-3 rounded-xl text-sm font-semibold">
             {mode === 'challenge' && lives <= 0 ? tr('See my score') : index + 1 < questions.length ? tr('Next question') : tr('See my score')}
           </button>
+          </div>
         </div>
       )}
     </div>

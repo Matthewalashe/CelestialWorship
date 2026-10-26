@@ -31,7 +31,7 @@ export function readQuizProgress(): Record<QuizTopic, TopicProgress> {
   const empty: TopicProgress = { best: 0, attempts: 0, mastered: [], lastPlayed: null };
   let stored: Partial<Record<QuizTopic, TopicProgress>> = {};
   try { stored = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); } catch {}
-  const topics: QuizTopic[] = ['bible', 'hymns', 'constitution', 'geography', 'doctrine'];
+  const topics: QuizTopic[] = ['bible', 'hymns', 'constitution', 'geography', 'doctrine', 'trivia'];
   return Object.fromEntries(topics.map(t => [t, { ...empty, ...stored[t] }])) as Record<QuizTopic, TopicProgress>;
 }
 

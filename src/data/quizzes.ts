@@ -4,8 +4,9 @@
  * the 1980 Constitution of the Celestial Church of Christ (Nigeria Diocese).
  * The hymn quiz is generated from the hymnal itself (see utils/quiz.ts).
  */
+import { TRIVIA } from './trivia';
 
-export type QuizTopic = 'bible' | 'hymns' | 'constitution' | 'geography' | 'doctrine';
+export type QuizTopic = 'bible' | 'hymns' | 'constitution' | 'geography' | 'doctrine' | 'trivia';
 
 export interface QuizQuestion {
   id: string;
@@ -25,6 +26,7 @@ export const QUIZ_TOPICS: Record<QuizTopic, { title: string; description: string
   doctrine: { title: 'Celestial faith & practice', description: 'Tenets, rites and worship of the Celestial Church', icon: '🕊️' },
   constitution: { title: 'The Constitution', description: 'How the Church is founded, led and organised', icon: '📜' },
   hymns: { title: 'Hymns', description: 'First lines, numbers and sections of the hymnal', icon: '🎵' },
+  trivia: { title: 'Trivia: true or false?', description: 'Quick facts about the Bible, the Church and its history', icon: '❔' },
 };
 
 const q = (id: string, question: string, options: string[], answer: number, explanation: string, source: string, difficulty: 1 | 2 | 3 = 1): QuizQuestion =>
@@ -135,4 +137,6 @@ export const QUESTION_BANKS: Record<Exclude<QuizTopic, 'hymns'>, QuizQuestion[]>
     q('c17', 'When was the Church incorporated in Nigeria?', ['24 November 1958', '29 September 1947', '1951', '29 March 1980'], 0, 'The Church was incorporated in Nigeria under the Land (Perpetual Succession) Ordinance on 24 November 1958.', 'Constitution, Deed of Constitution', 3),
     q('c18', 'Who announces items during devotional services?', ['The Parish Secretary', 'The choir leader', 'Any member', 'The Pastor’s Representative only'], 0, 'Announcements during devotional services are made by the Parish Secretary.', 'Constitution, clause 97', 2),
   ],
+  // True or false, from data/trivia.ts
+  trivia: TRIVIA.map(t => q(t.id, t.statement, ['True', 'False'], t.answer ? 0 : 1, t.explain, t.source, 1)),
 };

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Map as MapIcon, ChevronRight, Footprints, Timer, Globe2, History, List, MapPin, Ship, Mail } from 'lucide-react';
-import { BibleMap, LayerToggle, type MapLayer, type MapPin as Pin } from '../components/BibleMap';
+import { AtlasMap as BibleMap, LayerToggle, type MapLayer, type MapPin as Pin } from '../components/AtlasMap';
 import { PLACES, JESUS_JOURNEY, PAUL_JOURNEY, PAUL_JOURNEY_NAMES, PAUL_LETTERS, BIBLE_LANDS, placeById, distanceKm, distanceScore, type BiblePlace, type LonLat } from '../data/bibleLands';
 import { seededShuffle } from '../utils/quiz';
 import { answerPoints, recordRound, type RoundOutcome } from '../utils/gamify';
@@ -11,6 +11,9 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { parseReference, referenceToPath } from '../utils/parseReference';
 import { RoundSummary } from '../components/GameUi';
 import { tr } from '../i18n';
+import { collectPostcard } from '../lib/postcards';
+import { ExploreAtlas, StoryOfTheChurch, PostcardAlbum } from '../components/AtlasSections';
+import { showToast } from '../components/Toast';
 
 type Game = 'journey' | 'paul' | 'letters' | 'thennow' | 'master' | 'lands';
 
@@ -41,6 +44,11 @@ function PlaceFacts({ place }: { place: BiblePlace }) {
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read:')}{' '}<RefLink refs={place.refs} /></p>
     </div>
   );
+}
+
+/** A right answer on the map earns the place's postcard */
+function earn(placeId: string) {
+  if (collectPostcard(placeId)) showToast(`${tr('New postcard')}: ${tr(placeById(placeId)?.name ?? '')}`);
 }
 
 function finish(xp: number, correct: number, total: number, bestCombo: number): RoundOutcome {
@@ -83,7 +91,12 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
   const total = scores.reduce((a, b) => a + b, 0);
   const route = stops.slice(0, checked ? i + 1 : i).map(s => { const p = placeById(s.placeId)!; return [p.lon, p.lat] as LonLat; });
 
-  const check = () => { if (!guess) return; setChecked(true); setScores(s => [...s, score]); };
+  const check = () => {
+    if (!guess) return;
+    setChecked(true);
+    setScores(s => [...s, score]);
+    if (score >= 50) earn(place.id);
+  };
   const next = () => {
     if (i + 1 < stops.length) { setI(i + 1); setGuess(null); setChecked(false); return; }
     setOutcome(finish(Math.round(total / 8), scores.filter(s => s >= 50).length, scores.length, 0));
@@ -120,7 +133,7 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
           ))}
         </div>
       ) : (
-        <BibleMap region={region} layer={region === 'world' && layer === 'then' ? 'both' : layer} pins={pins} route={route}
+        <BibleMap region={region} layer={layer} pins={pins} route={route}
                   focus={focusFor(place)} onTap={checked ? undefined : setGuess} height="55vh" />
       )}
 
@@ -215,7 +228,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
     const ok = id === q.place.id;
     const nextCombo = ok ? combo + 1 : 0;
     setCombo(nextCombo); setBest(b => Math.max(b, nextCombo));
-    if (ok) { setRight(r => r + 1); setXp(x => x + answerPoints({ correct: true, difficulty: 2, ms: Date.now() - started.current, combo: nextCombo })); }
+    if (ok) { setRight(r => r + 1); setXp(x => x + answerPoints({ correct: true, difficulty: 2, ms: Date.now() - started.current, combo: nextCombo })); earn(q.place.id); }
   };
   const next = () => {
     if (k + 1 < round.length) { setK(k + 1); setChosen(null); return; }
@@ -309,7 +322,7 @@ function Master({ layer }: { layer: MapLayer }) {
     const ok = id === target.id;
     const nextCombo = ok ? combo + 1 : 0;
     setCombo(nextCombo); setBest(b => Math.max(b, nextCombo));
-    if (ok) { setHits(h => h + 1); setXp(x => x + answerPoints({ correct: true, difficulty: 2, combo: nextCombo })); }
+    if (ok) { setHits(h => h + 1); setXp(x => x + answerPoints({ correct: true, difficulty: 2, combo: nextCombo })); earn(target.id); }
     setFlash({ id: target.id, ok });
     setTimeout(() => { setFlash(null); setK(n => n + 1); }, ok ? 350 : 900);
   };
@@ -395,7 +408,7 @@ function Lands({ layer }: { layer: MapLayer }) {
           ))}
         </div>
       ) : (
-        <BibleMap region="world" layer={layer === 'then' ? 'both' : layer} onCountry={answered ? undefined : pick} highlight={highlight} focus={[33, 33, 34]} height="50vh" />
+        <BibleMap region="world" layer={layer} onCountry={answered ? undefined : pick} highlight={highlight} focus={[33, 33, 34]} height="50vh" />
       )}
       <button onClick={() => setListMode(m => !m)} className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-lg" style={{ color: 'var(--color-text-secondary)' }}>
         {listMode ? <><MapPin size={13} />{' '}{tr('Use the map')}</> : <><List size={13} />{' '}{tr('Choose from a list')}</>}
@@ -429,7 +442,7 @@ export default function MapGames() {
           <Link to="/quiz" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Quizzes')}</Link>
           <h1 className="text-2xl font-bold font-[Outfit] flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
             <MapIcon size={24} style={{ color: 'var(--color-accent-gold)' }} />{' '}{tr('Bible map games')}</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('Walk where Jesus walked. Every place tells you its name today and where to read about it.')}</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('Walk where Jesus walked, on the map of Palestine in the time of Christ. Every place tells you its name today and where to read about it, and gives you its postcard.')}</p>
         </div>
         <ul className="space-y-3">
           {GAMES.map(g => (
@@ -445,15 +458,9 @@ export default function MapGames() {
             </li>
           ))}
         </ul>
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr('Explore the map')}</h2>
-            <LayerToggle layer={layer} onChange={changeLayer} />
-          </div>
-          <BibleMap region="holyland" layer={layer} height="50vh" focus={[35.3, 32.2, 3]}
-                    pins={PLACES.filter(p => p.map === 'holyland').map(p => ({ at: [p.lon, p.lat] as LonLat, kind: 'place' as const, id: p.id, label: layer === 'now' ? p.today : p.name }))} />
-          <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Regions are approximate, as in the time of Jesus (Luke 3:1). Today’s borders are from Natural Earth and are shown for orientation only, not as a view on disputed territory.')}</p>
-        </div>
+        <ExploreAtlas layer={layer} onLayer={changeLayer} />
+        <StoryOfTheChurch />
+        <PostcardAlbum />
       </div>
     );
   }
