@@ -53,7 +53,7 @@ Secrets (`supabase secrets set NAME=value`):
 
 | Secret | For |
 |---|---|
-| `APP_ORIGIN` | The app's URL, e.g. `https://celestialworship.vercel.app` |
+| `APP_ORIGIN` | The app's URL, e.g. `https://celestialworship.online` |
 | `FLUTTERWAVE_SECRET_KEY` | Gifts and the Partner plan (the platform's Flutterwave account, `FLWSECK-…`) |
 | `FLUTTERWAVE_WEBHOOK_HASH` | Any long random string; the same value goes in Flutterwave → Settings → Webhooks → Secret hash |
 | `PLATFORM_PERCENTAGE` | Platform's share of each gift, e.g. `0` or `2.5` (applied when a parish saves its payout account) |

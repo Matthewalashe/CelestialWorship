@@ -1,7 +1,7 @@
 """QR codes for the install page and printed notices: public/qr/install{,-android,-ios}.svg
 
     pip install segno
-    python -I scripts/build_install_qr.py [https://celestialworship.vercel.app]
+    python -I scripts/build_install_qr.py [https://celestialworship.online]
 """
 import pathlib
 import sys
@@ -10,7 +10,7 @@ import segno
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'public' / 'qr'
-BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://celestialworship.vercel.app').rstrip('/')
+BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://celestialworship.online').rstrip('/')
 
 LINKS = {
     'install': f'{BASE}/install',

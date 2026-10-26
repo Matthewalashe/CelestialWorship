@@ -5,6 +5,7 @@ import { usePWAInstall, type Device } from '../hooks/usePWAInstall';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { showToast } from '../components/Toast';
 import { tr } from '../i18n';
+import { NEW_ORIGIN } from '../components/MovedNotice';
 
 /**
  * Get the app on a phone. CelestialWorship installs from the browser (no app store): one tap on
@@ -12,7 +13,7 @@ import { tr } from '../i18n';
  * (/install?device=android, /install?device=ios) and a QR code for notices and screens.
  */
 
-const SITE = 'https://celestialworship.vercel.app';
+const SITE = NEW_ORIGIN;
 const LINKS: Record<'android' | 'ios', string> = { android: `${SITE}/install?device=android`, ios: `${SITE}/install?device=ios` };
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };

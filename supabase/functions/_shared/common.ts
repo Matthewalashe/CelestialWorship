@@ -48,4 +48,4 @@ export const toMajor = (minor: number) => Number(minor) / 100;
 export const toMinor = (major: number) => Math.round(Number(major) * 100);
 
 /** Our page, where Flutterwave sends the payer back (with ?status=…&tx_ref=…&transaction_id=…) */
-export const appOrigin = () => Deno.env.get('APP_ORIGIN') ?? 'https://celestialworship.vercel.app';
+export const appOrigin = () => Deno.env.get('APP_ORIGIN') ?? 'https://celestialworship.online';

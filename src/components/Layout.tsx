@@ -14,6 +14,7 @@ import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
 import { LanguageSwitch } from './LanguageSwitch';
+import { MovedNotice } from './MovedNotice';
 
 interface NavItem {
   path: string;
@@ -187,6 +188,8 @@ export default function Layout() {
             </button>
           </div>
         </header>
+
+        <MovedNotice />
 
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar pb-20 md:pb-0">

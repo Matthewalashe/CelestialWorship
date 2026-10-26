@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / 'public' / 'data'
-BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://celestialworship.vercel.app').rstrip('/')
+BASE = (sys.argv[1] if len(sys.argv) > 1 else 'https://celestialworship.online').rstrip('/')
 TODAY = date.today().isoformat()
 
 PAGES = [
