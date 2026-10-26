@@ -44,7 +44,7 @@ export function ModerationExtras() {
                     : <button onClick={async () => setLinks({ ...links, [c.id]: await evidenceLinks(c.evidence_paths) })} className="text-xs font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr('View')}{' '}{c.evidence_paths.length}{' '}{tr('evidence file')}{c.evidence_paths.length > 1 ? 's' : ''}</button>}
                 </div>
                 <div className="flex gap-4 text-sm font-semibold pt-1">
-                  <button onClick={() => act(() => approveClaim(c.id), 'Approved — the parish is theirs to run')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={16} />{' '}{tr('Approve')}</button>
+                  <button onClick={() => act(() => approveClaim(c.id), 'Approved, the parish is theirs to run')} className="inline-flex items-center gap-1" style={{ color: 'var(--color-success)' }}><Check size={16} />{' '}{tr('Approve')}</button>
                   <button onClick={async () => { const note = await promptDialog({ title: tr('Reject the claim'), label: tr('Reason (shown to the person)') }); if (note) act(() => rejectClaim(c.id, note), 'Rejected'); }}
                           className="inline-flex items-center gap-1" style={{ color: 'var(--color-warning)' }}><X size={16} />{' '}{tr('Reject')}</button>
                 </div>

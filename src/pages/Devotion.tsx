@@ -176,7 +176,7 @@ export default function Devotion() {
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
         <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)' }}>🕊️</div>
         <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Amen.')}</h1>
-        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr('You have completed')}{' '}{tr(selectedService?.displayName) ?? tr('your devotion')}{tr('. “The LORD bless thee, and keep thee.” — Numbers 6:24')}</p>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr('You have completed')}{' '}{tr(selectedService?.displayName) ?? tr('your devotion')}{tr('. “The LORD bless thee, and keep thee.” Numbers 6:24')}</p>
         <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-gold)' }}>
           🔥 {streak.current}{' '}{tr('day')}{streak.current === 1 ? '' : 's'}{' '}{tr('in a row')}{streak.best > streak.current ? ` · best ${streak.best}` : ''}
         </p>
@@ -242,7 +242,7 @@ export default function Devotion() {
 
         <div className="mt-6 rounded-2xl p-4 flex gap-3 text-sm" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>
           <Users size={18} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-brand)' }} />
-          <p>{tr('Worshipping alone? Take every part yourself — the service conductor’s words and the congregation’s answers. Each step shows who does what, and how it is done.')}</p>
+          <p>{tr('Worshipping alone? Take every part yourself, the service conductor’s words and the congregation’s answers. Each step shows who does what, and how it is done.')}</p>
         </div>
 
         {intro.length > 0 && (

@@ -219,12 +219,12 @@ export default function Suggestions() {
   const exportPlan = () => {
     if (!selectedService) return '';
     const lines = [
-      `CCC Hymn Plan — ${tr(selectedService.displayName)}`,
+      `CCC Hymn Plan: ${tr(selectedService.displayName)}`,
       `Date: ${formatDate(planDay)}`,
       '',
       ...[...slotSelections, ...extraSlots].map(s => {
         const hymn = s.selectedHymn;
-        return `Step ${s.stepNumber}: ${s.slotName}\n  → Hymn #${hymn?.number || '?'} — ${hymn ? displayTitle(hymn, 'yo') : 'None selected'}`;
+        return `Step ${s.stepNumber}: ${s.slotName}\n  → Hymn #${hymn?.number || '?'}: ${hymn ? displayTitle(hymn, 'yo') : 'None selected'}`;
       }),
     ];
     return lines.join('\n');
@@ -262,7 +262,7 @@ export default function Suggestions() {
       .filter(s => s.selectedHymn)
       .map(s => ({ hymnNumber: s.selectedHymn!.number, slotName: s.slotName }));
     localStorage.setItem(OPERATOR_QUEUE_KEY, JSON.stringify({ serviceName: selectedService.displayName, items }));
-    showToast(tr('Sent to the Operator queue — open Operator → Hymns'));
+    showToast(tr('Sent to the Operator queue, open Operator → Hymns'));
   };
 
   const deletePlan = (id: string) => {
@@ -290,7 +290,7 @@ export default function Suggestions() {
         <h1 className="text-2xl font-bold font-[Outfit] text-[var(--color-text-primary)]">
           <><Music size={24} className="inline-block mr-2 align-text-bottom" />{' '}{tr('Hymn Selector')}</>
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{tr('Plan hymns for a service. Suggestions follow the Order of Service, the day\'s readings, the season and what was sung recently — accept, swap or override any of them.')}</p>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">{tr('Plan hymns for a service. Suggestions follow the Order of Service, the day\'s readings, the season and what was sung recently, accept, swap or override any of them.')}</p>
       </div>
 
       {/* Service Selector */}
@@ -308,7 +308,7 @@ export default function Suggestions() {
               {formatDate(planDay)}
               {season.label && <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-gold)]/15 text-[var(--color-accent-gold)] font-semibold">{tr(season.label)}</span>}
               {occasions.map(o => <span key={o} className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-accent-brand)]/10 text-[var(--color-accent-brand)] font-semibold">{o}</span>)}
-              {todaysLessons.length === 0 && <span className="block mt-1 text-[var(--color-text-muted)]">{tr('No readings published for this date — suggestions use the service and season only.')}</span>}
+              {todaysLessons.length === 0 && <span className="block mt-1 text-[var(--color-text-muted)]">{tr('No readings published for this date, suggestions use the service and season only.')}</span>}
             </div>
           </div>
 

@@ -101,7 +101,7 @@ export default function ArticleDetail() {
   const report = async () => {
     const reason = await promptDialog({ title: tr('Report this article'), label: tr('What is wrong with it?') });
     if (!reason?.trim()) return;
-    try { await reportContent('article', article.id, reason.trim()); showToast(tr('Thank you — a moderator will look at it')); }
+    try { await reportContent('article', article.id, reason.trim()); showToast(tr('Thank you, a moderator will look at it')); }
     catch (e) { showToast(errorMessage(e)); }
   };
 
@@ -134,7 +134,7 @@ export default function ArticleDetail() {
       <Link to="/articles" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Articles')}</Link>
 
       {!published && (
-        <p className="text-xs mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Preview — this article is')}{' '}{article.status === 'submitted' ? tr('waiting for review') : article.status}.
+        <p className="text-xs mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-muted)' }}>{tr('Preview, this article is')}{' '}{article.status === 'submitted' ? tr('waiting for review') : article.status}.
           {article.moderation_note && <>{' '}{tr('Moderator’s note:')}{' '}{article.moderation_note}</>}
         </p>
       )}

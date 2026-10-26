@@ -32,7 +32,7 @@ export const TIMELINE: TimelineEvent[] = [
 /** Beliefs and practices every part of the Church holds in common */
 export const COMMON_GROUND: { title: string; detail: string; source: string }[] = [
   { title: 'One Founder, one Divine Order', detail: 'Every Celestian traces the Church to the Divine Order given to Rev. S. B. J. Oshoffa in Porto-Novo on 29 September 1947. The title “Pastor and Founder” belongs to him alone.', source: 'Clauses 1–2, 110' },
-  { title: 'One and indivisible', detail: 'The Constitution calls the Church “one and indivisible” with “one Head who shall be known and called The Pastor” — a unity every group says it is working for.', source: 'Clauses 107, 109' },
+  { title: 'One and indivisible', detail: 'The Constitution calls the Church “one and indivisible” with “one Head who shall be known and called The Pastor” a unity every group says it is working for.', source: 'Clauses 107, 109' },
   { title: 'Jesus Christ, Lord and Saviour', detail: 'Membership is for all who accept Jesus Christ as the Son of God and only Lord and Saviour, and are baptised into the Church.', source: 'Clauses 101–102' },
   { title: 'Worship revealed by the Holy Spirit', detail: 'The name of the Church, its tenets, its mode of worship and its hymns are held to be revealed by the Holy Spirit (John 14:25–26).', source: 'Clause 91' },
   { title: 'The twelve tenets', detail: 'No idols, fetish or charms; no tobacco or alcohol; no pork or food offered to idols; white candles only; holiness in body and soul.', source: 'Clause 93' },
@@ -52,7 +52,7 @@ export const POINTS_OF_DIFFERENCE: { title: string; detail: string }[] = [
 export const APP_POSITION =
   'CelestialWorship serves every Celestian, whichever leadership their parish recognises. It uses the hymns, the Order of '
   + 'Service and the tenets that all parts of the Church share, presents disputed matters without taking a side, and '
-  + 'prays — as every group says it does — for the Church to be one again.';
+  + 'prays, as every group says it does, for the Church to be one again.';
 
 /** The Church’s published vision and mission */
 export const VISION = 'To evangelize the world through the proclamation of the Word.';
@@ -70,7 +70,7 @@ export const MISSION: string[] = [
 
 export const SOURCES = [
   { label: 'Constitution of the Celestial Church of Christ (Nigeria Diocese), 1980', url: '' },
-  { label: 'Brief History — celestialchurch.com', url: 'https://celestialchurch.com/about-us-2/brief-history-of-celestial-church-of-christ/' },
-  { label: 'Celestial Church of Christ — Wikipedia', url: 'https://en.wikipedia.org/wiki/Celestial_Church_of_Christ' },
-  { label: 'Why CELE Church has been in crisis — City People Magazine', url: 'https://www.citypeopleonline.com/cele-church-crisis-32-yrs/' },
+  { label: 'Brief History, celestialchurch.com', url: 'https://celestialchurch.com/about-us-2/brief-history-of-celestial-church-of-christ/' },
+  { label: 'Celestial Church of Christ: Wikipedia', url: 'https://en.wikipedia.org/wiki/Celestial_Church_of_Christ' },
+  { label: 'Why CELE Church has been in crisis: City People Magazine', url: 'https://www.citypeopleonline.com/cele-church-crisis-32-yrs/' },
 ];

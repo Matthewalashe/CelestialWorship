@@ -25,7 +25,7 @@ export interface ScoredHymnSuggestion {
 }
 
 export interface MatchContext {
-  /** Date the service will be held (YYYY-MM-DD) — drives season, recency and variety */
+  /** Date the service will be held (YYYY-MM-DD), drives season, recency and variety */
   date?: string;
   serviceId?: string;
   lessonRefs?: { book: string; chapter: number }[];
@@ -91,7 +91,7 @@ function lastUsedDaysAgo(usage: HymnUsage[], date: string): Map<number, number> 
 
 /**
  * Extract selectable hymn slots from a service.
- * - Fixed hymns (e.g. #674, #731) are constant ceremonial songs — excluded from selection.
+ * - Fixed hymns (e.g. #674, #731) are constant ceremonial songs, excluded from selection.
  * - Duplicate categories are deduplicated (keep first occurrence).
  * - Capped at 7 selectable slots per CCC liturgy (max 7 service hymns).
  */
@@ -414,7 +414,7 @@ const CATEGORY_SHORT: Record<string, string> = {
   recessional_or_closing: 'closing',
 };
 
-/** Small stable number in [0, 1) from a string — gives week-to-week variety without randomness */
+/** Small stable number in [0, 1) from a string, gives week-to-week variety without randomness */
 function stableJitter(seed: string): number {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i++) {

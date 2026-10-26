@@ -84,7 +84,7 @@ export function JoinSpaceButton({ parishId }: { parishId: string }) {
     <button className={cls} style={style} onClick={async () => {
       const note = await promptDialog({ title: tr('Ask to join the parish space'), message: tr('The parish will admit you. Say who you are if they may not know you (optional).'), label: tr('A note to the parish'), confirmLabel: tr('Ask to join') });
       if (note === null) return;
-      try { setState(await requestToJoin(parishId, note) === 'member' ? 'member' : 'pending'); showToast(tr('Asked — the parish will let you in')); } catch (e) { showToast(errorMessage(e)); }
+      try { setState(await requestToJoin(parishId, note) === 'member' ? 'member' : 'pending'); showToast(tr('Asked, the parish will let you in')); } catch (e) { showToast(errorMessage(e)); }
     }}><MessagesSquare size={15} /> {tr('Ask to join the parish space')}</button>
   );
 }

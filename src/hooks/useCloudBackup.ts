@@ -6,7 +6,7 @@ import { raise } from '../lib/backend';
 
 /**
  * Optional backup of the personal library to the signed-in user's own row
- * (table user_library, readable and writable only by that user — see migrations).
+ * (table user_library, readable and writable only by that user, see migrations).
  */
 export function useCloudBackup() {
   const { user } = useAuth();

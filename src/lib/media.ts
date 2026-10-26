@@ -20,7 +20,7 @@ async function upload(bucket: 'avatars' | 'parish-media', folder: string, name: 
   const path = `${folder}/${name}-${Date.now().toString(36)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, body, { contentType: body.type, cacheControl: '31536000', upsert: false });
   if (error) {
-    if (/not found|bucket/i.test(error.message)) throw new BackendError('Uploads aren’t available yet — the church’s online service is still being set up.', true);
+    if (/not found|bucket/i.test(error.message)) throw new BackendError('Uploads aren’t available yet, the church’s online service is still being set up.', true);
     throw new BackendError(`Upload failed: ${error.message}`);
   }
   return { url: supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl, path };
@@ -79,7 +79,7 @@ export async function listParishMedia(parishId: string): Promise<ParishMedia[] |
 export async function addParishMediaFile(parishId: string, file: File, caption: string): Promise<void> {
   const isVideo = file.type.startsWith('video/');
   if (isVideo && !['video/mp4', 'video/webm'].includes(file.type)) throw new BackendError('Videos must be MP4 or WebM');
-  if (isVideo && file.size > MAX_VIDEO_BYTES) throw new BackendError('Videos up to 50 MB — for longer ones, add a YouTube link');
+  if (isVideo && file.size > MAX_VIDEO_BYTES) throw new BackendError('Videos up to 50 MB, for longer ones, add a YouTube link');
   const body = isVideo ? file : await resizeImage(file, SHAPES.gallery);
   const { url, path } = await upload('parish-media', parishId, isVideo ? 'video' : 'photo', body);
   const { error } = await supabase.from('parish_media').insert({ parish_id: parishId, kind: isVideo ? 'video' : 'image', url, storage_path: path, caption: caption.trim() || null });

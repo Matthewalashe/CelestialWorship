@@ -72,7 +72,7 @@ export async function renderShareCard({ text, reference, footer }: CardOptions):
 
   ctx.fillStyle = '#D4A843';
   ctx.font = `700 ${Math.max(34, Math.round(fontSize * 0.7))}px Outfit, Inter, sans-serif`;
-  ctx.fillText(`— ${reference}`, margin, y + 30);
+  ctx.fillText(`: ${reference}`, margin, y + 30);
 
   ctx.fillStyle = 'rgba(248, 250, 252, 0.55)';
   ctx.font = '500 28px Inter, sans-serif';

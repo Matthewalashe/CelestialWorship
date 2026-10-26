@@ -66,7 +66,7 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
       // People registering a parish are usually its shepherd or admin
       if (v.kind === 'parish' && (profile.memberType === 'shepherd' || profile.memberType === 'church_admin')) await save({ parishId: id, parishName: row.name });
       draft.clear();
-      showToast(tr('Thank you — the parish will be listed once a moderator confirms it'));
+      showToast(tr('Thank you, the parish will be listed once a moderator confirms it'));
       onClose();
     } catch (e) {
       showToast(errorMessage(e));
@@ -195,8 +195,8 @@ function ParishCard({ p, onClaim, away }: { p: Parish; onClaim: () => void; away
         <div className="flex items-center gap-2 mt-3 pl-8">
           <span className="flex-1 text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
             {p.listing.url?.includes('celestialchurchofchrist-worldwide')
-              ? tr('From the Church’s public list (2005–2012) — may be out of date.')
-              : <>{tr('Listed from')} <a href={p.listing.url} target="_blank" rel="noopener noreferrer" className="underline">{tr(p.listing.source)}</a> — {tr('not yet confirmed by the parish.')}</>}
+              ? tr('From the Church’s public list (2005–2012), may be out of date.')
+              : <>{tr('Listed from')} <a href={p.listing.url} target="_blank" rel="noopener noreferrer" className="underline">{tr(p.listing.source)}</a>{tr('not yet confirmed by the parish.')}</>}
           </span>
           <button onClick={onClaim} className="text-xs font-semibold px-3 py-1.5 rounded-full border shrink-0" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Claim this parish')}</button>
         </div>

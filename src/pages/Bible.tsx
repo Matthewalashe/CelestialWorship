@@ -83,7 +83,7 @@ export default function Bible() {
       try { localStorage.setItem(OFFLINE_KEY, JSON.stringify(next)); } catch {}
       showToast(ok === BIBLE_BOOKS.length ? `${version.abbreviation} saved for offline reading` : `${ok} books saved for offline reading`);
     } else {
-      showToast(tr('Download failed — check your connection'));
+      showToast(tr('Download failed, check your connection'));
     }
   };
 
@@ -118,7 +118,7 @@ export default function Bible() {
         <select value={versionId} onChange={e => chooseVersion(e.target.value)} aria-label={tr('Bible version')}
                 className="flex-1 min-w-0 h-10 px-3 rounded-xl text-sm font-semibold border"
                 style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
-          {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation} — {v.name}{v.preview ? tr(' (preview)') : ''}</option>)}
+          {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation}: {v.name}{v.preview ? tr(' (preview)') : ''}</option>)}
         </select>
         {version.source.kind === 'local' && (
           offlineVersions.includes(version.id) ? (
@@ -140,7 +140,7 @@ export default function Bible() {
         style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}
         onSubmit={e => { e.preventDefault(); if (quickRef.trim()) handleQuickRef(sanitizeSearchInput(quickRef)); }}
       >
-        <input type="text" value={quickRef} onChange={e => setQuickRef(e.target.value)} placeholder={tr('Go to — e.g. "John 3:16" or "Ps 23"')}
+        <input type="text" value={quickRef} onChange={e => setQuickRef(e.target.value)} placeholder={tr('Go to, e.g. "John 3:16" or "Ps 23"')}
                className="flex-1 bg-transparent text-sm px-2 outline-none" style={{ color: 'var(--color-text-primary)' }} aria-label={tr('Go to a passage')} />
         <button type="submit" className="px-4 py-1.5 rounded-lg text-xs font-semibold"
                 style={{ backgroundColor: 'var(--color-accent-gold)', color: 'var(--color-text-on-accent)' }}>{tr('Go')}</button>

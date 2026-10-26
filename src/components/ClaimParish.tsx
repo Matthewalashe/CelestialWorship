@@ -37,7 +37,7 @@ export function ClaimParish({ parish, onClose }: { parish: Parish; onClose: () =
     setBusy(true);
     try {
       await submitClaim({ parish, role, office, note, files, details: d });
-      showToast(tr('Sent — a moderator will review your evidence and let you know'));
+      showToast(tr('Sent, a moderator will review your evidence and let you know'));
       onClose();
     } catch (e) {
       showToast(errorMessage(e));

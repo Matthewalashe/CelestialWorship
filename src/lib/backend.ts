@@ -22,7 +22,7 @@ export function isMissingTable(error: PostgrestError | null | undefined): boolea
 export function raise(error: PostgrestError | null | undefined, action: string): void {
   if (!error) return;
   if (isMissingTable(error)) {
-    throw new BackendError(`${action} isn't available yet — the church's online service is still being set up.`, true);
+    throw new BackendError(`${action} isn't available yet, the church's online service is still being set up.`, true);
   }
   if (error.code === '42501' || /permission|row-level security/i.test(error.message)) {
     throw new BackendError(`You don't have permission to ${action.toLowerCase()}. Try signing in.`);

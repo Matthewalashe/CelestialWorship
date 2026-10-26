@@ -24,7 +24,7 @@ import { useHymnContext } from '../hooks/useHymnContext';
 import { LanguageSwitch } from '../components/LanguageSwitch';
 
 /**
- * Studio — the desktop workspace for media teams, livestreamers and choirs:
+ * Studio, the desktop workspace for media teams, livestreamers and choirs:
  * the order of service on the left, the hymn on the screen in the middle (one click or arrow key
  * per stanza), and the parish's broadcast on the right.
  */
@@ -298,7 +298,7 @@ function LivePanel() {
         <div className="rounded-xl border p-3 space-y-2" style={{ borderColor: 'var(--color-border)' }}>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Next ·')}{' '}{next.scheduled_at ? new Date(next.scheduled_at).toLocaleString('en-GB', { weekday: 'short', hour: 'numeric', minute: '2-digit' }) : ''}</p>
           <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(next.title)}</p>
-          <button disabled={busy} onClick={() => run(async () => { await setStreamStatus(next.id, 'live'); try { const n = await notifyLive(next.id); showToast(`Live — ${n} alerted`); } catch { showToast(tr('Live. Alerts could not be sent.')); } })}
+          <button disabled={busy} onClick={() => run(async () => { await setStreamStatus(next.id, 'live'); try { const n = await notifyLive(next.id); showToast(`Live: ${n} alerted`); } catch { showToast(tr('Live. Alerts could not be sent.')); } })}
                   className="w-full py-2 rounded-lg text-sm font-bold inline-flex items-center justify-center gap-1.5" style={{ backgroundColor: '#EF4444', color: '#fff' }}><Radio size={15} />{' '}{tr('Go live')}</button>
           <ShareRow text={shareMessage(parish?.name ?? '', next)} url={streamLink(next.id)} />
         </div>

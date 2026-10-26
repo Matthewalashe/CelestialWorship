@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <h2 className="text-xl font-[Outfit] font-bold mb-2"
               style={{ color: 'var(--color-text-primary)' }}>{tr('Something went wrong')}</h2>
           <p className="text-sm mb-4 max-w-md"
-             style={{ color: 'var(--color-text-secondary)' }}>{tr('This page couldn’t be shown. Please try again — if it keeps happening, the problem has been reported.')}</p>
+             style={{ color: 'var(--color-text-secondary)' }}>{tr('This page couldn’t be shown. Please try again, if it keeps happening, the problem has been reported.')}</p>
           <div className="flex gap-3">
             <button
               onClick={() => this.setState({ hasError: false, error: null })}

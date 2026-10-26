@@ -39,7 +39,7 @@ export function AppSettings() {
           {!on ? (
             <button onClick={notif.requestPermission} disabled={notif.permission === 'denied'} className={`${row} w-full text-left disabled:opacity-60`}>
               <Bell size={18} style={muted} />
-              <span className="flex-1 text-sm" style={text}>{tr('Service and devotion reminders')}<span className="block text-xs" style={muted}>{notif.permission === 'denied' ? tr('Blocked — allow notifications in your browser settings') : tr('Tap to turn on')}</span>
+              <span className="flex-1 text-sm" style={text}>{tr('Service and devotion reminders')}<span className="block text-xs" style={muted}>{notif.permission === 'denied' ? tr('Blocked, allow notifications in your browser settings') : tr('Tap to turn on')}</span>
               </span>
             </button>
           ) : (

@@ -14,6 +14,9 @@ import json
 import re
 import sys
 from pathlib import Path
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+from undash import undash_all  # house style: no em dashes in the app's words
 
 ROOT = Path(__file__).resolve().parent.parent
 PATH = ROOT / 'public' / 'data' / 'services.json'
@@ -166,7 +169,7 @@ def main():
                 if step.get('type') == 'instruction' and re.match(r'^\s*(Bible (Lesson|Reading)|Reading of Psalm|Lesson)', text, re.I):
                     step['type'] = 'scripture'
                     stats['scripture_typed'] += 1
-    PATH.write_text(json.dumps(services, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    PATH.write_text(json.dumps(undash_all(services), ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(stats, indent=1))
 
 

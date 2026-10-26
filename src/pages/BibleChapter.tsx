@@ -85,7 +85,7 @@ const VerseItem = React.memo(function VerseItem({
       {sideBySide && (
         <p className="sm:border-l sm:pl-6 text-[0.95em]" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>
           <span className="sm:hidden">{number}</span>
-          {textSec ?? <span className="italic opacity-60">—</span>}
+          {textSec ?? <span className="italic opacity-60"></span>}
         </p>
       )}
     </div>
@@ -271,7 +271,7 @@ export default function BibleChapter() {
 
   const copySelection = async () => {
     try {
-      await navigator.clipboard.writeText(`${selectedText}\n— ${reference} (${version.abbreviation})`);
+      await navigator.clipboard.writeText(`${selectedText}\n: ${reference} (${version.abbreviation})`);
       showToast(tr('Copied'));
     } catch {
       showToast(tr('Couldn\'t copy'));
@@ -280,7 +280,7 @@ export default function BibleChapter() {
   };
 
   const shareSelection = async () => {
-    const text = `“${selectedText}”\n— ${reference} (${version.abbreviation})`;
+    const text = `“${selectedText}”\n: ${reference} (${version.abbreviation})`;
     if (navigator.share) {
       try { await navigator.share({ title: reference, text, url: shareUrl() }); clearSelection(); return; } catch {}
     }
@@ -321,7 +321,7 @@ export default function BibleChapter() {
     const lang = version.language;
     const voices = window.speechSynthesis.getVoices();
     const voice = voices.find(v => v.lang.toLowerCase().startsWith(lang));
-    if (lang === 'yo' && !voice) showToast(tr('No Yorùbá voice on this device — it will sound English'));
+    if (lang === 'yo' && !voice) showToast(tr('No Yorùbá voice on this device, it will sound English'));
     const startIndex = selected.length ? sortedVerses.findIndex(([n]) => Number(n) === selectedSorted[0]) : 0;
     const speakFrom = (i: number) => {
       if (i >= sortedVerses.length) { setSpeakingVerse(null); return; }
@@ -401,7 +401,7 @@ export default function BibleChapter() {
           <select value={version.id} onChange={e => chooseVersion(e.target.value)} aria-label={tr('Bible version')}
                   className="h-9 px-2 rounded-lg text-xs font-semibold border"
                   style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}>
-            {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation} — {v.name}</option>)}
+            {BIBLE_VERSIONS.map(v => <option key={v.id} value={v.id}>{v.abbreviation}: {v.name}</option>)}
           </select>
           {sideBySide && (
             <select value={secondVersion.id} onChange={e => updateParams({ with: e.target.value })} aria-label={tr('Second version')}

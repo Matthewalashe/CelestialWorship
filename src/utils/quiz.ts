@@ -112,7 +112,7 @@ export function buildHymnRound(hymns: Hymn[], count: number, seed: number): Quiz
           question: `Complete the line from hymn ${hymn.number}: “${lines[0]} …”`,
           options: [lines[1], ...decoys],
           answer: 0,
-          explanation: `“${lines[0]} / ${lines[1]}” — hymn ${hymn.number}.`,
+          explanation: `“${lines[0]} / ${lines[1]}” hymn ${hymn.number}.`,
           source: `Hymn ${hymn.number}`,
           difficulty: 3,
         };

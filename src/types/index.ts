@@ -1,5 +1,5 @@
 // ============================================================
-// CelestialWorship — Core Type Definitions
+// CelestialWorship: Core Type Definitions
 // ============================================================
 
 // ---------- Hymn Category Taxonomy ----------

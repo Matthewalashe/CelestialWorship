@@ -69,7 +69,7 @@ function BookAppointment({ parishId }: { parishId: string }) {
     try {
       const t = shownTimes[chosen];
       await bookAppointment({ ...t, topic, details, name: [profile.churchTitle, profile.displayName].filter(Boolean).join(' '), phone });
-      showToast(tr('Requested — you’ll see it confirmed here'));
+      showToast(tr('Requested, you’ll see it confirmed here'));
       setChosen(null);
       setDetails('');
       refresh();
@@ -86,7 +86,7 @@ function BookAppointment({ parishId }: { parishId: string }) {
         <CalendarClock size={18} style={{ color: 'var(--color-accent-brand)' }} />{' '}{tr('Book an appointment')}</h2>
       {mine.filter(a => new Date(a.starts_at) > new Date() && ['requested', 'confirmed'].includes(a.status)).map(a => (
         <p key={a.id} className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-primary)' }}>
-          {formatSlotTime(new Date(a.starts_at))} · {a.topic} — <strong>{a.status === 'confirmed' ? tr('Confirmed') : tr('Waiting for confirmation')}</strong>
+          {formatSlotTime(new Date(a.starts_at))} · {a.topic}: <strong>{a.status === 'confirmed' ? tr('Confirmed') : tr('Waiting for confirmation')}</strong>
           {a.host_note && <span className="block text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>{a.host_note}</span>}
         </p>
       ))}
@@ -222,7 +222,7 @@ export default function ParishPage() {
           <MapView label={`${tr('Map')}: ${parish.name}`} markers={[{ id: parish.id, lat: point.lat, lng: point.lng, title: parish.name }]}
                    selected={parish.id} zoom={parish.geo_precision === 'town' ? 12 : 16} className="h-56" />
           <div className="flex items-center gap-3">
-            {parish.geo_precision === 'town' && <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Approximate — the town only. The parish can place its exact pin when it claims this page.')}</span>}
+            {parish.geo_precision === 'town' && <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Approximate, the town only. The parish can place its exact pin when it claims this page.')}</span>}
             {directions && parish.geo_precision !== 'town' && (
               <a href={directions} target="_blank" rel="noopener noreferrer" className="ml-auto btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5">
                 <Navigation size={15} aria-hidden /> {tr('Directions')}

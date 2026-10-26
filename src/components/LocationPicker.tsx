@@ -46,7 +46,7 @@ export function LocationPicker({ value, onChange, inputClass, inputStyle, requir
     try {
       const found = await geocode(q);
       setOpen(true);
-      if (!found.length) { showToast(tr('That address wasn’t found — place the pin on the map instead')); return; }
+      if (!found.length) { showToast(tr('That address wasn’t found, place the pin on the map instead')); return; }
       setResults(found.length > 1 ? found : []);
       const best = found[0];
       onChange({ latitude: round(best.lat), longitude: round(best.lng) });
@@ -136,7 +136,7 @@ export function LocationPicker({ value, onChange, inputClass, inputStyle, requir
         <>
           <MapView label={tr('Map: tap to place the parish')} pin={pin} onPin={placePin} center={center} zoom={zoom} className="h-64" />
           <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
-            {pin ? `${tr('Pin placed')} · ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)} — ${tr('drag it or tap the map to move it.')}` : tr('Tap the map where the parish is.')}
+            {pin ? `${tr('Pin placed')} · ${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}: ${tr('drag it or tap the map to move it.')}` : tr('Tap the map where the parish is.')}
           </p>
         </>
       )}

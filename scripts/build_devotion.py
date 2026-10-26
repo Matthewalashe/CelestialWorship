@@ -20,6 +20,9 @@ import unicodedata
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))  # python -I leaves the script's folder out
 from devotion_parse import services as guide_services  # noqa: E402
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+from undash import undash_all  # house style: no em dashes in the app's words
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'public' / 'data' / 'devotion.json'
@@ -752,7 +755,7 @@ def main():
         out[sid] = {'intro': intro_blocks(data['intro']), 'steps': steps}
         report.append(f"## {sid} — {len(data['steps'])} guide steps → {len(steps)} devotion steps")
     out['hourly_prayer'] = {'intro': HOURLY_PRAYER['intro'], 'steps': [dict(st, n=n) for n, st in enumerate(HOURLY_PRAYER['steps'], 1)]}
-    OUT.write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    OUT.write_text(json.dumps(undash_all(out), ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     names = {}
     for sid, svc in out.items():
         for st in svc['steps']:

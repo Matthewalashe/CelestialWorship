@@ -47,7 +47,7 @@ export function VerseOfTheDay({ verse }: { verse: DailyVerse }) {
   const chapterPath = `${verse.path.split('?')[0]}?lang=${versionId}&v=${ref?.verseStart ?? 1}`;
 
   const share = async () => {
-    const body = `“${text}” — ${place} (${version.abbreviation})`;
+    const body = `“${text}” ${place} (${version.abbreviation})`;
     if (navigator.share) { try { await navigator.share({ title: place, text: body, url: `${window.location.origin}${chapterPath}` }); return; } catch {} }
     try { await navigator.clipboard.writeText(body); showToast(tr('Copied')); } catch {}
   };
@@ -59,7 +59,7 @@ export function VerseOfTheDay({ verse }: { verse: DailyVerse }) {
       setSaved(true);
       showToast(tr('Saved to your library'));
     } catch {
-      showToast(tr('Could not save — try again'));
+      showToast(tr('Could not save, try again'));
     }
   };
 

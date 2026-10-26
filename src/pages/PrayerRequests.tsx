@@ -70,7 +70,7 @@ export default function PrayerRequests() {
       });
       draft.clear();
       setComposing(false);
-      showToast(tr('Sent — it will appear once a moderator has seen it'));
+      showToast(tr('Sent, it will appear once a moderator has seen it'));
       if (tab === 'mine') load();
     } catch (e) {
       showToast(errorMessage(e));
@@ -97,7 +97,7 @@ export default function PrayerRequests() {
   const report = async (r: SharedPrayerRequest) => {
     const reason = await promptDialog({ title: tr('Report this request'), label: tr('What is wrong with it?') });
     if (!reason?.trim()) return;
-    try { await reportContent('prayer_request', r.id, reason.trim()); showToast(tr('Thank you — a moderator will look at it')); }
+    try { await reportContent('prayer_request', r.id, reason.trim()); showToast(tr('Thank you, a moderator will look at it')); }
     catch (e) { showToast(errorMessage(e)); }
   };
 
@@ -110,7 +110,7 @@ export default function PrayerRequests() {
             <Plus size={16} />{' '}{tr('Request')}</button>
         )}
       </div>
-      <p className="text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Pray one for another” — James 5:16. For a private record, use your')}{' '}
+      <p className="text-sm mb-5" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Pray one for another” James 5:16. For a private record, use your')}{' '}
         <Link to="/notes?tab=prayers" className="font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('prayer journal')}</Link>.
       </p>
 

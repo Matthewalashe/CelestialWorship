@@ -217,13 +217,13 @@ export default function ArticleEditor() {
                        placeholder={KIND_HINTS[v.kind] ?? tr('A passage, hymn number or lesson date')}
                        className={`${field} mt-1`} style={{ ...fieldStyle, borderColor: referenceInvalid ? 'var(--color-warning)' : fieldStyle.borderColor }} />
                 <span className="block mt-1">
-                  {referenceInvalid ? tr('Couldn’t read that — try “John 3:16”, “Hymn 5” or “2026-06-14”.')
+                  {referenceInvalid ? tr('Couldn’t read that, try “John 3:16”, “Hymn 5” or “2026-06-14”.')
                     : reference ? `Readers of ${referenceLabel(reference)} will see this article there.` : tr('Link it to a passage, hymn or lesson so readers find it there.')}
                 </span>
               </label>
               <label className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Reader support')}<select value={v.supportParishId} onChange={e => draft.setValue({ supportParishId: e.target.value })} className={`${field} mt-1`} style={fieldStyle}>
                   <option value="">{tr('No support button')}</option>
-                  {pages.map(pg => <option key={pg.parish.id} value={pg.parish.id} disabled={!pg.partner}>{pg.parish.name}{pg.partner ? '' : tr(' — needs the Partner plan')}</option>)}
+                  {pages.map(pg => <option key={pg.parish.id} value={pg.parish.id} disabled={!pg.partner}>{pg.parish.name}{pg.partner ? '' : tr('needs the Partner plan')}</option>)}
                 </select>
                 <span className="block mt-1">{tr('Readers can give to your parish or ministry from the article. Needs the Partner plan and a payout account.')}</span>
               </label>

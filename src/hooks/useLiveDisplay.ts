@@ -57,7 +57,7 @@ export function newRoomCode(): string {
 const roomChannelName = (room: string) => `display-${room.toUpperCase()}`;
 
 /**
- * Hook for the OPERATOR side — sends display commands.
+ * Hook for the OPERATOR side, sends display commands.
  */
 export function useDisplayController() {
   const [channel] = useState(() => new BroadcastChannel(CHANNEL_NAME));
@@ -125,7 +125,7 @@ export function useDisplayController() {
 }
 
 /**
- * Hook for the DISPLAY side — receives and renders display commands.
+ * Hook for the DISPLAY side, receives and renders display commands.
  */
 export function useDisplayReceiver(room?: string | null) {
   const [displayState, setDisplayState] = useState<DisplayState>(() => readLastState() ?? { type: 'logo', content: '' });

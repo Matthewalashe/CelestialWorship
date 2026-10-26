@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 /*
  * Chrome and Edge offer the install once, early (beforeinstallprompt). It is caught here when the
- * app starts (main.tsx imports this file), so any screen can use it later — the install page,
+ * app starts (main.tsx imports this file), so any screen can use it later, the install page,
  * Home's banner, settings.
  */
 let deferred: BeforeInstallPromptEvent | null = null;

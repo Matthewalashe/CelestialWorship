@@ -15,6 +15,9 @@ Writes public/data/stories/index.json, public/data/stories/<id>.json and public/
 """
 import io, json, math, re, runpy, sys, time, pathlib, urllib.parse, urllib.request
 from PIL import Image
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+from undash import undash_all  # house style: no em dashes in the app's words
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT_DATA = ROOT / 'public' / 'data' / 'stories'
@@ -163,7 +166,7 @@ def main():
         part = 'New Testament' if st['img'][0] in ('Matthew', 'Mark', 'Luke', 'John', 'Acts') else 'Old Testament'
         story = {'id': sid, 'number': i, 'title': st['title'], 'ref': st['ref'], 'part': part, 'image': pic,
                  'paragraphs': st['paragraphs'], 'questions': st['questions']}
-        (OUT_DATA / f'{sid}.json').write_text(json.dumps(story, ensure_ascii=False), encoding='utf-8', newline='\n')
+        (OUT_DATA / f'{sid}.json').write_text(json.dumps(undash_all(story), ensure_ascii=False), encoding='utf-8', newline='\n')
         items.append({k: story[k] for k in ('id', 'number', 'title', 'ref', 'part')} | {'image': pic['src'] if pic else None})
         print('ok', sid, st['title'].encode('ascii', 'replace').decode())
     collections.append({'id': 'bible-stories', 'title': 'Bible Stories',
@@ -181,14 +184,14 @@ def main():
             sid = f'{prefix}-{i:02d}'
             pic = picture(*img)
             story = {'id': sid, 'number': n, 'title': title.strip(), 'ref': ref, 'part': part, 'image': pic, 'paragraphs': paras, 'questions': []}
-            (OUT_DATA / f'{sid}.json').write_text(json.dumps(story, ensure_ascii=False), encoding='utf-8', newline='\n')
+            (OUT_DATA / f'{sid}.json').write_text(json.dumps(undash_all(story), ensure_ascii=False), encoding='utf-8', newline='\n')
             items.append({k: story[k] for k in ('id', 'number', 'title', 'ref', 'part')} | {'image': pic['src'] if pic else None})
             print('ok', sid, len(paras), 'paragraphs')
     collections.append({'id': 'classic', 'title': 'Classic Bible Stories',
                         'about': 'Mary A. Lathbury, Child’s Story of the Bible (1898). Public domain, from Project Gutenberg. Quoted speech is in the words of the King James Version.',
                         'credit': CREDIT, 'stories': items})
 
-    (OUT_DATA / 'index.json').write_text(json.dumps({'collections': collections}, ensure_ascii=False), encoding='utf-8', newline='\n')
+    (OUT_DATA / 'index.json').write_text(json.dumps(undash_all({'collections': collections}), ensure_ascii=False), encoding='utf-8', newline='\n')
     total = sum(f.stat().st_size for f in OUT_IMG.glob('*.webp'))
     print('images', len(list(OUT_IMG.glob('*.webp'))), f'{total // 1024} KB')
 

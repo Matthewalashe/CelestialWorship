@@ -194,7 +194,7 @@ export async function bookAppointment(input: { slot: AppointmentSlot; start: Dat
     starts_at: input.start.toISOString(), ends_at: input.end.toISOString(),
     topic: input.topic, details: input.details.trim() || null, status: 'requested',
   });
-  if (error?.code === '23505') throw new BackendError('Someone has just booked that time — please choose another');
+  if (error?.code === '23505') throw new BackendError('Someone has just booked that time, please choose another');
   raise(error, 'Booking the appointment');
 }
 

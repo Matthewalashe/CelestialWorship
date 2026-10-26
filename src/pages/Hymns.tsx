@@ -258,7 +258,7 @@ export default function Hymns() {
       ) : hymns.length === 0 ? (
         <div className="text-center py-10" style={{ color: 'var(--color-text-secondary)' }}>
           {favoritesOnly && favorites.length === 0
-            ? tr('No favourites yet — tap the heart on a hymn to save it here.')
+            ? tr('No favourites yet, tap the heart on a hymn to save it here.')
             : tr('No hymns match.')}
         </div>
       ) : (

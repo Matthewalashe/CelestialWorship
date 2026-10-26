@@ -7,6 +7,9 @@ Celestial Church of Christ Worldwide "Parishes Worldwide" page).
 Points on the map come from data-src/parish_geocode.json (scripts/geocode_parishes.py).
 """
 import json, re, runpy, pathlib
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+from undash import undash_all  # house style: no em dashes in the app's words
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCE = {'source': 'Celestial Church of Christ Worldwide — Parishes Worldwide (archived list, 2005–2012)',
@@ -26,5 +29,5 @@ for r in rows:
     at = geo.get(pid)
     point = {'latitude': at['lat'], 'longitude': at['lng'], 'geo_precision': at['precision']} if at else {}
     out.append({'id': pid, **r, **point, 'kind': 'parish', 'listing': listing})
-(ROOT / 'public' / 'data' / 'parishes_listed.json').write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8', newline='\n')
+(ROOT / 'public' / 'data' / 'parishes_listed.json').write_text(json.dumps(undash_all(out), ensure_ascii=False, separators=(',', ':')), encoding='utf-8', newline='\n')
 print(len(out), 'parishes')

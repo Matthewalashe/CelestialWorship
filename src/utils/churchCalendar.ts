@@ -54,7 +54,7 @@ export function churchObservances(year: number): ChurchEvent[] {
       'The Celestial Church of Christ came into the world by Divine Order on 29 September 1947 in Porto-Novo.', 'anniversary'),
     builtIn('founder-birthday', 'Pastor Founder’s Birthday', new Date(year, 9, 11),
       `Rev. Samuel Bilewu Joseph Oshoffa, Pastor Founder of the Celestial Church of Christ, was born on 11 October 1909 (${year - 1909} years). Remembered by the whole Church.`, 'anniversary'),
-    builtIn('christmas-convocation', `Imeko ${year} — Christmas Convocation`, new Date(year, 11, 21),
+    builtIn('christmas-convocation', `Imeko ${year}: Christmas Convocation`, new Date(year, 11, 21),
       'The annual pilgrimage and Christmas convocation at the Celestial City, Imeko, ending with the Christmas service. Dates vary a little each year: confirm with your parish.',
       'convention', undefined, 'Celestial City, Imeko, Ogun State', new Date(year, 11, 25)),
     builtIn('pastor-birthday', 'Birthday of the Pastor, Rev. Emmanuel Mobiyina Oshoffa', new Date(year, 11, 25),

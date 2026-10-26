@@ -182,7 +182,7 @@ export default function Onboarding() {
               <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>{tr('App language')}</p>
               <div className="grid grid-cols-2 gap-2">
                 {UI_LANGUAGES.map(l => (
-                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={l.name} subtitle={l.beta ? tr('Being translated — English fills the gaps') : l.english} />
+                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={l.name} subtitle={l.beta ? tr('Being translated: English fills the gaps') : l.english} />
                 ))}
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function Onboarding() {
               <div className="space-y-2">
                 {BIBLE_VERSIONS.map(v => (
                   <Choice key={v.id} selected={bibleVersion === v.id} onClick={() => setBibleVersion(v.id)}
-                          title={`${v.abbreviation}${v.id === 'en' ? ' (recommended)' : ''}`} subtitle={v.preview ? `${v.name} — preview, part of the Bible` : v.name} />
+                          title={`${v.abbreviation}${v.id === 'en' ? ' (recommended)' : ''}`} subtitle={v.preview ? `${v.name}, preview, part of the Bible` : v.name} />
                 ))}
               </div>
             </div>
@@ -273,7 +273,7 @@ export default function Onboarding() {
                 <Plus size={18} style={{ color: 'var(--color-accent-brand)' }} aria-hidden />
                 <span className="flex-1">
                   <span className="block font-semibold">{tr('Parish not listed?')}</span>
-                  <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr('Tell us where it is and we’ll add it to the directory — or skip.')}</span>
+                  <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>{tr('Tell us where it is and we’ll add it to the directory, or skip.')}</span>
                 </span>
               </button>
             ) : (

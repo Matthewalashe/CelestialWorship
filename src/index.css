@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* ============================================================
-   CelestialWorship — Design System
-   Theme: Blue, Gold, White — Light & Dark modes
+   CelestialWorship: Design System
+   Theme: Blue, Gold, White: Light & Dark modes
    Reader: monochrome reading mode (components/Reader.tsx)
    ============================================================ */
 
@@ -151,7 +151,7 @@
     border-radius: 4px;
   }
 
-  /* Skip-to-content link — visible only on focus */
+  /* Skip-to-content link: visible only on focus */
   .skip-to-content {
     position: absolute;
     top: -100%;
@@ -391,7 +391,7 @@
     backdrop-filter: none !important;
   }
 
-  /* Bible chapter — single column for print */
+  /* Bible chapter: single column for print */
   .max-w-2xl, .max-w-4xl {
     max-width: 100% !important;
   }

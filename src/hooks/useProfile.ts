@@ -14,13 +14,13 @@ export type MemberType = 'laity' | 'church_worker' | 'shepherd' | 'independent_s
 export const MEMBER_TYPES: Record<MemberType, { label: string; yoruba: string; description: string; needsVerification: boolean }> = {
   laity: { label: 'Member (laity)', yoruba: 'Ọmọ ìjọ', description: 'A worshipper in the congregation', needsVerification: false },
   church_worker: { label: 'Church worker', yoruba: 'Òṣìṣẹ́ ìjọ', description: 'Choir, usher, prayer band, Sunday school, youth, sanitation…', needsVerification: false },
-  shepherd: { label: 'Parish shepherd', yoruba: 'Olùṣọ́-àgùntàn ìjọ', description: 'Shepherd in charge of a parish — verified by the church before admin tools unlock', needsVerification: true },
+  shepherd: { label: 'Parish shepherd', yoruba: 'Olùṣọ́-àgùntàn ìjọ', description: 'Shepherd in charge of a parish, verified by the church before admin tools unlock', needsVerification: true },
   independent_shepherd: {
     label: 'Independent shepherd', yoruba: 'Olùṣọ́-àgùntàn aládàáni',
-    description: 'A shepherd not attached to a parish — run your own ministry page: articles, livestreams, prayer requests and giving',
+    description: 'A shepherd not attached to a parish, run your own ministry page: articles, livestreams, prayer requests and giving',
     needsVerification: true,
   },
-  church_admin: { label: 'Church admin', yoruba: 'Alákòóso ìjọ', description: 'Parish secretary or administrator — verified before you can manage a parish', needsVerification: true },
+  church_admin: { label: 'Church admin', yoruba: 'Alákòóso ìjọ', description: 'Parish secretary or administrator, verified before you can manage a parish', needsVerification: true },
 };
 
 /** Common forms of address; the field is free text because titles vary between parishes */

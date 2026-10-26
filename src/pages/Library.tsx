@@ -14,7 +14,7 @@ import { errorMessage } from '../lib/backend';
 import { tr } from '../i18n';
 
 /**
- * The Library: everything people write and share — articles and commentaries by shepherds,
+ * The Library: everything people write and share, articles and commentaries by shepherds,
  * books (uploaded or linked) and links to resources outside CelestialWorship.
  */
 
@@ -66,7 +66,7 @@ function AddItem({ onClose, onDone, initialKind }: { onClose: () => void; onDone
     setBusy(true);
     try {
       const status = await addLibraryItem({ kind, title, author, description, language, link, file, cover });
-      showToast(status === 'published' ? tr('Added to the library') : tr('Sent — a moderator will add it to the library'));
+      showToast(status === 'published' ? tr('Added to the library') : tr('Sent, a moderator will add it to the library'));
       onDone(); onClose();
     } catch (e) {
       showToast(errorMessage(e));
@@ -171,7 +171,7 @@ export default function Library() {
       </label>
       {tab === 'articles' && (
         <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
-          {Object.values(ARTICLE_KINDS).join(' · ')} — <Link to="/articles" className="underline">{tr('browse by kind')}</Link>
+          {Object.values(ARTICLE_KINDS).join(' · ')}: <Link to="/articles" className="underline">{tr('browse by kind')}</Link>
         </p>
       )}
 

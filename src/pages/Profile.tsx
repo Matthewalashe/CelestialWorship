@@ -63,7 +63,7 @@ export default function Profile() {
   const onRequestVerification = async () => {
     try {
       await requestVerification(draft.memberType, verifyDetails);
-      showToast(tr('Request sent — the church will confirm your role'));
+      showToast(tr('Request sent, the church will confirm your role'));
       setVerifyDetails('');
     } catch (e) {
       showToast(errorMessage(e));
@@ -183,7 +183,7 @@ export default function Profile() {
             <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Sign in, then ask the church to confirm your role.')}</p>
           ) : (
             <>
-              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Tell the moderators how they can confirm you — e.g. your parish, your shepherd, the year you were anointed.')}{status === 'rejected' && tr(' Your last request was not approved; you can send more details.')}
+              <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Tell the moderators how they can confirm you, e.g. your parish, your shepherd, the year you were anointed.')}{status === 'rejected' && tr(' Your last request was not approved; you can send more details.')}
               </p>
               <textarea value={verifyDetails} onChange={e => setVerifyDetails(e.target.value)} rows={3} className={inputClass} style={inputStyle}
                         placeholder={tr('Details for the moderators')} />

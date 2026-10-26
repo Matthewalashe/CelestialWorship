@@ -1,6 +1,6 @@
 /**
  * Links people type (websites, maps, livestreams, social pages) and links we render from other
- * people's content. Only https is allowed — the database checks the same (PRINCIPLES §3).
+ * people's content. Only https is allowed, the database checks the same (PRINCIPLES §3).
  */
 
 /** Tidy a typed link: adds https:// to "www.example.org", upgrades http://. null = empty, undefined = not a valid link. */

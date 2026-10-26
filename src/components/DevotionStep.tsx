@@ -13,7 +13,7 @@ import { tr, useT } from '../i18n';
 
 /*
  * One step of the Order of Service, as a worshipper follows it:
- *   who does what (acts), the words said or sung in full, then — set apart — how it is done.
+ *   who does what (acts), the words said or sung in full, then, set apart, how it is done.
  * Hymns and Bible passages open in a panel over the step, so the worshipper never loses their place.
  */
 
@@ -185,13 +185,13 @@ export function StepBlocks({ step, lessons, isLordsDay, suggest, onOpenHymn, onO
             return (
               <div key={i} className="rounded-2xl p-5 space-y-3" style={card}>
                 <div className="flex items-center gap-2"><Music size={16} style={{ color: 'var(--color-accent-gold)' }} aria-hidden />
-                  <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{b.number ? `${tr('Hymn')} ${b.number}` : tr('Sing a hymn')}{b.label ? ` — ${tr(b.label)}` : ''}</p>
+                  <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{b.number ? `${tr('Hymn')} ${b.number}` : tr('Sing a hymn')}{b.label ? `: ${tr(b.label)}` : ''}</p>
                 </div>
                 {b.number ? (
                   <button onClick={() => onOpenHymn(b.number!)} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">{tr('Open the hymn')} <ChevronRight size={15} /></button>
                 ) : options.length > 0 ? (
                   <>
-                    <p className="text-xs" style={muted}>{tr('Suggested for today — tap one to sing it here:')}</p>
+                    <p className="text-xs" style={muted}>{tr('Suggested for today, tap one to sing it here:')}</p>
                     <ul className="space-y-1.5">
                       {options.map(h => (
                         <li key={h.number}>
@@ -257,7 +257,7 @@ export function StepBlocks({ step, lessons, isLordsDay, suggest, onOpenHymn, onO
                 <div className="flex items-center gap-2"><Who who="reader" /><span className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Read from the Bible')}</span></div>
                 {ref ? (
                   <>
-                    <p className="text-sm" style={muted}>{tr('Today’s verse, with the verses around it — or read a passage you have chosen.')}</p>
+                    <p className="text-sm" style={muted}>{tr('Today’s verse, with the verses around it, or read a passage you have chosen.')}</p>
                     <button onClick={() => onOpenPassage(ref)} className="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-xl border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
                       <BookOpen size={15} /> {verse.reference}
                     </button>

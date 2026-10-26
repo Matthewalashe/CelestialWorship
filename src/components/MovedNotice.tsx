@@ -19,7 +19,7 @@ export function MovedNotice() {
          style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent-brand) 12%, var(--color-bg-card))', color: 'var(--color-text-primary)' }}>
       <span className="flex-1 min-w-[14rem]">
         <b>{tr('CelestialWorship has moved to celestialworship.online.')}</b>{' '}
-        {tr('Your notes, highlights and prayers are kept on this address — back them up first, then restore them there.')}
+        {tr('Your notes, highlights and prayers are kept on this address, back them up first, then restore them there.')}
       </span>
       <Link to="/notes?tab=backup" className="px-3 py-1.5 rounded-lg text-xs font-semibold border" style={{ borderColor: 'var(--color-border)' }}>{tr('Back up')}</Link>
       <a href={here} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1">{tr('Open the new address')} <ArrowRight size={13} /></a>

@@ -6,7 +6,7 @@ import { parseReference, referenceToPath } from './parseReference';
  * Minimal, safe Markdown for user-written articles: headings (#, ##, ###), paragraphs,
  * **bold**, *italic*, > quotes, - and 1. lists, [links](https://…), and Bible references
  * such as "John 3:16" or "1 Cor 13:4-7", which become links into the Bible reader.
- * Output is React elements only — no raw HTML is ever injected.
+ * Output is React elements only, no raw HTML is ever injected.
  */
 
 const BOOK_WORD = '(?:[1-3]\\s?)?[A-Z][a-z]+(?:\\s(?:of\\s)?[A-Z][a-z]+)?';
@@ -31,7 +31,7 @@ function linkReferences(text: string, keyBase: string): ReactNode[] {
 
 function inline(text: string, keyBase: string): ReactNode[] {
   const out: ReactNode[] = [];
-  // Links, bold, italic — in that order of precedence
+  // Links, bold, italic, in that order of precedence
   const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|\*([^*]+)\*/g;
   let last = 0;
   let i = 0;

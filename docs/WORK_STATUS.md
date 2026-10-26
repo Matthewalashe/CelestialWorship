@@ -1,4 +1,4 @@
-# CelestialWorship — work status
+# CelestialWorship, work status
 
 Branch `audit-fixes`. Checked before each deploy: typecheck, lint (React hooks + accessibility, zero
 warnings), 79 unit tests, a 62-route browser smoke test at phone width (in English, French, Yorùbá and Egun) (no errors, no sideways
@@ -13,7 +13,7 @@ Legend: ✅ done · 🔑 built, needs a key, permission or the database switched
 |---|---|---|---|
 | 1 | Audit everything and fix every recommendation | ✅ | See “Audit items” below |
 | 2 | Hymn layout: spacing, lines, stanzas, numbers | ✅ 457 hymns rebuilt, sections, choruses, Amin | Hymnal |
-| 3 | Smarter hymn selector; hymns must follow the event and the Bible lessons | ✅ rebuilt: the day's occasion from the lessons and the calendar (Harvest, Palm Sunday, Christmas…) leads; the set verses (not whole chapters) are matched in English and in Yorùbá against the hymns' own words; then the slot, recency, no repeats — the same logic on every screen | Plan hymns, Order of Service, Studio, Devotion |
+| 3 | Smarter hymn selector; hymns must follow the event and the Bible lessons | ✅ rebuilt: the day's occasion from the lessons and the calendar (Harvest, Palm Sunday, Christmas…) leads; the set verses (not whole chapters) are matched in English and in Yorùbá against the hymns' own words; then the slot, recency, no repeats, the same logic on every screen | Plan hymns, Order of Service, Studio, Devotion |
 | 4 | Hymns in Egun and French (not Igbo/Hausa) | ✅ contribution + review · 🔑 texts/permission | Hymn page → Translations |
 | 5 | Bible: KJV first, NIV, NKJV, AMP, NLT | ✅ KJV offline · 🔑 API.Bible key (NIV also Biblica) | Bible |
 | 6 | The original Yorùbá Bible | ✅ Bibeli Mimọ 1900 (491 verified chapters) + Yorùbá Òde-Òní | Bible → version |

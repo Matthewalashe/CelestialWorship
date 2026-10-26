@@ -118,7 +118,7 @@ describe('church calendar', () => {
   it('runs Imeko 2026 from 21 to 25 December and credits the Pastor’s birthday to Ketu', () => {
     const all = churchObservances(2026);
     const imeko = all.find(e => e.id === 'builtin-christmas-convocation-2026')!;
-    expect(imeko.title).toBe('Imeko 2026 — Christmas Convocation');
+    expect(imeko.title).toBe('Imeko 2026: Christmas Convocation');
     expect(toISODate(new Date(imeko.ends_at!))).toBe('2026-12-25');
     const pastor = all.find(e => e.id === 'builtin-pastor-birthday-2026')!;
     expect(pastor.description).toContain('International Headquarters, Ketu');
@@ -135,5 +135,20 @@ describe('constitution data', () => {
         if (/:\s*$/.test(cl.text)) expect(cl.subClauses.length, `${cl.number} ends with ':' but has no items`).toBeGreaterThan(0);
       }
     }
+  });
+});
+
+describe('house style', () => {
+  it('has no em dashes in the app’s words (Scripture keeps its own punctuation)', async () => {
+    const { readdirSync, statSync } = await import('node:fs');
+    const walk = (dir: string): string[] => readdirSync(dir).flatMap(f => {
+      const p = resolve(dir, f);
+      return statSync(p).isDirectory() ? (f === 'bible' ? [] : walk(p)) : [p];
+    });
+    const root = resolve(__dirname, '../..');
+    const files = [...walk(resolve(root, 'src')), ...walk(resolve(root, 'public/i18n')), ...walk(resolve(root, 'public/data'))]
+      .filter(f => /\.(tsx?|json|css)$/.test(f) && !f.endsWith('parseReference.ts') && !f.includes('__tests__'));
+    const offenders = files.filter(f => readFileSync(f, 'utf-8').includes('\u2014'));
+    expect(offenders).toEqual([]);
   });
 });

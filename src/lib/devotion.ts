@@ -4,7 +4,7 @@ import type { PrayerRef } from '../data/prayers';
 
 /**
  * The Order of Service as worshippers follow it (public/data/devotion.json, built by
- * scripts/build_devotion.py): each step in parts — what is done and by whom, the words in full,
+ * scripts/build_devotion.py): each step in parts, what is done and by whom, the words in full,
  * songs with their hymnal number, psalms with the holy name called before them, and the guidance.
  */
 

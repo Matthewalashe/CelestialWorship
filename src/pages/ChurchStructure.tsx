@@ -84,8 +84,8 @@ export default function ChurchStructure() {
         <div className="mt-5 space-y-6">
           <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Ranks are distinguished by the robes worn. Members rise by promotion up to Superior Senior Leader, Superior Senior Woleader and Superior Senior Elder; from Assistant Evangelist upward promotion is by the Pastor, not automatic. Tap a rank for its garment.')}</p>
           <div className="grid md:grid-cols-2 gap-6">
-            <Ladder title={tr('Men — from the most senior')} ranks={MEN_RANKS} />
-            <Ladder title={tr('Women — from the most senior')} ranks={WOMEN_RANKS} />
+            <Ladder title={tr('Men, from the most senior')} ranks={MEN_RANKS} />
+            <Ladder title={tr('Women, from the most senior')} ranks={WOMEN_RANKS} />
           </div>
           <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Order and garments as published by Celestial Church of Christ Worldwide (“Spiritual Ranks”). The Constitution (1980, cl. 185) names the Church’s publication')}{' '}<em>{tr('Order of Seniority and Promotion and Dressing Rank by Rank')}</em>{' '}{tr('as the authority; orders can differ slightly between dioceses and editions.')}</p>
         </div>

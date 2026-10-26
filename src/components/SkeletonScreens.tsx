@@ -10,7 +10,7 @@ function Pulse({ className = '' }: { className?: string }) {
   );
 }
 
-/** Bible page skeleton — book grid */
+/** Bible page skeleton, book grid */
 export function BibleSkeleton() {
   return (
     <div className="px-4 py-6 max-w-4xl mx-auto pb-24">
@@ -30,7 +30,7 @@ export function BibleSkeleton() {
   );
 }
 
-/** Hymnal page skeleton — list of hymn cards */
+/** Hymnal page skeleton, list of hymn cards */
 export function HymnsSkeleton() {
   return (
     <div className="p-4 max-w-5xl mx-auto pb-24">
@@ -50,7 +50,7 @@ export function HymnsSkeleton() {
   );
 }
 
-/** Devotion page skeleton — service picker + step card */
+/** Devotion page skeleton, service picker + step card */
 export function DevotionSkeleton() {
   return (
     <div className="max-w-xl mx-auto px-4 py-8 pb-24">

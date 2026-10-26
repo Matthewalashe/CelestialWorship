@@ -83,7 +83,7 @@ export default function Give() {
         pledgeDue: pledge ? pledgeDue || undefined : undefined, source,
       });
       if (pledge) {
-        showToast(tr('Pledge recorded — you can redeem it from your giving history'));
+        showToast(tr('Pledge recorded, you can redeem it from your giving history'));
         setAmount(''); setNote('');
         setHistory(await listMyDonations());
       } else {
@@ -117,10 +117,10 @@ export default function Give() {
       <div className="px-4 py-12 max-w-md mx-auto text-center space-y-4">
         <div className="flex justify-center">{icon}</div>
         <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
-          {result === 'checking' ? tr('Confirming your gift…') : result === 'paid' ? tr('Thank you — God bless you') : result === 'failed' ? tr('The payment didn’t go through') : tr('Waiting for confirmation')}
+          {result === 'checking' ? tr('Confirming your gift…') : result === 'paid' ? tr('Thank you: God bless you') : result === 'failed' ? tr('The payment didn’t go through') : tr('Waiting for confirmation')}
         </h1>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-          {result === 'paid' ? tr('“God loveth a cheerful giver.” — 2 Corinthians 9:7. Your receipt is sent to your email by Flutterwave.')
+          {result === 'paid' ? tr('“God loveth a cheerful giver.” 2 Corinthians 9:7. Your receipt is sent to your email by Flutterwave.')
             : result === 'failed' ? tr('You were not charged. You can try again.')
             : result === 'checking' ? tr('This takes a moment.') : tr('If you were charged, your gift will show as paid once Flutterwave confirms it.')}
         </p>
@@ -134,7 +134,7 @@ export default function Give() {
       <header>
         <h1 className="text-2xl font-bold font-[Outfit] flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
           <HandCoins size={24} style={{ color: 'var(--color-accent-gold)' }} />{' '}{tr('Give')}</h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Bring ye all the tithes into the storehouse” — Malachi 3:10')}</p>
+        <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('“Bring ye all the tithes into the storehouse” Malachi 3:10')}</p>
       </header>
 
       <section className="rounded-2xl border p-4 space-y-3" style={card}>

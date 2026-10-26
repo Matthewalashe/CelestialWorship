@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 /**
- * Screen Wake Lock — prevents device screen from dimming during worship.
+ * Screen Wake Lock, prevents device screen from dimming during worship.
  * Uses the Screen Wake Lock API (supported in Chrome, Edge, Safari 16.4+).
  * Falls back gracefully on unsupported browsers.
  *

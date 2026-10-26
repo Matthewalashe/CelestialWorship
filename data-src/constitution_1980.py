@@ -84,7 +84,7 @@ SECTIONS = [
     {
         'id': 'worship', 'title': 'Mode & Order of Worship', 'icon': '🕯️', 'type': 'clauses',
         'clauses': [
-            clause(94, 'All forms of worship are entirely as revealed by the Holy Spirit — the setting of the altar and the seats, the number '
+            clause(94, 'All forms of worship are entirely as revealed by the Holy Spirit, the setting of the altar and the seats, the number '
                        'of candles for the various types of services and the seating arrangement. The seating arrangement was revealed through '
                        'a prophetess who, in the wilderness on Friday 5th October 1947, sketched it using oranges.'),
             clause(95, 'There is an Order of Service for different occasions such as Marriage, Funeral and Mass in remembrance of the Dead. '
@@ -104,23 +104,23 @@ SECTIONS = [
     {
         'id': 'sacraments', 'title': 'Holy Rites & Annual Observances', 'icon': '✝️', 'type': 'clauses',
         'clauses': [
-            clause('99a', 'BAPTISM — by immersion. Before being accepted as a member one must be baptised or re-baptised into the faith of '
+            clause('99a', 'BAPTISM, by immersion. Before being accepted as a member one must be baptised or re-baptised into the faith of '
                           'Celestial Church of Christ (Acts 19:1-6).'),
-            clause('99b', 'HOLY COMMUNION — generally held quarterly, on Holy Thursday (pre-Easter) and on Christmas Day; also on special '
+            clause('99b', 'HOLY COMMUNION, generally held quarterly, on Holy Thursday (pre-Easter) and on Christmas Day; also on special '
                           'occasions such as Marriage, Funeral and Mass in remembrance of departed souls.'),
-            clause('99c', 'ANNUAL WASHING OF FEET — on the Thursday of Holy Week, in commemoration of Jesus washing the feet of His disciples '
+            clause('99c', 'ANNUAL WASHING OF FEET, on the Thursday of Holy Week, in commemoration of Jesus washing the feet of His disciples '
                           '(John 13:5-9).'),
-            clause('99d', 'ANNUAL CONVOCATION AT CHRISTMAS — members convocate for Christmas in remembrance of the birth of Christ (Luke 2:1). '
+            clause('99d', 'ANNUAL CONVOCATION AT CHRISTMAS, members convocate for Christmas in remembrance of the birth of Christ (Luke 2:1). '
                           'The 1980 text names the sea side at Porto-Novo; the convocation has since been held at the Celestial City, Imeko.'),
-            clause('99e', 'ANNUAL EASTER CONGREGATION — from Good Friday to Easter Sunday, with services at 9.00 a.m., 12.00 noon and '
+            clause('99e', 'ANNUAL EASTER CONGREGATION, from Good Friday to Easter Sunday, with services at 9.00 a.m., 12.00 noon and '
                           '3.00 p.m. on Good Friday, a midnight procession to the cemetery on Saturday, and a service of joy and victory on '
                           'Easter Sunday morning.'),
-            clause('99f', 'ANNUAL HARVEST THANKSGIVING — every parish observes Harvest in two parts: the Juvenile Harvest on the first Sunday '
+            clause('99f', 'ANNUAL HARVEST THANKSGIVING, every parish observes Harvest in two parts: the Juvenile Harvest on the first Sunday '
                           'in June, and the Adult Harvest on a date agreed with the Diocesan Headquarters (not the first Sunday in October, '
                           'kept for the Supreme Headquarters, or the first Sunday in August, kept for the Diocesan Headquarters).'),
-            clause('99g', 'HOLY MARY’S DAY — the first Friday of July, commemorating the appearance of Holy Mary to the Pastor on 15th July '
+            clause('99g', 'HOLY MARY’S DAY, the first Friday of July, commemorating the appearance of Holy Mary to the Pastor on 15th July '
                           '1977. It was first observed on Friday 7th July 1978.'),
-            clause(198, 'ANOINTMENT — after baptism, anointment is very important. It is performed only by the Pastor, usually once a year '
+            clause(198, 'ANOINTMENT, after baptism, anointment is very important. It is performed only by the Pastor, usually once a year '
                         'during the Christmas/New Year period.'),
         ],
     },
@@ -165,13 +165,13 @@ SECTIONS = [
         'clauses': [
             clause(107, 'Celestial Church of Christ is one and indivisible. For organisational purposes:',
                    ('a', 'INTERNATIONAL HEADQUARTERS: the Church is world-wide. Its Supreme Headquarters is at Porto Novo, Republic of Benin, which is also its birth-place; the International Headquarters of the Church world-wide is at Mission House, Ketu, Lagos State, Nigeria.'),
-                   ('b', 'DIOCESE: the entire Church within Nigeria, with National (Diocesan) Headquarters at Makoko, Yaba, Lagos — including, for the time being, parishes outside Nigeria administered from Nigeria.'),
+                   ('b', 'DIOCESE: the entire Church within Nigeria, with National (Diocesan) Headquarters at Makoko, Yaba, Lagos, including, for the time being, parishes outside Nigeria administered from Nigeria.'),
                    ('c', 'DISTRICTS: groups of parishes ministered to by Pastor’s Representatives of the rank of Assistant Evangelist and above.'),
                    ('d', 'PARISH: an individual Church congregation within the Diocese.')),
             clause(156, 'The overall machinery for the government of the Church (Nigeria Diocese) is vested in the Pastor-in-Council, under the '
                         'ultimate authority of the Pastor. Its members are the Pastor (Chairman), the Head of the Diocese and his Deputy, the '
                         'other members of the Board of Trustees, and members the Pastor may co-opt (Clause 157).'),
-            clause(112, 'There is a Representative of the Pastor in each Parish — an Elder or Leader or other rank in charge — who performs all '
+            clause(112, 'There is a Representative of the Pastor in each Parish, an Elder or Leader or other rank in charge, who performs all '
                         'the duties of the Spiritual Leader in the Parish.'),
             clause(180, 'All Church property belongs not to any individual or group, and shall be registered and retained in the name of the '
                         'Celestial Church of Christ.'),
@@ -208,8 +208,8 @@ SECTIONS = [
                         'Wolider and Superior Senior Elder; promotion to Assistant Evangelist and above is not automatic.'),
             clause(188, 'The Pastor may, at his sole discretion, make direct appointments to any rank, including Assistant Evangelist, '
                         'Evangelist and above.'),
-            clause(182, 'Full-time Church workers — Supreme Evangelist, Superior Senior Evangelist, Senior Evangelist, Evangelist, Assistant '
-                        'Evangelists — receive stipends from the Pastor’s share of the monthly takings (Malachi 3:8-12).'),
+            clause(182, 'Full-time Church workers: Supreme Evangelist, Superior Senior Evangelist, Senior Evangelist, Evangelist, Assistant '
+                        'Evangelists, receive stipends from the Pastor’s share of the monthly takings (Malachi 3:8-12).'),
         ],
     },
 ]
@@ -217,10 +217,10 @@ SECTIONS = [
 META = {
     'title': 'Constitution of the Celestial Church of Christ',
     'subtitle': 'Ijo Mimo ti Kristi lati Orun wa · Eglise du Christianisme Céleste',
-    'version': 'Nigeria Diocese — first revised edition, 1980',
+    'version': 'Nigeria Diocese, first revised edition, 1980',
     'note': 'Excerpts for study, numbered as in the printed Constitution (drafted 29 February 1976 – 29 February 1980, '
             'promulgated 29 March 1980, prepared by the Board of Trustees for the Pastor-in-Council). Copyright reserved by the '
-            'Board of Trustees. Some provisions — such as the venue of the Christmas convocation — have changed in practice since 1980, '
+            'Board of Trustees. Some provisions, such as the venue of the Christmas convocation, have changed in practice since 1980, '
             'and different parts of the Church today follow different editions; check with your parish where it matters.',
 }
 

@@ -48,15 +48,15 @@ export function weekStart(d = new Date()): string {
 // ── Levels: titles from Scripture, not Church ranks ─────────────
 
 export const LEVELS: { xp: number; title: string; verse: string }[] = [
-  { xp: 0, title: 'Seeker', verse: 'Seek, and ye shall find — Matthew 7:7' },
-  { xp: 150, title: 'Listener', verse: 'Swift to hear — James 1:19' },
-  { xp: 400, title: 'Disciple', verse: 'Learn of me — Matthew 11:29' },
-  { xp: 800, title: 'Berean', verse: 'Searched the scriptures daily — Acts 17:11' },
-  { xp: 1400, title: 'Scribe of the Kingdom', verse: 'Things new and old — Matthew 13:52' },
-  { xp: 2200, title: 'Watchman', verse: 'I have set thee a watchman — Ezekiel 33:7' },
-  { xp: 3300, title: 'Faithful Steward', verse: 'Well done, good and faithful — Matthew 25:21' },
-  { xp: 4800, title: 'Wise Heart', verse: 'An understanding heart — 1 Kings 3:9' },
-  { xp: 7000, title: 'Light on a Hill', verse: 'Ye are the light of the world — Matthew 5:14' },
+  { xp: 0, title: 'Seeker', verse: 'Seek, and ye shall find: Matthew 7:7' },
+  { xp: 150, title: 'Listener', verse: 'Swift to hear: James 1:19' },
+  { xp: 400, title: 'Disciple', verse: 'Learn of me: Matthew 11:29' },
+  { xp: 800, title: 'Berean', verse: 'Searched the scriptures daily: Acts 17:11' },
+  { xp: 1400, title: 'Scribe of the Kingdom', verse: 'Things new and old: Matthew 13:52' },
+  { xp: 2200, title: 'Watchman', verse: 'I have set thee a watchman: Ezekiel 33:7' },
+  { xp: 3300, title: 'Faithful Steward', verse: 'Well done, good and faithful: Matthew 25:21' },
+  { xp: 4800, title: 'Wise Heart', verse: 'An understanding heart: 1 Kings 3:9' },
+  { xp: 7000, title: 'Light on a Hill', verse: 'Ye are the light of the world: Matthew 5:14' },
 ];
 
 export function levelFor(xp: number) {
@@ -165,5 +165,5 @@ export function recordDaily(marks: boolean[], date = new Date()): number {
 export function dailyShareText(marks: string, streak: number, date = new Date()): string {
   const grid = [...marks].map(m => (m === '1' ? '🟩' : '🟥')).join('');
   const right = [...marks].filter(m => m === '1').length;
-  return `CelestialWorship Daily #${dailyNumber(date)} — ${right}/${marks.length}\n${grid}${streak > 1 ? ` 🔥${streak}` : ''}`;
+  return `CelestialWorship Daily #${dailyNumber(date)}: ${right}/${marks.length}\n${grid}${streak > 1 ? ` 🔥${streak}` : ''}`;
 }

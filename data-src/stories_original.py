@@ -1,5 +1,5 @@
 """
-Bible Stories for Children — original retellings for CelestialWorship.
+Bible Stories for Children, original retellings for CelestialWorship.
 
 Short, numbered, in Bible order; each speaks to the child, keeps the words of the KJV where it quotes
 God or Jesus, and ends with questions and the passage to read with a parent. Written for this app;
@@ -36,7 +36,7 @@ STORIES = [
   s('Noah Builds a Big Boat', 'Genesis 6–7', ('Genesis', 6), [
     'After many years there were lots of people on the earth. But most of them were wicked and unkind. God was sorry to see so much badness.',
     'There was one good man, Noah. He walked with God. God told Noah, “Make thee an ark.” An ark is a very big boat. God said a great flood was coming.',
-    'Noah and his sons worked for a long time. People laughed at them, but Noah kept on obeying God. When the ark was finished, the animals came two by two — and some by sevens.',
+    'Noah and his sons worked for a long time. People laughed at them, but Noah kept on obeying God. When the ark was finished, the animals came two by two, and some by sevens.',
     'Noah and his family went in, and God shut the door. Then the rain began. It rained for forty days and forty nights, but everyone inside the ark was safe.',
   ], ['Why was God sorry about the people on the earth?', 'What did God tell Noah to build?', 'Who shut the door of the ark?']),
 
@@ -51,7 +51,7 @@ STORIES = [
     'After the flood, everyone on earth spoke one language. Some people said, “Let us build a city and a tower that reaches to heaven, so that we can make a great name for ourselves.”',
     'They were proud. They wanted to be great without God. So God mixed up their language. Suddenly one man could not understand what the next man said!',
     'They could not work together any more, and they stopped building. The people moved away to different lands, each family with its own language. The city was called Babel.',
-    'God wants us to work together — but to do it for Him, not to show off. Why do you think pride is not good?',
+    'God wants us to work together, but to do it for Him, not to show off. Why do you think pride is not good?',
   ], ['Why did the people want to build the tower?', 'What did God do to their language?', 'What was the city called?']),
 
   # ── The fathers ──
@@ -86,7 +86,7 @@ STORIES = [
   s('Joseph Forgives His Brothers', 'Genesis 39–45', ('Genesis', 45), [
     'In Egypt, Joseph was a slave and then a prisoner. But he always did what was right, and God was with him.',
     'God helped Joseph explain the king’s dreams: seven good years of food would come, and then seven years of hunger. So the king, Pharaoh, put Joseph in charge of all Egypt to store up food.',
-    'When the hungry years came, Joseph’s brothers came to Egypt to buy food. They bowed down to him — but they did not know who he was! Joseph tested them, to see if they had changed. They had.',
+    'When the hungry years came, Joseph’s brothers came to Egypt to buy food. They bowed down to him, but they did not know who he was! Joseph tested them, to see if they had changed. They had.',
     'Then Joseph cried and said, “I am Joseph!” He hugged his brothers and forgave them. “God did send me before you to preserve life,” he said. The whole family came to live in Egypt. Is it hard to forgive someone who has been unkind to you?',
   ], ['How did God help Joseph in Egypt?', 'Why did Joseph’s brothers come to Egypt?', 'What did Joseph do when he told them who he was?']),
 
@@ -100,7 +100,7 @@ STORIES = [
 
   s('The Bush That Did Not Burn', 'Exodus 3', ('Exodus', 3), [
     'Moses grew up in Pharaoh’s palace. Later he had to run away, and he became a shepherd in the land of Midian.',
-    'One day, near Mount Horeb, Moses saw a strange sight. A bush was on fire — but it did not burn up! He went closer to look.',
+    'One day, near Mount Horeb, Moses saw a strange sight. A bush was on fire, but it did not burn up! He went closer to look.',
     'God called to him from the bush: “Moses, Moses… put off thy shoes from off thy feet, for the place whereon thou standest is holy ground.”',
     'God said He had seen how His people were suffering in Egypt. He was sending Moses to bring them out. Moses was afraid, but God said, “Certainly I will be with thee.” Why do you think Moses took off his shoes?',
   ], ['What was strange about the bush?', 'What did God tell Moses to take off?', 'What did God send Moses to do?']),
@@ -131,7 +131,7 @@ STORIES = [
     'After Moses died, Joshua led God’s people into the land God had promised. The first city was Jericho, with big, strong walls.',
     'God gave Joshua some strange orders. For six days the soldiers and the priests carrying the ark of God were to march around the city once a day, with seven priests blowing trumpets. No one was to shout.',
     'On the seventh day they marched around seven times. Then the priests blew the trumpets, and Joshua said, “Shout; for the LORD hath given you the city.”',
-    'Everyone shouted — and the walls fell down flat! The people had obeyed God even when His plan seemed strange, and God gave them the victory.',
+    'Everyone shouted, and the walls fell down flat! The people had obeyed God even when His plan seemed strange, and God gave them the victory.',
   ], ['Who led the people after Moses?', 'How many times did they march around on the seventh day?', 'What happened when they shouted?']),
 
   s('Gideon’s Little Army', 'Judges 7', ('Judges', 7), [
@@ -174,20 +174,20 @@ STORIES = [
     'When David grew old, his son Solomon became king. Solomon was young, and being king was a big job.',
     'One night God appeared to Solomon in a dream and said, “Ask what I shall give thee.” Solomon could have asked for riches, or a long life, or victory over his enemies.',
     'But Solomon asked for “an understanding heart,” so that he could judge the people well and know good from bad.',
-    'God was pleased. He gave Solomon wisdom — and riches and honour too! Solomon built a beautiful temple for God. If God said to you, “Ask what I shall give thee,” what would you ask?',
+    'God was pleased. He gave Solomon wisdom, and riches and honour too! Solomon built a beautiful temple for God. If God said to you, “Ask what I shall give thee,” what would you ask?',
   ], ['What did God say to Solomon in the dream?', 'What did Solomon ask for?', 'What else did God give him?']),
 
   s('Elijah and the Ravens', '1 Kings 17', ('1 Kings', 17), [
     'Wicked King Ahab worshipped false gods. God sent the prophet Elijah to tell him there would be no rain for years.',
     'Then God told Elijah to hide by a brook. Every morning and every evening, ravens brought him bread and meat, and he drank from the brook.',
     'When the brook dried up, God sent Elijah to a poor widow. She had only a handful of flour and a little oil, just enough for one last meal for herself and her son.',
-    'Elijah asked her to make him a little cake first, and promised that her flour and oil would not run out. She trusted God and did it — and her jar of flour and her jug of oil never ran out until the rain came back.',
+    'Elijah asked her to make him a little cake first, and promised that her flour and oil would not run out. She trusted God and did it, and her jar of flour and her jug of oil never ran out until the rain came back.',
   ], ['Who brought Elijah food by the brook?', 'How much food did the widow have?', 'What happened to her flour and oil?']),
 
   s('Fire from Heaven', '1 Kings 18', ('1 Kings', 18), [
     'Many people in Israel were praying to a false god called Baal. Elijah gathered them on Mount Carmel for a test.',
     'The prophets of Baal built an altar and put an offering on it. They called on Baal from morning until noon to send fire. They shouted and danced, but nothing happened.',
-    'Then Elijah built an altar to the LORD. He had the people pour water all over it — three times! Then he prayed, “Hear me, O LORD, hear me, that this people may know that thou art the LORD God.”',
+    'Then Elijah built an altar to the LORD. He had the people pour water all over it, three times! Then he prayed, “Hear me, O LORD, hear me, that this people may know that thou art the LORD God.”',
     'Fire fell from heaven and burnt up the offering, the wood, the stones and even the water! The people fell on their faces and said, “The LORD, he is the God.”',
   ], ['On which mountain did the test happen?', 'Why did Elijah pour water on the altar?', 'What did the people say when the fire fell?']),
 
@@ -195,13 +195,13 @@ STORIES = [
     'Naaman was a great army captain in Syria, but he had a terrible skin disease called leprosy.',
     'In his house was a little girl from Israel who served his wife. She said, “Would God my lord were with the prophet that is in Samaria! for he would recover him of his leprosy.”',
     'Naaman went to the prophet Elisha. Elisha sent a message: “Go and wash in Jordan seven times.” Naaman was angry. He had expected something grand! But his servants persuaded him to obey.',
-    'Naaman dipped himself in the river seven times — and his skin became like the skin of a little child! He said, “Now I know that there is no God in all the earth, but in Israel.” A little girl’s kind words helped a great man find God.',
+    'Naaman dipped himself in the river seven times, and his skin became like the skin of a little child! He said, “Now I know that there is no God in all the earth, but in Israel.” A little girl’s kind words helped a great man find God.',
   ], ['Who told Naaman about Elisha?', 'What did Elisha tell him to do?', 'What happened when Naaman obeyed?']),
 
   # ── Exile ──
   s('Three Friends in the Fire', 'Daniel 3', ('Daniel', 3), [
     'King Nebuchadnezzar of Babylon made a huge golden statue. He ordered everyone to bow down to it when the music played.',
-    'Three young Jewish friends — Shadrach, Meshach and Abednego — would not bow down. They would worship only God.',
+    'Three young Jewish friends: Shadrach, Meshach and Abednego, would not bow down. They would worship only God.',
     'The king was furious. He had the furnace heated seven times hotter, and the three friends were thrown in. But the king looked and said, “Lo, I see four men loose, walking in the midst of the fire… and the form of the fourth is like the Son of God.”',
     'When they came out, not a hair on their heads was burnt, and they did not even smell of smoke! The king praised their God. Is it brave to do what is right even when everyone else does wrong?',
   ], ['Why would the three friends not bow down?', 'How many men did the king see in the fire?', 'What happened to the friends?']),
@@ -217,7 +217,7 @@ STORIES = [
     'God told Jonah to go to the great city of Nineveh and warn the people to stop their wickedness. But Jonah did not want to go. He got on a ship sailing the other way!',
     'God sent a mighty storm. The sailors were terrified. Jonah told them, “Cast me forth into the sea,” for he knew the storm was because of him. When they did, the sea became calm.',
     'God sent a great fish to swallow Jonah. For three days and three nights Jonah was inside the fish, and he prayed. Then the fish spat him out onto dry land.',
-    'This time Jonah obeyed and went to Nineveh. The people were sorry for their sins, and God forgave them. God cares about all people — even those we think are bad.',
+    'This time Jonah obeyed and went to Nineveh. The people were sorry for their sins, and God forgave them. God cares about all people, even those we think are bad.',
   ], ['Why did Jonah get on a ship?', 'How long was Jonah inside the fish?', 'What did the people of Nineveh do?']),
 
   s('Brave Queen Esther', 'Esther 4–8', ('Esther', 5), [
@@ -267,7 +267,7 @@ STORIES = [
     'Jesus, His mother and His disciples went to a wedding in Cana. During the feast, the wine ran out! That would be very embarrassing for the family.',
     'Mary told Jesus about it. Then she told the servants, “Whatsoever he saith unto you, do it.”',
     'There were six big stone water jars. Jesus said, “Fill the waterpots with water.” The servants filled them to the brim. Then Jesus said, “Draw out now,” and take some to the man in charge of the feast.',
-    'The water had become wine — the very best wine! This was the first miracle Jesus did. Mary’s words are good for us too: whatever Jesus says to you, do it.',
+    'The water had become wine, the very best wine! This was the first miracle Jesus did. Mary’s words are good for us too: whatever Jesus says to you, do it.',
   ], ['What ran out at the wedding?', 'What did Mary tell the servants?', 'What did Jesus turn the water into?']),
 
   s('Fishers of Men', 'Luke 5', ('Luke', 5), [
@@ -301,12 +301,12 @@ STORIES = [
   s('The Kind Samaritan', 'Luke 10', ('Luke', 10), [
     'A man asked Jesus, “Who is my neighbour?” Jesus answered with a story.',
     'A man was travelling from Jerusalem to Jericho. Robbers attacked him, took his clothes, beat him and left him half dead by the road.',
-    'A priest came along, saw him, and passed by on the other side. Then a Levite came, looked, and passed by too. But then a Samaritan came — a man from a people the Jews did not get on with. He felt sorry for the hurt man. He bandaged his wounds, put him on his own donkey, took him to an inn and paid for his care.',
+    'A priest came along, saw him, and passed by on the other side. Then a Levite came, looked, and passed by too. But then a Samaritan came, a man from a people the Jews did not get on with. He felt sorry for the hurt man. He bandaged his wounds, put him on his own donkey, took him to an inn and paid for his care.',
     'Jesus asked, “Which… was neighbour unto him that fell among the thieves?” The answer was, the one who showed mercy. Jesus said, “Go, and do thou likewise.” Who can you be kind to this week?',
   ], ['What happened to the man on the road?', 'Who helped him?', 'What did Jesus tell us to do?']),
 
   s('The Lost Sheep', 'Luke 15', ('Luke', 15), [
-    'Jesus told about a shepherd who had a hundred sheep. One day he counted them — ninety-seven, ninety-eight, ninety-nine… One was missing!',
+    'Jesus told about a shepherd who had a hundred sheep. One day he counted them, ninety-seven, ninety-eight, ninety-nine… One was missing!',
     'The shepherd left the ninety-nine and went looking for the lost one. He searched and searched until he found it.',
     'He put the sheep on his shoulders, rejoicing, and carried it home. He called his friends and neighbours together: “Rejoice with me; for I have found my sheep which was lost.”',
     'Jesus said there is joy in heaven over one person who turns back to God. Each one of us is precious to God, like that one little sheep.',
@@ -365,7 +365,7 @@ STORIES = [
     'Jesus’ body was laid in a tomb cut out of rock, and a big stone was rolled across the door. His friends were very sad.',
     'Early on the first day of the week, Mary Magdalene and other women came to the tomb. There was a great earthquake! An angel had rolled the stone away and was sitting on it.',
     'The angel said, “Fear not ye: for I know that ye seek Jesus, which was crucified. He is not here: for he is risen, as he said.”',
-    'The women ran with fear and great joy to tell the disciples — and Jesus Himself met them on the way! Jesus is alive! That is why Easter is the happiest day of all.',
+    'The women ran with fear and great joy to tell the disciples, and Jesus Himself met them on the way! Jesus is alive! That is why Easter is the happiest day of all.',
   ], ['What had happened to the stone?', 'What did the angel say?', 'Who met the women on the way?']),
 
   s('Jesus Goes Up to Heaven', 'Acts 1', ('Acts', 1), [
@@ -392,7 +392,7 @@ STORIES = [
   s('Shipwrecked!', 'Acts 27–28', ('Acts', 27), [
     'Paul was a prisoner being taken by ship to Rome. A terrible storm blew for many days. The sailors threw cargo overboard and gave up hope.',
     'But an angel of God told Paul that no one would be lost. Paul told everyone, “Be of good cheer: for I believe God, that it shall be even as it was told me.”',
-    'The ship ran aground and broke apart. Some swam and some floated on boards — and all 276 people reached the land safely! The island was called Melita, now Malta.',
+    'The ship ran aground and broke apart. Some swam and some floated on boards, and all 276 people reached the land safely! The island was called Melita, now Malta.',
     'A snake bit Paul’s hand as he put sticks on a fire, but he shook it off and was not hurt. He prayed for the sick on the island and they were healed. Even in a storm, God took care of Paul.',
   ], ['Who told Paul that everyone would be safe?', 'How many people reached land?', 'What happened when the snake bit Paul?']),
 ]

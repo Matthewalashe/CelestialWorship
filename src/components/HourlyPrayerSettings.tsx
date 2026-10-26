@@ -62,7 +62,7 @@ export function HourlyPrayerSettings({ notif }: { notif: ReturnType<typeof useNo
                   style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
             <CalendarPlus size={16} aria-hidden /> {tr('Add to my phone’s calendar')}
           </button>
-          <p className="text-[11px]" style={muted}>{tr('The calendar rings at each hour even when the app is closed — the surest alarm on any phone.')}</p>
+          <p className="text-[11px]" style={muted}>{tr('The calendar rings at each hour even when the app is closed, the surest alarm on any phone.')}</p>
         </div>
       )}
     </div>

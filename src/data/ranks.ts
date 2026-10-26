@@ -4,7 +4,7 @@
  * Ranks and garments: “Spiritual Ranks”, Celestial Church of Christ Worldwide
  * (http://www.celestialchurchofchrist-worldwide.org/spiritual_ranks.htm). The Constitution (1980), clause 185,
  * names the Church’s own publication “Order of Seniority and Promotion and Dressing Rank by Rank” as the
- * authority, and orders can differ slightly between publications — so the app says so.
+ * authority, and orders can differ slightly between publications, so the app says so.
  * Structure and practice: the 1980 Constitution (clauses cited).
  */
 
@@ -74,13 +74,13 @@ export const HIERARCHY: { level: string; who: string; detail: string; source: st
   { level: 'Diocese', who: 'Head of the Diocese · National (Diocesan) Headquarters', detail: 'The Church in a country, e.g. Nigeria Diocese, headquartered at 12/15 Church Street, Makoko, Yaba, Lagos.', source: 'cl. 1' },
   { level: 'Provinces, regions, states', who: 'Provincial / regional / state heads', detail: 'Groupings used by dioceses as they grow; names and boundaries are set by each diocese.', source: 'practice' },
   { level: 'Districts & circuits', who: 'Pastor’s Representatives of the rank of Assistant Evangelist and above', detail: 'Groups of parishes ministered to together.', source: 'Definitions' },
-  { level: 'Parish', who: 'Shepherd-in-charge (the Pastor’s Representative) · Parochial Committee', detail: 'An individual congregation; its Representative — an Elder, Leader or higher — performs all the duties of the spiritual leader.', source: 'cl. 112' },
+  { level: 'Parish', who: 'Shepherd-in-charge (the Pastor’s Representative) · Parochial Committee', detail: 'An individual congregation; its Representative, an Elder, Leader or higher, performs all the duties of the spiritual leader.', source: 'cl. 112' },
   { level: 'Members', who: 'Laity, church workers and the ranks above', detail: 'Members are baptised, then anointed after steady worship; ranks are distinguished by robes.', source: 'cl. 185, 198' },
 ];
 
 /** Practice and symbols (Constitution 1980 unless noted) */
 export const ASSETS: { title: string; text: string; source: string }[] = [
-  { title: 'The emblem', text: 'The Church’s emblem shows an eye, a crown and a cross with the Church’s name. One reading: the eye is the eye of the Lord upon His people, and the cross — the work — comes before the crown. Accounts differ on the rainbow: one says the name was first written in the form of a bow and the rainbow was added at the Church’s 50th anniversary (1997). Ask your parish for the official description.', source: 'Celestial Weekly “Ask an Elder”; Celestial Church Blog' },
+  { title: 'The emblem', text: 'The Church’s emblem shows an eye, a crown and a cross with the Church’s name. One reading: the eye is the eye of the Lord upon His people, and the cross, the work, comes before the crown. Accounts differ on the rainbow: one says the name was first written in the form of a bow and the rainbow was added at the Church’s 50th anniversary (1997). Ask your parish for the official description.', source: 'Celestial Weekly “Ask an Elder”; Celestial Church Blog' },
   { title: 'White garment (sutana)', text: 'Members worship in a white garment; ranks are distinguished by the robe, cape, loins, crosses and strands worn over it. Shoes are not worn with the sutana or within the church premises.', source: 'cl. 185; prohibitions' },
   { title: 'The altar', text: 'The altar area is rectangular, faces EAST, and is cut off from the rest of the church by a hand-railing along its full width. The setting of the altar and the seats was revealed by the Holy Spirit.', source: 'cl. 94, 177' },
   { title: 'Candles', text: 'Only white candles are used; coloured candles are forbidden. The number of candles differs for each type of service.', source: 'cl. 94; prohibitions' },

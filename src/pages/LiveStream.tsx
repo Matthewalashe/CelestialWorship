@@ -54,7 +54,7 @@ export default function LiveStream() {
   const start = stream.scheduled_at ?? stream.started_at;
 
   const addToCalendar = () => start && downloadIcs({
-    id: stream.id, title: `${stream.title} — ${name}`, description: `${stream.description ?? ''}\n${streamLink(stream.id)}`.trim(),
+    id: stream.id, title: `${stream.title}: ${name}`, description: `${stream.description ?? ''}\n${streamLink(stream.id)}`.trim(),
     category: 'service', location: streamLink(stream.id), starts_at: start, ends_at: null, all_day: false,
     parish_id: stream.parish_id, scope: 'parish', contact: null, status: 'published', submitted_by: null,
   });

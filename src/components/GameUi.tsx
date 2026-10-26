@@ -23,7 +23,7 @@ export function useGameState(): GameState {
 export async function shareText(text: string, path?: string) {
   const url = path ? `${window.location.origin}${path}` : undefined;
   if (navigator.share) { try { await navigator.share({ text, url }); return; } catch {} }
-  try { await navigator.clipboard.writeText(url ? `${text}\n${url}` : text); showToast(tr('Copied — paste it to share')); } catch {}
+  try { await navigator.clipboard.writeText(url ? `${text}\n${url}` : text); showToast(tr('Copied, paste it to share')); } catch {}
 }
 
 export function LevelBar({ xp, compact = false }: { xp: number; compact?: boolean }) {
@@ -155,7 +155,7 @@ export function Leaderboard() {
       {error && <p className="text-sm" style={{ color: 'var(--color-warning)' }}>{error}</p>}
       {rows === undefined && !error && <p className="text-sm animate-pulse" style={{ color: 'var(--color-text-muted)' }}>{tr('Loading…')}</p>}
       {rows === null && <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('The leaderboard opens when the church’s online service is set up.')}</p>}
-      {rows && rows.length === 0 && <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('No one yet this week — be the first.')}</p>}
+      {rows && rows.length === 0 && <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{tr('No one yet this week, be the first.')}</p>}
       {rows && rows.length > 0 && (
         <ol className="space-y-1.5">
           {rows.map((r, i) => (

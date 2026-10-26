@@ -89,7 +89,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
       tune.current = tune.current ?? new TunePlayer(prefs.volume);
       tune.current.setVolume(prefs.volume);
       tune.current.play(item.solfa, { times: 2, onEnd: () => playNext() });
-      setNow({ title: `Hymn ${item.hymn} — ${item.title}`, detail: 'Celestial hymn tune, from the hymnal’s sol-fa' });
+      setNow({ title: `Hymn ${item.hymn}: ${item.title}`, detail: 'Celestial hymn tune, from the hymnal’s sol-fa' });
     }
   }, [buildQueue, halt, prefs.volume]);
 

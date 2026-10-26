@@ -47,7 +47,7 @@ const SERVICE_LENGTH: Record<string, number> = { lords_day_service: 180 };
 
 /**
  * The hours of prayer kept on a date. A service takes the place of an hourly prayer that falls during it,
- * or that comes less than 90 minutes before it starts (people are on their way) — except at home, in
+ * or that comes less than 90 minutes before it starts (people are on their way), except at home, in
  * personal or family devotion, where every hour is kept.
  */
 export function hourlyPrayersForDate(date: Date, atHome = false): number[] {

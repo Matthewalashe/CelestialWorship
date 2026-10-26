@@ -60,11 +60,11 @@ export const PLACES: BiblePlace[] = [
   p('shiloh', 'Shiloh', 'Khirbet Seilun', 'Palestine (West Bank)', 32.0556, 35.2897, 'Ruins where the tabernacle stood and young Samuel served.', '1 Samuel 1:3; Joshua 18:1'),
   p('bethel', 'Bethel', 'Beitin', 'Palestine (West Bank)', 31.9283, 35.2378, 'A village near Ramallah where Jacob dreamt of the ladder.', 'Genesis 28:10-19'),
   // ── Judea ──
-  p('jerusalem', 'Jerusalem', 'Jerusalem (Old City)', 'Jerusalem — status disputed', 31.7767, 35.2345, 'The walled Old City, holy to Jews, Christians and Muslims. Its status is disputed between Israel and Palestine.', 'Psalm 122; Luke 2:41-49'),
-  p('temple', 'The Temple', 'Temple Mount / Haram al-Sharif', 'Jerusalem — status disputed', 31.7781, 35.2354, 'The Western Wall and the Dome of the Rock stand where Herod’s Temple stood.', 'John 2:13-17; 1 Kings 6'),
-  p('golgotha', 'Golgotha (Calvary)', 'Church of the Holy Sepulchre', 'Jerusalem — status disputed', 31.7784, 35.2296, 'A church built in AD 335 over the rock of Calvary and the tomb. (Some prefer the Garden Tomb, 600 m north.)', 'John 19:17-18, 41-42', { traditional: true }),
-  p('gethsemane', 'Gethsemane', 'Garden of Gethsemane', 'Jerusalem — status disputed', 31.7794, 35.2397, 'Ancient olive trees beside the Church of All Nations at the foot of the Mount of Olives.', 'Matthew 26:36-46'),
-  p('olives', 'Mount of Olives', 'Mount of Olives (at-Tur)', 'Jerusalem — status disputed', 31.7783, 35.2444, 'A ridge east of the Old City, covered with churches and an ancient Jewish cemetery.', 'Matthew 21:1; Acts 1:9-12'),
+  p('jerusalem', 'Jerusalem', 'Jerusalem (Old City)', 'Jerusalem, status disputed', 31.7767, 35.2345, 'The walled Old City, holy to Jews, Christians and Muslims. Its status is disputed between Israel and Palestine.', 'Psalm 122; Luke 2:41-49'),
+  p('temple', 'The Temple', 'Temple Mount / Haram al-Sharif', 'Jerusalem, status disputed', 31.7781, 35.2354, 'The Western Wall and the Dome of the Rock stand where Herod’s Temple stood.', 'John 2:13-17; 1 Kings 6'),
+  p('golgotha', 'Golgotha (Calvary)', 'Church of the Holy Sepulchre', 'Jerusalem, status disputed', 31.7784, 35.2296, 'A church built in AD 335 over the rock of Calvary and the tomb. (Some prefer the Garden Tomb, 600 m north.)', 'John 19:17-18, 41-42', { traditional: true }),
+  p('gethsemane', 'Gethsemane', 'Garden of Gethsemane', 'Jerusalem, status disputed', 31.7794, 35.2397, 'Ancient olive trees beside the Church of All Nations at the foot of the Mount of Olives.', 'Matthew 26:36-46'),
+  p('olives', 'Mount of Olives', 'Mount of Olives (at-Tur)', 'Jerusalem, status disputed', 31.7783, 35.2444, 'A ridge east of the Old City, covered with churches and an ancient Jewish cemetery.', 'Matthew 21:1; Acts 1:9-12'),
   p('bethany', 'Bethany', 'al-Eizariya', 'Palestine (West Bank)', 31.7714, 35.2614, 'A town whose Arabic name remembers Lazarus; his tomb is shown there.', 'John 11:1-44; Luke 24:50'),
   p('bethlehem', 'Bethlehem', 'Bethlehem', 'Palestine (West Bank)', 31.7043, 35.2073, 'A city south of Jerusalem; the Church of the Nativity stands over the cave of Jesus’ birth.', 'Luke 2:4-7; Micah 5:2'),
   p('jericho', 'Jericho', 'Jericho (Ariha)', 'Palestine (West Bank)', 31.8711, 35.4442, 'A green oasis city near the ancient mound of Tell es-Sultan, one of the oldest towns in the world.', 'Joshua 6; Luke 19:1-10'),
@@ -269,7 +269,7 @@ export interface BibleLand { name: string; aka: string; countries: string[]; ans
 
 export const BIBLE_LANDS: BibleLand[] = [
   { name: 'Egypt', aka: 'Mizraim, the land of Ham', countries: ['EGY'], answer: 'Egypt', refs: 'Genesis 12:10; Matthew 2:13', note: 'Israel’s house of bondage, and a refuge for the holy family.' },
-  { name: 'Ethiopia (Cush)', aka: 'the kingdom of Candace', countries: ['SDN'], answer: 'Sudan', refs: 'Acts 8:27; Psalm 68:31', note: 'Biblical “Ethiopia” was Cush, the Nile kingdom of Meroë — today northern Sudan.' },
+  { name: 'Ethiopia (Cush)', aka: 'the kingdom of Candace', countries: ['SDN'], answer: 'Sudan', refs: 'Acts 8:27; Psalm 68:31', note: 'Biblical “Ethiopia” was Cush, the Nile kingdom of Meroë, today northern Sudan.' },
   { name: 'Babylon (Chaldea)', aka: 'the land of Shinar', countries: ['IRQ'], answer: 'Iraq', refs: 'Genesis 11:2; Daniel 1:1', note: 'Between the Tigris and Euphrates, south of Baghdad.' },
   { name: 'Assyria', aka: 'Asshur, with Nineveh', countries: ['IRQ'], answer: 'Iraq', refs: '2 Kings 17:6; Jonah 1:2', note: 'Northern Iraq, around Mosul (Nineveh).' },
   { name: 'Persia and Media', aka: 'Elam, Shushan the palace', countries: ['IRN'], answer: 'Iran', refs: 'Esther 1:3; Daniel 5:28', note: 'Cyrus king of Persia let the Jews return home (Ezra 1).' },

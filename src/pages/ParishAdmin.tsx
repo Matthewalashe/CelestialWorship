@@ -279,7 +279,7 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
 
   const goLive = (s: Livestream) => run(async () => {
     await setStreamStatus(s.id, 'live');
-    try { const sent = await notifyLive(s.id); showToast(`You’re live — ${sent} member${sent === 1 ? '' : 's'} alerted`); }
+    try { const sent = await notifyLive(s.id); showToast(`You’re live: ${sent} member${sent === 1 ? '' : 's'} alerted`); }
     catch { showToast(tr('You’re live. Alerts could not be sent.')); }
   });
 
@@ -292,7 +292,7 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
     });
     setForm(null);
     if (startNow) await goLive(saved);
-    else showToast(tr('Scheduled — it shows on the Live page'));
+    else showToast(tr('Scheduled, it shows on the Live page'));
   });
 
   return (
@@ -381,10 +381,10 @@ function LiveTab({ parish, onSaved, fullAdmin, onPlan }: { parish: PrivateParish
           <li>{tr('Start the stream with the tool you use: YouTube Studio, Facebook Live Producer, or OBS on a computer.')}</li>
           <li>{tr('To reach YouTube, Facebook, Instagram and TikTok together, send one stream to a multistreaming service (for example Restream or StreamYard), or add each platform’s stream key in OBS’s “Multiple RTMP outputs”.')}</li>
           <li>{tr('Here, press')}{' '}<b>{tr('Go live')}</b>{tr(', paste the link from each platform and send the alert. Members and followers get a notification; the broadcast shows on the Live page and your parish page.')}</li>
-          <li>{tr('Share it to WhatsApp, Facebook, X and Telegram with the buttons — the link opens the broadcast in the app, with every platform listed.')}</li>
+          <li>{tr('Share it to WhatsApp, Facebook, X and Telegram with the buttons, the link opens the broadcast in the app, with every platform listed.')}</li>
           <li>{tr('Press')}{' '}<b>{tr('End broadcast')}</b>{' '}{tr('when you finish; it then appears under “Watch again”.')}</li>
         </ol>
-        <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>{tr('Never paste a stream key here — keys stay in your streaming software.')}</p>
+        <p className="text-xs mt-3" style={{ color: 'var(--color-text-muted)' }}>{tr('Never paste a stream key here, keys stay in your streaming software.')}</p>
       </details>
     </div>
   );
@@ -453,7 +453,7 @@ function PlanTab({ parish }: { parish: PrivateParish }) {
 
   return (
     <div className="space-y-4">
-      {params.get('subscribed') && !active && <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>{tr('Payment received — your plan will show here in a moment.')}</p>}
+      {params.get('subscribed') && !active && <p className="text-sm p-3 rounded-xl" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}>{tr('Payment received, your plan will show here in a moment.')}</p>}
       <div className="rounded-2xl border p-4 space-y-3" style={card}>
         <p className="font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
           <Crown size={18} style={{ color: 'var(--color-accent-gold)' }} />{' '}{tr('Partner plan')}<span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full" style={active ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-muted)' }}>
@@ -640,7 +640,7 @@ function PayoutAccountCard({ parishId }: { parishId: string }) {
           <p style={{ color: 'var(--color-text-primary)' }}>{account.bank_name} · ••••{account.account_number.slice(-4)}</p>
           {account.account_name && <p style={{ color: 'var(--color-text-secondary)' }}>{account.account_name}</p>}
           <p className="text-xs font-semibold" style={{ color: account.status === 'verified' ? 'var(--color-success)' : 'var(--color-warning)' }}>
-            {account.status === 'verified' ? tr('Verified — online giving is on') : account.status === 'failed' ? `Not verified: ${account.status_message ?? ''}` : tr('Pending')}
+            {account.status === 'verified' ? tr('Verified, online giving is on') : account.status === 'failed' ? `Not verified: ${account.status_message ?? ''}` : tr('Pending')}
           </p>
           <button onClick={() => setEditing(true)} className="text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Change account')}</button>
         </div>
@@ -712,7 +712,7 @@ function GivingTab({ parishId, fullAdmin, onPlan }: { parishId: string; fullAdmi
       <ul className="space-y-1">
         {items.slice(0, 100).map(d => (
           <li key={d.id} className="flex items-center gap-2 text-sm rounded-xl px-3 py-2" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(DONATION_PURPOSES[d.purpose])} · {d.is_anonymous ? tr('Anonymous') : d.donor_name ?? '—'}</span>
+            <span className="flex-1 truncate" style={{ color: 'var(--color-text-primary)' }}>{tr(DONATION_PURPOSES[d.purpose])} · {d.is_anonymous ? tr('Anonymous') : d.donor_name ?? ''}</span>
             <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{money(d.amount_minor, d.currency)}</span>
             <span className="text-[10px] uppercase w-16 text-right" style={{ color: d.status === 'paid' ? 'var(--color-success)' : 'var(--color-text-muted)' }}>{d.status}</span>
           </li>
@@ -761,7 +761,7 @@ function AppointmentsTab({ parishId }: { parishId: string }) {
                   {new Date(b.starts_at).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true })}
                   {b.host_id === user?.id ? tr(' · with you') : ''}
                 </p>
-                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{b.member_name} — {b.topic}</p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{b.member_name}: {b.topic}</p>
                 {b.details && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{b.details}</p>}
                 {b.member_phone && <a href={`tel:${b.member_phone}`} className="text-xs" style={{ color: 'var(--color-accent-brand)' }}>{b.member_phone}</a>}
                 <div className="flex gap-3 mt-2 text-xs font-semibold">
@@ -834,7 +834,7 @@ export default function ParishAdmin() {
     return (
       <div className="px-4 py-10 max-w-md mx-auto text-center space-y-3">
         <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('You don’t manage a parish or ministry yet')}</p>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Register it in the directory. Once a moderator lists it, you can manage it here — or ask its current administrator to add you.')}</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Register it in the directory. Once a moderator lists it, you can manage it here, or ask its current administrator to add you.')}</p>
         <Link to="/directory?submit=1" className="btn-primary inline-block px-5 py-2.5 rounded-xl text-sm font-semibold">{tr('Register a parish or ministry')}</Link>
       </div>
     );

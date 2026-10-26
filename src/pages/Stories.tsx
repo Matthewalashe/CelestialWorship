@@ -20,7 +20,7 @@ export default function Stories() {
   return (
     <div className="px-4 py-6 max-w-3xl mx-auto pb-24">
       <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Bible stories')}</h1>
-      <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('To read with your children — every story has questions and the passage to read together.')}</p>
+      <p className="text-sm mt-1" style={{ color: 'var(--color-text-secondary)' }}>{tr('To read with your children, every story has questions and the passage to read together.')}</p>
 
       <div className="flex gap-1 mt-4 border-b" style={{ borderColor: 'var(--color-border)' }} role="tablist">
         {collections.map(c => (

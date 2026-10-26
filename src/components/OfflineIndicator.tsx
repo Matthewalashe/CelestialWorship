@@ -32,7 +32,7 @@ export function OfflineIndicator() {
       aria-live="polite"
     >
       <WifiOff size={16} />
-      <span>{tr('You\'re offline — cached content available')}</span>
+      <span>{tr('You\'re offline, cached content available')}</span>
       <button
         onClick={() => setDismissed(true)}
         className="ml-2 opacity-70 hover:opacity-100"

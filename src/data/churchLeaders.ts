@@ -1,6 +1,6 @@
 /**
  * The Founder, the Pastor and those who have led the Church, with photographs that are free to use
- * (Wikimedia Commons, CC BY-SA 4.0 — credited where shown). Dates from Wikipedia.
+ * (Wikimedia Commons, CC BY-SA 4.0, credited where shown). Dates from Wikipedia.
  * The Board of Trustees and the Pastor-in-Council are described from the Constitution; their members are
  * listed once the Church confirms them.
  */

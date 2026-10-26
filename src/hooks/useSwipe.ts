@@ -10,7 +10,7 @@ interface UseSwipeOptions {
   onSwipeRight?: () => void;
   /** Minimum horizontal distance (px) to trigger a swipe. Default: 50 */
   threshold?: number;
-  /** Maximum vertical distance (px) — prevents swipe during scroll. Default: 80 */
+  /** Maximum vertical distance (px), prevents swipe during scroll. Default: 80 */
   maxVertical?: number;
 }
 

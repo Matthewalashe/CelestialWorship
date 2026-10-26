@@ -78,7 +78,7 @@ const SPLASH_KEY = 'cw-splash-seen';
 // Once per page load: the app is drawn again when the language changes
 let splashShown = false;
 
-/** The splash opens the app once per visit — not on the projector screens, nor for test browsers (unless ?splash) */
+/** The splash opens the app once per visit, not on the projector screens, nor for test browsers (unless ?splash) */
 function shouldSplash(): boolean {
   if (splashShown) return false;
   try {

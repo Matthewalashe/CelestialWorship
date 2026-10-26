@@ -15,7 +15,7 @@ import { tr } from '../i18n';
 type Game = 'journey' | 'paul' | 'letters' | 'thennow' | 'master' | 'lands';
 
 const GAMES: { id: Game; title: string; description: string; icon: typeof MapIcon }[] = [
-  { id: 'journey', title: 'Journey of Jesus', description: 'From Bethlehem to the Mount of Olives — put each moment of His life on the map.', icon: Footprints },
+  { id: 'journey', title: 'Journey of Jesus', description: 'From Bethlehem to the Mount of Olives, put each moment of His life on the map.', icon: Footprints },
   { id: 'paul', title: 'Journeys of Paul', description: 'From the Damascus road through Asia and Greece to Rome.', icon: Ship },
   { id: 'letters', title: 'Paul’s letters', description: 'The churches he wrote to: where they were, and what they are today.', icon: Mail },
   { id: 'thennow', title: 'Then & Now', description: 'Bible names and what the places are called today.', icon: History },
@@ -162,14 +162,14 @@ const LETTER_STOPS: TraceStop[] = PAUL_LETTERS.map(l => ({
 function PaulLetterList() {
   return (
     <details className="rounded-2xl border p-4" style={card}>
-      <summary className="font-semibold text-sm cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>{tr('The churches Paul wrote to — then and now')}</summary>
+      <summary className="font-semibold text-sm cursor-pointer" style={{ color: 'var(--color-text-primary)' }}>{tr('The churches Paul wrote to, then and now')}</summary>
       <ul className="mt-3 divide-y" style={{ borderColor: 'var(--color-border)' }}>
         {PAUL_LETTERS.map(l => {
           const pl = placeById(l.placeId)!;
           return (
             <li key={l.letter} className="py-2.5 text-sm" style={{ borderColor: 'var(--color-border)' }}>
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{l.letter} <span className="font-normal text-xs" style={{ color: 'var(--color-text-muted)' }}>· <RefLink refs={l.ref} /></span></p>
-              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('To')}{' '}{l.to}. <b>{pl.name}</b>{' '}{tr('— today')}{' '}{pl.today}, {pl.country}.</p>
+              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('To')}{' '}{l.to}. <b>{pl.name}</b>{' '}{tr('today')}{' '}{pl.today}, {pl.country}.</p>
               <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Written from')}{' '}{l.from}, {l.when}.</p>
             </li>
           );
@@ -297,7 +297,7 @@ function Master({ layer }: { layer: MapLayer }) {
     return (
       <div className="text-center py-8 space-y-4">
         <Timer size={40} className="mx-auto" style={{ color: 'var(--color-accent-gold)' }} />
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('A place is named — tap its dot on the map. Right answers in a row build a combo.')}</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('A place is named, tap its dot on the map. Right answers in a row build a combo.')}</p>
         <button onClick={reset} className="btn-primary px-8 py-3 rounded-xl font-semibold">{tr('Start')}</button>
       </div>
     );
@@ -474,7 +474,7 @@ export default function MapGames() {
         <TraceGame layer={layer} region="world" finishLabel="Finish at Rome" sharePath="/maps?game=paul"
                    stops={PAUL_JOURNEY.map(s => ({ ...s, tag: PAUL_JOURNEY_NAMES[s.journey] }))}
                    focusFor={worldFocus} zeroAtFor={() => 250}
-                   summary={{ sub: 'From the Damascus road to Rome — about 16,000 km.', share: t => `I followed the Journeys of Paul on CelestialWorship: ${t} points.` }} />
+                   summary={{ sub: 'From the Damascus road to Rome, about 16,000 km.', share: t => `I followed the Journeys of Paul on CelestialWorship: ${t} points.` }} />
       )}
       {game === 'letters' && (
         <>

@@ -364,7 +364,7 @@ function PrayersTab() {
       )}
 
       {shown.length === 0 ? (
-        <Empty icon={<HandHeart size={28} />} text={filter === 'open' ? 'Keep a record of what you bring before God, and mark each one as answered.' : 'Answered prayers become your testimonies — they will appear here.'} />
+        <Empty icon={<HandHeart size={28} />} text={filter === 'open' ? 'Keep a record of what you bring before God, and mark each one as answered.' : 'Answered prayers become your testimonies, they will appear here.'} />
       ) : (
         <ul className="space-y-2">
           {shown.map(p => (
@@ -487,7 +487,7 @@ function BackupTab() {
       <div className="rounded-2xl border p-4" style={card}>
         <h3 className="font-semibold mb-1" style={{ color: 'var(--color-text-primary)' }}>{tr('On this device')}</h3>
         <p className="text-sm mb-3" style={{ color: 'var(--color-text-secondary)' }}>
-          {count === null ? '…' : `${count} item${count === 1 ? '' : 's'}`}{' '}{tr('— notes, saved passages, highlights and prayers. They stay private on this phone or computer.')}</p>
+          {count === null ? '…' : `${count} item${count === 1 ? '' : 's'}`}{' '}{tr('notes, saved passages, highlights and prayers. They stay private on this phone or computer.')}</p>
         <div className="flex flex-wrap gap-2">
           <button onClick={download} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1">
             <Download size={15} />{' '}{tr('Download backup file')}</button>

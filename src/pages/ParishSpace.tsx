@@ -63,7 +63,7 @@ function Posts({ space, people, canPlan, to }: { space: MySpace; people: SpacePe
       const made = await post({ parishId: space.parish_id, channelId: channel, body, audience, people: chosen });
       setBody(''); setChosen([]);
       if (audience === 'link' && made.share_token) {
-        try { await navigator.clipboard.writeText(`${origin()}/shared/${made.share_token}`); showToast(tr('Posted — link copied')); } catch { showToast(tr('Posted')); }
+        try { await navigator.clipboard.writeText(`${origin()}/shared/${made.share_token}`); showToast(tr('Posted, link copied')); } catch { showToast(tr('Posted')); }
       } else showToast(tr('Posted'));
       setAudience('space');
       load();
@@ -173,7 +173,7 @@ function DutyRow({ d, people }: { d: Duty; people: SpacePerson[] }) {
   return (
     <li className="flex items-baseline gap-3 py-1.5">
       <span className="text-sm flex-1 min-w-0" style={{ color: 'var(--color-text-secondary)' }}>{tr(d.duty)}</span>
-      <span className="text-sm font-semibold text-right" style={text}>{who || '—'}</span>
+      <span className="text-sm font-semibold text-right" style={text}>{who || ''}</span>
       {d.user_id && <span className="text-[10px] font-bold uppercase w-16 text-right" style={{ color: colour }}>{d.status === 'accepted' ? tr('Accepted') : d.status === 'declined' ? tr('Declined') : tr('Asked')}</span>}
     </li>
   );
@@ -190,7 +190,7 @@ function Rosters({ space, people, canPlan }: { space: MySpace; people: SpacePers
   useEffect(() => { load(); }, [load]);
 
   const answer = async (id: string, a: 'accepted' | 'declined') => {
-    try { await respond(id, a); showToast(a === 'accepted' ? tr('Thank you — accepted') : tr('Declined')); load(); } catch (e) { showToast(errorMessage(e)); }
+    try { await respond(id, a); showToast(a === 'accepted' ? tr('Thank you, accepted') : tr('Declined')); load(); } catch (e) { showToast(errorMessage(e)); }
   };
 
   return (
@@ -286,7 +286,7 @@ function RosterEditor({ space, people, roster, onClose }: { space: MySpace; peop
     setBusy(true);
     try {
       await saveRoster({ id: roster?.id, parishId: space.parish_id, serviceDate: date, serviceId, title: title.trim() || serviceName || tr('Service roster'), notes, status, duties });
-      showToast(status === 'published' ? tr('Published — those on duty can see it') : tr('Draft saved'));
+      showToast(status === 'published' ? tr('Published, those on duty can see it') : tr('Draft saved'));
       onClose(true);
     } catch (e) { showToast(errorMessage(e)); } finally { setBusy(false); }
   };
@@ -385,7 +385,7 @@ function People({ space, people, canPlan, onMessage, onChanged }: { space: MySpa
       {canPlan && (
         <section className="rounded-2xl p-4 space-y-3" style={card}>
           <p className="font-semibold text-sm flex items-center gap-2" style={text}><UserPlus size={16} style={{ color: 'var(--color-accent-brand)' }} /> {tr('Invite people')}</p>
-          <p className="text-xs" style={muted}>{tr('Anyone with the link joins after signing in — or signing up, if they are new. Put an email to make the link for one person only.')}</p>
+          <p className="text-xs" style={muted}>{tr('Anyone with the link joins after signing in, or signing up, if they are new. Put an email to make the link for one person only.')}</p>
           <div className="grid grid-cols-[auto_1fr] gap-2">
             <select value={inviteRole} onChange={e => setInviteRole(e.target.value as 'member' | 'minister')} aria-label={tr('Role')} className="rounded-xl px-3 py-2 text-sm border" style={fieldStyle}>
               <option value="member">{tr('Member')}</option>
@@ -473,7 +473,7 @@ export default function ParishSpace() {
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-3">
         <Users size={36} className="mx-auto" style={{ color: 'var(--color-accent-brand)' }} />
         <h1 className="text-xl font-bold font-[Outfit]" style={text}>{tr('Parish space')}</h1>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('You are not in a parish space yet. Ask your shepherd or parish administrator to add you — or, if you run a parish, claim it in Parishes.')}</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('You are not in a parish space yet. Ask your shepherd or parish administrator to add you, or, if you run a parish, claim it in Parishes.')}</p>
         <Link to="/directory" className="btn-primary inline-block px-6 py-2.5 rounded-xl text-sm font-semibold">{tr('Parishes')}</Link>
       </div>
     );

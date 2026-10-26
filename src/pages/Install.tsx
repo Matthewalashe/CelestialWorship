@@ -51,7 +51,7 @@ function AndroidSteps() {
   return (
     <div className="space-y-4">
       {canPrompt ? (
-        <button onClick={async () => { if (await install()) showToast(tr('Installed — find it on your home screen')); }}
+        <button onClick={async () => { if (await install()) showToast(tr('Installed, find it on your home screen')); }}
                 className="btn-primary w-full py-3.5 rounded-2xl text-base font-semibold inline-flex items-center justify-center gap-2">
           <Download size={20} /> {tr('Install the app')}
         </button>
@@ -86,7 +86,7 @@ function IOSSteps() {
       )}
       <ol className="space-y-3">
         <Step n={1}>{tr('Open this page in')} <Key>{tr('Safari')}</Key>.</Step>
-        <Step n={2}>{tr('Tap the Share button')} <Key><Share size={14} /></Key> {tr('— at the bottom of the screen (top right on iPad).')}</Step>
+        <Step n={2}>{tr('Tap the Share button')} <Key><Share size={14} /></Key> {tr('at the bottom of the screen (top right on iPad).')}</Step>
         <Step n={3}>{tr('Scroll down and tap')} <Key><PlusSquare size={14} /> {tr('Add to Home Screen')}</Key>.</Step>
         <Step n={4}>{tr('Tap')} <Key>{tr('Add')}</Key>. {tr('Open CelestialWorship from your home screen.')}</Step>
       </ol>
@@ -124,7 +124,7 @@ export default function Install() {
       <header className="text-center space-y-3">
         <img src="/pwa-192x192.png" alt="" width={80} height={80} className="w-20 h-20 mx-auto rounded-[22px] shadow-lg" />
         <h1 className="text-2xl font-bold font-[Outfit]" style={text}>{tr('Get the CelestialWorship app')}</h1>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Hymns, the Bible, the Order of Service and devotion on your phone — free.')}</p>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Hymns, the Bible, the Order of Service and devotion on your phone, free.')}</p>
         <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs" style={muted}>
           <li className="inline-flex items-center gap-1"><Smartphone size={13} /> {tr('About 3 MB')}</li>
           <li className="inline-flex items-center gap-1"><WifiOff size={13} /> {tr('Works offline')}</li>

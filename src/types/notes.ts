@@ -58,7 +58,7 @@ export interface SavedPassage {
   verseEnd: number;
   text: string;
   annotation: string;
-  category?: PassageCategory; // optional — existing passages won't have it
+  category?: PassageCategory; // optional, existing passages won't have it
   savedAt: string; // ISO date string
 }
 
@@ -100,7 +100,7 @@ export interface PrayerRequest {
   description: string;
   isAnswered: boolean;
   answeredAt?: string; // ISO date string
-  /** How the prayer was answered — a testimony to look back on */
+  /** How the prayer was answered, a testimony to look back on */
   answeredNote?: string;
   category?: PrayerCategory;
   /** Times the user has prayed for this (tapped "I prayed") */

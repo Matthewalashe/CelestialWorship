@@ -8,23 +8,23 @@ the Partner plan, livestreams, pictures and push alerts.
 ## 1. Database (Supabase)
 
 1. In the Supabase dashboard → SQL editor, run the migrations **in order** (or `supabase db push`):
-   1. `supabase/migrations/20261022000000_community.sql` — accounts, parishes, articles, prayer, events, giving
-   2. `supabase/migrations/20261023000000_hardening.sql` — server-side rules (names, publishing, https links, shepherds only write articles)
-   3. `supabase/migrations/20261024000000_games.sql` — weekly quiz leaderboard
-   4. `supabase/migrations/20261025000000_partner_plan_live.sql` — Partner plan, livestreams, following, reader support
-   5. `supabase/migrations/20261026000000_media.sql` — profile photos and banners, parish logos, covers and galleries (Storage buckets), rate limits
-   6. `supabase/migrations/20261027000000_church_structure.sql` — parish levels (cathedral, circuit, state,
+   1. `supabase/migrations/20261022000000_community.sql`, accounts, parishes, articles, prayer, events, giving
+   2. `supabase/migrations/20261023000000_hardening.sql`, server-side rules (names, publishing, https links, shepherds only write articles)
+   3. `supabase/migrations/20261024000000_games.sql`, weekly quiz leaderboard
+   4. `supabase/migrations/20261025000000_partner_plan_live.sql`: Partner plan, livestreams, following, reader support
+   5. `supabase/migrations/20261026000000_media.sql`, profile photos and banners, parish logos, covers and galleries (Storage buckets), rate limits
+   6. `supabase/migrations/20261027000000_church_structure.sql`, parish levels (cathedral, circuit, state,
       province, regional… headquarters), ownership and affiliation, sister parishes and branches; shepherds'
       ranks, offices and church records (birth, baptism, rank, investiture, education, travels…); parishes
       authenticating their shepherds; the Library (`library` bucket); **parish claims with evidence**
-      (private `evidence` bucket) — a moderator approves a claim in Moderation, which publishes or updates the
+      (private `evidence` bucket), a moderator approves a claim in Moderation, which publishes or updates the
       parish with the claimant's contact, makes them its verified administrator or shepherd, and sets their parish
 2. Make yourself an admin:
    ```sql
    update public.profiles set role = 'admin' where id = (select id from auth.users where email = 'YOUR EMAIL');
    ```
 3. Auth → Providers: enable Email (and Google if wanted). Set the Site URL to the app's address.
-4. Realtime is used for the operator's "another device as the screen" — it is on by default.
+4. Realtime is used for the operator's "another device as the screen"it is on by default.
 5. **Partner plan prices** are placeholders (₦5,000 a month, ₦50,000 a year), in kobo. Set the real ones:
    ```sql
    update public.plans set amount_minor = 500000 where id = 'partner_monthly';
@@ -93,7 +93,7 @@ Sharing previews (`middleware.ts`) and the preview pictures (`api/og.tsx`) run o
   translations needs the publisher's permission.
 - **Interface translations** live in `public/i18n/{yo,fr,egun}.json`, keyed by the English text. French
   and Yorùbá cover the whole interface and should be read by native speakers; **Gungbe (Egun) has only a few
-  words so far** and falls back to French — it needs a Gun speaker. After changing the app's text run
+  words so far** and falls back to French, it needs a Gun speaker. After changing the app's text run
   `node scripts/i18n.cjs wrap` (wraps new text in `tr()`) and `node scripts/i18n.cjs extract` (lists what each
   language is missing).
 - **Parishes from the Bible-lessons booklet**: the 2026 PDF supplied holds only the lesson tables. Send the

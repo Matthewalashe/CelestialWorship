@@ -59,7 +59,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
         parish_id: profile.parishId, scope: v.scope,
       });
       draft.clear();
-      showToast(tr('Event submitted — it appears once approved (straight away for verified parish admins)'));
+      showToast(tr('Event submitted, it appears once approved (straight away for verified parish admins)'));
       onDone();
     } catch (e) {
       showToast(errorMessage(e));
@@ -85,7 +85,7 @@ function SubmitEvent({ onClose, onDone }: { onClose: () => void; onDone: () => v
         </select>
         <input value={v.location} onChange={e => draft.setValue({ location: e.target.value })} placeholder={profile.parishName || tr('Venue')} className={inputClass} style={inputStyle} />
         <textarea value={v.description} onChange={e => draft.setValue({ description: e.target.value })} rows={3} maxLength={4000}
-                  placeholder={tr('Details — programme, dress code, what to bring')} className={inputClass} style={inputStyle} />
+                  placeholder={tr('Details, programme, dress code, what to bring')} className={inputClass} style={inputStyle} />
         <input value={v.contact} onChange={e => draft.setValue({ contact: e.target.value })} placeholder={tr('Contact for enquiries (optional)')} className={inputClass} style={inputStyle} />
         <select value={v.scope} onChange={e => draft.setValue({ scope: e.target.value as 'church' | 'parish' })} className={inputClass} style={inputStyle} aria-label={tr('Who is it for')}>
           <option value="parish">{profile.parishName ? `For ${profile.parishName}` : tr('For my parish')}</option>

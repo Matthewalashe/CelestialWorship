@@ -1,6 +1,6 @@
 """
 Parishes listed on the Celestial Church of Christ Worldwide website, "Parishes Worldwide" page
-(http://www.celestialchurchofchrist-worldwide.org/parishes_worldwide.htm — a partial list, archived 2005–2012).
+(http://www.celestialchurchofchrist-worldwide.org/parishes_worldwide.htm, a partial list, archived 2005–2012).
 Transcribed by hand; shepherds' titles are kept exactly as the page gives them. Parishes marked
 CLOSED there are left out. Details may be out of date: the directory says so and lets a parish claim
 its entry. Fields: name, continent, country, state/region, city, address, phone, email, shepherd.

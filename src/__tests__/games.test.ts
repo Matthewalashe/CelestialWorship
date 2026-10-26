@@ -52,7 +52,7 @@ describe('rounds and the daily challenge', () => {
     expect(dailySeed(d)).toBe(dailySeed(new Date(2026, 9, 23, 20)));
     expect(dailyQuestions(d).map(q => q.id)).toEqual(dailyQuestions(d).map(q => q.id));
     expect(dailyQuestions(d)).toHaveLength(5);
-    expect(dailyShareText('11011', 3, d)).toBe('CelestialWorship Daily #23 — 4/5\n🟩🟩🟥🟩🟩 🔥3');
+    expect(dailyShareText('11011', 3, d)).toBe('CelestialWorship Daily #23: 4/5\n🟩🟩🟥🟩🟩 🔥3');
   });
 });
 

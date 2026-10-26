@@ -2,8 +2,8 @@ import { getUILanguage } from '../i18n';
 
 /**
  * Addresses ↔ points on the map, through OpenStreetMap's Nominatim (free; at most one request a second,
- * so lookups happen only when someone asks for one). Everything a parish says about where it is — the
- * typed address and the pin — is kept together, so the directory, its map and parish pages agree.
+ * so lookups happen only when someone asks for one). Everything a parish says about where it is, the
+ * typed address and the pin, is kept together, so the directory, its map and parish pages agree.
  */
 
 export interface Place {
@@ -26,7 +26,7 @@ async function call(path: string, params: Record<string, string>): Promise<any> 
   last = Date.now();
   const qs = new URLSearchParams({ format: 'jsonv2', addressdetails: '1', 'accept-language': getUILanguage(), ...params });
   const res = await fetch(`${API}/${path}?${qs}`);
-  if (!res.ok) throw new Error('The map service is busy — try again in a moment');
+  if (!res.ok) throw new Error('The map service is busy, try again in a moment');
   return res.json();
 }
 

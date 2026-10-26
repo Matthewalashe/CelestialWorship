@@ -212,7 +212,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
         <RoundSummary
           outcome={outcome}
           headline={`${right}/${marks.length}`}
-          sub={mode === 'challenge' && lives <= 0 ? 'Out of lives — well played!' : right === marks.length ? 'Every answer right!' : right / Math.max(marks.length, 1) >= 0.7 ? 'Well done!' : 'Keep going — every round teaches something new.'}
+          sub={mode === 'challenge' && lives <= 0 ? 'Out of lives, well played!' : right === marks.length ? 'Every answer right!' : right / Math.max(marks.length, 1) >= 0.7 ? 'Well done!' : 'Keep going, every round teaches something new.'}
           shareText={dailyText ?? `I scored ${right}/${marks.length} in the ${title} quiz on CelestialWorship.`}
           sharePath={topic === 'daily' ? '/quiz?daily=1' : `/quiz?topic=${topic}`}
           onAgain={onAgain}
@@ -270,7 +270,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
       {answered && (
         <div className="mt-5 p-4 rounded-2xl animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
           <p className="font-semibold mb-1" style={{ color: chosen === q.answer ? 'var(--color-success)' : 'var(--color-warning)' }}>
-            {chosen === q.answer ? tr('Correct!') : chosen === -1 ? `Time’s up — the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
+            {chosen === q.answer ? tr('Correct!') : chosen === -1 ? `Time’s up, the answer is: ${q.options[q.answer]}` : `The answer is: ${q.options[q.answer]}`}
           </p>
           <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{q.explanation}</p>
           <p className="text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr('Source:')}{' '}<SourceLink source={q.source} /></p>

@@ -48,7 +48,7 @@ export function ParishStructureCard({ parish, onSaved }: { parish: Parish; onSav
         </label>
       </div>
       <label className="block text-xs" style={muted}>{tr('Answers to (headquarters, circuit, province…)')}<select value={v.parent_id} onChange={e => setV({ ...v, parent_id: e.target.value })} className={`${field} mt-1`} style={fieldStyle}>
-          <option value="">—</option>
+          <option value=""></option>
           {real.filter(p => p.level && p.level !== 'parish').map(p => <option key={p.id} value={p.id}>{p.name} ({tr(PARISH_LEVELS[p.level!])})</option>)}
         </select>
       </label>

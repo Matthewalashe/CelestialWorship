@@ -160,8 +160,8 @@ export async function sharedRoster(token: string) {
 /** The roster as a message for WhatsApp, SMS or email */
 export function rosterMessage(r: { title: string; service_date: string; notes?: string | null }, duties: { duty: string; person: string | null }[], link: string, parishName: string) {
   const date = new Date(`${r.service_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
-  const lines = duties.map(d => `• ${d.duty}: ${d.person || '—'}`);
-  return [`*${parishName} — ${r.title}*`, date, '', ...lines, ...(r.notes ? ['', r.notes] : []), '', link].join('\n');
+  const lines = duties.map(d => `• ${d.duty}: ${d.person || ''}`);
+  return [`*${parishName}: ${r.title}*`, date, '', ...lines, ...(r.notes ? ['', r.notes] : []), '', link].join('\n');
 }
 
 // ── Joining ──────────────────────────────────────────────────

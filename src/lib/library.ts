@@ -51,7 +51,7 @@ export async function addLibraryItem(input: {
   let storage_path: string | null = null;
   if (input.file) {
     if (!['application/pdf', 'application/epub+zip'].includes(input.file.type)) throw new BackendError('Books must be PDF or EPUB');
-    if (input.file.size > MAX_FILE) throw new BackendError('Books up to 30 MB — for larger ones add a link instead');
+    if (input.file.size > MAX_FILE) throw new BackendError('Books up to 30 MB, for larger ones add a link instead');
     storage_path = `${user.id}/${Date.now().toString(36)}.${input.file.type === 'application/pdf' ? 'pdf' : 'epub'}`;
     const { error } = await supabase.storage.from('library').upload(storage_path, input.file, { contentType: input.file.type });
     if (error) throw new BackendError(`Upload failed: ${error.message}`);

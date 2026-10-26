@@ -13,7 +13,7 @@ const fieldStyle = { backgroundColor: 'var(--color-bg-primary)', borderColor: 'v
 const label = 'block text-xs';
 const muted = { color: 'var(--color-text-muted)' };
 
-/** Rank, office and a short biography — part of the profile form */
+/** Rank, office and a short biography, part of the profile form */
 export function RankFields({ draft, update }: { draft: MemberProfile; update: (u: Partial<MemberProfile>) => void }) {
   const ranks = draft.rankLine === 'women' ? WOMEN_RANKS : draft.rankLine === 'men' ? MEN_RANKS : [...MEN_RANKS, ...WOMEN_RANKS];
   const known = ranks.some(r => r.name === draft.rank);
@@ -21,11 +21,11 @@ export function RankFields({ draft, update }: { draft: MemberProfile; update: (u
     <>
       <div className="grid grid-cols-2 gap-3">
         <label className={label} style={muted}>{tr('Rank line')}<select value={draft.rankLine} onChange={e => update({ rankLine: e.target.value as MemberProfile['rankLine'] })} className={`${field} mt-1`} style={fieldStyle}>
-            <option value="">—</option><option value="men">{tr('Men')}</option><option value="women">{tr('Women')}</option>
+            <option value=""></option><option value="men">{tr('Men')}</option><option value="women">{tr('Women')}</option>
           </select>
         </label>
         <label className={label} style={muted}>{tr('Rank')}<select value={known ? draft.rank : draft.rank ? '__other' : ''} onChange={e => update({ rank: e.target.value === '__other' ? ' ' : e.target.value })} className={`${field} mt-1`} style={fieldStyle}>
-            <option value="">—</option>
+            <option value=""></option>
             {ranks.map(r => <option key={`${r.name}-${r.order}`} value={r.name}>{r.name}</option>)}
             <option value="__other">{tr('Other…')}</option>
           </select>

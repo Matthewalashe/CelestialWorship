@@ -5,7 +5,7 @@ Every feature is built and reviewed against these. Each has a check that can fai
 ## 0. Liturgy and devotion first
 - **Six tabs, always the same:** Home, Service, Devotion, Hymnal, Bible, Learn. Everything else lives in
   one Menu, grouped Worship · Church · Me. Nothing important is more than two taps away.
-- **Phones for worship, computers for the work behind it.** On a computer the app opens in Studio — the
+- **Phones for worship, computers for the work behind it.** On a computer the app opens in Studio, the
   order of service, the projector and the livestream for media teams, livestreamers and choirs.
 - **Quiet screens.** One primary action per screen; no element that repeats the navigation; secondary
   features (quizzes, map games, leaderboards) stay inside their own section and never on Home.
@@ -50,7 +50,7 @@ Every feature is built and reviewed against these. Each has a check that can fai
 - Works with a screen reader: every control has a name; dialogs are labelled; state is announced.
 - Readable: body text ≥ 16px option, contrast ≥ 4.5:1, text can be enlarged without breaking layout.
 - Touch first: actions reachable without hover; targets ≥ 44 × 44 px where possible.
-- No native `alert/confirm/prompt` — they can't be styled, translated or reliably read.
+- No native `alert/confirm/prompt`, they can't be styled, translated or reliably read.
 - Motion is optional (`prefers-reduced-motion`).
 
 ## 5. Built for the congregation's phones and networks
@@ -62,7 +62,7 @@ Every feature is built and reviewed against these. Each has a check that can fai
 
 ## 6. Engineering
 - Typed (TypeScript strict), linted (ESLint incl. React hooks and accessibility rules), tested
-  (unit + browser flows) — all run in `npm run build`.
+  (unit + browser flows), all run in `npm run build`.
 - Data is built by scripts from cited sources, with validation that fails loudly.
 - One source of truth per fact (e.g. the service schedule), checked by tests.
 - Errors are reported (without personal data) and shown to people in plain words.

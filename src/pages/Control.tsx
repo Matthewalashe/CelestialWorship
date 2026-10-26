@@ -24,7 +24,7 @@ interface Slide { label: string; state: DisplayState }
 const btn = 'inline-flex items-center justify-center gap-1.5 rounded-xl font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed';
 const panel = 'rounded-2xl border bg-[var(--color-bg-card)] border-[var(--color-border)]';
 
-/** What the projector shows, drawn small — the same layout as the Display page */
+/** What the projector shows, drawn small, the same layout as the Display page */
 function Monitor({ state, label, live }: { state: DisplayState | null; label: string; live?: boolean }) {
   return (
     <div>

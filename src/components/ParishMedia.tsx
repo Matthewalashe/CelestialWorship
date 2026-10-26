@@ -91,7 +91,7 @@ export function ParishMediaManager({ parish, onSaved }: { parish: Parish & { log
 
       <div className="rounded-2xl border p-4 space-y-3" style={card}>
         <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Add pictures and videos')}</p>
-        <input value={caption} onChange={e => setCaption(e.target.value)} maxLength={200} placeholder={tr('Caption (optional) — e.g. Harvest 2026')} className={field} style={fieldStyle} />
+        <input value={caption} onChange={e => setCaption(e.target.value)} maxLength={200} placeholder={tr('Caption (optional), e.g. Harvest 2026')} className={field} style={fieldStyle} />
         <button disabled={busy} onClick={() => fileInput.current?.click()} className="w-full py-3 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 border-2 border-dashed" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
           <ImagePlus size={18} /> {busy ? tr('Uploading…') : tr('Choose photos or a short video')}
         </button>

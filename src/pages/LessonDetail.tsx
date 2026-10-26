@@ -12,7 +12,7 @@ export default function LessonDetail() {
   const { lessons, loading } = useLessonsByDate(date || '');
   
   const firstLesson = lessons[0];
-  usePageTitle('lesson_detail', firstLesson ? `Lessons for ${date} — CCC Liturgy` : undefined);
+  usePageTitle('lesson_detail', firstLesson ? `Lessons for ${date}: CCC Liturgy` : undefined);
 
   if (loading) {
     return (

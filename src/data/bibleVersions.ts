@@ -6,7 +6,7 @@
  *   API.Bible under its licence. They appear when configured:
  *     VITE_BIBLE_PROXY_URL   recommended: a server proxy that holds the API key
  *                            (see supabase/functions/bible-proxy)
- *     VITE_API_BIBLE_KEY     or the key itself (dev / non-commercial only — it is public in the bundle)
+ *     VITE_API_BIBLE_KEY     or the key itself (dev / non-commercial only, it is public in the bundle)
  *     VITE_API_BIBLE_VERSIONS  JSON map of version id -> API.Bible bibleId,
  *                            e.g. {"nkjv":"…","nlt":"…","amp":"…","niv":"…"}
  *   NIV additionally needs Biblica's permission for commercial use.
@@ -22,7 +22,7 @@ export interface BibleVersion {
   language: BibleLanguageCode;
   source: { kind: 'local'; dir: string } | { kind: 'api'; bibleId: string };
   copyright: string;
-  /** Text still being proofread — shown with a notice */
+  /** Text still being proofread, shown with a notice */
   preview?: boolean;
 }
 
@@ -33,7 +33,7 @@ const LOCAL_VERSIONS: BibleVersion[] = [
     name: 'King James Version',
     language: 'en',
     source: { kind: 'local', dir: 'en' },
-    copyright: 'King James Version — public domain.',
+    copyright: 'King James Version, public domain.',
   },
   {
     id: 'yo1900',
@@ -41,7 +41,7 @@ const LOCAL_VERSIONS: BibleVersion[] = [
     name: 'Bibeli Mimọ (1900)',
     language: 'yo',
     source: { kind: 'local', dir: 'yo1900' },
-    copyright: 'Bibeli Mimọ, 1900 edition (Crowther translation, revised) — public domain. Digitised from the scan at archive.org (item YOROLD_DBS_HS); about 40% of chapters have passed checks so far, and the opening word of a chapter may be misread. Corrections welcome.',
+    copyright: 'Bibeli Mimọ, 1900 edition (Crowther translation, revised), public domain. Digitised from the scan at archive.org (item YOROLD_DBS_HS); about 40% of chapters have passed checks so far, and the opening word of a chapter may be misread. Corrections welcome.',
     preview: true,
   },
   {
@@ -58,7 +58,7 @@ const LOCAL_VERSIONS: BibleVersion[] = [
     name: 'Louis Segond (1910)',
     language: 'fr',
     source: { kind: 'local', dir: 'fr' },
-    copyright: 'La Bible Louis Segond, 1910 — domaine public. Texte de getbible.net.',
+    copyright: 'La Bible Louis Segond, 1910, domaine public. Texte de getbible.net.',
   },
 ];
 

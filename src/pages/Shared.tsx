@@ -5,7 +5,7 @@ import { sharedRoster, sharedPost } from '../lib/parishSpace';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { tr } from '../i18n';
 
-/** What a parish shares by link — a roster or a post — readable without an account */
+/** What a parish shares by link, a roster or a post, readable without an account */
 
 const card = { backgroundColor: 'var(--color-bg-card)' };
 const muted = { color: 'var(--color-text-muted)' };
@@ -39,7 +39,7 @@ export function SharedRoster() {
         {rows.filter(x => x.duty).map((x, i) => (
           <li key={i} className="flex items-baseline gap-3 px-4 py-3" style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
             <span className="flex-1 text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr(x.duty!)}</span>
-            <span className="text-sm font-semibold text-right" style={text}>{x.person || '—'}</span>
+            <span className="text-sm font-semibold text-right" style={text}>{x.person || ''}</span>
           </li>
         ))}
       </ul>

@@ -33,7 +33,7 @@ function store(key: string, value: string | number) {
   try { localStorage.setItem(key, String(value)); } catch {}
 }
 
-/** Clean solfa notation — remove unnecessary spaces around colons */
+/** Clean solfa notation, remove unnecessary spaces around colons */
 function cleanSolfa(solfa: string): string {
   return solfa
     .replace(/\s*:\s*/g, ':')
@@ -160,7 +160,7 @@ export default function HymnDetail() {
   const setView = (v: LyricsView) => { setViewState(v); store(VIEW_KEY, v); };
 
   const titleLang: HymnLanguage = view === 'en' ? 'en' : 'yo';
-  usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number} — ${displayTitle(hymn, titleLang)}` : undefined);
+  usePageTitle('hymn_detail', hymn ? `CCC Hymn #${hymn.number}: ${displayTitle(hymn, titleLang)}` : undefined);
 
   const { reading } = useReader();
   const readingStyle = useReadingStyle();
@@ -213,7 +213,7 @@ export default function HymnDetail() {
       const lines = lang === 'en' ? v.englishLines : v.yorubaLines;
       return `${stanzaLabel(v, lang)}\n${lines.join('\n')}`;
     }).join('\n\n');
-    return `CCC Hymn ${h.number} — ${displayTitle(h, lang)}\n\n${body}`;
+    return `CCC Hymn ${h.number}: ${displayTitle(h, lang)}\n\n${body}`;
   };
 
   const handleShare = async () => {

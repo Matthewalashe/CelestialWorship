@@ -16,7 +16,7 @@ export default function StoryDetail() {
   const navigate = useNavigate();
   const readingStyle = useReadingStyle();
   const [speaking, setSpeaking] = useState(false);
-  usePageTitle('story', story ? `${story.title} — Bible stories` : 'Bible stories');
+  usePageTitle('story', story ? `${story.title}: Bible stories` : 'Bible stories');
 
   useEffect(() => { if (story) markStoryRead(story.id); }, [story]);
   useEffect(() => () => { window.speechSynthesis?.cancel(); }, [id]);
@@ -91,7 +91,7 @@ export default function StoryDetail() {
       </nav>
 
       {story.image && (
-        <p className="text-[11px] mt-6" style={{ color: 'var(--color-text-muted)' }}>{tr('Picture: Jim Padgett, Sweet Publishing / Gospel Light, CC BY-SA 3.0 —')}{' '}<a href={story.image.source} target="_blank" rel="noopener noreferrer" className="underline">{tr('source')}</a>.
+        <p className="text-[11px] mt-6" style={{ color: 'var(--color-text-muted)' }}>{tr('Picture: Jim Padgett, Sweet Publishing / Gospel Light, CC BY-SA 3.0: ')}{' '}<a href={story.image.source} target="_blank" rel="noopener noreferrer" className="underline">{tr('source')}</a>.
           {story.id.startsWith('cl-') && tr(' Text: Mary A. Lathbury, 1898 (public domain).')}
         </p>
       )}

@@ -74,9 +74,9 @@ const STRINGS = {
 
   'onboarding.welcomeTitle': { en: 'Welcome to CelestialWorship', yo: 'Ẹ káàbọ̀ sí CelestialWorship', fr: 'Bienvenue sur CelestialWorship' },
   'onboarding.welcomeBody': {
-    en: 'Hymns, the Bible, the Order of Service and your devotion — together, and working offline.',
-    yo: 'Orin, Bíbélì, Ètò Ìsìn àti ìfọkànsìn rẹ — papọ̀, ó sì ń ṣiṣẹ́ láìsí íntánẹ́ẹ̀tì.',
-    fr: 'Les cantiques, la Bible, l’ordre du culte et votre dévotion — réunis, et disponibles hors ligne.',
+    en: 'Hymns, the Bible, the Order of Service and your devotion, together, and working offline.',
+    yo: 'Orin, Bíbélì, Ètò Ìsìn àti ìfọkànsìn rẹ, papọ̀, ó sì ń ṣiṣẹ́ láìsí íntánẹ́ẹ̀tì.',
+    fr: 'Les cantiques, la Bible, l’ordre du culte et votre dévotion, réunis, et disponibles hors ligne.',
   },
   'onboarding.getStarted': { en: 'Get started', yo: 'Bẹ̀rẹ̀', fr: 'Commencer' },
   'onboarding.languageTitle': { en: 'Your languages', yo: 'Èdè rẹ', fr: 'Vos langues' },

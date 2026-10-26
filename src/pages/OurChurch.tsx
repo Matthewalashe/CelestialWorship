@@ -43,7 +43,7 @@ function LeaderCard({ leader, large = false }: { leader: Leader; large?: boolean
 }
 
 export default function OurChurch() {
-  usePageTitle('our_church', 'Our Church — History & Common Ground');
+  usePageTitle('our_church', 'Our Church: History & Common Ground');
 
   return (
     <div className="px-4 py-6 max-w-3xl mx-auto pb-24 space-y-10">

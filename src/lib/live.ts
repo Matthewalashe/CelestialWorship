@@ -6,8 +6,8 @@ import { safeHref } from '../utils/safeUrl';
 /**
  * Livestreaming (supabase/migrations/20261025000000_partner_plan_live.sql).
  *
- * Parishes stream with the tools they already use — YouTube Studio, Facebook Live Producer, OBS,
- * Restream for several platforms at once — and the app does the rest: one place to watch, one
+ * Parishes stream with the tools they already use: YouTube Studio, Facebook Live Producer, OBS,
+ * Restream for several platforms at once, and the app does the rest: one place to watch, one
  * schedule, alerts to members and followers, and sharing to every social network.
  */
 

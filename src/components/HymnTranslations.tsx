@@ -112,7 +112,7 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
       });
       raise(error, 'Sending your translation');
       draft.clear();
-      showToast(tr('Thank you — a moderator will review it'));
+      showToast(tr('Thank you, a moderator will review it'));
       onClose();
     } catch (e) {
       showToast(errorMessage(e));
@@ -139,7 +139,7 @@ function ContributeForm({ hymn, onClose }: { hymn: Hymn; onClose: () => void }) 
         {hymn.verses.map((verse, i) => (
           <div key={i}>
             <p className="text-[11px] font-bold uppercase mb-1" style={{ color: 'var(--color-text-muted)' }}>
-              {stanzaLabel(verse)} — <span className="normal-case font-normal">{verse.yorubaLines[0] ?? verse.englishLines[0]}</span>
+              {stanzaLabel(verse)}: <span className="normal-case font-normal">{verse.yorubaLines[0] ?? verse.englishLines[0]}</span>
             </p>
             <textarea value={v.stanzas[i] ?? ''} rows={Math.max(3, verse.yorubaLines.length)} placeholder={tr('One line per line of the hymn')}
                       onChange={e => draft.setValue(d => ({ ...d, stanzas: d.stanzas.map((s, j) => (j === i ? e.target.value : s)) }))}

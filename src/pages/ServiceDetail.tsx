@@ -26,7 +26,7 @@ const KIND: Record<StepKind, { label: string; icon: React.ReactNode; colour: str
   psalm: { label: 'Psalm', icon: <BookOpen size={15} />, colour: 'var(--color-accent-blue)' },
 };
 
-/** The Order of Service on one page: every step in parts — who does what, the words, and how it is done */
+/** The Order of Service on one page: every step in parts, who does what, the words, and how it is done */
 export default function ServiceDetail() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ export default function ServiceDetail() {
   const [hymnOpen, setHymnOpen] = useState<{ hymn: Hymn; step: number } | null>(null);
   const [passageOpen, setPassageOpen] = useState<{ ref: ScriptureReference; step: number } | null>(null);
 
-  usePageTitle('service_detail', service ? `${tr(service.displayName)} — CCC Order of Service` : undefined);
+  usePageTitle('service_detail', service ? `${tr(service.displayName)}: CCC Order of Service` : undefined);
 
   const hymnContext = useHymnContext(toISODate(new Date()), service?.id);
   const suggest = useCallback((category?: HymnCategory) => (category ? getCandidateHymns({ category }, hymns, 8, hymnContext).map(c => c.hymn) : []), [hymns, hymnContext]);
@@ -60,7 +60,7 @@ export default function ServiceDetail() {
 
   const share = async () => {
     const url = `${window.location.origin}/services/${service.id}`;
-    if (navigator.share) { try { await navigator.share({ title: service.displayName, text: `Order of Service — ${tr(service.displayName)}`, url }); return; } catch {} }
+    if (navigator.share) { try { await navigator.share({ title: service.displayName, text: `Order of Service: ${tr(service.displayName)}`, url }); return; } catch {} }
     try { await navigator.clipboard.writeText(url); showToast(tr('Link copied')); } catch {}
   };
 
@@ -82,7 +82,7 @@ export default function ServiceDetail() {
         </div>
         {order?.intro.length ? (
           <details className="rounded-2xl p-4 print:open" style={{ backgroundColor: 'var(--color-bg-card)' }}>
-            <summary className="cursor-pointer text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Before the service — preparation notes')}</summary>
+            <summary className="cursor-pointer text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Before the service, preparation notes')}</summary>
             <div className="mt-3 space-y-2 text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
               {order.intro.map((b, i) => <p key={i}>{'text' in b ? tr(b.text) : null}</p>)}
             </div>
