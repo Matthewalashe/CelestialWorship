@@ -37,7 +37,7 @@ export default function ServiceDetail() {
   const [hymnOpen, setHymnOpen] = useState<{ hymn: Hymn; step: number } | null>(null);
   const [passageOpen, setPassageOpen] = useState<{ ref: ScriptureReference; step: number } | null>(null);
 
-  usePageTitle('service_detail', service ? `${service.displayName} — CCC Order of Service` : undefined);
+  usePageTitle('service_detail', service ? `${tr(service.displayName)} — CCC Order of Service` : undefined);
 
   const hymnContext = useHymnContext(toISODate(new Date()), service?.id);
   const suggest = useCallback((category?: HymnCategory) => (category ? getCandidateHymns({ category }, hymns, 8, hymnContext).map(c => c.hymn) : []), [hymns, hymnContext]);
@@ -60,7 +60,7 @@ export default function ServiceDetail() {
 
   const share = async () => {
     const url = `${window.location.origin}/services/${service.id}`;
-    if (navigator.share) { try { await navigator.share({ title: service.displayName, text: `Order of Service — ${service.displayName}`, url }); return; } catch {} }
+    if (navigator.share) { try { await navigator.share({ title: service.displayName, text: `Order of Service — ${tr(service.displayName)}`, url }); return; } catch {} }
     try { await navigator.clipboard.writeText(url); showToast(tr('Link copied')); } catch {}
   };
 
@@ -71,8 +71,8 @@ export default function ServiceDetail() {
 
       <header className="mb-8 space-y-3">
         <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{tr('Order of Service')}</p>
-        <h1 className="text-3xl font-[Outfit] font-bold leading-tight" style={{ color: 'var(--color-text-primary)' }}>{service.displayName}</h1>
-        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr(service.day)}{service.time ? ` · ${service.time}` : ''} · {steps.length}{' '}{tr('steps')}</p>
+        <h1 className="text-3xl font-[Outfit] font-bold leading-tight" style={{ color: 'var(--color-text-primary)' }}>{tr(service.displayName)}</h1>
+        <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr(service.day)}{service.time ? ` · ${tr(service.time)}` : ''} · {steps.length}{' '}{tr('steps')}</p>
         <div className="flex flex-wrap gap-2 pt-1 print:hidden">
           <Link to={`/devotion?service=${service.id}`} className="btn-primary px-4 py-2.5 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"><Bird size={15} />{' '}{tr('Start this service')}</Link>
           <Link to={`/suggestions?service=${service.id}`} className="px-4 py-2.5 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5"

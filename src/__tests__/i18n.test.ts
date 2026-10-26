@@ -14,8 +14,9 @@ describe('translation catalogs', () => {
         for (const mark of ['·', '‹', '→', '←', '›', '↗', '✓', '●', '🙏']) {
           if (en.includes(mark)) expect(t, `${en} → ${t}`).toContain(mark);
         }
-        // References and numbers stay the same
-        for (const n of en.match(/\d+/g) ?? []) expect(t, `${en} → ${t}`).toContain(n);
+        // References and numbers stay the same; clock times, ordinals and "3ce" (three times) may be written in words
+        const words = /\d+(?:[.:]\d+)?\s*(?:am|pm)\b|\b12 midnight|\d+\s*(?:st|nd|rd|th|ce)\b/gi;
+        for (const n of en.replace(words, '').match(/\d+/g) ?? []) expect(t, `${en} → ${t}`).toContain(n);
       }
     }
   });
@@ -28,8 +29,7 @@ describe('translation catalogs', () => {
 
 describe('tr()', () => {
   beforeAll(() => {
-    // Someone who had chosen Gungbe (no longer offered) is moved to French
-    const store = new Map<string, string>([['cw-ui-language', 'egun'], ['cw-i18n-fr', JSON.stringify(fr)]]);
+    const store = new Map<string, string>([['cw-ui-language', 'fr'], ['cw-i18n-fr', JSON.stringify(fr)]]);
     vi.stubGlobal('localStorage', { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => store.set(k, v), removeItem: (k: string) => store.delete(k) });
     vi.stubGlobal('window', { addEventListener() {}, removeEventListener() {}, dispatchEvent() { return true; } });
     vi.stubGlobal('document', { documentElement: { lang: 'en' } });
@@ -45,5 +45,14 @@ describe('tr()', () => {
     expect(tr(42)).toBe(42);
     expect(contentDefaults().bibleVersion).toBe('fr');
     expect(contentDefaults('yo')).toEqual({ bibleVersion: 'yo', hymnView: 'yo' });
+  });
+
+  it('keeps Egun as Egun, with English where a word is not yet translated', async () => {
+    localStorage.setItem('cw-ui-language', 'egun');
+    vi.resetModules();
+    const { tr, getUILanguage, translate } = await import('../i18n');
+    expect(getUILanguage()).toBe('egun');
+    expect(tr('Hymn lyrics')).toBe('Hymn lyrics');
+    expect(translate('nav.home')).toBe('Home');
   });
 });

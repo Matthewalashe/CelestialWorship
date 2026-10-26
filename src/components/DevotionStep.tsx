@@ -74,16 +74,22 @@ function PrayerText({ refKey, who }: { refKey: keyof typeof PRAYERS; who?: strin
 
 function PsalmBlock({ block, step, onOpenPassage, compact }: { block: Extract<Block, { kind: 'psalm' }>; step: number; onOpenPassage: (r: ScriptureReference) => void; compact?: boolean }) {
   const [open, setOpen] = useState(!compact);
-  const ref: ScriptureReference = { raw: block.ref, book: 'Psalms', chapter: block.chapter, verseStart: block.range?.[0] ?? 1, verseEnd: block.range?.[1] ?? 176 };
+  const { lang } = useT();
+  // Yorùbá and French readers read the psalm from their Bible; the English as read in church stays a tap away
+  const ownBible = lang === 'yo' || lang === 'fr';
+  const [english, setEnglish] = useState(false);
+  const ref: ScriptureReference = { raw: `${tr('Psalm')} ${block.chapter}`, book: 'Psalms', chapter: block.chapter, verseStart: block.range?.[0] ?? 1, verseEnd: block.range?.[1] ?? 176 };
   return (
     <section className="space-y-4" aria-label={block.ref}>
       <div className="flex items-center gap-3">
-        <h3 className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{block.ref}{block.range ? `:${block.range[0]}–${block.range[1]}` : ''}</h3>
+        <h3 className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Psalm')} {block.chapter}{block.range ? `:${block.range[0]}–${block.range[1]}` : ''}</h3>
         <button onClick={() => onOpenPassage(ref)} className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-xl border"
                 style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }} data-step={step}>
           <BookOpen size={15} /> {tr('Open in the Bible')}
         </button>
       </div>
+      {block.spiritLed && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('The holy name is called as the Spirit leads.')}</p>}
+      {block.follows && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Read straight after')} {block.follows}.</p>}
       {block.name && (
         <div className="rounded-2xl p-4 space-y-2" style={card}>
           <div className="flex items-center gap-2 flex-wrap"><Who who="conductor" /><span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('calls the holy name')}</span><Times n={3} /></div>
@@ -98,14 +104,20 @@ function PsalmBlock({ block, step, onOpenPassage, compact }: { block: Extract<Bl
       {block.verses.length > 0 && open && (
         <>
           <p className="text-xs" style={muted}>{tr('The service conductor reads a line; the congregation repeats it.')}</p>
-          <ol className="space-y-2.5">
+          {ownBible && <PassageText reference={ref} defaultOpen compact />}
+          {ownBible && (
+            <button onClick={() => setEnglish(e => !e)} aria-expanded={english} className="text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>
+              {english ? tr('Hide the English') : tr('The English, as read in church')}
+            </button>
+          )}
+          {(!ownBible || english) && <ol className="space-y-2.5" lang="en">
             {block.verses.map((v, i) => (
               <li key={i} className="flex gap-3 leading-relaxed">
                 <span className="text-[0.7em] font-bold pt-1 w-5 shrink-0 text-right" style={{ color: 'var(--color-accent-brand)' }}>{i + 1}</span>
                 <span>{v}</span>
               </li>
             ))}
-          </ol>
+          </ol>}
         </>
       )}
     </section>
@@ -196,6 +208,29 @@ export function StepBlocks({ step, lessons, isLordsDay, suggest, onOpenHymn, onO
           }
           case 'psalm':
             return <PsalmBlock key={i} block={b} step={step.n} onOpenPassage={onOpenPassage} compact={compact} />;
+          case 'passage': {
+            const ref: ScriptureReference = { raw: b.ref, book: b.book, chapter: b.chapter, verseStart: b.verseStart, verseEnd: b.verseEnd };
+            return (
+              <section key={i} className="space-y-4" aria-label={b.ref}>
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{b.ref.startsWith(b.book) ? tr(b.book) + b.ref.slice(b.book.length) : b.ref}</h3>
+                  <button onClick={() => onOpenPassage(ref)} className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-xl border"
+                          style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
+                    <BookOpen size={15} /> {tr('Open in the Bible')}
+                  </button>
+                </div>
+                {b.name && (
+                  <div className="rounded-2xl p-4 space-y-2" style={card}>
+                    <div className="flex items-center gap-2 flex-wrap"><Who who="conductor" /><span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('calls the holy name')}</span><Times n={3} /></div>
+                    <p className="text-2xl font-bold font-[Outfit] tracking-wide" style={{ color: 'var(--color-accent-gold)' }}>{b.name}</p>
+                    <p className="text-xs -mt-1" style={muted}>{tr('A name of God, given in tongues')}</p>
+                    <div className="flex items-center gap-2 flex-wrap"><Who who="congregation" /><span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('answers')}</span><b>{tr('Holy')}</b></div>
+                  </div>
+                )}
+                <PassageText reference={ref} defaultOpen compact />
+              </section>
+            );
+          }
           case 'psalm_choice':
             return (
               <div key={i} className="space-y-2">

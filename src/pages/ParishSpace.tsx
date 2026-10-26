@@ -298,7 +298,7 @@ function RosterEditor({ space, people, roster, onClose }: { space: MySpace; peop
           <label className="text-xs" style={muted}>{tr('Date')}<input type="date" value={date} onChange={e => setDate(e.target.value)} className={`${field} mt-1`} style={fieldStyle} /></label>
           <label className="text-xs" style={muted}>{tr('Service')}
             <select value={serviceId} onChange={e => chooseService(e.target.value)} className={`${field} mt-1`} style={fieldStyle}>
-              {services.map(s => <option key={s.id} value={s.id}>{s.displayName}</option>)}
+              {services.map(s => <option key={s.id} value={s.id}>{tr(s.displayName)}</option>)}
             </select>
           </label>
         </div>

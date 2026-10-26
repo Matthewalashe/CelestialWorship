@@ -35,6 +35,15 @@ HEADINGS = [
     ('ORDER OF SERVICE FOR THE END OF YEAR', 'end_of_year'),
 ]
 
+# Orders that open with a numbered list of materials before the service starts at 1: how many items it has
+PREP_STEPS = {'baby_christening': 5, 'new_moon': 2}
+
+# Corrections to the guide, confirmed by the Church
+LINE_FIXES = {
+    # Before the service the shepherd reads Psalm 24 (Jehovah Ramah); "or Psalm 150" is not used
+    'baby_christening': [('he will\nthe read Psalm 24 or Psalm 150', 'he will\nthen read Psalm 24'), ('he will the read Psalm 24 or Psalm 150', 'he will then read Psalm 24')],
+}
+
 STEP = re.compile(r'^\s{0,6}(\d{1,2}[a-z]?)\s*:\s*(.*)$')
 
 
@@ -77,9 +86,21 @@ def services():
                 intro.append(line)
             else:
                 current['lines'].append(line)
+        n = PREP_STEPS.get(sid, 0)
+        for prep in steps[:n]:
+            intro.append(f"{prep['label']}: " + ' '.join(l.strip() for l in prep['lines'] if l.strip()))
+        steps = steps[n:]
+        if sid == 'baby_christening' and steps and steps[0]['lines'] and steps[0]['lines'][0].strip() == 'Incense':
+            intro.append(f"{steps[0]['label']}: Incense")
+            steps[0]['lines'] = steps[0]['lines'][1:]
+            steps[0]['title'] = 'Before the service: receiving the baby'
         for s in steps:
             while s['lines'] and not s['lines'][-1].strip():
                 s['lines'].pop()
+            joined = '\n'.join(s['lines'])
+            for old, new in LINE_FIXES.get(sid, []):
+                joined = joined.replace(old, new)
+            s['lines'] = joined.split('\n')
         result[sid] = {'intro': intro, 'steps': steps}
     return result
 

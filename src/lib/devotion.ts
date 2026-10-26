@@ -18,7 +18,8 @@ export type Block =
   | { kind: 'prayer'; ref: PrayerRef; who?: Who }
   | { kind: 'song'; title: string; lines: string[]; hymn?: number; repeat?: number }
   | { kind: 'hymn'; label?: string; number?: number; title?: string }
-  | { kind: 'psalm'; ref: string; chapter: number; verses: string[]; name?: string; range?: [number, number] }
+  | { kind: 'psalm'; ref: string; chapter: number; verses: string[]; name?: string; range?: [number, number]; spiritLed?: boolean; follows?: string }
+  | { kind: 'passage'; ref: string; book: string; chapter: number; verseStart: number; verseEnd: number; name?: string }
   | { kind: 'psalm_choice'; refs: string[] }
   | { kind: 'lesson'; which: 1 | 2 }
   | { kind: 'offering'; parts: boolean }

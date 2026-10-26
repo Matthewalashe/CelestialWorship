@@ -1,25 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * Interface language: English, Yorùbá and French.
+ * Interface language: English, Yorùbá, French and Egun (Gun), the Church's four official languages.
  *
  * The app's own words are written in English and translated through catalogs keyed by the
  * English text (public/i18n/<lang>.json). `tr('Save')` returns the word in the chosen
- * language, or the English if there's no translation yet. Content (hymns, Bible, devotion) has its own language choices, which start
+ * language, or the English if there's no translation yet. Egun is being translated by Gun speakers
+ * (data-src/i18n_review/egun.csv); until a word is done it shows in English. Content (hymns, Bible, devotion) has its own language choices, which start
  * from this one. Translations should be reviewed by native speakers; corrections welcome.
  *
  * scripts/i18n.cjs wraps new text in tr() and lists strings that still need translating.
  */
 
-export type UILanguage = 'en' | 'yo' | 'fr';
+export type UILanguage = 'en' | 'yo' | 'fr' | 'egun';
 
 export const UI_LANGUAGES: { id: UILanguage; name: string; english: string; htmlLang: string; beta?: boolean }[] = [
   { id: 'en', name: 'English', english: 'English', htmlLang: 'en' },
   { id: 'yo', name: 'Yorùbá', english: 'Yoruba', htmlLang: 'yo' },
   { id: 'fr', name: 'Français', english: 'French', htmlLang: 'fr' },
+  { id: 'egun', name: 'Ègùn', english: 'Egun (Gun)', htmlLang: 'guw', beta: true },
 ];
 
-type Entry = { en: string; yo: string; fr: string };
+type Entry = { en: string; yo: string; fr: string; egun?: string };
 
 const STRINGS = {
   'nav.home': { en: 'Home', yo: 'Ilé', fr: 'Accueil' },
@@ -91,9 +93,8 @@ export type StringKey = keyof typeof STRINGS;
 
 const KEY = 'cw-ui-language';
 const CHANGE_EVENT = 'cw-ui-language-changed';
-const isLang = (v: unknown): v is UILanguage => v === 'en' || v === 'yo' || v === 'fr';
-// Gungbe (Egun) was offered for a while with French filling its gaps; those readers now get French
-const known = (v: unknown): UILanguage | null => (v === 'egun' ? 'fr' : isLang(v) ? v : null);
+const isLang = (v: unknown): v is UILanguage => v === 'en' || v === 'yo' || v === 'fr' || v === 'egun';
+const known = (v: unknown): UILanguage | null => (isLang(v) ? v : null);
 
 export function getUILanguage(): UILanguage {
   try {
@@ -103,7 +104,7 @@ export function getUILanguage(): UILanguage {
     const fromProfile = known(JSON.parse(localStorage.getItem('cw-profile') || '{}').preferredLanguage);
     if (fromProfile) return fromProfile;
     const nav = (navigator.language || 'en').toLowerCase();
-    return nav.startsWith('yo') ? 'yo' : nav.startsWith('fr') ? 'fr' : 'en';
+    return nav.startsWith('yo') ? 'yo' : nav.startsWith('fr') ? 'fr' : nav.startsWith('guw') ? 'egun' : 'en';
   } catch {
     return 'en';
   }
@@ -180,7 +181,7 @@ export function tr<T>(text: T): T {
 
 export function translate(key: StringKey, lang: UILanguage = current): string {
   const e: Entry = STRINGS[key];
-  return e[lang] ?? e.en;
+  return e[lang] || e.en;
 }
 
 /** Changes whenever the words on screen should change (language picked, catalog arrived) */

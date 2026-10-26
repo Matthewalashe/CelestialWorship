@@ -79,11 +79,11 @@ export default function Services() {
                     <div className="flex items-center justify-between mb-2 w-full">
                       <Church size={24} style={{ color: 'var(--color-accent-brand)' }} />
                       <span className="text-xs font-medium text-[var(--color-text-secondary)] bg-[var(--color-bg-secondary)] px-2 py-1 rounded-full group-hover:text-[var(--color-accent-gold)] transition-colors">
-                        {service.day}
+                        {tr(service.day)}
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-1 font-outfit">{service.displayName}</h3>
-                    <p className="text-sm text-[var(--color-text-secondary)]">{service.time}</p>
+                    <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-1 font-outfit">{tr(service.displayName)}</h3>
+                    <p className="text-sm text-[var(--color-text-secondary)]">{tr(service.time)}</p>
                   </button>
                 ))}
               </div>

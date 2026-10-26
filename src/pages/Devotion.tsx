@@ -175,7 +175,7 @@ export default function Devotion() {
       <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
         <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)' }}>🕊️</div>
         <h1 className="text-2xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Amen.')}</h1>
-        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr('You have completed')}{' '}{selectedService?.displayName ?? tr('your devotion')}{tr('. “The LORD bless thee, and keep thee.” — Numbers 6:24')}</p>
+        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr('You have completed')}{' '}{tr(selectedService?.displayName) ?? tr('your devotion')}{tr('. “The LORD bless thee, and keep thee.” — Numbers 6:24')}</p>
         <p className="text-sm font-semibold" style={{ color: 'var(--color-accent-gold)' }}>
           🔥 {streak.current}{' '}{tr('day')}{streak.current === 1 ? '' : 's'}{' '}{tr('in a row')}{streak.best > streak.current ? ` · best ${streak.best}` : ''}
         </p>
@@ -202,8 +202,8 @@ export default function Devotion() {
             {chosen && <Check size={12} color="white" strokeWidth={3} />}
           </span>
           <span className="flex-1 min-w-0">
-            <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{svc.displayName}</span>
-            <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{svc.time ? `${svc.time} · ` : ''}{count}{' '}{tr('steps')}</span>
+            <span className="block font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(svc.displayName)}</span>
+            <span className="block text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{svc.time ? `${tr(svc.time)} · ` : ''}{count}{' '}{tr('steps')}</span>
           </span>
           {today && <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ color: 'var(--color-accent-brand)', backgroundColor: 'color-mix(in srgb, var(--color-accent-brand) 12%, transparent)' }}>{tr('Today')}</span>}
         </button>
@@ -222,7 +222,7 @@ export default function Devotion() {
         {showResumePrompt && savedState && (
           <div className="mb-6 p-4 rounded-2xl border" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-accent-brand)' }}>
             <p className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('Resume where you left off?')}</p>
-            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{services.find(s => s.id === savedState.selectedServiceId)?.displayName} · {tr('Step')}{' '}{(savedState.currentStep || 0) + 1}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr(services.find(s => s.id === savedState.selectedServiceId)?.displayName)} · {tr('Step')}{' '}{(savedState.currentStep || 0) + 1}</p>
             <div className="flex gap-2 mt-3">
               <button onClick={() => { setIsStarted(true); setShowResumePrompt(false); }} className="btn-primary flex-1 py-2 rounded-xl text-sm font-semibold">{tr('Resume')}</button>
               <button onClick={() => { clearDevotionState(); setCurrentStep(0); setShowResumePrompt(false); }} className="flex-1 py-2 rounded-xl text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('Start Over')}</button>
@@ -287,7 +287,7 @@ export default function Devotion() {
     <div className="max-w-xl mx-auto px-4 pt-5 pb-36" {...swipeHandlers}>
       <div className="flex items-center justify-between gap-2 mb-4">
         <button onClick={() => setShowStepPicker(true)} className="text-sm inline-flex items-center gap-1.5 min-w-0" style={{ color: 'var(--color-text-secondary)' }} aria-label={tr('Choose a step')}>
-          <ListOrdered size={16} className="shrink-0" /> <span className="truncate">{selectedService?.displayName}</span>
+          <ListOrdered size={16} className="shrink-0" /> <span className="truncate">{tr(selectedService?.displayName)}</span>
         </button>
         <div className="flex gap-1.5 shrink-0">
           <MusicButton />

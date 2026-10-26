@@ -162,7 +162,7 @@ export default function Profile() {
         <Field label={tr('App language')}>
           <select value={lang} onChange={e => { const l = e.target.value as UILanguage; setUILanguage(l); update({ preferredLanguage: l }); }}
                   className={inputClass} style={inputStyle}>
-            {UI_LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+            {UI_LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.beta ? `${l.name} (${tr('being translated')})` : l.name}</option>)}
           </select>
         </Field>
         <button onClick={onSave} disabled={!dirty || syncing} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50">

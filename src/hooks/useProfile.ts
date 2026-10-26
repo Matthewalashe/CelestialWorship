@@ -48,7 +48,7 @@ export interface MemberProfile {
   /** Phone and email shown to fellow members of the parish spaces they belong to */
   shareContactInSpaces: boolean;
   birthday: string; // YYYY-MM-DD or ''
-  preferredLanguage: 'en' | 'yo' | 'fr';
+  preferredLanguage: 'en' | 'yo' | 'fr' | 'egun';
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   onboardedAt: string | null;
   /** Profile photo and banner (set through lib/media.ts) */

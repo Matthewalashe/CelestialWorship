@@ -389,8 +389,12 @@ def build_step(lines, slot):
         if kind == 'prose':
             events = [(m.start(), 'name', tidy_name(m.group(1))) for m in NAME_RE.finditer(val)]
             events += [(m.start(), 'psalm', m) for m in re.finditer(r'\bPsalms?\s*(\d{1,3})(?:\s*:\s*(\d+)\s*[–-]\s*(\d+))?', val, re.I)]
+            made_here = None  # a psalm headed in this same line
             for _, what, v in sorted(events, key=lambda e: e[0]):
                 if what == 'name':
+                    # "Psalm 24 Jehovah Ramah [3c]": a name right after a psalm's heading is that psalm's
+                    if made_here is not None and not made_here['verses']:
+                        made_here['name'] = v
                     name = v
                     continue
                 current = {'kind': 'psalm', 'ref': f'Psalm {v.group(1)}', 'chapter': int(v.group(1)), 'verses': []}
@@ -399,6 +403,7 @@ def build_step(lines, slot):
                 if name:
                     current['name'] = name
                 psalms.append(current)
+                made_here = current
         elif kind == 'verse' and current is not None:
             current['verses'].append(val[1])
     # The guide often names a psalm in its instruction and again as a heading: keep one, with its verses and name
@@ -614,6 +619,64 @@ def tidy_step(st):
         st['title'] = KIND_HEADING.get(st['kind'], st['title'][:48])
 
 
+# Names of God called before readings, as the Church uses them, where the guide leaves them out or differs
+# (service, psalm chapter) → name. Confirmed by the Church on 2026-10-26.
+HOLY_NAMES = {
+    ('mercy_day_service', 100): 'Agashadua', ('mercy_day_service', 136): 'Agashadua',
+    ('power_day_service', 100): 'Agashadua', ('power_day_service', 136): 'Agashadua',
+    ('evening_service_lords_day', 100): 'Agashadua', ('evening_service_lords_day', 136): 'Agashadua',
+    ('prophets_prophetess_dreamers', 20): 'Eli Bamah or Eli Yabah',
+    ('new_moon', 103): 'Agashadua',
+    ('baby_christening', 24): 'Jehovah Ramah', ('baby_christening', 51): 'Eyiba', ('baby_christening', 113): 'Jerimoyamah',
+    ('baptism', 51): 'Eyiba',
+    ('burial', 90): 'Alfaji Ara-hahi', ('remembrance', 90): 'Alfaji Ara-hahi',
+}
+# Psalms read as the Spirit leads: the name is not fixed
+SPIRIT_LED = {('private_house_dedication', 121), ('private_house_dedication', 125), ('church_dedication', 121), ('church_dedication', 125)}
+# Psalms the guide offers that the Church does not use here ("Psalm 24 or Psalm 150": only Psalm 24)
+DROP_PSALMS = {('baby_christening', 150)}
+# A psalm that follows the one before it without a new call
+FOLLOWS = {('baby_christening', 128): 'Psalm 51'}
+
+# A name of God before a reading from another book: "Jehovah [3ce] Deut. 28: 1 – 14", "ELO-HIM JAH [3ce] Zechariah 6: 12 – 15"
+READING_NAME = re.compile(r"(?:^|[:.]\s*)((?:[A-Z][A-Za-z]*[- ]?){1,3}?)\s*\[\s*3\s*c\w*\s*\]\s*(?:follow\w*\s+by\s+)?(?:[1-3]\s?)?[A-Z][a-z]+\.?\s*\d+\s*:", re.M)
+
+
+def name_readings(sid, st, lines):
+    """Psalms get the Church's names; readings from other books get a passage part with their name"""
+    for b in st['blocks']:
+        if b['kind'] != 'psalm':
+            continue
+        key = (sid, b['chapter'])
+        if key in HOLY_NAMES:
+            b['name'] = HOLY_NAMES[key]
+        if key in SPIRIT_LED:
+            b.pop('name', None)
+            b['spiritLed'] = True
+        if key in DROP_PSALMS:
+            b['drop'] = True
+        if key in FOLLOWS:
+            b.pop('name', None)
+            b['follows'] = FOLLOWS[key]
+    st['blocks'] = [b for b in st['blocks'] if not b.get('drop')]
+    if st.get('scripture'):
+        st['scripture'] = [r for r in st['scripture'] if (sid, r.get('chapter')) not in DROP_PSALMS or r.get('book') != 'Psalms']
+    if st['kind'] == 'psalm' or any(b['kind'] in ('lesson', 'psalm') for b in st['blocks']):
+        return
+    refs = [r for r in st.get('scripture') or [] if r.get('book') and r['book'] != 'Psalms']
+    if not refs:
+        return
+    m = READING_NAME.search(' '.join(l.strip() for l in lines))
+    name = tidy_name(m.group(1)) if m and m.group(1).strip().lower() not in ('holy', 'amen', 'reading') else None
+    for i, r in enumerate(refs):
+        span = f"{r['verseStart']}–{r['verseEnd']}" if r.get('verseStart') and r.get('verseEnd') and r['verseEnd'] != r['verseStart'] else str(r.get('verseStart') or '')
+        block = {'kind': 'passage', 'ref': f"{r['book']} {r['chapter']}" + (f":{span}" if span else ''), 'book': r['book'], 'chapter': r['chapter'],
+                 'verseStart': r.get('verseStart') or 1, 'verseEnd': r.get('verseEnd') or r.get('verseStart') or 200}
+        if name and i == 0:
+            block['name'] = name
+        st['blocks'].append(block)
+
+
 def main():
     guide = guide_services()
     out, report = {}, ['# Devotion build report', '']
@@ -626,6 +689,7 @@ def main():
             blocks, psalms = build_step(gs['lines'], slot)
             for st in expand(blocks, psalms, gs['lines'], slot, refs):
                 st['source'] = gs['label']
+                st['_lines'] = gs['lines']
                 collection = re.search(r'\bcollections?\b', ' '.join(gs['lines']), re.I)
                 if st['kind'] == 'offering' and sid == 'lords_day_service' and collection:
                     st['blocks'] = [{'kind': 'offering', 'parts': True}] + [b for b in st['blocks'] if b['kind'] != 'act']
@@ -647,6 +711,8 @@ def main():
                 steps.append(st)
         for st in steps:
             tidy_step(st)
+        for st in steps:
+            name_readings(sid, st, st.pop('_lines', []))
         merged = []
         for st in steps:
             if merged and merged[-1]['kind'] == 'psalm' and all(b['kind'] in ('instruction', 'psalm_choice') for b in merged[-1]['blocks']) and st['kind'] == 'psalm':
@@ -656,7 +722,7 @@ def main():
         for n, st in enumerate(steps, 1):
             st['n'] = n
             for b in st['blocks']:
-                if b['kind'] == 'psalm' and b['verses'] and not b.get('name'):
+                if b['kind'] == 'psalm' and b['verses'] and not b.get('name') and not b.get('spiritLed') and not b.get('follows'):
                     flags.append(f"- {sid} step {n} ({b['ref']}): no holy name in the guide")
         out[sid] = {'intro': intro_blocks(data['intro']), 'steps': steps}
         report.append(f"## {sid} — {len(data['steps'])} guide steps → {len(steps)} devotion steps")

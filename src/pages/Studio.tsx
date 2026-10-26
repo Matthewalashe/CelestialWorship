@@ -107,7 +107,7 @@ export default function Studio() {
         <h1 className="font-bold font-[Outfit] mr-2" style={{ color: 'var(--color-text-primary)' }}>{tr('Studio')}</h1>
         <select value={serviceId} onChange={e => setServiceId(e.target.value)} aria-label={tr('Service')} className="rounded-lg px-2 py-1.5 text-sm border"
                 style={{ backgroundColor: 'var(--color-bg-primary)', borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-          {services.map(s => <option key={s.id} value={s.id}>{s.displayName}{schedule.some(x => x.id === s.id) ? tr(' (today)') : ''}</option>)}
+          {services.map(s => <option key={s.id} value={s.id}>{tr(s.displayName)}{schedule.some(x => x.id === s.id) ? tr(' (today)') : ''}</option>)}
         </select>
         <div className="ml-auto flex items-center gap-2">
           <LanguageSwitch />

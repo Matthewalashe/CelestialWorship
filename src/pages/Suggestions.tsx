@@ -219,7 +219,7 @@ export default function Suggestions() {
   const exportPlan = () => {
     if (!selectedService) return '';
     const lines = [
-      `CCC Hymn Plan — ${selectedService.displayName}`,
+      `CCC Hymn Plan — ${tr(selectedService.displayName)}`,
       `Date: ${formatDate(planDay)}`,
       '',
       ...[...slotSelections, ...extraSlots].map(s => {
@@ -328,7 +328,7 @@ export default function Suggestions() {
                     {planDate === toISODate(new Date()) ? tr('Today') : planDay.toLocaleDateString('en-GB', { weekday: 'short' })}
                   </span>
                   <div className="font-medium text-[var(--color-text-primary)] font-[Outfit] group-hover:text-[var(--color-accent-gold)] transition-colors pr-12">
-                    {svc.displayName}
+                    {tr(svc.displayName)}
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)] mt-1">
                     {svc.time && `${svc.time} • `} {slotCount}{' '}{tr('hymn slots')}</div>
@@ -349,7 +349,7 @@ export default function Suggestions() {
                   className="text-left p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)] hover:border-[var(--color-accent-gold)]/50 transition-all group"
                 >
                   <div className="font-medium text-[var(--color-text-primary)] font-[Outfit] group-hover:text-[var(--color-accent-gold)] transition-colors">
-                    {svc.displayName}
+                    {tr(svc.displayName)}
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)] mt-1">
                     {svc.day} {svc.time && `• ${svc.time}`} • {slotCount}{' '}{tr('hymn')}{slotCount !== 1 ? 's' : ''}
@@ -400,7 +400,7 @@ export default function Suggestions() {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-xl font-bold text-[var(--color-accent-gold)] font-[Outfit]">
-                  {selectedService?.displayName}
+                  {tr(selectedService?.displayName)}
                 </h2>
                 <p className="text-sm text-[var(--color-text-muted)] mt-1">
                   {slotSelections.length}{' '}{tr('hymn slots (per Order of Service) •')}{' '}{filledCount}{' '}{tr('filled')}</p>

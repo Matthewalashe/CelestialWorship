@@ -145,7 +145,7 @@ export default function Onboarding() {
               <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>{tr('App language')}</p>
               <div className="grid grid-cols-2 gap-2">
                 {UI_LANGUAGES.map(l => (
-                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={l.name} subtitle={l.beta ? tr('Being translated — French fills the gaps') : l.english} />
+                  <Choice key={l.id} selected={lang === l.id} onClick={() => chooseLanguage(l.id)} title={l.name} subtitle={l.beta ? tr('Being translated — English fills the gaps') : l.english} />
                 ))}
               </div>
             </div>
