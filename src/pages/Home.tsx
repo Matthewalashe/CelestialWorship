@@ -18,7 +18,6 @@ import { VerseOfTheDay } from '../components/VerseOfTheDay';
 import { getBibleVersion } from '../data/bibleVersions';
 import { displayTitle } from '../utils/hymnText';
 import { isLiveNow } from '../components/LiveEmbed';
-import { LanguageSwitch } from '../components/LanguageSwitch';
 import { InstallBanner } from '../components/InstallBanner';
 import { listEvents, type ChurchEvent } from '../lib/community';
 import { myDuties, type MyDuty } from '../lib/parishSpace';
@@ -106,10 +105,7 @@ export default function Home() {
     <div className="px-5 pt-6 pb-28 max-w-xl mx-auto space-y-12">
       {/* Greeting */}
       <header className="space-y-5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-xs" style={muted}>{formatDate(today)}{season.label ? ` · ${tr(season.label)}` : ''}</p>
-          <LanguageSwitch />
-        </div>
+        <p className="text-xs" style={muted}>{formatDate(today)}{season.label ? ` · ${tr(season.label)}` : ''}</p>
         <div>
           <p className="text-sm font-semibold tracking-wide" style={{ color: 'var(--color-accent-gold)' }}>{exclamation}!</p>
           <h1 className="text-[2rem] leading-tight font-[Outfit] font-bold tracking-tight mt-1" style={{ color: 'var(--color-text-primary)' }}>{greeting}</h1>

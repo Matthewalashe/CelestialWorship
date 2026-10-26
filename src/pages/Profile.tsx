@@ -5,7 +5,8 @@ import { useProfile, MEMBER_TYPES, CHURCH_TITLE_SUGGESTIONS, MINISTRY_SUGGESTION
 import { useAuth } from '../hooks/useAuth';
 import { useParishes } from '../hooks/useParishes';
 import { useStreak } from '../hooks/useProgress';
-import { useT, setUILanguage, UI_LANGUAGES, type UILanguage, tr } from '../i18n';
+import { useT, UI_LANGUAGES, type UILanguage, tr } from '../i18n';
+import { useChooseLanguage } from '../components/LanguageSwitch';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { showToast } from '../components/Toast';
 import { errorMessage } from '../lib/backend';
@@ -30,6 +31,7 @@ function Field({ label, children, hint }: { label: string; children: React.React
 }
 
 export default function Profile() {
+  const chooseLanguage = useChooseLanguage();
   usePageTitle('profile', 'My profile');
   const navigate = useNavigate();
   const { user, signOut, canModerate } = useAuth();
@@ -160,7 +162,7 @@ export default function Profile() {
           <input type="checkbox" checked={draft.shareContactInSpaces} onChange={e => update({ shareContactInSpaces: e.target.checked })} />{tr('Let people in my parish spaces see my phone and email')}</label>
         <Field label={tr('Birthday (optional)')}><input type="date" value={draft.birthday} onChange={e => update({ birthday: e.target.value })} className={inputClass} style={inputStyle} /></Field>
         <Field label={tr('App language')}>
-          <select value={lang} onChange={e => { const l = e.target.value as UILanguage; setUILanguage(l); update({ preferredLanguage: l }); }}
+          <select value={lang} onChange={e => { const l = e.target.value as UILanguage; chooseLanguage(l); update({ preferredLanguage: l }); }}
                   className={inputClass} style={inputStyle}>
             {UI_LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.beta ? `${l.name} (${tr('being translated')})` : l.name}</option>)}
           </select>

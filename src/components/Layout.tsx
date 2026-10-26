@@ -9,6 +9,7 @@ import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
   HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare,
+  Baby, Calendar, Map as MapIcon, Landmark, Network, ScrollText, ChevronRight, PenLine,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
@@ -23,18 +24,33 @@ interface NavItem {
   icon: ReactNode;
 }
 
-/** What people come for: today, the service, devotion, hymns, the Bible, and learning */
+/** What people come for: today, the service, devotion, hymns and the Bible (then the Menu) */
 const NavItems: NavItem[] = [
   { path: '/', label: 'nav.home', icon: <Home size={20} /> },
   { path: '/services', label: 'nav.services', icon: <Church size={20} /> },
   { path: '/devotion', label: 'nav.devotion', icon: <Bird size={20} /> },
   { path: '/hymns', label: 'nav.hymns', icon: <Music size={20} /> },
   { path: '/bible', label: 'nav.bible', icon: <BookOpen size={20} /> },
-  { path: '/learn', label: 'nav.learn', icon: <GraduationCap size={20} /> },
 ];
+
+const LearnItem: NavItem = { path: '/learn', label: 'nav.learn', icon: <GraduationCap size={20} /> };
 
 /** Everything else, in the Menu */
 const MoreGroups: { title: string; items: NavItem[] }[] = [
+  {
+    title: 'Learn',
+    items: [
+      LearnItem,
+      { path: '/stories', label: 'nav.stories', icon: <Baby size={20} /> },
+      { path: '/lessons', label: 'nav.lessons', icon: <Calendar size={20} /> },
+      { path: '/quiz', label: 'nav.quiz', icon: <GraduationCap size={20} /> },
+      { path: '/maps', label: 'nav.maps', icon: <MapIcon size={20} /> },
+      { path: '/library', label: 'nav.articles', icon: <PenLine size={20} /> },
+      { path: '/our-church', label: 'nav.history', icon: <Landmark size={20} /> },
+      { path: '/structure', label: 'nav.structure', icon: <Network size={20} /> },
+      { path: '/constitution', label: 'nav.constitution', icon: <ScrollText size={20} /> },
+    ],
+  },
   {
     title: 'Worship',
     items: [
@@ -57,7 +73,6 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
     title: 'Me',
     items: [
       { path: '/notes', label: 'nav.library', icon: <StickyNote size={20} /> },
-      { path: '/profile', label: 'nav.profile', icon: <User size={20} /> },
       { path: '/install', label: 'nav.install', icon: <Download size={20} /> },
     ],
   },
@@ -71,6 +86,7 @@ const DesktopItems: NavItem[] = [
   { path: '/', label: 'nav.studio', icon: <MonitorPlay size={20} /> },
   { path: '/today', label: 'nav.home', icon: <Home size={20} /> },
   ...NavItems.slice(1),
+  LearnItem,
   { path: '/live', label: 'nav.live', icon: <Radio size={20} /> },
 ];
 
@@ -102,6 +118,20 @@ export default function Layout() {
     : groups;
   const label = (item: NavItem) => t(item.label);
   const initial = profile.displayName.trim()[0]?.toUpperCase();
+  // The Menu tab is lit on the pages it leads to
+  const inMenu = !NavItems.some(i => isActivePath(location.pathname, i.path)) && location.pathname !== '/';
+  const me = (
+    <Link to="/profile" className="flex items-center gap-3 p-3 rounded-2xl" style={{ backgroundColor: 'var(--color-bg-card)' }}>
+      {profile.avatarUrl || initial
+        ? <Avatar url={profile.avatarUrl} name={profile.displayName} size={40} />
+        : <span className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-secondary)', color: 'var(--color-text-secondary)' }}><User size={20} /></span>}
+      <span className="flex-1 min-w-0">
+        <span className="block text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{profile.displayName.trim() || tr('Your profile')}</span>
+        <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{t('nav.profile')}</span>
+      </span>
+      <ChevronRight size={16} aria-hidden style={{ color: 'var(--color-text-muted)' }} />
+    </Link>
+  );
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen"
@@ -158,7 +188,9 @@ export default function Layout() {
           ))}
         </nav>
 
-        <div className="pt-3 mt-3" style={{ borderTop: '1px solid var(--color-border)' }}>
+        <div className="pt-3 mt-3 space-y-1" style={{ borderTop: '1px solid var(--color-border)' }}>
+          {me}
+          <LanguageSwitch />
           <button
             onClick={toggleTheme}
             className="flex items-center gap-3 px-4 py-2.5 rounded-xl w-full transition-colors text-sm"
@@ -179,18 +211,6 @@ export default function Layout() {
             <img src={logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
             <span className="text-base font-[Outfit] font-bold tracking-wide" style={{ color: 'var(--color-text-primary)' }}>{tr('CelestialWorship')}</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link to="/profile" aria-label={t('nav.profile')} className="rounded-full">
-              {profile.avatarUrl || initial
-                ? <Avatar url={profile.avatarUrl} name={profile.displayName} size={36} />
-                : <span className="w-9 h-9 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-secondary)' }}><User size={18} /></span>}
-            </Link>
-            <button onClick={() => setMoreOpen(true)} aria-expanded={moreOpen} aria-label={t('nav.more')}
-                    className="h-9 pl-2.5 pr-3 rounded-full flex items-center gap-1.5 text-sm font-semibold"
-                    style={{ backgroundColor: 'var(--color-bg-card)', color: 'var(--color-text-primary)' }}>
-              <Menu size={18} /> {t('nav.more')}
-            </button>
-          </div>
         </header>
 
         <MovedNotice />
@@ -207,6 +227,14 @@ export default function Layout() {
       {moreOpen && (
         <Sheet label={t('nav.more')} onClose={() => setMoreOpen(false)}>
           <nav aria-label={tr('Menu')} className="space-y-4">
+            <div className="space-y-1">
+              {me}
+              <LanguageSwitch />
+              <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                <span style={{ color: 'var(--color-text-muted)' }}>{theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}</span>
+                <span className="flex-1 text-left">{theme === 'light' ? tr('Dark mode') : tr('Light mode')}</span>
+              </button>
+            </div>
             {groups.map(group => (
               <div key={group.title}>
                 <p className="text-[11px] uppercase tracking-wider font-semibold mb-1 px-1" style={{ color: 'var(--color-text-muted)' }}>{tr(group.title)}</p>
@@ -226,10 +254,6 @@ export default function Layout() {
                 </ul>
               </div>
             ))}
-            <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>
-              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />} {theme === 'light' ? tr('Dark mode') : tr('Light mode')}
-            </button>
-            <div className="px-1"><LanguageSwitch full /></div>
           </nav>
         </Sheet>
       )}
@@ -258,6 +282,15 @@ export default function Layout() {
             </NavLink>
           );
         })}
+        <button onClick={() => setMoreOpen(true)} aria-expanded={moreOpen} aria-current={inMenu ? 'page' : undefined}
+                className="flex flex-col items-center justify-center flex-1 h-14 rounded-xl"
+                style={{ color: inMenu ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}>
+          <span className="mb-0.5 h-7 w-12 grid place-items-center rounded-full transition-colors"
+                style={inMenu ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' } : undefined}>
+            <Menu size={20} />
+          </span>
+          <span className={`text-[10px] ${inMenu ? 'font-semibold' : 'font-medium'}`}>{t('nav.more')}</span>
+        </button>
       </nav>
     </div>
   );

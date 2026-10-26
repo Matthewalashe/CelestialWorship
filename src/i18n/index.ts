@@ -48,6 +48,8 @@ const STRINGS = {
   'nav.moderate': { en: 'Moderation', yo: 'Àbójútó', fr: 'Modération' },
   'nav.install': { en: 'Get the app', yo: 'Gba ìṣàfilọ́lẹ̀', fr: 'Installer l’app' },
   'nav.space': { en: 'Parish space', yo: 'Ààyè ìjọ', fr: 'Espace paroissial' },
+  'nav.maps': { en: 'Bible maps', yo: 'Máàpù Bíbélì', fr: 'Cartes bibliques' },
+  'nav.structure': { en: 'Ranks & symbols', yo: 'Ipò àti àmì', fr: 'Rangs et symboles' },
 
   'home.morning': { en: 'Good Morning', yo: 'Ẹ káàárọ̀', fr: 'Bonjour' },
   'home.afternoon': { en: 'Good Afternoon', yo: 'Ẹ káàsán', fr: 'Bon après-midi' },
