@@ -8,9 +8,12 @@ its entry. Fields: name, continent, country, state/region, city, address, phone,
 
 NA, EU, AF = 'North America', 'Europe', 'Africa'
 
-def p(name, continent, country, state, city, address, phone=None, email=None, shepherd=None):
-    return dict(name=name, continent=continent, country=country, state_region=state, city=city,
-                address=address, phone=phone, email=email, shepherd_name=shepherd)
+def p(name, continent, country, state, city, address, phone=None, email=None, shepherd=None, source=None):
+    row = dict(name=name, continent=continent, country=country, state_region=state, city=city,
+               address=address, phone=phone, email=email, shepherd_name=shepherd)
+    if source:
+        row['source'] = source  # where this entry came from, when not the Church's worldwide list
+    return row
 
 LISTED = [
   # ── Canada ──
@@ -170,6 +173,8 @@ LISTED = [
   p('Calvary Parish 1', AF, 'Nigeria', 'Lagos', 'Ikeja', '7 Calvary Close, Aguda, Ogba, Ikeja, Lagos', '+234 1 811 6049', 'ccccalvary1@yahoo.com'),
   p('Ikeja 2 Parish', AF, 'Nigeria', 'Lagos', 'Ogba', 'Agege–Ogba, Lagos'),
   p('Itura Parish', AF, 'Nigeria', 'Lagos', 'Itire', '1 Evangelist Akanni Avenue, Celestial Villa, Canaan Land, off Adeniyi Street, Itire, Lagos', '0802 321 1601'),
+  p('Holy Cross Redemption Parish 1', AF, 'Nigeria', 'Lagos', 'Akoka', 'No. 2 Ojo Street, Akoka, Lagos', '+234 803 300 2835',
+    source=('The parish’s Facebook page', 'https://www.facebook.com/Holycrossredemptionparish')),
   p('Jedidah Parish 1', AF, 'Nigeria', 'Lagos', 'Ogba', '37/39 Celestial Avenue, Power Line, Oke-Ira, Ogba-Aguda, Lagos', '+234 802 316 9197'),
   p('Odun Ayo Parish', AF, 'Nigeria', 'Lagos', 'Ikorodu', 'Ojokoro Road, Ikorodu Town, Lagos', '+234 803 346 9328'),
   p('Ojo Road I Parish', AF, 'Nigeria', 'Lagos', 'Ajegunle', '14 Abudu Rashid Street, Apapa, Ajegunle, Lagos'),

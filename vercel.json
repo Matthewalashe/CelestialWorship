@@ -31,7 +31,7 @@
         },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.scripture.api.bible https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://upload.wikimedia.org wss://*.supabase.co https://api.scripture.api.bible https://*.vercel-insights.com https://vitals.vercel-insights.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.facebook.com; media-src 'self' blob: https://upload.wikimedia.org https://*.supabase.co; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self' https://checkout.paystack.com; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.scripture.api.bible https://va.vercel-scripts.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://upload.wikimedia.org wss://*.supabase.co https://api.scripture.api.bible https://*.vercel-insights.com https://vitals.vercel-insights.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.facebook.com; media-src 'self' blob: https://upload.wikimedia.org https://*.supabase.co; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self' https://checkout.flutterwave.com https://checkout-v2.flutterwave.com; frame-ancestors 'none'"
         }
       ]
     },

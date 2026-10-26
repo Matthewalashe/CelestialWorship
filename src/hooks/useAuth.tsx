@@ -98,7 +98,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName }, emailRedirectTo: window.location.origin },
+      // The confirmation link brings them back where they were going (an invitation, a parish …)
+      options: { data: { display_name: displayName }, emailRedirectTo: `${window.location.origin}${new URLSearchParams(window.location.search).get('returnTo') || '/'}` },
     });
     if (error) throw error;
     return !data.session;

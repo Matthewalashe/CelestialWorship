@@ -45,6 +45,8 @@ export interface MemberProfile {
   stateRegion: string;
   phone: string;
   phonePublic: boolean;
+  /** Phone and email shown to fellow members of the parish spaces they belong to */
+  shareContactInSpaces: boolean;
   birthday: string; // YYYY-MM-DD or ''
   preferredLanguage: 'en' | 'yo' | 'fr';
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
@@ -65,7 +67,7 @@ const CHANGE_EVENT = 'cw-profile-changed';
 
 export const EMPTY_PROFILE: MemberProfile = {
   displayName: '', memberType: 'laity', churchTitle: '', ministry: '', parishId: null, parishName: '', country: '',
-  stateRegion: '', phone: '', phonePublic: false, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified', avatarUrl: null, bannerUrl: null, rank: '', rankLine: '', office: '', officeScope: '', bio: '',
+  stateRegion: '', phone: '', phonePublic: false, shareContactInSpaces: true, birthday: '', preferredLanguage: 'en', verificationStatus: 'unverified', avatarUrl: null, bannerUrl: null, rank: '', rankLine: '', office: '', officeScope: '', bio: '',
   onboardedAt: null,
 };
 
@@ -97,6 +99,7 @@ function toRow(p: MemberProfile) {
     state_region: p.stateRegion || null,
     phone: p.phone || null,
     phone_public: p.phonePublic,
+    share_contact_in_spaces: p.shareContactInSpaces,
     birthday: p.birthday || null,
     preferred_language: p.preferredLanguage,
     onboarded_at: p.onboardedAt,
@@ -120,6 +123,7 @@ function fromRow(row: any, local: MemberProfile): MemberProfile {
     stateRegion: row.state_region ?? local.stateRegion,
     phone: row.phone ?? local.phone,
     phonePublic: row.phone_public ?? local.phonePublic,
+    shareContactInSpaces: row.share_contact_in_spaces ?? local.shareContactInSpaces ?? true,
     birthday: row.birthday ?? local.birthday,
     preferredLanguage: row.preferred_language ?? local.preferredLanguage,
     verificationStatus: row.verification_status ?? local.verificationStatus,

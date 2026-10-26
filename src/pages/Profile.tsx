@@ -13,6 +13,7 @@ import { AppSettings } from '../components/AppSettings';
 import { ClaimParish } from '../components/ClaimParish';
 import { RankFields, ChurchRecordSection } from '../components/ChurchRecord';
 import { ProfileMedia } from '../components/ProfileMedia';
+import { MySpaces } from '../components/MySpaces';
 
 const card = { backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' };
 const inputClass = 'w-full rounded-xl px-3 py-2.5 text-sm border outline-none';
@@ -155,6 +156,8 @@ export default function Profile() {
         </Field>
         <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
           <input type="checkbox" checked={draft.phonePublic} onChange={e => update({ phonePublic: e.target.checked })} />{tr('Show my phone number to other members')}</label>
+        <label className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+          <input type="checkbox" checked={draft.shareContactInSpaces} onChange={e => update({ shareContactInSpaces: e.target.checked })} />{tr('Let people in my parish spaces see my phone and email')}</label>
         <Field label={tr('Birthday (optional)')}><input type="date" value={draft.birthday} onChange={e => update({ birthday: e.target.value })} className={inputClass} style={inputStyle} /></Field>
         <Field label={tr('App language')}>
           <select value={lang} onChange={e => { const l = e.target.value as UILanguage; setUILanguage(l); update({ preferredLanguage: l }); }}
@@ -191,6 +194,7 @@ export default function Profile() {
         </section>
       )}
 
+      {user && <MySpaces />}
       {user && <ChurchRecordSection shepherd={draft.memberType === 'shepherd' || draft.memberType === 'independent_shepherd'} />}
       {user && <Link to={`/people/${user.id}`} className="block text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('See my public profile ›')}</Link>}
 

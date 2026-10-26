@@ -13,6 +13,7 @@ import {
 import { SignInPrompt } from '../components/CommunityStates';
 import { LivePlayer, isLiveNow } from '../components/LiveEmbed';
 import { FollowButton } from '../components/FollowButton';
+import { JoinSpaceButton } from '../components/MySpaces';
 import { ParishGallery } from '../components/ParishMedia';
 import { listLivestreams, bestEmbed, isStreamLive, PLATFORMS, type Livestream, type LivePlatform } from '../lib/live';
 import { showToast } from '../components/Toast';
@@ -188,6 +189,7 @@ export default function ParishPage() {
                   style={isMine ? { backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' } : { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)' }}>
             {isMine ? <><Check size={15} />{' '}{tr('My parish')}</> : <><Star size={15} />{' '}{tr('Make this my parish')}</>}
           </button>
+          {!parish.seed && <JoinSpaceButton parishId={parish.id} />}
           {isAdmin && (
             <Link to={`/parish-admin?parish=${parish.id}`} className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5"
                   style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>

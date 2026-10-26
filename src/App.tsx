@@ -55,6 +55,7 @@ const ChurchStructure = React.lazy(() => import('./pages/ChurchStructure'));
 const Person = React.lazy(() => import('./pages/Person'));
 const Install = React.lazy(() => import('./pages/Install'));
 const ParishSpace = React.lazy(() => import('./pages/ParishSpace'));
+const JoinSpace = React.lazy(() => import('./pages/JoinSpace'));
 const SharedRoster = React.lazy(() => import('./pages/Shared').then(m => ({ default: m.SharedRoster })));
 const SharedPost = React.lazy(() => import('./pages/Shared').then(m => ({ default: m.SharedPost })));
 const Stories = React.lazy(() => import('./pages/Stories'));
@@ -142,6 +143,7 @@ function App() {
             <Route path="/people/:id" element={<Person />} />
             <Route path="/install" element={<Install />} />
             <Route path="/space" element={<ParishSpace />} />
+            <Route path="/join/:token" element={<JoinSpace />} />
             <Route path="/roster/:token" element={<SharedRoster />} />
             <Route path="/shared/:token" element={<SharedPost />} />
             <Route path="/download" element={<Navigate to="/install" replace />} />

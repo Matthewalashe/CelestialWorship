@@ -88,6 +88,7 @@ function PsalmBlock({ block, step, onOpenPassage, compact }: { block: Extract<Bl
         <div className="rounded-2xl p-4 space-y-2" style={card}>
           <div className="flex items-center gap-2 flex-wrap"><Who who="conductor" /><span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('calls the holy name')}</span><Times n={3} /></div>
           <p className="text-2xl font-bold font-[Outfit] tracking-wide" style={{ color: 'var(--color-accent-gold)' }}>{block.name}</p>
+          <p className="text-xs -mt-1" style={muted}>{tr('A name of God, given in tongues')}</p>
           <div className="flex items-center gap-2 flex-wrap"><Who who="congregation" /><span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('answers')}</span><b>{tr('Holy')}</b></div>
         </div>
       )}

@@ -17,6 +17,8 @@ for r in rows:
     if pid in seen:
         raise SystemExit(f'duplicate: {pid}')
     seen.add(pid)
-    out.append({'id': pid, **r, 'kind': 'parish', 'listing': SOURCE})
+    own = r.pop('source', None)
+    listing = {'source': own[0], 'url': own[1]} if own else SOURCE
+    out.append({'id': pid, **r, 'kind': 'parish', 'listing': listing})
 (ROOT / 'public' / 'data' / 'parishes_listed.json').write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')), encoding='utf-8', newline='\n')
 print(len(out), 'parishes')

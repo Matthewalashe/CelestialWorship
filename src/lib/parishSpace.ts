@@ -8,7 +8,7 @@ import { raise } from './backend';
  */
 
 export interface MySpace { parish_id: string; role: string; name: string; city: string | null; logo_url: string | null }
-export interface SpacePerson { user_id: string; role: string; display_name: string | null; church_title: string | null; avatar_url: string | null }
+export interface SpacePerson { user_id: string; role: string; display_name: string | null; church_title: string | null; avatar_url: string | null; phone: string | null; email: string | null }
 export interface Channel { id: string; parish_id: string; name: string; about: string | null }
 export type Audience = 'space' | 'people' | 'link';
 export interface Post {
@@ -162,4 +162,61 @@ export function rosterMessage(r: { title: string; service_date: string; notes?: 
   const date = new Date(`${r.service_date}T12:00:00`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   const lines = duties.map(d => `• ${d.duty}: ${d.person || '—'}`);
   return [`*${parishName} — ${r.title}*`, date, '', ...lines, ...(r.notes ? ['', r.notes] : []), '', link].join('\n');
+}
+
+// ── Joining ──────────────────────────────────────────────────
+
+export interface JoinRequest { id: string; user_id: string; display_name: string | null; church_title: string | null; note: string | null; created_at: string }
+export interface InviteDetails { parish_id: string; parish_name: string; city: string | null; logo_url: string | null; role: string; invited_by: string | null; for_email: boolean; valid: boolean }
+
+export async function requestToJoin(parishId: string, note?: string): Promise<'pending' | 'member'> {
+  const { data, error } = await supabase.rpc('request_to_join_space', { pid: parishId, p_note: note ?? null });
+  raise(error, 'Asking to join');
+  return data as 'pending' | 'member';
+}
+
+/** This member's answer-in-waiting for a parish, if any */
+export async function myRequest(parishId: string): Promise<'pending' | 'declined' | null> {
+  const { data } = await supabase.from('parish_space_requests').select('status').eq('parish_id', parishId).maybeSingle();
+  return data?.status === 'pending' || data?.status === 'declined' ? data.status : null;
+}
+
+export async function spaceRequests(parishId: string): Promise<JoinRequest[]> {
+  const { data, error } = await supabase.rpc('space_requests', { pid: parishId });
+  raise(error, 'Loading the requests to join');
+  return (data ?? []) as JoinRequest[];
+}
+
+export async function decideRequest(id: string, approve: boolean, role: 'member' | 'minister' = 'member') {
+  const { error } = await supabase.rpc('decide_space_request', { req_id: id, approve, p_role: role });
+  raise(error, 'Answering the request');
+}
+
+export async function createInvite(parishId: string, role: string, email?: string): Promise<string> {
+  const { data, error } = await supabase.rpc('create_space_invite', { pid: parishId, p_role: role, p_email: email?.trim() || null });
+  raise(error, 'Making the invitation');
+  return `${window.location.origin}/join/${data as string}`;
+}
+
+export async function inviteDetails(token: string): Promise<InviteDetails | null> {
+  const { data, error } = await supabase.rpc('space_invite_details', { p_token: token });
+  raise(error, 'Loading the invitation');
+  return ((data ?? []) as InviteDetails[])[0] ?? null;
+}
+
+export async function acceptInvite(token: string): Promise<string> {
+  const { data, error } = await supabase.rpc('accept_space_invite', { p_token: token });
+  raise(error, 'Joining the parish space');
+  return data as string;
+}
+
+export async function myInvites(): Promise<{ token: string; parish_id: string; parish_name: string; role: string }[]> {
+  const { data, error } = await supabase.rpc('my_space_invites');
+  if (error) return [];
+  return (data ?? []) as { token: string; parish_id: string; parish_name: string; role: string }[];
+}
+
+export async function leaveSpace(parishId: string) {
+  const { error } = await supabase.rpc('leave_space', { pid: parishId });
+  raise(error, 'Leaving the space');
 }

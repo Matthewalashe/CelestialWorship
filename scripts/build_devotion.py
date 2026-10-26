@@ -90,7 +90,8 @@ PRAYER_MATCH = [
     (re.compile(r'^\s*the\s+creed\b', re.I), 'creed'),
 ]
 
-# Holy names called before psalms in the guide (each is called three times; the congregation answers "Holy")
+# Holy names called before psalms in the guide: names of God given in tongues (not names of angels).
+# Each is called three times; the congregation answers "Holy".
 NAME_ANY = re.compile(r"\b(Eyiba|Jehovah\s+Ramah|Jehovah\s+Lass|Eli[\s-]?ya(?:h)?|Eli[\s-]?bamah|Eli[\s-]?yabah)\b", re.I)
 NAME_RE = re.compile(r"\b(Eyiba|Jehovah\s+Ramah|Jehovah\s+Lass|Eli[\s-]?ya(?:h)?|Eli[\s-]?bamah(?:\s+or\s+Eli[\s-]?yabah)?|Eli[\s-]?yabah|Jehovah\s+Jireh|Jehovah\s+Nissi|Jehovah\s+Shalom|Jehovah|El\s+Shaddai|Elohim|Adonai|Yah\s*rah\s*man)\b(?=[^.\n]{0,12}\[?\s*3\s*c)", re.I)
 

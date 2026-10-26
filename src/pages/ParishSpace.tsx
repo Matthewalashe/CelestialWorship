@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Hash, Plus, Send, Users, Link2, Lock, Trash2, Share2, CalendarDays, Check, X, ClipboardList, UserPlus, Copy } from 'lucide-react';
+import { Hash, Plus, Send, Users, Link2, Lock, Trash2, Share2, CalendarDays, Check, X, ClipboardList, UserPlus, Copy, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useServices } from '../hooks/useServices';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -11,6 +11,7 @@ import { tr } from '../i18n';
 import {
   mySpaces, spacePeople, channels as loadChannels, addChannel, feed, post, deletePost, rosters as loadRosters, saveRoster, deleteRoster,
   myDuties, respond, rosterMessage, personName, DUTY_TEMPLATES, DEFAULT_DUTIES,
+  spaceRequests, decideRequest, createInvite, leaveSpace, type JoinRequest,
   type MySpace, type SpacePerson, type Channel, type Post, type Audience, type Roster, type Duty, type MyDuty,
 } from '../lib/parishSpace';
 
@@ -36,14 +37,15 @@ async function shareText(message: string, url?: string) {
 
 // ── Posts ────────────────────────────────────────────────────
 
-function Posts({ space, people, canPlan }: { space: MySpace; people: SpacePerson[]; canPlan: boolean }) {
+function Posts({ space, people, canPlan, to }: { space: MySpace; people: SpacePerson[]; canPlan: boolean; to: string | null }) {
   const { user } = useAuth();
   const [chans, setChans] = useState<Channel[]>([]);
   const [channel, setChannel] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [body, setBody] = useState('');
-  const [audience, setAudience] = useState<Audience>('space');
-  const [chosen, setChosen] = useState<string[]>([]);
+  // "Message" on someone in People opens here, for that person only
+  const [audience, setAudience] = useState<Audience>(to ? 'people' : 'space');
+  const [chosen, setChosen] = useState<string[]>(to ? [to] : []);
   const [busy, setBusy] = useState(false);
   const [newChannel, setNewChannel] = useState(false);
 
@@ -341,24 +343,100 @@ const ROLE_LABEL: Record<string, string> = {
   shepherd: 'Shepherd', admin: 'Administrator', parochial_committee: 'Parochial committee', media: 'Media', choir: 'Choir', editor: 'Editor', minister: 'Minister', member: 'Member',
 };
 
-function People({ space, people, canPlan }: { space: MySpace; people: SpacePerson[]; canPlan: boolean }) {
+function People({ space, people, canPlan, onMessage, onChanged }: { space: MySpace; people: SpacePerson[]; canPlan: boolean; onMessage: (userId: string) => void; onChanged: () => void }) {
+  const { user } = useAuth();
+  const [requests, setRequests] = useState<JoinRequest[]>([]);
+  const [inviteRole, setInviteRole] = useState<'member' | 'minister'>('member');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [link, setLink] = useState<string | null>(null);
+  const loadRequests = useCallback(() => { if (canPlan) spaceRequests(space.parish_id).then(setRequests).catch(() => setRequests([])); }, [canPlan, space.parish_id]);
+  useEffect(() => { loadRequests(); }, [loadRequests]);
+
+  const decide = async (r: JoinRequest, approve: boolean, role: 'member' | 'minister' = 'member') => {
+    try { await decideRequest(r.id, approve, role); showToast(approve ? tr('Admitted to the space') : tr('Declined')); loadRequests(); onChanged(); } catch (e) { showToast(errorMessage(e)); }
+  };
+  const makeInvite = async () => {
+    try { setLink(await createInvite(space.parish_id, inviteRole, inviteEmail)); } catch (e) { showToast(errorMessage(e)); }
+  };
+  const inviteText = (url: string) => `${tr('You are invited to join')} ${space.name} ${tr('on CelestialWorship')}: ${url}`;
+  const copy = async (value: string) => { try { await navigator.clipboard.writeText(value); showToast(tr('Link copied')); } catch { showToast(tr('Couldn’t copy')); } };
+  const chip = 'px-2.5 py-1 rounded-lg text-xs font-semibold border inline-flex items-center gap-1';
+  const chipStyle = { borderColor: 'var(--color-border)', ...text };
+
   return (
-    <div className="space-y-4">
-      {canPlan && (
-        <Link to={`/parish-admin?parish=${space.parish_id}&tab=team`} className="flex items-center gap-3 rounded-2xl p-4" style={card}>
-          <UserPlus size={18} style={{ color: 'var(--color-accent-brand)' }} />
-          <span className="flex-1 text-sm" style={text}>{tr('Add shepherds, ministers and members to the space')}</span>
-        </Link>
+    <div className="space-y-6">
+      {canPlan && requests.length > 0 && (
+        <section className="space-y-2">
+          <h3 className="text-[11px] uppercase tracking-widest font-semibold" style={muted}>{tr('Asking to join')}</h3>
+          {requests.map(r => (
+            <div key={r.id} className="rounded-2xl p-4 space-y-2 border" style={{ ...card, borderColor: 'var(--color-accent-brand)' }}>
+              <Link to={`/people/${r.user_id}`} className="font-semibold text-sm" style={text}>{personName(r)}</Link>
+              {r.note && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{r.note}</p>}
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => decide(r, true, 'member')} className="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold">{tr('Admit as member')}</button>
+                <button onClick={() => decide(r, true, 'minister')} className={chip} style={chipStyle}>{tr('Admit as minister')}</button>
+                <button onClick={() => decide(r, false)} className="px-3 py-1.5 rounded-lg text-xs" style={muted}>{tr('Decline')}</button>
+              </div>
+            </div>
+          ))}
+        </section>
       )}
-      <ul className="rounded-2xl overflow-hidden" style={card}>
-        {people.map((p, i) => (
-          <li key={p.user_id} className="flex items-center gap-3 px-4 py-3" style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
-            <span className="w-8 h-8 rounded-full grid place-items-center text-sm font-bold shrink-0" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-accent-brand)' }}>{(p.display_name ?? '?')[0]?.toUpperCase()}</span>
-            <Link to={`/people/${p.user_id}`} className="flex-1 min-w-0 text-sm font-semibold truncate" style={text}>{personName(p)}</Link>
-            <span className="text-xs" style={muted}>{tr(ROLE_LABEL[p.role] ?? p.role)}</span>
-          </li>
-        ))}
-      </ul>
+
+      {canPlan && (
+        <section className="rounded-2xl p-4 space-y-3" style={card}>
+          <p className="font-semibold text-sm flex items-center gap-2" style={text}><UserPlus size={16} style={{ color: 'var(--color-accent-brand)' }} /> {tr('Invite people')}</p>
+          <p className="text-xs" style={muted}>{tr('Anyone with the link joins after signing in — or signing up, if they are new. Put an email to make the link for one person only.')}</p>
+          <div className="grid grid-cols-[auto_1fr] gap-2">
+            <select value={inviteRole} onChange={e => setInviteRole(e.target.value as 'member' | 'minister')} aria-label={tr('Role')} className="rounded-xl px-3 py-2 text-sm border" style={fieldStyle}>
+              <option value="member">{tr('Member')}</option>
+              <option value="minister">{tr('Minister')}</option>
+            </select>
+            <input value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} type="email" placeholder={tr('Email (optional)')} aria-label={tr('Email (optional)')} className={field} style={fieldStyle} />
+          </div>
+          <button onClick={makeInvite} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold">{tr('Make an invitation link')}</button>
+          {link && (
+            <div className="rounded-xl p-3 space-y-2" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
+              <p className="text-xs break-all" style={text}>{link}</p>
+              <div className="flex flex-wrap gap-2">
+                <a href={`https://wa.me/?text=${encodeURIComponent(inviteText(link))}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white" style={{ backgroundColor: '#1F9D55' }}>{tr('Send on WhatsApp')}</a>
+                <button onClick={() => shareText(inviteText(link), link)} className={chip} style={chipStyle}><Share2 size={13} /> {tr('Share')}</button>
+                <button onClick={() => copy(link)} className={chip} style={chipStyle}><Copy size={13} /> {tr('Copy link')}</button>
+              </div>
+            </div>
+          )}
+          {['shepherd', 'admin'].includes(space.role) && (
+            <Link to={`/parish-admin?parish=${space.parish_id}&tab=team`} className="block text-xs font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Give someone a leadership role (shepherd, administrator, media, choir…) ›')}</Link>
+          )}
+        </section>
+      )}
+
+      <section className="space-y-2">
+        <h3 className="text-[11px] uppercase tracking-widest font-semibold" style={muted}>{people.length} {tr('in this space')}</h3>
+        <ul className="rounded-2xl overflow-hidden" style={card}>
+          {people.map((p, i) => (
+            <li key={p.user_id} className="px-4 py-3 space-y-2" style={i ? { borderTop: '1px solid var(--color-border)' } : undefined}>
+              <div className="flex items-center gap-3">
+                <span className="w-9 h-9 rounded-full grid place-items-center text-sm font-bold shrink-0" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-accent-brand)' }}>{(p.display_name ?? '?')[0]?.toUpperCase()}</span>
+                <span className="flex-1 min-w-0">
+                  <Link to={`/people/${p.user_id}`} className="block text-sm font-semibold truncate" style={text}>{personName(p)}</Link>
+                  <span className="block text-xs" style={muted}>{tr(ROLE_LABEL[p.role] ?? p.role)}</span>
+                </span>
+              </div>
+              {p.user_id !== user?.id && (
+                <div className="flex flex-wrap gap-2 pl-12">
+                  <button onClick={() => onMessage(p.user_id)} className={chip} style={chipStyle}><Send size={12} /> {tr('Message')}</button>
+                  {p.phone && <a href={`tel:${p.phone.replace(/[^\d+]/g, '')}`} className={chip} style={chipStyle}><Phone size={12} /> {p.phone}</a>}
+                  {p.phone && <a href={`https://wa.me/${p.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className={chip} style={chipStyle}>{tr('WhatsApp')}</a>}
+                  {p.email && <a href={`mailto:${p.email}`} className={chip} style={chipStyle}><Mail size={12} /> {tr('Email')}</a>}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <button onClick={async () => { if (await confirmDialog({ title: tr('Leave this parish space?'), message: tr('You can ask to join again later.'), confirmLabel: tr('Leave'), danger: true })) { try { await leaveSpace(space.parish_id); showToast(tr('You have left the space')); onChanged(); } catch (e) { showToast(errorMessage(e)); } } }}
+              className="w-full text-sm py-2" style={muted}>{tr('Leave this space')}</button>
     </div>
   );
 }
@@ -373,9 +451,11 @@ export default function ParishSpace() {
   const [people, setPeople] = useState<SpacePerson[]>([]);
   const tab = (params.get('tab') as 'posts' | 'rosters' | 'people') || 'posts';
 
-  useEffect(() => { if (user) mySpaces().then(setSpaces).catch(() => setSpaces([])); }, [user]);
+  const loadSpaces = useCallback(() => { if (user) mySpaces().then(setSpaces).catch(() => setSpaces([])); }, [user]);
+  useEffect(() => { loadSpaces(); }, [loadSpaces]);
   const space = useMemo(() => spaces?.find(s => s.parish_id === params.get('parish')) ?? spaces?.[0] ?? null, [spaces, params]);
-  useEffect(() => { if (space) spacePeople(space.parish_id).then(setPeople).catch(() => setPeople([])); }, [space]);
+  const loadPeople = useCallback(() => { if (space) spacePeople(space.parish_id).then(setPeople).catch(() => setPeople([])); }, [space]);
+  useEffect(() => { loadPeople(); }, [loadPeople]);
 
   if (!loading && !user) {
     return (
@@ -399,7 +479,7 @@ export default function ParishSpace() {
     );
   }
   const canPlan = PLANNERS.includes(space.role);
-  const setTab = (t: string) => { const p = new URLSearchParams(params); p.set('tab', t); setParams(p, { replace: true }); };
+  const setTab = (t: string) => { const p = new URLSearchParams(params); p.set('tab', t); p.delete('to'); setParams(p, { replace: true }); };
 
   return (
     <div className="px-4 pt-6 pb-28 max-w-2xl mx-auto space-y-6">
@@ -420,9 +500,11 @@ export default function ParishSpace() {
           ))}
         </div>
       </header>
-      {tab === 'posts' && <Posts space={space} people={people} canPlan={canPlan} />}
+      {tab === 'posts' && <Posts key={params.get('to') ?? ''} space={space} people={people} canPlan={canPlan} to={params.get('to')} />}
       {tab === 'rosters' && <Rosters space={space} people={people} canPlan={canPlan} />}
-      {tab === 'people' && <People space={space} people={people} canPlan={canPlan} />}
+      {tab === 'people' && <People space={space} people={people} canPlan={canPlan}
+                                   onMessage={uid => { const p = new URLSearchParams(params); p.set('tab', 'posts'); p.set('to', uid); setParams(p); }}
+                                   onChanged={() => { loadSpaces(); loadPeople(); }} />}
       <p className="text-[11px] text-center" style={muted}><ClipboardList size={12} className="inline mr-1" />{tr('Only people in this parish space can read it, except posts you choose to share by link.')}</p>
     </div>
   );
