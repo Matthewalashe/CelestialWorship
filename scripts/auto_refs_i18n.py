@@ -3,7 +3,7 @@
     python -I -X utf8 scripts/auto_refs_i18n.py data-src/i18n_games
 
 "Acts 13:4; Romans 1:7" becomes "Ìṣe Àwọn Àpọ́sítélì 13:4; Róòmù 1:7" and "Actes 13:4 ; Romains 1:7";
-"24 November 1958" becomes "24 Oṣù Kọkànlá 1958" and "24 novembre 1958". Writes auto.txt (N|yo|fr) in the folder,
+"24 November 1958" becomes "24 Oṣù Kọkànlá 1958" and "24 novembre 1958". Writes part0_auto.txt (N|yo|fr) in the folder,
 merged with the hand translations by merge_content_i18n.py. Prints the strings still to translate by hand.
 """
 import json
@@ -58,6 +58,6 @@ for i, s in enumerate(strings):
         rows.append(f"{i}|{d} {MONTHS[mo][0]}{' ' + y if y else ''}|{d} {MONTHS[mo][1]}{' ' + y if y else ''}")
     else:
         manual.append(i)
-(folder / 'auto.txt').write_text('\n'.join(rows) + '\n', encoding='utf-8', newline='\n')
+(folder / 'part0_auto.txt').write_text('\n'.join(rows) + '\n', encoding='utf-8', newline='\n')
 (folder / 'manual.json').write_text(json.dumps(manual), encoding='utf-8')
 print(len(rows), 'by rule;', len(manual), 'by hand')
