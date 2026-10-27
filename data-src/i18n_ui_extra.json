@@ -790,5 +790,33 @@
 "screens per visit": [
 "ojú-ìwé fún ìbẹ̀wò kọ̀ọ̀kan",
 "écrans par visite"
+],
+"Then & Now on CelestialWorship: {right}/{total}": [
+"Ìgbà Náà àti Lónìí lórí CelestialWorship: {right}/{total}",
+"Hier et aujourd’hui sur CelestialWorship : {right}/{total}"
+],
+"Map Master on CelestialWorship: I found {n} Bible places in a minute.": [
+"Ọ̀gá Máàpù lórí CelestialWorship: mo rí ibi {n} inú Bíbélì ní ìṣẹ́jú kan.",
+"Maître de la carte sur CelestialWorship : j’ai trouvé {n} lieux bibliques en une minute."
+],
+"Bible Lands Today on CelestialWorship: {right}/{total}": [
+"Ilẹ̀ Bíbélì Lónìí lórí CelestialWorship: {right}/{total}",
+"Terres bibliques aujourd’hui sur CelestialWorship : {right}/{total}"
+],
+"I traced the Journey of Jesus on CelestialWorship: {n} points.": [
+"Mo tọpa Ìrìn Àjò Jésù lórí CelestialWorship: àmì {n}.",
+"J’ai suivi le voyage de Jésus sur CelestialWorship : {n} points."
+],
+"I followed the Journeys of Paul on CelestialWorship: {n} points.": [
+"Mo tẹ̀lé Ìrìn Àjò Pọ́ọ̀lù lórí CelestialWorship: àmì {n}.",
+"J’ai suivi les voyages de Paul sur CelestialWorship : {n} points."
+],
+"I placed Paul’s letters on the map on CelestialWorship: {n} points.": [
+"Mo fi àwọn lẹ́tà Pọ́ọ̀lù sí ààyè wọn lórí máàpù CelestialWorship: àmì {n}.",
+"J’ai placé les lettres de Paul sur la carte de CelestialWorship : {n} points."
+],
+"I scored {right}/{total} in the {title} quiz on CelestialWorship.": [
+"Mo gba {right}/{total} nínú ìbéèrè {title} lórí CelestialWorship.",
+"J’ai obtenu {right}/{total} au quiz « {title} » sur CelestialWorship."
 ]
 }

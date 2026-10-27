@@ -40,7 +40,7 @@
 222|Jósẹ́fù, olùgbàlà àwọn ènìyàn rẹ̀|Joseph, le sauveur de son peuple
 224|Ìkórè Ọmọdé|Moisson des jeunes
 225|Gbogbo ìjọ ló máa ń ṣe Ìdúpẹ́ Ìkórè Ọmọdé ní Ọjọ́ Àìkú àkọ́kọ́ nínú oṣù Kẹfà.|L’action de grâce de la Moisson des jeunes est célébrée par toutes les paroisses le premier dimanche de juin.
-226|Arábìnrin Àgbà Ńlá Àgbà Onílẹ̀ẹ̀sì|Sœur aînée senior supérieure en dentelle
+226|Arábìnrin Àgbà Gíga Onílẹ̀ẹ̀sì|Sœur aînée senior supérieure en dentelle
 227|Wòlíì Obìnrin Ńlá Àgbà Onílẹ̀ẹ̀sì|Prophétesse senior supérieure en dentelle
 228|Sùtánà àṣíwájú onílẹ̀ẹ̀sì, òkè eérú, ọ̀pá àgbélébùú búlù pẹ̀lú okùn yẹ́lò|Soutane de leader en dentelle, haut gris, barre de croix bleue avec un fil jaune
 229|Òkè yẹ́lò onílẹ̀ẹ̀sì lórí aṣọ èjìká igun mẹ́rin onílẹ̀ẹ̀sì|Haut jaune en dentelle sur une cape à quatre coins en dentelle
@@ -154,7 +154,7 @@
 353|Mímú ìjì dákẹ́|L’apaisement de la tempête
 354|Ìtàn tí a sọ lẹ́bàá adágún|Histoires racontées au bord du lac
 355|Ajíhìnrere Gíga|Évangéliste supérieur
-356|Arábìnrin Àgbà Ńlá Àgbà|Sœur aînée senior supérieure
+356|Arábìnrin Àgbà Gíga|Sœur aînée senior supérieure
 357|Àṣíwájú Ńlá Àgbà|Leader senior supérieur
 358|Àṣíwájú Ńlá Àgbà (òṣìṣẹ́ alákòókò kíkún)|Leader senior supérieur (ouvrier à plein temps)
 359|Wòlíì Obìnrin Ńlá Àgbà|Prophétesse senior supérieure

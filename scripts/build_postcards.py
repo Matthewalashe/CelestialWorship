@@ -21,8 +21,8 @@ UA = {'User-Agent': 'CelestialWorship build (https://celestialworship.online)'}
 
 # Place id → Wikipedia article (the place, or what stands there now)
 ARTICLES = {
-    'nazareth': 'Basilica of the Annunciation', 'cana': 'Kafr Kanna', 'capernaum': 'Capernaum', 'magdala': 'Magdala',
-    'bethsaida': 'Bethsaida', 'chorazin': 'Chorazin', 'gergesa': 'Kursi, Sea of Galilee', 'nain': 'Nein, Israel', 'tabor': 'Mount Tabor',
+    'nazareth': 'Basilica of the Annunciation', 'cana': 'Cana', 'capernaum': 'Capernaum', 'magdala': 'Magdala',
+    'bethsaida': 'Bethsaida', 'chorazin': 'Chorazin', 'gergesa': 'Kursi, Sea of Galilee', 'nain': 'Givat HaMoreh', 'tabor': 'Mount Tabor',
     'tabgha': 'Tabgha', 'caesarea-philippi': 'Caesarea Philippi', 'tyre': 'Tyre, Lebanon', 'sidon': 'Sidon', 'hermon': 'Mount Hermon',
     'dan': 'Tel Dan', 'megiddo': 'Tel Megiddo', 'carmel': 'Mount Carmel', 'sychar': "Jacob's Well", 'shechem': 'Shechem',
     'samaria': 'Sebastia, Nablus', 'shiloh': 'Shiloh (biblical city)', 'bethel': 'Bethel', 'jerusalem': 'Old City of Jerusalem',
@@ -31,22 +31,24 @@ ARTICLES = {
     'bethabara': 'Al-Maghtas', 'emmaus': 'Emmaus Nicopolis', 'hebron': 'Cave of the Patriarchs', 'beersheba': 'Tel Be\'er Sheva',
     'joppa': 'Jaffa', 'caesarea': 'Caesarea Maritima', 'ashdod': 'Ashdod', 'masada': 'Masada', 'gadara': 'Umm Qais',
     'nebo': 'Mount Nebo', 'rabbah': 'Amman Citadel', 'machaerus': 'Machaerus', 'petra': 'Petra', 'egypt-flight': 'Coptic Cairo',
-    'goshen': 'Land of Goshen', 'memphis': 'Memphis, Egypt', 'on': 'Heliopolis (ancient Egypt)', 'sinai': 'Mount Sinai',
+    'goshen': 'Zagazig', 'memphis': 'Memphis, Egypt', 'on': 'Heliopolis (ancient Egypt)', 'sinai': 'Mount Sinai',
     'kadesh': 'Kadesh (biblical)', 'ezion-geber': 'Ezion-Geber', 'ur': 'Ziggurat of Ur', 'haran': 'Harran', 'babylon': 'Babylon', 'nineveh': 'Nineveh',
-    'shushan': 'Susa', 'damascus': 'Damascus', 'antioch': 'Church of Saint Peter', 'tarsus': 'Tarsus, Mersin', 'ephesus': 'Ephesus', 'patmos': 'Patmos',
-    'philippi': 'Philippi', 'athens': 'Areopagus', 'corinth': 'Acrocorinth', 'rome': 'Rome', 'melita': "St Paul's Islands",
+    'shushan': 'Tomb of Daniel', 'damascus': 'Damascus', 'antioch': 'Church of Saint Peter', 'tarsus': 'Tarsus, Mersin', 'ephesus': 'Ephesus', 'patmos': 'Patmos',
+    'philippi': 'Philippi', 'athens': 'Areopagus', 'corinth': 'Acrocorinth', 'rome': 'Rome', 'melita': "St. Paul's Bay",
     'paphos': 'Paphos', 'seleucia': 'Seleucia Pieria', 'salamis': 'Salamis, Cyprus', 'perga': 'Perga', 'attalia': 'Antalya',
-    'pisidian-antioch': 'Antioch of Pisidia', 'iconium': 'Konya', 'derbe': 'Derbe', 'troas': 'Alexandria Troas',
+    'pisidian-antioch': 'Antioch of Pisidia', 'iconium': 'Konya', 'derbe': 'Karaman', 'troas': 'Alexandria Troas',
     'neapolis': 'Kavala', 'thessalonica': 'Thessaloniki', 'berea': 'Veria', 'cenchreae': 'Cenchreae', 'miletus': 'Miletus',
-    'myra': 'Myra', 'fair-havens': 'Kali Limenes', 'syracuse': 'Syracuse, Sicily', 'rhegium': 'Reggio Calabria', 'puteoli': 'Pozzuoli',
-    'colossae': 'Colossae', 'laodicea': 'Laodicea on the Lycus', 'crete': 'Gortyn', 'ararat': 'Mount Ararat',
+    'myra': 'Myra', 'fair-havens': 'Kaloi Limenes', 'syracuse': 'Syracuse, Sicily', 'rhegium': 'Reggio Calabria', 'puteoli': 'Pozzuoli',
+    'colossae': 'Honaz', 'laodicea': 'Laodicea on the Lycus', 'crete': 'Gortyn', 'ararat': 'Mount Ararat',
     'thebes': 'Karnak', 'cyrene': 'Cyrene, Libya',
+    # No free lead photo of the city or province: Gaza's ancient church, and the castle hill of Ancyra, Galatia's capital
+    'gaza': 'Church of Saint Porphyrius', 'galatia': 'Ankara Castle',
     # The story of the Church
     'spread-jerusalem': 'Old City of Jerusalem', 'spread-damascus': 'Damascus', 'spread-antioch': 'Church of Saint Peter',
     'spread-philippi': 'Philippi', 'spread-ephesus': 'Ephesus', 'spread-rome': 'Rome', 'spread-alexandria': 'Alexandria',
     'spread-armenia': 'Etchmiadzin Cathedral', 'spread-nicaea': 'Nicaea', 'spread-constantinople': 'Hagia Sophia', 'spread-axum': 'Aksum',
     'spread-carthage': 'Hippo Regius', 'spread-ireland': 'Saint Patrick', 'spread-kyiv': 'Saint Sophia Cathedral, Kyiv',
-    'spread-wittenberg': 'All Saints\' Church, Wittenberg', 'spread-badagry': 'Badagry', 'spread-aladura': 'Aladura',
+    'spread-wittenberg': 'All Saints\' Church, Wittenberg', 'spread-badagry': 'Badagry', 'spread-aladura': 'Christ Apostolic Church',
     'spread-porto-novo': 'Porto-Novo', 'spread-imeko': 'Imeko',
 }
 

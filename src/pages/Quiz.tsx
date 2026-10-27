@@ -15,7 +15,7 @@ import { recordActivity } from '../hooks/useProgress';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { parseReference, referenceToPath } from '../utils/parseReference';
 import { RoundSummary, LevelBar, BadgeShelf, Leaderboard, useGameState, shareText } from '../components/GameUi';
-import { tr } from '../i18n';
+import { tr, trf } from '../i18n';
 
 const ROUND_SIZE = 10;
 const LIVES = 3;
@@ -242,7 +242,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
           outcome={outcome}
           headline={`${right}/${marks.length}`}
           sub={mode === 'challenge' && lives <= 0 ? 'Out of lives, well played!' : right === marks.length ? 'Every answer right!' : right / Math.max(marks.length, 1) >= 0.7 ? 'Well done!' : 'Keep going, every round teaches something new.'}
-          shareText={dailyText ?? `I scored ${right}/${marks.length} in the ${title} quiz on CelestialWorship.`}
+          shareText={dailyText ?? trf('I scored {right}/{total} in the {title} quiz on CelestialWorship.', { right, total: marks.length, title: tr(title) })}
           sharePath={topic === 'daily' ? '/quiz?daily=1' : `/quiz?topic=${topic}`}
           onAgain={onAgain}
           extra={dailyText ? <p className="text-2xl tracking-widest" aria-label={`${right} of ${marks.length} right`}>{marks.map(m => (m ? '🟩' : '🟥')).join('')}</p> : undefined}

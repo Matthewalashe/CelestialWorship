@@ -10,7 +10,7 @@ import { recordActivity } from '../hooks/useProgress';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { parseReference, referenceToPath } from '../utils/parseReference';
 import { RoundSummary } from '../components/GameUi';
-import { tr } from '../i18n';
+import { tr, trf } from '../i18n';
 import { collectPostcard } from '../lib/postcards';
 import { ExploreAtlas, StoryOfTheChurch, PostcardAlbum } from '../components/AtlasSections';
 import { showToast } from '../components/Toast';
@@ -218,7 +218,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
   useEffect(() => { started.current = Date.now(); }, [k]);
 
   if (outcome) return <RoundSummary outcome={outcome} headline={`${right} / ${round.length}`} sub="Bible names and the places today."
-                                    shareText={`Then & Now on CelestialWorship: ${right}/${round.length}`} sharePath="/maps?game=thennow"
+                                    shareText={trf('Then & Now on CelestialWorship: {right}/{total}', { right, total: round.length })} sharePath="/maps?game=thennow"
                                     onAgain={() => { setSeed(s => s + 1); setK(0); setChosen(null); setCombo(0); setBest(0); setXp(0); setRight(0); setOutcome(null); }} />;
 
   const q = round[k];
@@ -305,7 +305,7 @@ function Master({ layer }: { layer: MapLayer }) {
   const reset = () => { done.current = false; setSeed(s => s + 1); setLeft(MASTER_SECONDS); setK(0); setHits(0); setCombo(0); setBest(0); setXp(0); setOutcome(null); setRunning(true); };
 
   if (outcome) return <RoundSummary outcome={outcome} headline={`${hits} ${tr('found')}`} sub={tr(`in ${MASTER_SECONDS} seconds`)}
-                                    shareText={`Map Master on CelestialWorship: I found ${hits} Bible places in a minute.`} sharePath="/maps?game=master" onAgain={reset} />;
+                                    shareText={trf('Map Master on CelestialWorship: I found {n} Bible places in a minute.', { n: hits })} sharePath="/maps?game=master" onAgain={reset} />;
 
   if (!running) {
     return (
@@ -370,7 +370,7 @@ function Lands({ layer }: { layer: MapLayer }) {
   const [outcome, setOutcome] = useState<RoundOutcome | null>(null);
 
   if (outcome) return <RoundSummary outcome={outcome} headline={`${right} / ${round.length}`} sub="Lands of the Bible and the countries today."
-                                    shareText={`Bible Lands Today on CelestialWorship: ${right}/${round.length}`} sharePath="/maps?game=lands"
+                                    shareText={trf('Bible Lands Today on CelestialWorship: {right}/{total}', { right, total: round.length })} sharePath="/maps?game=lands"
                                     onAgain={() => { setSeed(s => s + 1); setK(0); setPicked(null); setRight(0); setCombo(0); setBest(0); setXp(0); setOutcome(null); }} />;
 
   const land = round[k];
@@ -476,19 +476,19 @@ export default function MapGames() {
       {game === 'journey' && (
         <TraceGame layer={layer} stops={JESUS_JOURNEY} region="holyland" finishLabel="Finish the journey" sharePath="/maps?game=journey"
                    focusFor={p => (p.id === 'egypt-flight' ? undefined : [35.3, 32.2, 2.6])} zeroAtFor={p => (p.id === 'egypt-flight' ? 250 : 60)}
-                   summary={{ sub: 'You walked with Jesus from Bethlehem to the Mount of Olives.', share: t => `I traced the Journey of Jesus on CelestialWorship: ${t} points.` }} />
+                   summary={{ sub: 'You walked with Jesus from Bethlehem to the Mount of Olives.', share: t => trf('I traced the Journey of Jesus on CelestialWorship: {n} points.', { n: t }) }} />
       )}
       {game === 'paul' && (
         <TraceGame layer={layer} region="world" finishLabel="Finish at Rome" sharePath="/maps?game=paul"
                    stops={PAUL_JOURNEY.map(s => ({ ...s, tag: PAUL_JOURNEY_NAMES[s.journey] }))}
                    focusFor={worldFocus} zeroAtFor={() => 250}
-                   summary={{ sub: 'From the Damascus road to Rome, about 16,000 km.', share: t => `I followed the Journeys of Paul on CelestialWorship: ${t} points.` }} />
+                   summary={{ sub: 'From the Damascus road to Rome, about 16,000 km.', share: t => trf('I followed the Journeys of Paul on CelestialWorship: {n} points.', { n: t }) }} />
       )}
       {game === 'letters' && (
         <>
           <TraceGame layer={layer} region="world" finishLabel={tr('See my score')} sharePath="/maps?game=letters" stops={letterStops()}
                      focusFor={worldFocus} zeroAtFor={() => 250}
-                     summary={{ sub: 'Thirteen letters, from Rome to Colosse.', share: t => `I placed Paul’s letters on the map on CelestialWorship: ${t} points.` }} />
+                     summary={{ sub: 'Thirteen letters, from Rome to Colosse.', share: t => trf('I placed Paul’s letters on the map on CelestialWorship: {n} points.', { n: t }) }} />
           <PaulLetterList />
         </>
       )}

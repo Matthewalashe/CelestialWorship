@@ -47,6 +47,14 @@ describe('tr()', () => {
     expect(contentDefaults('yo')).toEqual({ bibleVersion: 'yo', hymnView: 'yo' });
   });
 
+  it('fills the placeholders of a translated sentence', async () => {
+    vi.resetModules();
+    const { trf } = await import('../i18n');
+    const sentence = 'I traced the Journey of Jesus on CelestialWorship: {n} points.';
+    expect(trf(sentence, { n: 640 })).toBe(fr[sentence].replace('{n}', '640'));
+    expect(trf('Untranslated {x} and {y}', { x: 1 })).toBe('Untranslated 1 and {y}');
+  });
+
   it('gives French to anyone who had chosen Egun, until its translation is ready', async () => {
     localStorage.setItem('cw-ui-language', 'egun');
     vi.resetModules();

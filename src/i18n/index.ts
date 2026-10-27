@@ -173,6 +173,11 @@ export function setUILanguage(lang: UILanguage) {
   announce();
 }
 
+/** A sentence with {placeholders}, translated and then filled in: trf('I scored {n} points', { n: 40 }) */
+export function trf(template: string, values: Record<string, string | number>): string {
+  return tr(template).replace(/\{(\w+)\}/g, (whole, key: string) => (key in values ? String(values[key]) : whole));
+}
+
 /** The app's words in the chosen language. Anything that isn't a known English string passes through. */
 export function tr<T>(text: T): T {
   if (current === 'en' || typeof text !== 'string') return text;

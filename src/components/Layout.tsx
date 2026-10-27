@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { useScreenViews } from '../hooks/useAnalytics';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
@@ -98,7 +97,6 @@ const isActivePath = (pathname: string, path: string) =>
 
 export default function Layout() {
   const location = useLocation();
-  useScreenViews(location.pathname);
   const { theme, toggleTheme } = useTheme();
   const { t } = useT();
   const { canModerate, profile: account } = useAuth();
