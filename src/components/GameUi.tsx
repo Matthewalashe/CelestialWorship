@@ -40,7 +40,7 @@ export function LevelBar({ xp, compact = false }: { xp: number; compact?: boolea
       </div>
       {!compact && (
         <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>
-          <em>{lv.verse}</em>{lv.next && ` · ${lv.next.xp - xp} XP to ${tr(lv.next.title)}`}
+          <em>{tr(lv.verse)}</em>{lv.next && ` · ${lv.next.xp - xp} XP ${tr("to reach")} ${tr(lv.next.title)}`}
         </p>
       )}
     </div>
@@ -58,7 +58,7 @@ export function RoundSummary({ outcome, headline, sub, shareText: text, sharePat
         <Burst />
       </div>
       <p className="text-5xl font-black font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{headline}</p>
-      {sub && <p className="font-semibold" style={{ color: 'var(--color-text-secondary)' }}>{sub}</p>}
+      {sub && <p className="font-semibold" style={{ color: 'var(--color-text-secondary)' }}>{tr(sub)}</p>}
       <p className="text-lg font-bold" style={{ color: 'var(--color-accent-gold)' }}>+{outcome.xpGained}{' '}{tr('XP')}</p>
       {outcome.levelUp && <p className="text-sm font-bold px-3 py-1.5 rounded-full inline-block" style={{ backgroundColor: 'var(--color-accent-gold)', color: '#1F2937' }}>{tr('Level up! You are now a')}{' '}{tr(levelFor(outcome.total).title)}</p>}
       <div className="text-left p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-bg-card)' }}><LevelBar xp={outcome.total} /></div>

@@ -82,7 +82,7 @@ export default function OurChurch() {
             <div key={tr(b.name)} className="rounded-2xl border p-4" style={card}>
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(b.name)}</p>
               <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(b.detail)}</p>
-              <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{b.source}</p>
+              <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr(b.source)}</p>
             </div>
           ))}
         </div>
@@ -97,7 +97,7 @@ export default function OurChurch() {
               <p className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent-brand)' }}>{e.date}</p>
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(e.title)}</p>
               <p className="text-sm mt-0.5 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(e.detail)}</p>
-              <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{e.source}</p>
+              <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>{tr(e.source)}</p>
             </li>
           ))}
         </ol>
@@ -111,7 +111,7 @@ export default function OurChurch() {
             <div key={tr(c.title)} className="rounded-2xl border p-4" style={card}>
               <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(c.title)}</p>
               <p className="text-sm mt-1 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>{tr(c.detail)}</p>
-              <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{c.source}</p>
+              <p className="text-[11px] mt-2" style={{ color: 'var(--color-text-muted)' }}>{tr(c.source)}</p>
             </div>
           ))}
         </div>
@@ -150,7 +150,7 @@ export default function OurChurch() {
                 <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline py-1.5">
                   {tr(s.label)} <ExternalLink size={11} />
                 </a>
-              ) : s.label}
+              ) : tr(s.label)}
             </li>
           ))}
         </ul>

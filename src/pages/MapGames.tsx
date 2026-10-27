@@ -32,14 +32,14 @@ function RefLink({ refs }: { refs: string }) {
   const first = refs.split(';')[0].trim();
   const ref = parseReference(first);
   return ref
-    ? <Link to={referenceToPath(ref)} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{refs}</Link>
-    : <span className="font-semibold">{refs}</span>;
+    ? <Link to={referenceToPath(ref)} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr(refs)}</Link>
+    : <span className="font-semibold">{tr(refs)}</span>;
 }
 
 function PlaceFacts({ place }: { place: BiblePlace }) {
   return (
     <div className="text-sm space-y-1" style={{ color: 'var(--color-text-secondary)' }}>
-      <p><span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(place.name)}</span>{' '}{tr('→ today')}{' '}<span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{place.today}</span>, {place.country}{place.traditional ? tr(' (traditional site)') : ''}</p>
+      <p><span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(place.name)}</span>{' '}{tr('→ today')}{' '}<span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(place.today)}</span>, {tr(place.country)}{place.traditional ? tr(' (traditional site)') : ''}</p>
       <p>{tr(place.note)}</p>
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read:')}{' '}<RefLink refs={place.refs} /></p>
     </div>
@@ -110,16 +110,16 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
 
   const pins: Pin[] = [
     ...(guess ? [{ at: guess, kind: 'guess' as const }] : []),
-    ...(checked ? [{ at: [place.lon, place.lat] as LonLat, kind: 'answer' as const, label: layer === 'now' ? place.today : place.name }] : []),
+    ...(checked ? [{ at: [place.lon, place.lat] as LonLat, kind: 'answer' as const, label: tr(layer === 'now' ? place.today : place.name) }] : []),
   ];
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-xs font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-        <span>{stop.tag ? `${stop.tag} · ` : ''}{i + 1}{' '}{tr('of')}{' '}{stops.length}</span>
+        <span>{stop.tag ? `${tr(stop.tag)} · ` : ''}{i + 1}{' '}{tr('of')}{' '}{stops.length}</span>
         <span>{total}{' '}{tr('points')}</span>
       </div>
-      <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{stop.prompt}</p>
+      <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr(stop.prompt)}</p>
       <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}><RefLink refs={stop.ref} /></p>
 
       {listMode ? (
@@ -151,9 +151,9 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
           <p className="font-semibold" style={{ color: score >= 50 ? 'var(--color-success)' : 'var(--color-warning)' }}>
             {score >= 90 ? tr('Right there!') : score >= 50 ? tr('Close!') : tr('Not quite.')} {km !== null && `${km < 1 ? '<1' : Math.round(km)} km away · +${score}`}
           </p>
-          {stop.extra && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{stop.extra}</p>}
+          {stop.extra && <p className="text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(stop.extra)}</p>}
           <PlaceFacts place={place} />
-          <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{i + 1 < stops.length ? tr('Next') : finishLabel}</button>
+          <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{i + 1 < stops.length ? tr('Next') : tr(finishLabel)}</button>
         </div>
       )}
     </div>
@@ -164,11 +164,12 @@ function TraceGame({ layer, stops, region, focusFor, zeroAtFor, summary, sharePa
 const worldFocus = (place: BiblePlace): [number, number, number] =>
   place.lon < 20 ? [15, 39, 12] : place.lon < 30 ? [25, 38.5, 12] : [33, 36, 16];
 
-const LETTER_STOPS: TraceStop[] = PAUL_LETTERS.map(l => ({
+/** Built when shown, so the words follow the chosen language */
+const letterStops = (): TraceStop[] => PAUL_LETTERS.map(l => ({
   placeId: l.placeId,
-  prompt: `${l.letter}: Paul wrote “unto ${l.to}”. Where was that?`,
+  prompt: `${tr(l.letter)}: ${tr('Paul wrote')} “${tr(l.to)}”. ${tr('Where was that?')}`,
   ref: l.ref,
-  extra: `${l.letter} was written from ${l.from}, ${l.when}.`,
+  extra: `${tr(l.letter)}: ${tr('written from')} ${tr(l.from)}, ${tr(l.when)}.`,
 }));
 
 /** Paul's letters: then and now, as a reference list */
@@ -181,9 +182,9 @@ function PaulLetterList() {
           const pl = placeById(l.placeId)!;
           return (
             <li key={l.letter} className="py-2.5 text-sm" style={{ borderColor: 'var(--color-border)' }}>
-              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{l.letter} <span className="font-normal text-xs" style={{ color: 'var(--color-text-muted)' }}>· <RefLink refs={l.ref} /></span></p>
-              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('To')}{' '}{l.to}. <b>{tr(pl.name)}</b>{' '}{tr('today')}{' '}{pl.today}, {pl.country}.</p>
-              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Written from')}{' '}{l.from}, {l.when}.</p>
+              <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr(l.letter)} <span className="font-normal text-xs" style={{ color: 'var(--color-text-muted)' }}>· <RefLink refs={l.ref} /></span></p>
+              <p style={{ color: 'var(--color-text-secondary)' }}>{tr('Addressed to:')}{' '}“{tr(l.to)}”. <b>{tr(pl.name)}</b>{' '}{tr('today')}{' '}{tr(pl.today)}, {tr(pl.country)}.</p>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Written from')}{' '}{tr(l.from)}, {tr(l.when)}.</p>
             </li>
           );
         })}
@@ -242,7 +243,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
         <span>{combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} · </span>}{xp}{' '}{tr('XP')}</span>
       </div>
       <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>
-        {q.reverse ? <>{tr('Which Bible place is')}{' '}<em>{q.place.today}</em> ({q.place.country}{tr(') today?')}</> : <>{tr('What is')}{' '}<em>{tr(q.place.name)}</em>{' '}{tr('called today?')}</>}
+        {q.reverse ? <>{tr('Which Bible place is')}{' '}<em>{tr(q.place.today)}</em> ({tr(q.place.country)}{tr(') today?')}</> : <>{tr('What is')}{' '}<em>{tr(q.place.name)}</em>{' '}{tr('called today?')}</>}
       </p>
       <div className="space-y-2" role="radiogroup">
         {q.options.map(o => {
@@ -251,7 +252,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
             <button key={o.id} role="radio" aria-checked={isChosen} disabled={answered} onClick={() => choose(o.id)}
                     className="w-full text-left p-3 rounded-xl border-2 text-sm"
                     style={{ ...card, color: 'var(--color-text-primary)', borderColor: answered && isAnswer ? 'var(--color-success)' : answered && isChosen ? 'var(--color-warning)' : 'var(--color-border)' }}>
-              {q.reverse ? o.name : `${o.today}, ${o.country}`}
+              {q.reverse ? tr(o.name) : `${tr(o.today)}, ${tr(o.country)}`}
             </button>
           );
         })}
@@ -260,7 +261,7 @@ function ThenNow({ layer }: { layer: MapLayer }) {
         <div className="space-y-3 animate-slide-up" aria-live="polite">
           <BibleMap region={q.place.map} layer={layer} height="35vh" focus={q.place.map === 'holyland' ? [q.place.lon, q.place.lat, 1.6] : [q.place.lon, q.place.lat, 18]}
                     pins={[{ at: [q.place.lon, q.place.lat], kind: 'answer', label: layer === 'now' ? q.place.today : q.place.name }]} />
-          <PlaceFacts place={tr(q.place)} />
+          <PlaceFacts place={q.place} />
           <button onClick={next} className="btn-primary w-full py-3 rounded-xl text-sm font-semibold">{k + 1 < round.length ? tr('Next') : tr('See my score')}</button>
         </div>
       )}
@@ -303,7 +304,7 @@ function Master({ layer }: { layer: MapLayer }) {
 
   const reset = () => { done.current = false; setSeed(s => s + 1); setLeft(MASTER_SECONDS); setK(0); setHits(0); setCombo(0); setBest(0); setXp(0); setOutcome(null); setRunning(true); };
 
-  if (outcome) return <RoundSummary outcome={outcome} headline={`${hits} found`} sub={`in ${MASTER_SECONDS} seconds`}
+  if (outcome) return <RoundSummary outcome={outcome} headline={`${hits} ${tr('found')}`} sub={tr(`in ${MASTER_SECONDS} seconds`)}
                                     shareText={`Map Master on CelestialWorship: I found ${hits} Bible places in a minute.`} sharePath="/maps?game=master" onAgain={reset} />;
 
   if (!running) {
@@ -397,13 +398,13 @@ function Lands({ layer }: { layer: MapLayer }) {
         <span>{combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} · </span>}{xp}{' '}{tr('XP')}</span>
       </div>
       <p className="text-lg font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr('Where is')}{' '}<em>{tr(land.name)}</em>{' '}{tr('today?')}</p>
-      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Also:')}{' '}{land.aka}</p>
+      <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Also:')}{' '}{tr(land.aka)}</p>
       {listMode ? (
         <div className="grid grid-cols-2 gap-2">
           {listOptions.map(id => (
             <button key={id} disabled={answered} onClick={() => pick(id)} className="p-3 rounded-xl border-2 text-sm"
                     style={{ ...card, color: 'var(--color-text-primary)', borderColor: answered && land.countries.includes(id) ? 'var(--color-success)' : answered && id === picked ? 'var(--color-warning)' : 'var(--color-border)' }}>
-              {COUNTRY_NAMES[id]}
+              {tr(COUNTRY_NAMES[id])}
             </button>
           ))}
         </div>
@@ -415,7 +416,7 @@ function Lands({ layer }: { layer: MapLayer }) {
       </button>
       {answered && (
         <div className="p-4 rounded-2xl space-y-2 animate-slide-up" style={{ backgroundColor: 'var(--color-bg-card)' }} aria-live="polite">
-          <p className="font-semibold" style={{ color: ok ? 'var(--color-success)' : 'var(--color-warning)' }}>{ok ? tr('Correct!') : `It’s ${land.answer}.`}</p>
+          <p className="font-semibold" style={{ color: ok ? 'var(--color-success)' : 'var(--color-warning)' }}>{ok ? tr('Correct!') : `${tr('It’s')} ${tr(land.answer)}.`}</p>
           <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr(land.note)}</p>
           <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Read:')}{' '}<RefLink refs={land.refs} /></p>
           <button onClick={next} className="btn-primary w-full mt-2 py-3 rounded-xl text-sm font-semibold">{k + 1 < round.length ? tr('Next') : tr('See my score')}</button>
@@ -485,7 +486,7 @@ export default function MapGames() {
       )}
       {game === 'letters' && (
         <>
-          <TraceGame layer={layer} region="world" finishLabel="See my score" sharePath="/maps?game=letters" stops={LETTER_STOPS}
+          <TraceGame layer={layer} region="world" finishLabel={tr('See my score')} sharePath="/maps?game=letters" stops={letterStops()}
                      focusFor={worldFocus} zeroAtFor={() => 250}
                      summary={{ sub: 'Thirteen letters, from Rome to Colosse.', share: t => `I placed Paul’s letters on the map on CelestialWorship: ${t} points.` }} />
           <PaulLetterList />

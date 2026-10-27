@@ -54,7 +54,8 @@ export default function LeafletAtlas({ region, layer, pins = [], route, onTap, o
   // The map and its panes
   useEffect(() => {
     if (!el.current) return;
-    const m = L.map(el.current, { zoomControl: true, attributionControl: true, worldCopyJump: true, minZoom: 2, maxZoom: region === 'holyland' ? 12 : 9, zoomSnap: 0.25 });
+    const m = L.map(el.current, { zoomControl: false, attributionControl: true, worldCopyJump: true, minZoom: 2, maxZoom: region === 'holyland' ? 12 : 9, zoomSnap: 0.25 });
+    L.control.zoom({ zoomInTitle: tr('Zoom in'), zoomOutTitle: tr('Zoom out') }).addTo(m);
     m.createPane('now').style.zIndex = '200';
     m.createPane('thenBase').style.zIndex = '240';
     m.createPane('then').style.zIndex = '250';

@@ -16,6 +16,7 @@ const ROOT = path.resolve(__dirname, '..');
 const TS_FILES = [
   'src/data/ranks.ts', 'src/data/churchHistory.ts', 'src/data/churchLeaders.ts', 'src/data/music.ts', 'src/utils/churchCalendar.ts',
   'src/hooks/useProfile.ts', 'src/types/index.ts', 'src/data/prayers.ts', 'src/hooks/useParishes.ts',
+  'src/data/quizzes.ts', 'src/data/quizMore.ts', 'src/data/trivia.ts', 'src/data/christianity.ts', 'src/data/bibleLands.ts',
 ];
 const words = s => /[A-Za-z]{3}/.test(s) && /\s/.test(s.trim()) || /^[A-Z][a-z]+(?: [A-Z&][a-z]*)*$/.test(s);
 const skip = s => /^(#|\/|https?:|cw-|var\(|[a-z_]+$|[a-z]+(-[a-z]+)+$)/.test(s) || /\.(png|jpe?g|webp|json|svg)$/.test(s);

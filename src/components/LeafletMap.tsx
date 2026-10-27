@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { MapProps } from './MapView';
+import { tr } from '../i18n';
 
 /*
  * The map itself (OpenStreetMap tiles through Leaflet). Loaded only when a map is shown, and kept out of
@@ -40,7 +41,8 @@ export default function LeafletMap({ markers = [], selected, onSelect, pin, onPi
 
   useEffect(() => {
     if (!el.current) return;
-    const m = L.map(el.current, { zoomControl: true, attributionControl: true, worldCopyJump: true });
+    const m = L.map(el.current, { zoomControl: false, attributionControl: true, worldCopyJump: true });
+    L.control.zoom({ zoomInTitle: tr('Zoom in'), zoomOutTitle: tr('Zoom out') }).addTo(m);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',

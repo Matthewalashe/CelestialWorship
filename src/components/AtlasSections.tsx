@@ -23,7 +23,7 @@ function ReadLink({ refs }: { refs: string }) {
   const first = refs.split(';')[0].trim();
   const ref = parseReference(first);
   return ref
-    ? <Link to={referenceToPath(ref)} className="inline-flex items-center gap-1 font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}><BookOpen size={13} aria-hidden /> {refs}</Link>
+    ? <Link to={referenceToPath(ref)} className="inline-flex items-center gap-1 font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}><BookOpen size={13} aria-hidden /> {tr(refs)}</Link>
     : <span className="font-semibold">{tr(refs)}</span>;
 }
 
@@ -33,7 +33,7 @@ function PostcardView({ p: card0, big = false }: { p: Postcard; big?: boolean })
   return (
     <figure className="rounded-2xl overflow-hidden border" style={card}>
       {p.photo
-        ? <img src={p.photo.src} alt={`${tr(p.then)}, ${p.now}`} loading="lazy" decoding="async" className={`w-full object-cover ${big ? 'aspect-[4/3]' : 'aspect-[3/2]'}`} />
+        ? <img src={p.photo.src} alt={`${tr(p.then)}, ${tr(p.now)}`} loading="lazy" decoding="async" className={`w-full object-cover ${big ? 'aspect-[4/3]' : 'aspect-[3/2]'}`} />
         : <div className={`w-full flex items-center justify-center ${big ? 'aspect-[4/3]' : 'aspect-[3/2]'} font-[Outfit] text-lg font-bold`} style={{ backgroundColor: '#EFE2C2', color: '#5A4320' }}>{tr(p.then)}</div>}
       <figcaption className="p-3 space-y-1">
         <p className="font-semibold leading-tight" style={{ color: 'var(--color-text-primary)' }}>{tr(p.then)}</p>

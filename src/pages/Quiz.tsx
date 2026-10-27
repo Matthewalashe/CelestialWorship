@@ -27,11 +27,11 @@ type Mode = 'learn' | 'challenge' | 'daily';
 function SourceLink({ source }: { source: string }) {
   const first = source.split(';')[0].trim();
   const ref = /\d+:\d+/.test(first) ? parseReference(first) : null;
-  if (ref) return <Link to={referenceToPath(ref)} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{source}</Link>;
+  if (ref) return <Link to={referenceToPath(ref)} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr(source)}</Link>;
   const hymn = first.match(/^Hymn (\d+)$/);
-  if (hymn) return <Link to={`/hymns/${hymn[1]}`} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{source}</Link>;
-  if (/^Constitution/.test(first)) return <Link to="/constitution" className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{source}</Link>;
-  return <span className="font-semibold">{source}</span>;
+  if (hymn) return <Link to={`/hymns/${hymn[1]}`} className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr('Hymn')} {hymn[1]}</Link>;
+  if (/^Constitution/.test(first)) return <Link to="/constitution" className="font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr(source)}</Link>;
+  return <span className="font-semibold">{tr(source)}</span>;
 }
 
 /** Today's five questions, the same for everyone */
@@ -256,7 +256,7 @@ function Round({ topic, mode, questions, onExit, onAgain }: {
   return (
     <div className="px-4 py-6 max-w-xl mx-auto pb-24">
       <div className="flex items-center justify-between mb-2 gap-2">
-        <button onClick={onExit} className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>‹ {title}</button>
+        <button onClick={onExit} className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>‹ {tr(title)}</button>
         <span className="text-xs font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
           {mode === 'challenge' && <span aria-label={`${lives} lives left`} className="inline-flex gap-0.5">{Array.from({ length: LIVES }, (_, i) => <Heart key={i} size={13} fill={i < lives ? '#EF4444' : 'none'} stroke="#EF4444" />)}</span>}
           {combo >= 3 && <span style={{ color: 'var(--color-accent-gold)' }}>🔥 {combo} ×{comboMultiplier(combo)}</span>}
