@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Church } from 'lucide-react';
 import { useServices } from '../hooks/useServices';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { tr } from '../i18n';
 
@@ -30,7 +29,6 @@ const SERVICE_GROUPS = [
 ];
 
 export default function Services() {
-  usePageView('services');
   usePageTitle('services');
   const { services, loading } = useServices();
   const navigate = useNavigate();

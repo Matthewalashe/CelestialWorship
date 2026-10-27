@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { adminOverview, type AdminOverview } from '../lib/adminOverview';
 import { ErrorState } from '../components/CommunityStates';
+import { AnalyticsPanel, Bars } from '../components/AdminAnalytics';
 import { tr } from '../i18n';
 
 /**
@@ -59,38 +60,14 @@ function Counts({ data }: { data: Record<string, number> }) {
   );
 }
 
-/** New accounts per day over the last 30 days: one series, one colour, a tooltip on each bar */
+/** New accounts per day over the last 30 days */
 function SignupBars({ days }: { days: { day: string; n: number }[] }) {
   const byDay = new Map(days.map(d => [d.day, d.n]));
   const series = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(Date.now() - (29 - i) * 86400000).toISOString().slice(0, 10);
-    return { day: d, n: byDay.get(d) ?? 0 };
+    return { label: new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), n: byDay.get(d) ?? 0 };
   });
-  const max = Math.max(1, ...series.map(s => s.n));
-  const [hover, setHover] = useState<number | null>(null);
-  const H = 120, W = 300, bw = W / 30;
-  return (
-    <figure className="rounded-2xl border p-4 space-y-2" style={card}>
-      <figcaption className="flex justify-between text-xs" style={muted}>
-        <span>{tr('New accounts per day, last 30 days')}</span>
-        <span className="tabular-nums" style={ink}>{hover !== null ? `${new Date(series[hover].day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}: ${series[hover].n}` : `${tr('Most in a day')}: ${max}`}</span>
-      </figcaption>
-      <svg viewBox={`0 0 ${W} ${H + 14}`} className="w-full h-auto" role="img" aria-label={tr('New accounts per day, last 30 days')} onMouseLeave={() => setHover(null)}>
-        <line x1="0" x2={W} y1={H} y2={H} stroke="var(--color-border)" strokeWidth="1" />
-        {series.map((s, i) => {
-          const h = (s.n / max) * (H - 6);
-          return (
-            <g key={s.day} onMouseEnter={() => setHover(i)} onTouchStart={() => setHover(i)}>
-              <rect x={i * bw} y="0" width={bw} height={H} fill="transparent" />
-              {s.n > 0 && <rect x={i * bw + 1} y={H - h} width={bw - 2} height={h} rx="2" fill="var(--color-accent-brand)" opacity={hover === null || hover === i ? 1 : 0.45}><title>{`${s.day}: ${s.n}`}</title></rect>}
-            </g>
-          );
-        })}
-        <text x="0" y={H + 12} fontSize="8" fill="var(--color-text-muted)">{new Date(series[0].day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</text>
-        <text x={W} y={H + 12} fontSize="8" textAnchor="end" fill="var(--color-text-muted)">{tr('Today')}</text>
-      </svg>
-    </figure>
-  );
+  return <Bars series={series} caption="New accounts per day, last 30 days" endLabel={tr('Today')} />;
 }
 
 export default function Admin() {
@@ -161,6 +138,8 @@ export default function Admin() {
           </table>
         </div>
       </Section>
+
+      <AnalyticsPanel />
 
       <Section title="Waiting for a decision" action={<Link to="/moderate" className="text-sm font-semibold" style={{ color: 'var(--color-accent-brand)' }}>{tr('Open the moderation queue')} ›</Link>}>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

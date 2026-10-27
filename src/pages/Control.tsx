@@ -7,7 +7,6 @@ import { useBible } from '../hooks/useBible';
 import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
 import type { DisplayState, Hymn } from '../types';
 import { buildSlides, displayTitle } from '../utils/hymnText';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { tr } from '../i18n';
 
@@ -168,7 +167,6 @@ function NoticeSource({ onSend }: { onSend: (s: DisplayState) => void }) {
 // ── Page ─────────────────────────────────────────────────────
 
 export default function Control() {
-  usePageView('operator');
   usePageTitle('control', 'Operator');
   const { sendToDisplay, room, setRoom, remoteConnected } = useDisplayController();
   const { hymns } = useHymns();

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ScrollText, ChevronDown } from 'lucide-react';
 import { useConstitutionSearch } from '../hooks/useConstitution';
 import type { ConstitutionSection, ConstitutionClause } from '../types';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { tr } from '../i18n';
 
@@ -85,7 +84,6 @@ function NarrativeSection({ section, searchTerm }: { section: ConstitutionSectio
 }
 
 export default function Constitution() {
-  usePageView('constitution');
   usePageTitle('constitution');
   const [expandedSection, setExpandedSection] = useState<string | null>('foundation_history');
   const [searchTerm, setSearchTerm] = useState('');

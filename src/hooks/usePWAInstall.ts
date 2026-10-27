@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { trackEvent } from './useAnalytics';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -16,8 +17,12 @@ const listeners = new Set<() => void>();
 const notify = () => listeners.forEach(fn => fn());
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e as BeforeInstallPromptEvent; notify(); });
-  window.addEventListener('appinstalled', () => { installedNow = true; deferred = null; notify(); });
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    if (!deferred) trackEvent('install_offered', {});
+    deferred = e as BeforeInstallPromptEvent; notify();
+  });
+  window.addEventListener('appinstalled', () => { installedNow = true; deferred = null; trackEvent('app_installed', {}); notify(); });
 }
 
 export type Device = 'ios' | 'android' | 'desktop';
@@ -60,12 +65,14 @@ export function usePWAInstall() {
     deferred = null;
     await prompt.prompt();
     const { outcome } = await prompt.userChoice;
+    trackEvent('install_prompt', { outcome });
     if (outcome === 'accepted') installedNow = true;
     notify();
     return outcome === 'accepted';
   };
 
   const dismiss = () => {
+    trackEvent('install_banner_dismissed', {});
     setDismissed(true);
     try { localStorage.setItem('pwa-install-dismissed', 'true'); } catch {}
   };

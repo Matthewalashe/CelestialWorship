@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { trackEvent } from './useAnalytics';
 import { toISODate } from '../utils/dateUtils';
 
 /**
@@ -74,6 +75,7 @@ export function recordActivity(activity: StreakActivity) {
   const s = read(STREAK_KEY, emptyStreak);
   const todayActivities = s.today.date === today ? s.today.activities : [];
   if (todayActivities.includes(activity) && s.days.includes(today)) return;
+  trackEvent('activity', { kind: activity });
   const days = s.days.includes(today) ? s.days : [...s.days, today].slice(-400);
   const next: StreakData = { days, today: { date: today, activities: [...todayActivities, activity] }, best: s.best };
   next.best = Math.max(next.best, currentStreak(next.days, today));

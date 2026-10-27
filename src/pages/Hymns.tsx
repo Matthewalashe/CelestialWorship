@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Heart, Search, X } from 'lucide-react';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useHymnSearch } from '../hooks/useHymns';
 import { useFavoriteHymns } from '../hooks/useFavorites';
@@ -25,7 +24,6 @@ function readView(): LyricsView {
 }
 
 export default function Hymns() {
-  usePageView('hymns');
   usePageTitle('hymns');
   const [searchParams, setSearchParams] = useSearchParams();
   const { favorites } = useFavoriteHymns();

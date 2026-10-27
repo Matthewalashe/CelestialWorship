@@ -31,3 +31,28 @@ export async function adminOverview(): Promise<AdminOverview> {
   raise(error, 'The admin overview');
   return data as AdminOverview;
 }
+
+export interface DayRow { day: string; active: number; new_devices: number; views: number; sessions: number; installs: number }
+export type Counts = Record<string, number>;
+
+/** The app's anonymous analytics over the last `days` days (the admin_analytics function, migration 20261103000001) */
+export interface AdminAnalytics {
+  days: number;
+  totals: { devices: number; new_devices: number; returning_devices: number; sessions: number; views: number; events: number; devices_all_time: number; installed_devices: number };
+  daily: DayRow[];
+  installs: { install_page_views: number; offered: number; prompt_accepted: number; prompt_dismissed: number; banner_dismissed: number; installed: number; first_launches: number; by_platform: Counts };
+  retention: { cohort: number; returned: number };
+  screens: { path: string; views: number; devices: number }[];
+  actions: { event: string; n: number; devices: number }[];
+  activities: Counts; games: Counts; shares: Counts; languages_changed: Counts; platforms: Counts;
+  breakdown: Partial<Record<'language' | 'theme' | 'display' | 'referrer' | 'utm_source' | 'utm_campaign' | 'screen' | 'timezone' | 'version', Counts>>;
+  hours_lagos: { hour: number; n: number }[];
+  weekdays_lagos: { dow: number; n: number }[];
+  errors: { count: number; devices: number; top: { message: string; n: number; path: string | null; last: string }[] };
+}
+
+export async function adminAnalytics(days: number): Promise<AdminAnalytics> {
+  const { data, error } = await supabase.rpc('admin_analytics', { p_days: days });
+  raise(error, 'The analytics');
+  return data as AdminAnalytics;
+}

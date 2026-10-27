@@ -7,7 +7,6 @@ import { useServices } from '../hooks/useServices';
 import { useParishes } from '../hooks/useParishes';
 import { useReadingProgress } from '../hooks/useProgress';
 import { hasOnboarded } from '../hooks/useProfile';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useT, tr } from '../i18n';
 import { getServiceScheduleForDate, formatDate, toISODate, formatServiceTime, hourlyPrayersForDate } from '../utils/dateUtils';
@@ -32,7 +31,6 @@ const label = 'text-[11px] uppercase tracking-widest font-semibold';
  * today's readings and what is coming. Everything else is a tab away.
  */
 export default function Home() {
-  usePageView('home');
   usePageTitle('home');
   const { t, lang } = useT();
   const today = new Date();

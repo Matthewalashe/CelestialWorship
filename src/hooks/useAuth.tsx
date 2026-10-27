@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { trackEvent } from './useAnalytics';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '../supabase';
 
@@ -81,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = () => wrap(async () => {
+    trackEvent('sign_in', { method: 'google' });
     const returnTo = new URLSearchParams(window.location.search).get('returnTo') || '/';
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -92,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = (email: string, password: string) => wrap(async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    trackEvent('sign_in', { method: 'email' });
   });
 
   const signUpWithEmail = (email: string, password: string, displayName: string) => wrap(async () => {
@@ -102,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       options: { data: { display_name: displayName }, emailRedirectTo: `${window.location.origin}${new URLSearchParams(window.location.search).get('returnTo') || '/'}` },
     });
     if (error) throw error;
+    trackEvent('sign_up', { method: 'email' });
     return !data.session;
   });
 

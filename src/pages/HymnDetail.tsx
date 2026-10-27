@@ -4,7 +4,6 @@ import { useHymn } from '../hooks/useHymns';
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '../types';
 import type { Hymn, HymnVerse } from '../types';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReader } from '../hooks/useReader';
 import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
@@ -146,7 +145,6 @@ function Stanza({
 }
 
 export default function HymnDetail() {
-  usePageView('hymn_detail');
   const { number } = useParams();
   const navigate = useNavigate();
   const { hymn, prevNumber, nextNumber, loading } = useHymn(Number(number));

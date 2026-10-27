@@ -10,7 +10,6 @@ import { BIBLE_VERSIONS, getBibleVersion, companionVersion, DEFAULT_VERSION_ID }
 import { useDisplayController } from '../hooks/useLiveDisplay';
 import { useSavedPassages, useChapterHighlights, notesApi } from '../hooks/useNotes';
 import { useBible } from '../hooks/useBible';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReader } from '../hooks/useReader';
 import { ReaderButtons, ReaderFrame, useReadingStyle } from '../components/Reader';
@@ -93,7 +92,6 @@ const VerseItem = React.memo(function VerseItem({
 });
 
 export default function BibleChapter() {
-  usePageView('bible_chapter');
   const { book: bookSlug, chapter: chapterStr } = useParams<{ book: string; chapter: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();

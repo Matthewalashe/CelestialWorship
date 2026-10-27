@@ -506,5 +506,289 @@
 "prayers said": [
 "àdúrà tí a gbà",
 "prières dites"
+],
+"Accepted the offer": [
+"Gba ìfilọ̀ náà",
+"Offre acceptée"
+],
+"Active devices": [
+"Ẹ̀rọ tí ń lò ó",
+"Appareils actifs"
+],
+"Active devices per day": [
+"Ẹ̀rọ tí ń lò ó lójoojúmọ́",
+"Appareils actifs par jour"
+],
+"Analytics": [
+"Ìtúpalẹ̀ ìlò",
+"Statistiques"
+],
+"App version": [
+"Ẹ̀yà áàpù",
+"Version de l’application"
+],
+"Browser offered to install": [
+"Ẹ̀rọ ìwákiri fúnni láti fi sórí ẹ̀rọ",
+"Installation proposée par le navigateur"
+],
+"Busiest days": [
+"Ọjọ́ tí ó kún jùlọ",
+"Jours les plus actifs"
+],
+"Busiest hours (Lagos time)": [
+"Wákàtí tí ó kún jùlọ (àkókò Èkó)",
+"Heures les plus actives (heure de Lagos)"
+],
+"Came back the next week": [
+"Padà wá ní ọ̀sẹ̀ tí ó tẹ̀lé e",
+"Revenus la semaine suivante"
+],
+"Campaigns": [
+"Ìpolongo",
+"Campagnes"
+],
+"Closed the install banner": [
+"Ti àsíá ìfisórí-ẹ̀rọ pa",
+"Bannière d’installation fermée"
+],
+"Counts are anonymous: each device has a random id, and no names, emails or notes are sent. Visits from before this update only counted a few screens.": [
+"Ìkà yìí kò fi ẹnikẹ́ni hàn: ẹ̀rọ kọ̀ọ̀kan ní nọ́ńbà àìròtẹ́lẹ̀, a kì í sì í fi orúkọ, ímeèlì tàbí àkọsílẹ̀ ránṣẹ́. Ìbẹ̀wò ṣáájú àtúnṣe yìí ka ojú-ìwé díẹ̀ nìkan.",
+"Les chiffres sont anonymes : chaque appareil a un identifiant aléatoire, et aucun nom, e-mail ni note n’est envoyé. Les visites antérieures à cette mise à jour ne comptaient que quelques écrans."
+],
+"Daily activity": [
+"Ìṣe ojoojúmọ́",
+"Activité quotidienne"
+],
+"Declined the offer": [
+"Kọ ìfilọ̀ náà",
+"Offre refusée"
+],
+"Devices": [
+"Ẹ̀rọ",
+"Appareils"
+],
+"Devices ever": [
+"Gbogbo ẹ̀rọ láti ìbẹ̀rẹ̀",
+"Appareils depuis le début"
+],
+"Errors": [
+"Àṣìṣe",
+"Erreurs"
+],
+"First launch as an app": [
+"Ṣíṣí àkọ́kọ́ bí áàpù",
+"Premier lancement comme application"
+],
+"First opened": [
+"Ṣíṣí àkọ́kọ́",
+"Première ouverture"
+],
+"First opened as an app (all, iPhone too)": [
+"Ṣíṣí àkọ́kọ́ bí áàpù (gbogbo rẹ̀, iPhone pẹ̀lú)",
+"Ouverte pour la première fois comme application (tous, iPhone compris)"
+],
+"Game rounds finished": [
+"Eré tí a parí",
+"Parties terminées"
+],
+"Games finished": [
+"Eré tí a parí",
+"Jeux terminés"
+],
+"Giving started": [
+"Ọrẹ tí a bẹ̀rẹ̀",
+"Dons commencés"
+],
+"Install banner closed": [
+"Àsíá ìfisórí-ẹ̀rọ tí a tì pa",
+"Bannière d’installation fermée"
+],
+"Install offered": [
+"Ìfisórí-ẹ̀rọ tí a fi lọ̀",
+"Installation proposée"
+],
+"Install prompt answered": [
+"Ìdáhùn sí ìbéèrè ìfisórí-ẹ̀rọ",
+"Réponse à la proposition d’installation"
+],
+"Installed": [
+"Ti fi sórí ẹ̀rọ",
+"Installée"
+],
+"Installed (Android, computers)": [
+"Ti fi sórí ẹ̀rọ (Android, kọ̀ǹpútà)",
+"Installée (Android, ordinateurs)"
+],
+"Installed app or browser": [
+"Áàpù lórí ẹ̀rọ tàbí ẹ̀rọ ìwákiri",
+"Application installée ou navigateur"
+],
+"Installing the app": [
+"Fífi áàpù sórí ẹ̀rọ",
+"Installation de l’application"
+],
+"Installs": [
+"Ìfisórí-ẹ̀rọ",
+"Installations"
+],
+"Installs (downloads)": [
+"Ìfisórí-ẹ̀rọ (ìgbàsílẹ̀)",
+"Installations (téléchargements)"
+],
+"Installs by platform": [
+"Ìfisórí-ẹ̀rọ gẹ́gẹ́ bí irú ẹ̀rọ",
+"Installations par plateforme"
+],
+"Installs per day": [
+"Ìfisórí-ẹ̀rọ lójoojúmọ́",
+"Installations par jour"
+],
+"Language changed": [
+"Èdè tí a yí padà",
+"Langue changée"
+],
+"Language of the app": [
+"Èdè áàpù",
+"Langue de l’application"
+],
+"Language switched to": [
+"Èdè tí a yí sí",
+"Langue choisie"
+],
+"Light or dark": [
+"Ìmọ́lẹ̀ tàbí òkùnkùn",
+"Clair ou sombre"
+],
+"Most frequent errors": [
+"Àṣìṣe tí ó wọ́pọ̀ jùlọ",
+"Erreurs les plus fréquentes"
+],
+"Most viewed screens": [
+"Ojú-ìwé tí a wò jùlọ",
+"Écrans les plus vus"
+],
+"New devices": [
+"Ẹ̀rọ tuntun",
+"Nouveaux appareils"
+],
+"New devices per day": [
+"Ẹ̀rọ tuntun lójoojúmọ́",
+"Nouveaux appareils par jour"
+],
+"No errors in this period": [
+"Kò sí àṣìṣe ní àsìkò yìí",
+"Aucune erreur sur cette période"
+],
+"Opened the install page": [
+"Ṣí ojú-ìwé ìfisórí-ẹ̀rọ",
+"Page d’installation ouverte"
+],
+"Period": [
+"Àsìkò",
+"Période"
+],
+"Postcards collected": [
+"Káàdì ìfìwéránṣẹ́ tí a kó jọ",
+"Cartes postales collectées"
+],
+"Prayer requests sent": [
+"Ìbéèrè àdúrà tí a fi ránṣẹ́",
+"Demandes de prière envoyées"
+],
+"Region (time zone)": [
+"Agbègbè (àkókò)",
+"Région (fuseau horaire)"
+],
+"Reminders asked": [
+"Ìránnilétí tí a béèrè",
+"Rappels demandés"
+],
+"Screen size": [
+"Ìwọ̀n ojú ẹ̀rọ",
+"Taille d’écran"
+],
+"Screens viewed": [
+"Ojú-ìwé tí a wò",
+"Écrans vus"
+],
+"Screens viewed per day": [
+"Ojú-ìwé tí a wò lójoojúmọ́",
+"Écrans vus par jour"
+],
+"Shared from": [
+"Ibi tí a ti pín in",
+"Partagé depuis"
+],
+"Shares": [
+"Pínpín",
+"Partages"
+],
+"Sign-ins": [
+"Wíwọlé",
+"Connexions"
+],
+"Sign-ups": [
+"Ìforúkọsílẹ̀",
+"Inscriptions"
+],
+"Total": [
+"Àpapọ̀",
+"Total"
+],
+"Use the installed app": [
+"Ń lo áàpù tí a fi sórí ẹ̀rọ",
+"Utilisent l’application installée"
+],
+"Visits": [
+"Ìbẹ̀wò",
+"Visites"
+],
+"Visits per day": [
+"Ìbẹ̀wò lójoojúmọ́",
+"Visites par jour"
+],
+"What people do": [
+"Ohun tí àwọn ènìyàn ń ṣe",
+"Ce que font les gens"
+],
+"Where visits come from": [
+"Ibi tí ìbẹ̀wò ti wá",
+"Provenance des visites"
+],
+"days": [
+"ọjọ́",
+"jours"
+],
+"devices": [
+"ẹ̀rọ",
+"appareils"
+],
+"installed, or first opened as an app": [
+"tí a fi sórí ẹ̀rọ, tàbí tí a kọ́kọ́ ṣí bí áàpù",
+"installée, ou ouverte pour la première fois comme application"
+],
+"last": [
+"ìkẹyìn",
+"dernière"
+],
+"new": [
+"tuntun",
+"nouveaux"
+],
+"new devices": [
+"ẹ̀rọ tuntun",
+"nouveaux appareils"
+],
+"of devices": [
+"nínú àwọn ẹ̀rọ",
+"des appareils"
+],
+"returning": [
+"tí ó padà wá",
+"de retour"
+],
+"screens per visit": [
+"ojú-ìwé fún ìbẹ̀wò kọ̀ọ̀kan",
+"écrans par visite"
 ]
 }

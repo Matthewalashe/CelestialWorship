@@ -66,8 +66,65 @@ export function reportError(error: unknown, where: string) {
   });
 }
 
-export function usePageView(pageName: string): void {
+/** A screen, with ids taken out so one hymn or parish counts with the others: /hymns/12 → /hymns/:id */
+export function screenPath(pathname: string): string {
+  return pathname
+    .split('/')
+    .map(part => (/^\d+$|^[0-9a-f]{8}-[0-9a-f-]{27,}$|^[a-z]{2,4}-\d+$/i.test(part) ? ':id' : part))
+    .join('/')
+    .slice(0, 80) || '/';
+}
+
+/** Every screen the reader opens (Layout calls this on each change of route) */
+export function useScreenViews(pathname: string): void {
   useEffect(() => {
-    trackEvent('page_view', { page: pageName });
-  }, [pageName]);
+    trackEvent('page_view', { path: screenPath(pathname) });
+  }, [pathname]);
+}
+
+/**
+ * Once per opening of the app: how it is being used. Nothing that identifies the person: the language, the theme,
+ * whether it runs installed, where the visit came from (the referring site and campaign tags), the screen size,
+ * the time zone (a rough region) and the version.
+ */
+export function startSession(): void {
+  const params = new URLSearchParams(window.location.search);
+  let referrer = '';
+  try { referrer = document.referrer ? new URL(document.referrer).hostname : ''; } catch {}
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  const width = window.innerWidth;
+  let language = 'en', theme = 'light', isNew = false;
+  try {
+    language = localStorage.getItem('cw-ui-language') || 'en';
+    theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    isNew = !localStorage.getItem('cw-device-id');
+  } catch {}
+  getDeviceId();
+  if (isNew) trackEvent('first_open', {});
+  trackEvent('session_start', {
+    language,
+    theme,
+    display: standalone ? 'installed' : 'browser',
+    referrer: referrer && referrer !== window.location.hostname ? referrer.replace(/^www\./, '').slice(0, 60) : '',
+    utm_source: (params.get('utm_source') ?? params.get('ref') ?? '').slice(0, 40),
+    utm_campaign: (params.get('utm_campaign') ?? '').slice(0, 40),
+    screen: width < 640 ? 'phone' : width < 1024 ? 'tablet' : 'desktop',
+    timezone: (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return ''; } })(),
+    version: import.meta.env.VITE_APP_VERSION ?? 'dev',
+  });
+  // The first time the installed app is opened on this device; on iPhones this is the only sign of an install
+  try {
+    if (standalone && !localStorage.getItem('cw-installed-seen')) {
+      localStorage.setItem('cw-installed-seen', '1');
+      trackEvent('pwa_first_launch', {});
+    }
+  } catch {}
+  // Every share sheet in the app goes through navigator.share: count them in one place
+  if (typeof navigator.share === 'function') {
+    const share = navigator.share.bind(navigator);
+    navigator.share = (data?: ShareData) => {
+      trackEvent('share', { path: screenPath(window.location.pathname), files: !!data?.files?.length });
+      return share(data);
+    };
+  }
 }

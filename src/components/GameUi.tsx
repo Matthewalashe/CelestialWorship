@@ -8,6 +8,7 @@ import { useProfile } from '../hooks/useProfile';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
 import { tr } from '../i18n';
+import { trackEvent } from '../hooks/useAnalytics';
 
 export function useGameState(): GameState {
   const [s, setS] = useState(readGame);
@@ -51,6 +52,7 @@ export function LevelBar({ xp, compact = false }: { xp: number; compact?: boolea
 export function RoundSummary({ outcome, headline, sub, shareText: text, sharePath, onAgain, extra }: {
   outcome: RoundOutcome; headline: string; sub?: string; shareText: string; sharePath: string; onAgain?: () => void; extra?: React.ReactNode;
 }) {
+  useEffect(() => { trackEvent('game_finished', { game: sharePath.slice(0, 60), xp: outcome.xpGained }); }, [sharePath, outcome]);
   return (
     <div className="py-8 max-w-md mx-auto text-center space-y-4" aria-live="polite">
       <div className="relative inline-block">

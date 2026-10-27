@@ -166,6 +166,8 @@ function activate(l: UILanguage) {
 if (typeof window !== 'undefined') activate(getUILanguage());
 
 export function setUILanguage(lang: UILanguage) {
+  // Loaded when needed, so the words never wait on (or depend on) the analytics
+  if (lang !== current) { const from = current; import('../hooks/useAnalytics').then(m => m.trackEvent('language_changed', { to: lang, from })).catch(() => {}); }
   try { localStorage.setItem(KEY, lang); } catch {}
   activate(lang);
   announce();

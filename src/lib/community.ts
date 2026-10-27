@@ -1,5 +1,6 @@
 import { supabase } from '../supabase';
 import { raise, BackendError } from './backend';
+import { trackEvent } from '../hooks/useAnalytics';
 
 /**
  * Data access for the shared (community) features. Tables and their Row Level Security
@@ -58,6 +59,7 @@ export async function submitPrayerRequest(input: {
   title: string; body: string; category?: string; isAnonymous: boolean; visibility: PrayerVisibility; parishId?: string | null;
 }) {
   const user = await requireUser();
+  trackEvent('prayer_request', { visibility: input.visibility, category: input.category ?? '' });
   const { error } = await supabase.from('prayer_requests').insert({
     user_id: user.id,
     display_name: input.isAnonymous ? null : await myName(),
@@ -326,6 +328,7 @@ export async function createDonation(input: {
   source?: { kind: 'article' | 'livestream'; id: string };
 }): Promise<Donation> {
   const { data: { user } } = await supabase.auth.getUser();
+  trackEvent('giving_started', { purpose: input.purpose, currency: input.currency, pledge: !!input.pledgeDue });
   const reference = `CW-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}`.toUpperCase();
   const { data, error } = await supabase.from('donations').insert({
     user_id: user?.id ?? null,

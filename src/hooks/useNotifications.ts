@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { trackEvent } from './useAnalytics';
 import { getServiceScheduleForDate, toISODate, hourlyPrayersForDate, hourLabel, HOURLY_PRAYER_HOURS } from '../utils/dateUtils';
 import { tr } from '../i18n';
 import { pushConfigured, syncPushSubscription, removePushSubscription } from '../lib/push';
@@ -213,6 +214,7 @@ export function useNotifications() {
     const result = await Notification.requestPermission();
     setPermission(result);
 
+    trackEvent('reminders_permission', { result });
     if (result === 'granted') {
       const newPrefs = { ...prefs, enabled: true };
       setPrefs(newPrefs);

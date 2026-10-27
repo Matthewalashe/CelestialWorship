@@ -5,7 +5,6 @@ import { BIBLE_BOOKS, OT_BOOKS, NT_BOOKS } from '../data/bibleBooks';
 import { BIBLE_VERSIONS, getBibleVersion, DEFAULT_VERSION_ID } from '../data/bibleVersions';
 import { downloadVersionForOffline } from '../hooks/useBible';
 import { useReadingProgress } from '../hooks/useProgress';
-import { usePageView } from '../hooks/useAnalytics';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { sanitizeSearchInput } from '../utils/sanitize';
 import { parseReference } from '../utils/parseReference';
@@ -18,7 +17,6 @@ const OFFLINE_KEY = 'cw-bible-offline';
 const slugOf = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
 
 export default function Bible() {
-  usePageView('bible');
   usePageTitle('bible');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

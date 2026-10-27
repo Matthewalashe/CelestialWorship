@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { createJsonResource } from './jsonResource';
 import { PLACES } from '../data/bibleLands';
 import { SPREAD } from '../data/christianity';
+import { trackEvent } from '../hooks/useAnalytics';
 
 /**
  * Postcards to collect: a card for each Bible place found in the map games, and for each stop on the story of the
@@ -42,6 +43,7 @@ export function collectPostcard(id: string): boolean {
   if (have.includes(id) || !POSTCARDS.some(p => p.id === id)) return false;
   try { localStorage.setItem(KEY, JSON.stringify([...have, id])); } catch {}
   window.dispatchEvent(new Event(EVENT));
+  trackEvent('postcard', { id });
   return true;
 }
 
