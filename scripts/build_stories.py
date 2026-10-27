@@ -24,7 +24,7 @@ OUT_DATA = ROOT / 'public' / 'data' / 'stories'
 OUT_IMG = ROOT / 'public' / 'stories'
 LATHBURY = pathlib.Path(sys.argv[1])
 CACHE = pathlib.Path(sys.argv[2]); CACHE.mkdir(parents=True, exist_ok=True)
-UA = {'User-Agent': 'CelestialWorship/1.0 (childrens Bible stories; contact askpadimi@gmail.com)'}
+UA = {'User-Agent': 'CelestialWorship/1.0 (childrens Bible stories; https://celestialworship.online)'}
 
 COMMONS_BOOK = {
     'Genesis': 'Book of Genesis', 'Exodus': 'Book of Exodus', 'Numbers': 'Book of Numbers', 'Joshua': 'Book of Joshua',
