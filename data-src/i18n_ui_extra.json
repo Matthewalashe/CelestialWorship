@@ -294,5 +294,217 @@
 "Compare": [
 "Fi wéra",
 "Comparer"
+],
+"A brass seven-branched candle stand with seven lit white candles": [
+"Ọ̀pá fìtílà oníga méje tí a fi idẹ ṣe, pẹ̀lú fìtílà funfun méje tí ń jó",
+"Un chandelier en laiton à sept branches avec sept bougies blanches allumées"
+],
+"A parish altar dressed for a feast, with candle stands, flowers and the word HOLY": [
+"Pẹpẹ ìjọ kan tí a ṣe lọ́ṣọ̀ọ́ fún àjọ̀dún, pẹ̀lú ọ̀pá fìtílà, òdòdó àti ọ̀rọ̀ náà HOLY",
+"Un autel de paroisse paré pour une fête, avec des chandeliers, des fleurs et le mot HOLY"
+],
+"A parish altar: a tall cross on a white marble wall, a gold seven-branched candle stand with white candles, and worshippers in prayer": [
+"Pẹpẹ ìjọ kan: àgbélébùú gíga lára ògiri òkúta mábù funfun, ọ̀pá fìtílà wúrà oníga méje pẹ̀lú fìtílà funfun, àti àwọn olùjọsìn nínú àdúrà",
+"Un autel de paroisse : une grande croix sur un mur de marbre blanc, un chandelier doré à sept branches avec des bougies blanches, et des fidèles en prière"
+],
+"Accounts": [
+"Àkáǹtì",
+"Comptes"
+],
+"Admin dashboard": [
+"Pátákó alákòóso",
+"Tableau de bord"
+],
+"An altar dressed for a feast": [
+"Pẹpẹ tí a ṣe lọ́ṣọ̀ọ́ fún àjọ̀dún",
+"Un autel paré pour une fête"
+],
+"Church records": [
+"Àkọsílẹ̀ ìjọ",
+"Registres d’Église"
+],
+"Database and sign-ins": [
+"Ibi ìpamọ́ dátà àti wíwọlé",
+"Base de données et connexions"
+],
+"Devices by platform": [
+"Ẹ̀rọ gẹ́gẹ́ bí irú wọn",
+"Appareils par plateforme"
+],
+"Devices this week": [
+"Ẹ̀rọ ní ọ̀sẹ̀ yìí",
+"Appareils cette semaine"
+],
+"Devices with reminders": [
+"Ẹ̀rọ tí ó ní ìránnilétí",
+"Appareils avec rappels"
+],
+"Elsewhere": [
+"Níbòmíràn",
+"Ailleurs"
+],
+"Emails sent": [
+"Ímeèlì tí a fi ránṣẹ́",
+"E-mails envoyés"
+],
+"Failed this month": [
+"Èyí tí kò yọrí ní oṣù yìí",
+"Échecs ce mois-ci"
+],
+"In all": [
+"Lápapọ̀",
+"Au total"
+],
+"In the app": [
+"Nínú áàpù",
+"Dans l’application"
+],
+"Joined": [
+"Ó darapọ̀",
+"Inscription"
+],
+"Last sign-in": [
+"Wíwọlé tí ó kẹ́yìn",
+"Dernière connexion"
+],
+"Livestreams": [
+"Ìgbéjáde tààrà",
+"Directs"
+],
+"Most in a day": [
+"Èyí tí ó pọ̀ jùlọ ní ọjọ́ kan",
+"Maximum en un jour"
+],
+"Most used, last 7 days": [
+"Èyí tí a lò jùlọ, ọjọ́ 7 sẹ́yìn",
+"Les plus utilisés, 7 derniers jours"
+],
+"New accounts per day, last 30 days": [
+"Àkáǹtì tuntun lójoojúmọ́, ọjọ́ 30 sẹ́yìn",
+"Nouveaux comptes par jour, 30 derniers jours"
+],
+"New this month": [
+"Tuntun ní oṣù yìí",
+"Nouveaux ce mois-ci"
+],
+"New this week": [
+"Tuntun ní ọ̀sẹ̀ yìí",
+"Nouveaux cette semaine"
+],
+"Newest accounts": [
+"Àkáǹtì tuntun jùlọ",
+"Comptes les plus récents"
+],
+"Nothing yet": [
+"Kò sí nǹkankan síbẹ̀",
+"Rien pour l’instant"
+],
+"Open pledges": [
+"Ẹ̀jẹ́ tí a kò tí ì san",
+"Promesses en cours"
+],
+"Open the moderation queue": [
+"Ṣí ìlà àbójútó",
+"Ouvrir la file de modération"
+],
+"Parish claims": [
+"Ìbéèrè fún ìjọ",
+"Revendications de paroisse"
+],
+"Players in the games": [
+"Àwọn tí ń ṣe eré",
+"Joueurs"
+],
+"Received": [
+"Tí a gbà",
+"Reçu"
+],
+"Refresh": [
+"Sọ di tuntun",
+"Actualiser"
+],
+"Reminders sent": [
+"Ìránnilétí tí a fi ránṣẹ́",
+"Rappels envoyés"
+],
+"Roles in the app": [
+"Ipò nínú áàpù",
+"Rôles dans l’application"
+],
+"Saved to libraries": [
+"Tí a fi pamọ́ sínú ibi ìkówèésí",
+"Enregistrés dans les bibliothèques"
+],
+"Signed in this week": [
+"Tí ó wọlé ní ọ̀sẹ̀ yìí",
+"Connectés cette semaine"
+],
+"Site, visits and deploys": [
+"Ojú-ìwé, àbẹ̀wò àti ìgbéjáde",
+"Site, visites et déploiements"
+],
+"The altar faces east: the cross, and the seven-branched candle stand with white candles": [
+"Pẹpẹ kọjú sí ìlà-oòrùn: àgbélébùú, àti ọ̀pá fìtílà oníga méje pẹ̀lú fìtílà funfun",
+"L’autel est tourné vers l’est : la croix, et le chandelier à sept branches avec des bougies blanches"
+],
+"The seven-branched candle stand": [
+"Ọ̀pá fìtílà oníga méje",
+"Le chandelier à sept branches"
+],
+"This page is for the app’s administrators.": [
+"Ojú-ìwé yìí wà fún àwọn alákòóso áàpù.",
+"Cette page est réservée aux administrateurs de l’application."
+],
+"Upcoming events": [
+"Ìṣẹ̀lẹ̀ tí ń bọ̀",
+"Événements à venir"
+],
+"Updated": [
+"A ṣe é di tuntun",
+"Mis à jour"
+],
+"Use this week": [
+"Ìlò ní ọ̀sẹ̀ yìí",
+"Utilisation cette semaine"
+],
+"Waiting for a decision": [
+"Ń dúró de ìpinnu",
+"En attente d’une décision"
+],
+"Waiting for the payment gateway": [
+"Ń dúró de ẹnu-ọ̀nà ìsanwó",
+"En attente de la passerelle de paiement"
+],
+"Who they are in the Church": [
+"Ipò wọn nínú Ìjọ",
+"Leur place dans l’Église"
+],
+"confirmed": [
+"ti fìdí múlẹ̀",
+"confirmés"
+],
+"gifts": [
+"ẹ̀bùn",
+"dons"
+],
+"including people without an account": [
+"pẹ̀lú àwọn tí kò ní àkáǹtì",
+"y compris les personnes sans compte"
+],
+"live now": [
+"ń lọ lọ́wọ́lọ́wọ́",
+"en direct"
+],
+"not confirmed": [
+"kò tí ì fìdí múlẹ̀",
+"non confirmé"
+],
+"on the map": [
+"lórí máàpù",
+"sur la carte"
+],
+"prayers said": [
+"àdúrà tí a gbà",
+"prières dites"
 ]
 }

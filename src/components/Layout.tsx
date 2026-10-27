@@ -8,7 +8,7 @@ import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard,
   Baby, Calendar, Map as MapIcon, Landmark, Network, ScrollText, ChevronRight, PenLine,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
@@ -99,7 +99,7 @@ export default function Layout() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
   const { t } = useT();
-  const { canModerate } = useAuth();
+  const { canModerate, profile: account } = useAuth();
   const { profile } = useProfile();
   const [moreOpen, setMoreOpen] = useState(false);
   const desktop = useIsDesktop();
@@ -110,7 +110,8 @@ export default function Layout() {
   useEffect(() => { sendWaitingParishLeads(); }, []);
 
   const groups: { title: string; items: NavItem[] }[] = canModerate
-    ? MoreGroups.map(g => (g.title === 'Me' ? { ...g, items: [...g.items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} /> }] } : g))
+    ? MoreGroups.map(g => (g.title === 'Me' ? { ...g, items: [...g.items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} /> },
+        ...(account?.role === 'admin' ? [{ path: '/admin', label: 'nav.admin' as StringKey, icon: <LayoutDashboard size={20} /> }] : [])] } : g))
     : MoreGroups;
   // On a computer, items already in the main list aren't repeated in the groups
   const sidebarGroups = desktop

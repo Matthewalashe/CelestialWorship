@@ -3,29 +3,33 @@ import { tr } from '../i18n';
 
 /**
  * "Symbols & practice": real photographs of Celestians at worship (Wikimedia Commons, credited with their
- * licences), and a drawing of the altar until a photograph of a parish altar is added. The emblem is the
- * Church's own artwork: place the official file at public/emblem.png (or .svg) and it appears.
+ * licences) and of parish altars (given to the app, credited where known). The emblem is the Church's own
+ * artwork, at public/emblem.png.
  */
 
-const frame = 'w-full h-auto rounded-2xl';
-const ink = 'var(--color-text-primary)';
 const paper = 'var(--color-bg-primary)';
-const gold = '#B08D2E';
 
-interface PhotoInfo { src: string; alt: string; caption: string; credit: string; license: string; source: string }
+interface PhotoInfo { src: string; alt: string; caption: string; credit?: string; license?: string; source?: string }
 
 function Photo({ p }: { p: PhotoInfo }) {
   return (
     <figure className="space-y-1.5">
       <img src={p.src} alt={tr(p.alt)} loading="lazy" decoding="async" className="w-full h-auto rounded-2xl" style={{ backgroundColor: paper }} />
       <figcaption className="text-[11px] leading-snug" style={{ color: 'var(--color-text-muted)' }}>
-        {tr(p.caption)} · {tr('Photo')}: <a href={p.source} target="_blank" rel="noopener noreferrer" className="underline">{p.credit}</a>, {p.license}
+        {tr(p.caption)}
+        {p.credit && <> · {tr('Photo')}: {p.source ? <a href={p.source} target="_blank" rel="noopener noreferrer" className="underline">{p.credit}</a> : p.credit}{p.license ? `, ${p.license}` : ''}</>}
       </figcaption>
     </figure>
   );
 }
 
 const PHOTOS: Record<string, PhotoInfo> = {
+  altar: { src: '/symbols/altar.jpg', alt: 'A parish altar: a tall cross on a white marble wall, a gold seven-branched candle stand with white candles, and worshippers in prayer',
+    caption: 'The altar faces east: the cross, and the seven-branched candle stand with white candles' },
+  candleStand: { src: '/symbols/candle-stand.jpg', alt: 'A brass seven-branched candle stand with seven lit white candles',
+    caption: 'The seven-branched candle stand' },
+  altarDecorated: { src: '/symbols/altar-decorated.jpg', alt: 'A parish altar dressed for a feast, with candle stands, flowers and the word HOLY',
+    caption: 'An altar dressed for a feast', credit: 'Ketu Media' },
   sutanaMen: { src: '/symbols/sutana-men.jpg', alt: 'Men in plain white sutanas praying with their hands together',
     caption: 'The white sutana, plain, without decoration. Pilgrimage at Seme, 2013', credit: 'Live.philips', license: 'CC BY-SA 3.0',
     source: 'https://commons.wikimedia.org/wiki/File:Praying_member.jpg' },
@@ -40,31 +44,16 @@ const PHOTOS: Record<string, PhotoInfo> = {
     source: 'https://commons.wikimedia.org/wiki/File:Materials_used_for_naming_naming_ceremony_in_the_Celestial_Church_of_Christ.jpg' },
 };
 
-/** A drawing for now: the altar faces east behind its rail, with seven candle stands */
+/** Celestial altars: the cross, the seven-branched candle stand with white candles */
 export function AltarArt() {
-  const stands = Array.from({ length: 7 }, (_, i) => 70 + i * 30);
   return (
-    <figure className="space-y-1.5">
-      <svg viewBox="0 0 320 190" className={frame} role="img" aria-label={tr('The altar faces east, behind a rail, with seven candle stands')} style={{ backgroundColor: paper }}>
-        <text x="160" y="16" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--color-text-muted)" letterSpacing="3">{tr('EAST')}</text>
-        {/* Seven candle stands with white candles */}
-        {stands.map(x => (
-          <g key={x}>
-            <path d={`M${x} 26c3.5 4.5 4.5 7 4.5 9a4.5 4.5 0 0 1-9 0c0-2 1-4.5 4.5-9Z`} fill={gold} />
-            <rect x={x - 3.5} y="40" width="7" height="22" rx="1.2" fill="#FFFFFF" stroke={ink} strokeWidth="1.6" />
-            <path d={`M${x - 8} 63h16M${x} 63v34M${x - 9} 97h18`} stroke={ink} strokeWidth="2" strokeLinecap="round" fill="none" />
-          </g>
-        ))}
-        {/* Altar table with its white cloth */}
-        <rect x="52" y="98" width="216" height="34" rx="3" fill="#FFFFFF" stroke={ink} strokeWidth="2.5" />
-        <path d="M52 108h216" stroke={ink} strokeWidth="1.2" opacity="0.35" />
-        {/* The rail that separates the altar area */}
-        <path d="M20 160h280" stroke={ink} strokeWidth="3" strokeLinecap="round" />
-        {Array.from({ length: 13 }, (_, i) => 30 + i * 21.7).map(x => <path key={x} d={`M${x} 160v20`} stroke={ink} strokeWidth="2" strokeLinecap="round" />)}
-        <path d="M20 180h280" stroke={ink} strokeWidth="3" strokeLinecap="round" />
-      </svg>
-      <figcaption className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('A drawing. A photograph of a parish altar will take its place.')}</figcaption>
-    </figure>
+    <div className="space-y-3">
+      <Photo p={PHOTOS.altar} />
+      <div className="grid grid-cols-2 gap-3">
+        <Photo p={PHOTOS.candleStand} />
+        <Photo p={PHOTOS.altarDecorated} />
+      </div>
+    </div>
   );
 }
 

@@ -122,7 +122,7 @@
 1056|Shahat|Shahat
 1057|Ṣébà|Saba
 1058|Ṣékémù|Sichem
-1059|Olùṣọ́-àgùntàn àti Aríran|Berger et visionnaire
+1059|Olùṣọ́-àgùntàn àti Olùdásílẹ̀|Berger et visionnaire
 1060|Ṣílò|Silo
 1061|Etí Òkun Tìbéríà|Rive de la mer de Tibériade
 1062|Shush|Shush
@@ -141,7 +141,7 @@
 1075|Títẹ̀lé ọ̀rọ̀ tí a yàn pẹ̀lú ìṣọ́ra jẹ́ “ìlànà tí ó ga ju gbogbo rẹ̀ lọ”; òṣèlú àti ìwé ìròyìn jẹ́ èèwọ̀.|Le strict respect du texte prescrit est « un principe primordial » ; la politique et les journaux sont interdits.
 1076|Sudan|Soudan
 1077|Àwókù èbúté Kọ́ríńtì tí ó rì sínú omi. Fébè sin ìjọ níbí.|Les ruines englouties du port de Corinthe. Phébé y servait l’Église.
-1078|Àṣíwájú Ńlá Àgbà, Wòlíìdà Ńlá Àgbà àti Alàgbà Ńlá Àgbà|Leader senior supérieur, Wolider senior supérieur et Ancien senior supérieur
+1078|Àṣíwájú Ńlá Àgbà, Wòlíì Gíga àti Alàgbà Gíga|Leader senior supérieur, Wolider senior supérieur et Ancien senior supérieur
 1079|Síkárì|Sychar
 1080|Síkárì (kànga Jékọ́bù)|Sychar (le puits de Jacob)
 1081|Sírákúsì|Syracuse
@@ -233,10 +233,10 @@
 1167|Ìgbìmọ̀ Ìjọ kọ̀ọ̀kan lè fi ìbáwí lélẹ̀ nínú ọ̀rọ̀ kékeré; a ń jábọ̀ ìgbésẹ̀ tí ó le jù sókè.|Le comité paroissial de chaque paroisse peut prendre des mesures disciplinaires dans les cas mineurs ; les sanctions plus sévères sont signalées plus haut.
 1168|Àjọ Ìrékọjá|La Pâque
 1169|Pásítọ̀ lè fagilé, yí padà tàbí fi kún ìpèsè èyíkéyìí, fúnra rẹ̀ tàbí nípa àbá Ìgbìmọ̀.|Le Pasteur peut révoquer, modifier ou compléter toute disposition, de lui-même ou sur recommandation du Conseil.
-1170|Pásítọ̀, fúnra rẹ̀ tàbí nípa àbá Pásítọ̀ àti Ìgbìmọ̀ Rẹ̀|Le Pasteur, de lui-même ou sur recommandation du Pasteur en conseil
-1171|Pásítọ̀ àti Ìgbìmọ̀ Rẹ̀|Le Pasteur en conseil
-1172|Pásítọ̀ àti Ìgbìmọ̀ Rẹ̀ ló ń túmọ̀ Òfin, lábẹ́ àṣẹ ìkẹyìn Pásítọ̀.|Le Pasteur en conseil est chargé de l’interprétation, sous l’autorité ultime du Pasteur.
-1173|Pásítọ̀ àti Ìgbìmọ̀ Rẹ̀, lábẹ́ àṣẹ ìkẹyìn Pásítọ̀|Le Pasteur en conseil, sous l’autorité ultime du Pasteur
+1170|Pásítọ̀, fúnra rẹ̀ tàbí nípa àbá Ìgbìmọ̀ Olú Ìjọ|Le Pasteur, de lui-même ou sur recommandation du Pasteur en conseil
+1171|Ìgbìmọ̀ Olú Ìjọ|Le Pasteur en conseil
+1172|Ìgbìmọ̀ Olú Ìjọ ló ń túmọ̀ Òfin, lábẹ́ àṣẹ ìkẹyìn Pásítọ̀.|Le Pasteur en conseil est chargé de l’interprétation, sous l’autorité ultime du Pasteur.
+1173|Ìgbìmọ̀ Olú Ìjọ, lábẹ́ àṣẹ ìkẹyìn Pásítọ̀|Le Pasteur en conseil, sous l’autorité ultime du Pasteur
 1174|Aṣojú Pásítọ̀|Le représentant du Pasteur
 1175|Aṣojú Pásítọ̀ nìkan|Le représentant du Pasteur seulement
 1176|Òkun Pupa|La mer Rouge

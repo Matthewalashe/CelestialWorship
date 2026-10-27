@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldCheck, Clock, LogOut, Church, Gavel, Save, Settings } from 'lucide-react';
+import { ShieldCheck, Clock, LogOut, Church, Gavel, Save, Settings, LayoutDashboard } from 'lucide-react';
 import { useProfile, MEMBER_TYPES, CHURCH_TITLE_SUGGESTIONS, MINISTRY_SUGGESTIONS, type MemberType, type MemberProfile } from '../hooks/useProfile';
 import { useAuth } from '../hooks/useAuth';
 import { useParishes } from '../hooks/useParishes';
@@ -34,7 +34,7 @@ export default function Profile() {
   const chooseLanguage = useChooseLanguage();
   usePageTitle('profile', 'My profile');
   const navigate = useNavigate();
-  const { user, signOut, canModerate } = useAuth();
+  const { user, signOut, canModerate, profile: account } = useAuth();
   const { profile, save, syncing, requestVerification } = useProfile();
   const { parishes } = useParishes();
   const [claiming, setClaiming] = useState(() => new URLSearchParams(window.location.search).get('claim') === '1');
@@ -231,6 +231,12 @@ export default function Profile() {
           <Link to="/moderate" className="flex items-center gap-3 py-2" style={{ color: 'var(--color-text-primary)' }}>
             <Gavel size={18} style={{ color: 'var(--color-accent-gold)' }} />
             <span className="flex-1 font-semibold text-sm">{tr('Moderation queue')}</span>
+          </Link>
+        )}
+        {account?.role === 'admin' && (
+          <Link to="/admin" className="flex items-center gap-3 py-2" style={{ color: 'var(--color-text-primary)' }}>
+            <LayoutDashboard size={18} style={{ color: 'var(--color-accent-gold)' }} />
+            <span className="flex-1 font-semibold text-sm">{tr('Admin dashboard')}</span>
           </Link>
         )}
         {user && (

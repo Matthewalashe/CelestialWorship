@@ -46,6 +46,7 @@ const STRINGS = {
   'nav.profile': { en: 'Profile & settings', yo: 'Ìwé mi', fr: 'Profil et réglages' },
   'nav.live': { en: 'Livestreams', yo: 'Ní tààrà', fr: 'En direct' },
   'nav.moderate': { en: 'Moderation', yo: 'Àbójútó', fr: 'Modération' },
+  'nav.admin': { en: 'Admin dashboard', yo: 'Pátákó alákòóso', fr: 'Tableau de bord' },
   'nav.install': { en: 'Get the app', yo: 'Gba ìṣàfilọ́lẹ̀', fr: 'Installer l’app' },
   'nav.space': { en: 'Parish space', yo: 'Ààyè ìjọ', fr: 'Espace paroissial' },
   'nav.maps': { en: 'Bible maps', yo: 'Máàpù Bíbélì', fr: 'Cartes bibliques' },

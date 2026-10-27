@@ -62,6 +62,7 @@ const Stories = React.lazy(() => import('./pages/Stories'));
 const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
 const Moderate = React.lazy(() => import('./pages/Moderate'));
+const Admin = React.lazy(() => import('./pages/Admin'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
@@ -153,6 +154,7 @@ function App() {
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/maps" element={<MapGames />} />
             <Route path="/moderate" element={<Moderate />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
