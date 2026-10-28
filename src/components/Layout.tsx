@@ -8,7 +8,7 @@ import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard, LibraryBig,
   Baby, Calendar, Map as MapIcon, Landmark, Network, ScrollText, ChevronRight, PenLine,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
@@ -16,12 +16,17 @@ import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
 import { LanguageSwitch } from './LanguageSwitch';
 import { MovedNotice } from './MovedNotice';
+import { PictureTile, IconTile, TileGroup } from './Tiles';
 import { sendWaitingParishLeads } from '../lib/parishLeads';
 
 interface NavItem {
   path: string;
   label: StringKey;
   icon: ReactNode;
+  /** One line under the name in the Menu, so people can tell where it leads */
+  blurb?: string;
+  /** A real picture for the Menu's feature tiles */
+  image?: string;
 }
 
 /** What people come for: today, the service, devotion, hymns and the Bible (then the Menu) */
@@ -33,7 +38,7 @@ const NavItems: NavItem[] = [
   { path: '/bible', label: 'nav.bible', icon: <BookOpen size={20} /> },
 ];
 
-const LearnItem: NavItem = { path: '/learn', label: 'nav.learn', icon: <GraduationCap size={20} /> };
+const LearnItem: NavItem = { path: '/learn', label: 'nav.learn', icon: <LibraryBig size={20} />, blurb: 'Everything to learn, in one place' };
 
 /** Everything else, in the Menu */
 const MoreGroups: { title: string; items: NavItem[] }[] = [
@@ -41,39 +46,39 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
     title: 'Learn',
     items: [
       LearnItem,
-      { path: '/stories', label: 'nav.stories', icon: <Baby size={20} /> },
-      { path: '/lessons', label: 'nav.lessons', icon: <Calendar size={20} /> },
-      { path: '/quiz', label: 'nav.quiz', icon: <GraduationCap size={20} /> },
-      { path: '/maps', label: 'nav.maps', icon: <MapIcon size={20} /> },
-      { path: '/library', label: 'nav.articles', icon: <PenLine size={20} /> },
-      { path: '/our-church', label: 'nav.history', icon: <Landmark size={20} /> },
-      { path: '/structure', label: 'nav.structure', icon: <Network size={20} /> },
-      { path: '/constitution', label: 'nav.constitution', icon: <ScrollText size={20} /> },
+      { path: '/stories', label: 'nav.stories', icon: <Baby size={20} />, blurb: '54 illustrated stories', image: '/tiles/stories.jpg' },
+      { path: '/maps', label: 'nav.maps', icon: <MapIcon size={20} />, blurb: 'Walk where Jesus walked', image: '/tiles/map.jpg' },
+      { path: '/our-church', label: 'nav.history', icon: <Landmark size={20} />, blurb: 'Our history and beliefs', image: '/tiles/church.jpg' },
+      { path: '/structure', label: 'nav.structure', icon: <Network size={20} />, blurb: 'Ranks, robes, the altar', image: '/tiles/altar.jpg' },
+      { path: '/lessons', label: 'nav.lessons', icon: <Calendar size={20} />, blurb: 'The weekly readings' },
+      { path: '/quiz', label: 'nav.quiz', icon: <GraduationCap size={20} />, blurb: 'Play and learn' },
+      { path: '/library', label: 'nav.articles', icon: <PenLine size={20} />, blurb: 'Writing by shepherds' },
+      { path: '/constitution', label: 'nav.constitution', icon: <ScrollText size={20} />, blurb: 'How the Church is ordered' },
     ],
   },
   {
     title: 'Worship',
     items: [
-      { path: '/live', label: 'nav.live', icon: <Radio size={20} /> },
-      { path: '/suggestions', label: 'nav.selector', icon: <ListMusic size={20} /> },
-      { path: '/control', label: 'nav.operator', icon: <MonitorPlay size={20} /> },
+      { path: '/live', label: 'nav.live', icon: <Radio size={20} />, blurb: 'Services as they happen' },
+      { path: '/suggestions', label: 'nav.selector', icon: <ListMusic size={20} />, blurb: 'Choose hymns for a service' },
+      { path: '/control', label: 'nav.operator', icon: <MonitorPlay size={20} />, blurb: 'Hymns and verses on a screen' },
     ],
   },
   {
     title: 'Church',
     items: [
-      { path: '/events', label: 'nav.events', icon: <CalendarDays size={20} /> },
-      { path: '/prayer-requests', label: 'nav.prayer', icon: <HandHeart size={20} /> },
-      { path: '/directory', label: 'nav.directory', icon: <MapPin size={20} /> },
-      { path: '/space', label: 'nav.space', icon: <MessagesSquare size={20} /> },
-      { path: '/give', label: 'nav.give', icon: <HandCoins size={20} /> },
+      { path: '/directory', label: 'nav.directory', icon: <MapPin size={20} />, blurb: 'Find a parish near you' },
+      { path: '/events', label: 'nav.events', icon: <CalendarDays size={20} />, blurb: 'Feasts and gatherings' },
+      { path: '/prayer-requests', label: 'nav.prayer', icon: <HandHeart size={20} />, blurb: 'Pray with one another' },
+      { path: '/space', label: 'nav.space', icon: <MessagesSquare size={20} />, blurb: 'Your parish together' },
+      { path: '/give', label: 'nav.give', icon: <HandCoins size={20} />, blurb: 'Offerings and tithes' },
     ],
   },
   {
     title: 'Me',
     items: [
-      { path: '/notes', label: 'nav.library', icon: <StickyNote size={20} /> },
-      { path: '/install', label: 'nav.install', icon: <Download size={20} /> },
+      { path: '/notes', label: 'nav.library', icon: <StickyNote size={20} />, blurb: 'Notes, prayers, saved verses' },
+      { path: '/install', label: 'nav.install', icon: <Download size={20} />, blurb: 'Add it to your home screen' },
     ],
   },
 ];
@@ -110,8 +115,8 @@ export default function Layout() {
   useEffect(() => { sendWaitingParishLeads(); }, []);
 
   const groups: { title: string; items: NavItem[] }[] = canModerate
-    ? MoreGroups.map(g => (g.title === 'Me' ? { ...g, items: [...g.items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} /> },
-        ...(account?.role === 'admin' ? [{ path: '/admin', label: 'nav.admin' as StringKey, icon: <LayoutDashboard size={20} /> }] : [])] } : g))
+    ? MoreGroups.map(g => (g.title === 'Me' ? { ...g, items: [...g.items, { path: '/moderate', label: 'nav.moderate' as StringKey, icon: <Gavel size={20} />, blurb: 'Items waiting for review' },
+        ...(account?.role === 'admin' ? [{ path: '/admin', label: 'nav.admin' as StringKey, icon: <LayoutDashboard size={20} />, blurb: 'People, use and analytics' }] : [])] } : g))
     : MoreGroups;
   // On a computer, items already in the main list aren't repeated in the groups
   const sidebarGroups = desktop
@@ -227,7 +232,7 @@ export default function Layout() {
       {/* Menu: everything beyond the five tabs */}
       {moreOpen && (
         <Sheet label={t('nav.more')} onClose={() => setMoreOpen(false)}>
-          <nav aria-label={tr('Menu')} className="space-y-4">
+          <nav aria-label={tr('Menu')} className="space-y-6">
             <div className="space-y-1">
               {me}
               <LanguageSwitch />
@@ -236,25 +241,23 @@ export default function Layout() {
                 <span className="flex-1 text-left">{theme === 'light' ? tr('Dark mode') : tr('Light mode')}</span>
               </button>
             </div>
-            {groups.map(group => (
-              <div key={group.title}>
-                <p className="text-[11px] uppercase tracking-wider font-semibold mb-1 px-1" style={{ color: 'var(--color-text-muted)' }}>{tr(group.title)}</p>
-                <ul className="grid grid-cols-2 gap-1">
-                  {group.items.map(item => {
-                    const active = isActivePath(location.pathname, item.path);
-                    return (
-                      <li key={item.path}>
-                        <NavLink to={item.path} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm"
-                                 style={{ backgroundColor: active ? 'var(--color-accent-brand)' : 'transparent', color: active ? 'var(--color-text-on-accent)' : 'var(--color-text-primary)', fontWeight: active ? 600 : 400 }}>
-                          <span style={{ color: active ? 'inherit' : 'var(--color-text-muted)' }}>{item.icon}</span>
-                          <span className="leading-tight">{label(item)}</span>
-                        </NavLink>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+            {groups.map(group => {
+              const tile = (item: NavItem) => ({ to: item.path, title: label(item), blurb: item.blurb, icon: item.icon, image: item.image, active: isActivePath(location.pathname, item.path) });
+              const pictures = group.items.filter(i => i.image);
+              const rest = group.items.filter(i => !i.image);
+              return (
+                <TileGroup key={group.title} title={group.title}>
+                  {pictures.length > 0 && (
+                    <ul className="grid grid-cols-2 gap-2.5">
+                      {pictures.map(item => <li key={item.path}><PictureTile item={tile(item)} compact /></li>)}
+                    </ul>
+                  )}
+                  <ul className="grid grid-cols-2 gap-2.5">
+                    {rest.map(item => <li key={item.path}><IconTile item={tile(item)} compact /></li>)}
+                  </ul>
+                </TileGroup>
+              );
+            })}
           </nav>
         </Sheet>
       )}

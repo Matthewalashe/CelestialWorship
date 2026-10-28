@@ -63,43 +63,50 @@ export function VerseOfTheDay({ verse }: { verse: DailyVerse }) {
     }
   };
 
-  const action = 'inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl';
+  const action = 'inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-2 rounded-lg';
   return (
-    <section aria-labelledby="votd" className="space-y-4">
-      <h2 id="votd" className="text-xs uppercase tracking-[0.18em] font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{t('home.verseOfDay')}</h2>
-      <figure className="space-y-3">
-        <blockquote className="text-[1.4rem] leading-relaxed" style={{ color: 'var(--color-text-primary)', fontFamily: 'Literata, Georgia, serif' }} lang={version.language}>
-          “{text}”
-        </blockquote>
-        <figcaption className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
-          {place} <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>· {version.abbreviation}</span>
-        </figcaption>
-      </figure>
+    <section aria-labelledby="votd" className="rounded-2xl border overflow-hidden" style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
+      <div className="px-5 pt-5 pb-4 space-y-3">
+        <div className="flex items-center gap-2.5">
+          {/* A short gold rule: the one ornament */}
+          <span aria-hidden className="h-px w-6" style={{ backgroundColor: 'var(--color-accent-gold)' }} />
+          <h2 id="votd" className="text-[11px] uppercase tracking-[0.18em] font-semibold" style={{ color: 'var(--color-accent-gold)' }}>{t('home.verseOfDay')}</h2>
+        </div>
+        <figure className="space-y-2.5">
+          <blockquote className="text-[1.125rem] leading-[1.7]" style={{ color: 'var(--color-text-primary)', fontFamily: 'Literata, Georgia, serif' }} lang={version.language}>
+            “{text}”
+          </blockquote>
+          <figcaption className="text-sm font-semibold" style={{ color: 'var(--color-text-secondary)' }}>
+            {place} <span className="font-normal" style={{ color: 'var(--color-text-muted)' }}>· {version.abbreviation}</span>
+          </figcaption>
+        </figure>
 
-      {around && context.length > 0 && (
-        <ol className="space-y-2 rounded-2xl p-4" style={{ backgroundColor: 'var(--color-bg-card)' }} lang={version.language}>
-          {context.map(([n, v]) => {
-            const it = ref && n >= ref.verseStart && n <= ref.verseEnd;
-            return (
-              <li key={n} className="flex gap-3 text-[15px] leading-relaxed" style={{ color: it ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', fontWeight: it ? 600 : 400 }}>
-                <span className="text-[0.7em] font-bold pt-1 w-5 shrink-0 text-right" style={{ color: 'var(--color-accent-brand)' }}>{n}</span><span>{v}</span>
-              </li>
-            );
-          })}
-        </ol>
-      )}
+        {around && context.length > 0 && (
+          <ol className="space-y-2 rounded-xl p-4" style={{ backgroundColor: 'var(--color-bg-primary)' }} lang={version.language}>
+            {context.map(([n, v]) => {
+              const it = ref && n >= ref.verseStart && n <= ref.verseEnd;
+              return (
+                <li key={n} className="flex gap-3 text-[15px] leading-relaxed" style={{ color: it ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', fontWeight: it ? 600 : 400 }}>
+                  <span className="text-[0.7em] font-bold pt-1 w-5 shrink-0 text-right" style={{ color: 'var(--color-accent-brand)' }}>{n}</span><span>{v}</span>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 -ml-3">
+      <div className="flex flex-wrap items-center gap-0.5 px-2.5 py-1.5 border-t" style={{ borderColor: 'var(--color-border)' }}>
+        <Link to={chapterPath} className={action} style={{ color: 'var(--color-accent-brand)' }}><BookOpen size={15} aria-hidden /> {tr('Read the chapter')}</Link>
         {context.length > 0 && (
           <button onClick={() => setAround(a => !a)} aria-expanded={around} className={action} style={{ color: 'var(--color-text-secondary)' }}>
             {around ? <ChevronUp size={15} aria-hidden /> : <ChevronDown size={15} aria-hidden />} {around ? tr('Hide the passage') : tr('The verses around it')}
           </button>
         )}
-        <Link to={chapterPath} className={action} style={{ color: 'var(--color-accent-brand)' }}><BookOpen size={15} aria-hidden /> {tr('Read the chapter')}</Link>
-        <button onClick={save} disabled={!ref} className={action} aria-pressed={saved} style={{ color: saved ? 'var(--color-success)' : 'var(--color-text-secondary)' }}>
-          {saved ? <BookmarkCheck size={15} aria-hidden /> : <Bookmark size={15} aria-hidden />} {saved ? tr('Saved') : tr('Save')}
+        <span className="flex-1" />
+        <button onClick={save} disabled={!ref} className={action} aria-pressed={saved} aria-label={saved ? tr('Saved') : tr('Save')} style={{ color: saved ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
+          {saved ? <BookmarkCheck size={16} aria-hidden /> : <Bookmark size={16} aria-hidden />}
         </button>
-        <button onClick={share} className={action} style={{ color: 'var(--color-text-secondary)' }}><Share2 size={15} aria-hidden /> {tr('Share')}</button>
+        <button onClick={share} className={action} aria-label={tr('Share')} style={{ color: 'var(--color-text-muted)' }}><Share2 size={16} aria-hidden /></button>
       </div>
     </section>
   );

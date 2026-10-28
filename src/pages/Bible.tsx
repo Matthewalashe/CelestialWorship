@@ -16,6 +16,30 @@ const OFFLINE_KEY = 'cw-bible-offline';
 
 const slugOf = (name: string) => name.toLowerCase().replace(/\s+/g, '-');
 
+/** The divisions of the Protestant canon, as the contents page of a Bible lists them */
+const DIVISIONS: { title: string; testament: 'OT' | 'NT'; books: string[] }[] = [
+  { title: 'The Law', testament: 'OT', books: ['Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy'] },
+  { title: 'History', testament: 'OT', books: ['Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel', '1 Kings', '2 Kings', '1 Chronicles', '2 Chronicles', 'Ezra', 'Nehemiah', 'Esther'] },
+  { title: 'Poetry and Wisdom', testament: 'OT', books: ['Job', 'Psalms', 'Proverbs', 'Ecclesiastes', 'Song of Solomon'] },
+  { title: 'Major Prophets', testament: 'OT', books: ['Isaiah', 'Jeremiah', 'Lamentations', 'Ezekiel', 'Daniel'] },
+  { title: 'Minor Prophets', testament: 'OT', books: ['Hosea', 'Joel', 'Amos', 'Obadiah', 'Jonah', 'Micah', 'Nahum', 'Habakkuk', 'Zephaniah', 'Haggai', 'Zechariah', 'Malachi'] },
+  { title: 'The Gospels', testament: 'NT', books: ['Matthew', 'Mark', 'Luke', 'John'] },
+  { title: 'The Early Church', testament: 'NT', books: ['Acts'] },
+  { title: 'Letters of Paul', testament: 'NT', books: ['Romans', '1 Corinthians', '2 Corinthians', 'Galatians', 'Ephesians', 'Philippians', 'Colossians', '1 Thessalonians', '2 Thessalonians', '1 Timothy', '2 Timothy', 'Titus', 'Philemon'] },
+  { title: 'Other Letters', testament: 'NT', books: ['Hebrews', 'James', '1 Peter', '2 Peter', '1 John', '2 John', '3 John', 'Jude'] },
+  { title: 'Prophecy', testament: 'NT', books: ['Revelation'] },
+];
+
+const WELL_LOVED: { ref: string; book: string; chapter: number; what: string }[] = [
+  { ref: 'ps23', book: 'Psalms', chapter: 23, what: 'The Lord is my shepherd' },
+  { ref: 'jn3', book: 'John', chapter: 3, what: 'For God so loved the world' },
+  { ref: 'mt5', book: 'Matthew', chapter: 5, what: 'The Beatitudes' },
+  { ref: 'ps91', book: 'Psalms', chapter: 91, what: 'Under His wings' },
+  { ref: 'rm8', book: 'Romans', chapter: 8, what: 'Nothing can separate us' },
+  { ref: '1co13', book: '1 Corinthians', chapter: 13, what: 'The greatest is love' },
+  { ref: 'is53', book: 'Isaiah', chapter: 53, what: 'The suffering servant' },
+];
+
 export default function Bible() {
   usePageTitle('bible');
   const navigate = useNavigate();
@@ -165,29 +189,58 @@ export default function Bible() {
         </div>
       </div>
 
-      {/* Books */}
-      <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {filteredBooks.map(book => {
-          const read = completedInBook(book.name);
-          return (
-            <li key={tr(book.name)}>
-              <Link to={`/bible/${slugOf(book.name)}/1?lang=${versionId}`}
-                    className="block p-3 rounded-xl border h-full"
+      {/* Well-loved passages, a way in for anyone who doesn't know where to start */}
+      {!debouncedSearch.trim() && testament === 'all' && (
+        <div className="mb-6">
+          <p className="text-[11px] uppercase tracking-[0.14em] font-semibold mb-2 px-0.5" style={{ color: 'var(--color-text-muted)' }}>{tr('Well-loved passages')}</p>
+          <div className="flex gap-2 overflow-x-auto hide-scrollbar -mx-4 px-4">
+            {WELL_LOVED.map(w => (
+              <Link key={w.ref} to={`/bible/${slugOf(w.book)}/${w.chapter}?lang=${versionId}`} className="shrink-0 rounded-xl border px-3.5 py-2.5"
                     style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
-                <span className="block font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>{tr(book.name)}</span>
-                <span className="block text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>
-                  {book.chapters}{' '}{tr('chapter')}{book.chapters > 1 ? 's' : ''} · {book.testament === 'OT' ? tr('Old') : tr('New')}{' '}{tr('Testament')}</span>
-                {read > 0 && (
-                  <span className="block mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}
-                        aria-label={`${read} of ${book.chapters} chapters read`}>
-                    <span className="block h-full rounded-full" style={{ width: `${(read / book.chapters) * 100}%`, backgroundColor: 'var(--color-success)' }} />
-                  </span>
-                )}
+                <span className="block text-sm font-semibold whitespace-nowrap" style={{ color: 'var(--color-text-primary)' }}>{tr(w.book)} {w.chapter}</span>
+                <span className="block text-[11px] whitespace-nowrap" style={{ color: 'var(--color-text-muted)' }}>{tr(w.what)}</span>
               </Link>
-            </li>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Books, in the divisions of the Bible's own contents page */}
+      <div className="space-y-6">
+        {DIVISIONS.map(division => {
+          const books = filteredBooks.filter(b => division.books.includes(b.name));
+          if (!books.length) return null;
+          return (
+            <section key={division.title} aria-label={tr(division.title)}>
+              <div className="flex items-baseline justify-between mb-2 px-0.5">
+                <h2 className="text-[11px] uppercase tracking-[0.14em] font-semibold" style={{ color: 'var(--color-text-muted)' }}>{tr(division.title)}</h2>
+                <span className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr(division.testament === 'OT' ? 'Old Testament' : 'New Testament')}</span>
+              </div>
+              <ul className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                {books.map(book => {
+                  const read = completedInBook(book.name);
+                  return (
+                    <li key={book.name}>
+                      <Link to={`/bible/${slugOf(book.name)}/1?lang=${versionId}`}
+                            className="flex flex-col justify-between h-full min-h-[4.25rem] p-2.5 rounded-xl border transition-transform active:scale-[0.98]"
+                            style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
+                        <span className="block font-semibold text-[13px] leading-tight hyphens-auto break-words" lang={document.documentElement.lang} style={{ color: 'var(--color-text-primary)' }}>{tr(book.name)}</span>
+                        <span className="block text-[11px] mt-1 tabular-nums" style={{ color: 'var(--color-text-muted)' }}>{book.chapters} {tr(book.chapters > 1 ? 'chapters' : 'chapter')}</span>
+                        {read > 0 && (
+                          <span className="block mt-1.5 h-1 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}
+                                aria-label={`${read} / ${book.chapters}`}>
+                            <span className="block h-full rounded-full" style={{ width: `${(read / book.chapters) * 100}%`, backgroundColor: 'var(--color-accent-brand)' }} />
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
           );
         })}
-      </ul>
+      </div>
       {filteredBooks.length === 0 && <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>{tr('No books found')}</div>}
 
       <p className="mt-8 text-[11px] leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{version.copyright}</p>

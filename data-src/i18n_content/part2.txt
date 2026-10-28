@@ -41,7 +41,7 @@
 224|Ìkórè Ọmọdé|Moisson des jeunes
 225|Gbogbo ìjọ ló máa ń ṣe Ìdúpẹ́ Ìkórè Ọmọdé ní Ọjọ́ Àìkú àkọ́kọ́ nínú oṣù Kẹfà.|L’action de grâce de la Moisson des jeunes est célébrée par toutes les paroisses le premier dimanche de juin.
 226|Arábìnrin Àgbà Gíga Onílẹ̀ẹ̀sì|Sœur aînée senior supérieure en dentelle
-227|Wòlíì Obìnrin Ńlá Àgbà Onílẹ̀ẹ̀sì|Prophétesse senior supérieure en dentelle
+227|Wòlíì Gíga Onílẹ̀ẹ̀sì|Prophétesse senior supérieure en dentelle
 228|Sùtánà àṣíwájú onílẹ̀ẹ̀sì, òkè eérú, ọ̀pá àgbélébùú búlù pẹ̀lú okùn yẹ́lò|Soutane de leader en dentelle, haut gris, barre de croix bleue avec un fil jaune
 229|Òkè yẹ́lò onílẹ̀ẹ̀sì lórí aṣọ èjìká igun mẹ́rin onílẹ̀ẹ̀sì|Haut jaune en dentelle sur une cape à quatre coins en dentelle
 230|Ọmọ ìjọ, òṣìṣẹ́ ìjọ àti àwọn ipò tó ga jù|Laïcs, ouvriers de l’Église et rangs supérieurs
@@ -76,7 +76,7 @@
 263|Kò sí òrìṣà, oògùn tàbí ońdè; kò sí tábà tàbí ọtí; kò sí ẹran ẹlẹ́dẹ̀ tàbí oúnjẹ tí a fi rúbọ sí òrìṣà; àbẹ́là funfun nìkan; ìwà mímọ́ nínú ara àti ọkàn.|Pas d’idoles, de fétiches ni de charmes ; ni tabac ni alcool ; ni porc ni nourriture offerte aux idoles ; uniquement des cierges blancs ; la sainteté de corps et d’âme.
 264|Nóà kan ọkọ̀ ńlá|Noé construit un grand bateau
 265|Kò sí ẹni tí a kà sí ọmọ ìjọ títí a ó fi ṣe ìrìbọmi fún un nínú Ìjọ Mímọ́ ti Kírísítì láti Ọ̀run Wá, láìka ìrìbọmi tí ó ti ṣe nínú ìjọ Kírísítẹ́nì mìíràn sí.|Nul n’est considéré comme membre avant d’avoir été baptisé dans l’Église du Christianisme Céleste, quel que soit un baptême antérieur dans une autre dénomination chrétienne.
-266|Ní ọ̀pọ̀ ìgbà, ipò tó ga jùlọ tí a lè gbé ọmọ ìjọ dé nípa ìgbéga ni Àṣíwájú Ńlá Àgbà, Wòlíì Gíga àti Alàgbà Gíga; ìgbéga sí Ajíhìnrere Kékeré àti jù bẹ́ẹ̀ lọ kì í ṣe láìfọ̀rọ̀wérọ̀.|Normalement, les rangs les plus élevés atteints par promotion sont Superior Senior Leader, Superior Senior Wolider et Superior Senior Elder ; la promotion au rang d’Évangéliste adjoint et au-dessus n’est pas automatique.
+266|Ní ọ̀pọ̀ ìgbà, ipò tó ga jùlọ tí a lè gbé ọmọ ìjọ dé nípa ìgbéga ni Àṣíwájú Gíga, Wòlíì Gíga àti Alàgbà Gíga; ìgbéga sí Ajíhìnrere Kékeré àti jù bẹ́ẹ̀ lọ kì í ṣe láìfọ̀rọ̀wérọ̀.|Normalement, les rangs les plus élevés atteints par promotion sont Superior Senior Leader, Superior Senior Wolider et Superior Senior Elder ; la promotion au rang d’Évangéliste adjoint et au-dessus n’est pas automatique.
 270|Májẹ̀mú Láéláé|Ancien Testament
 271|Ní ọjọ́ 29 Oṣù Kẹsàn-án, 1947, nínú àṣírí jíjinlẹ̀ ìfarahàn àtọ̀runwá, nígbà àdúrà, ti áńgẹ́lì oníyẹ̀ẹ́ tí ìmọ́lẹ̀ gbígbóná wẹ̀, ọ̀rọ̀ wá láti ọ̀dọ̀ Ọlọ́run sí Olùdásílẹ̀.|Le 29 septembre 1947, dans le profond mystère de l’apparition divine, pendant la prière, de l’ange ailé baigné d’une lumière intense, une parole vint de Dieu au Fondateur.
 272|Ní ọjọ́ tí oòrùn ṣókùnkùn, nígbà tí ó wà nínú igbó, Olùdásílẹ̀ gbọ́ ìpè Ọlọ́run, ó sì lo nǹkan bí oṣù mẹ́ta nínú aginjù.|Le jour d’une éclipse de soleil, alors qu’il est dans la forêt, le Fondateur entend l’appel de Dieu et passe environ trois mois dans le désert.
@@ -136,7 +136,7 @@
 335|À ń fi ìbéèrè ìmúdájú ránṣẹ́|Envoi de la demande de vérification
 336|Arákùnrin Àgbà Ńlá|Frère aîné senior
 337|Arábìnrin Àgbà Ńlá|Sœur aînée senior
-338|Wòlíì Obìnrin Ńlá|Prophétesse senior
+338|Wòlíì Ńlá|Prophétesse senior
 339|Wolida Ńlá|Woleader senior
 340|Iṣẹ́ Ìsìn àti àwọn òfin tí gbogbo apá Ìjọ ń pín, ó ń sọ àwọn ọ̀rọ̀ àríyànjiyàn láìgbè sẹ́yìn ẹnì kankan, ó sì|du culte et les commandements que toutes les parties de l’Église partagent, présente les points disputés sans prendre parti, et
 341|Ìsìn ní agogo 9 òwúrọ̀, 12 ọ̀sán àti 3 ọ̀sán ní ìrántí ìmúni, ìdájọ́, ìkànmọ́ àgbélébùú àti ìsìnkú Jésù Kírísítì.|Cultes à 9 h, 12 h et 15 h en mémoire de l’arrestation, du procès, de la crucifixion et de la mise au tombeau de Jésus-Christ.
@@ -155,7 +155,7 @@
 354|Ìtàn tí a sọ lẹ́bàá adágún|Histoires racontées au bord du lac
 355|Ajíhìnrere Gíga|Évangéliste supérieur
 356|Arábìnrin Àgbà Gíga|Sœur aînée senior supérieure
-357|Àṣíwájú Ńlá Àgbà|Leader senior supérieur
-358|Àṣíwájú Ńlá Àgbà (òṣìṣẹ́ alákòókò kíkún)|Leader senior supérieur (ouvrier à plein temps)
-359|Wòlíì Obìnrin Ńlá Àgbà|Prophétesse senior supérieure
+357|Àṣíwájú Gíga|Leader senior supérieur
+358|Àṣíwájú Gíga (òṣìṣẹ́ alákòókò kíkún)|Leader senior supérieur (ouvrier à plein temps)
+359|Wòlíì Gíga|Prophétesse senior supérieure
 360|Wòlíì Gíga|Woleader senior supérieur

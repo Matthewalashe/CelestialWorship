@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { Fragment, useState, useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Heart, Search, X } from 'lucide-react';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -10,6 +10,7 @@ import { sanitizeSearchInput } from '../utils/sanitize';
 import { normalizeForSearch } from '../utils/search';
 import { displayTitle, type HymnLanguage } from '../utils/hymnText';
 import { contentDefaults, tr } from '../i18n';
+import { iconSquare } from '../components/Tiles';
 
 type LyricsView = 'yo' | 'both' | 'en';
 // Shared with the hymn page so both remember the same choice
@@ -21,6 +22,13 @@ function readView(): LyricsView {
     if (v === 'yo' || v === 'en' || v === 'both') return v;
   } catch {}
   return contentDefaults().hymnView;
+}
+
+/** Titles typed in capitals read as shouting: show them in sentence case (the words themselves are unchanged) */
+function calm(title: string): string {
+  if (!title || title !== title.toUpperCase() || !/[A-ZÀ-Ý]/.test(title)) return title;
+  const lower = title.toLocaleLowerCase();
+  return lower.charAt(0).toLocaleUpperCase() + lower.slice(1);
 }
 
 export default function Hymns() {
@@ -260,31 +268,40 @@ export default function Hymns() {
             : tr('No hymns match.')}
         </div>
       ) : (
-        <ul className="divide-y rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
-          {hymns.map(hymn => {
-            const primary = displayTitle(hymn, titleLang);
-            const secondary = view === 'both' ? displayTitle(hymn, 'en') : null;
-            const category = hymn.categories[0];
+        <ul className="rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>
+          {hymns.map((hymn, i) => {
+            const primary = calm(displayTitle(hymn, titleLang));
+            const secondary = view === 'both' ? calm(displayTitle(hymn, 'en')) : null;
+            // In hymnal order the section is a heading where it begins, not a line on every hymn
+            const inOrder = !sectionId;
+            const newSection = inOrder && hymn.section && hymn.section.id !== hymns[i - 1]?.section?.id;
             return (
-              <li key={hymn.number} id={`hymn-row-${hymn.number}`} style={{ borderColor: 'var(--color-border)' }}>
-                <Link to={`/hymns/${hymn.number}`} className="flex items-center gap-3 px-3 py-3 hover:bg-[var(--color-bg-card-hover)] transition-colors">
-                  <span className="w-12 shrink-0 text-center text-xl font-black font-[Outfit]" style={{ color: 'var(--color-accent-gold)' }}>
-                    {hymn.number}
-                  </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }} lang={titleLang}>
-                      {primary}
+              <Fragment key={hymn.number}>
+                {newSection && (
+                  <li className="px-4 pt-4 pb-1.5 text-[11px] uppercase tracking-[0.14em] font-semibold" aria-hidden
+                      style={{ color: 'var(--color-text-muted)', backgroundColor: 'var(--color-bg-primary)', borderTop: i ? '1px solid var(--color-border)' : undefined }}>
+                    {tr(hymn.section!.english)}
+                  </li>
+                )}
+                <li id={`hymn-row-${hymn.number}`} style={{ borderTop: i && !newSection ? '1px solid var(--color-border)' : undefined }}>
+                  <Link to={`/hymns/${hymn.number}`} className="flex items-center gap-3.5 px-3 py-3 hover:bg-[var(--color-bg-card-hover)] transition-colors">
+                    <span className="w-11 h-11 shrink-0 grid place-items-center rounded-xl text-base font-bold font-[Outfit] tabular-nums" style={iconSquare}>
+                      {hymn.number}
                     </span>
-                    {secondary && secondary !== primary && (
-                      <span className="block text-sm truncate" style={{ color: 'var(--color-text-secondary)' }} lang="en">{secondary}</span>
-                    )}
-                    <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
-                      {[tr(hymn.section?.english), category ? tr(CATEGORY_LABELS[category]) : null].filter(Boolean).join(' · ')}
+                    <span className="flex-1 min-w-0">
+                      <span className="block font-semibold truncate" style={{ color: 'var(--color-text-primary)' }} lang={titleLang}>{primary}</span>
+                      {secondary && secondary !== primary && (
+                        <span className="block text-sm truncate" style={{ color: 'var(--color-text-secondary)' }} lang="en">{secondary}</span>
+                      )}
+                      {/* The categories are guessed from keywords and wait for clergy review, so the list names only the hymnal's own section */}
+                      {!inOrder && hymn.section && (
+                        <span className="block text-[11px] mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>{tr(hymn.section.english)}</span>
+                      )}
                     </span>
-                  </span>
-                  {favorites.includes(hymn.number) && <Heart size={14} className="shrink-0" fill="#EF4444" color="#EF4444" />}
-                </Link>
-              </li>
+                    {favorites.includes(hymn.number) && <Heart size={14} className="shrink-0" fill="var(--color-accent-brand)" color="var(--color-accent-brand)" aria-label={tr('Favourite')} />}
+                  </Link>
+                </li>
+              </Fragment>
             );
           })}
         </ul>
