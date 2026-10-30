@@ -30,7 +30,8 @@ jobs:
           cd build
           npm init -y >/dev/null
           npm i ws@8 esbuild@0.28 postject@1.0.0-alpha.6
-          npx esbuild ../desktop/connect/main.mjs --bundle --platform=node --format=cjs --outfile=connect.cjs --external:bufferutil --external:utf-8-validate
+          cp ../desktop/connect/main.mjs ../desktop/connect/args.mjs .
+          npx esbuild main.mjs --bundle --platform=node --format=cjs --outfile=connect.cjs --external:bufferutil --external:utf-8-validate
           echo '{"main":"connect.cjs","output":"sea.blob","disableExperimentalSEAWarning":true}' > sea.json
           node --experimental-sea-config sea.json
           cp "$(node -p process.execPath)" ../out/CelestialWorshipConnect.exe
