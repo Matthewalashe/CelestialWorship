@@ -25,7 +25,7 @@ export function connectRunning(): Promise<boolean> {
   });
 }
 
-export interface ConnectStats { fps: number; kbps: number; speed: number }
+export interface ConnectStats { fps: number; kbps: number | null; speed: number | null }
 
 export interface ConnectEvents {
   onStats?: (s: ConnectStats) => void;

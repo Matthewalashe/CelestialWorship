@@ -24,10 +24,16 @@ export function ffmpegArgs(urls) {
 /** Stream keys are part of the addresses: nothing FFmpeg says may be repeated without taking them out */
 export const redact = line => line.replace(/rtmps?:\/\/\S+/g, '[stream address]');
 
-/** FFmpeg's progress line, e.g. "frame=  120 fps= 30 q=21.0 size= 512kB time=00:00:04.00 bitrate=1048.6kbits/s speed=1.01x" */
+/**
+ * FFmpeg's progress line, e.g. "frame=  120 fps= 30 q=21.0 size= 512kB time=00:00:04.00 bitrate=1048.6kbits/s speed=1.01x".
+ * Sending to several outputs at once, size and bitrate read N/A.
+ */
 export function parseProgress(line) {
-  const m = line.match(/frame=\s*(\d+).*?fps=\s*([\d.]+).*?bitrate=\s*([\d.]+)kbits\/s.*?speed=\s*([\d.]+)x/);
-  return m ? { frames: Number(m[1]), fps: Number(m[2]), kbps: Number(m[3]), speed: Number(m[4]) } : null;
+  const m = line.match(/frame=\s*(\d+).*?fps=\s*([\d.]+)/);
+  if (!m) return null;
+  const kbps = line.match(/bitrate=\s*([\d.]+)kbits\/s/);
+  const speed = line.match(/speed=\s*([\d.]+)x/);
+  return { frames: Number(m[1]), fps: Number(m[2]), kbps: kbps ? Number(kbps[1]) : null, speed: speed ? Number(speed[1]) : null };
 }
 
 /** A plain sentence for what went wrong, or null if the line is not a problem */

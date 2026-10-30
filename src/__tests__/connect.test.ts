@@ -27,6 +27,7 @@ describe('CelestialWorship Connect', () => {
 
   it('reads FFmpeg progress and explains failures plainly', () => {
     expect(parseProgress('frame=  120 fps= 30 q=21.0 size=     512kB time=00:00:04.00 bitrate=1048.6kbits/s speed=1.01x')).toEqual({ frames: 120, fps: 30, kbps: 1048.6, speed: 1.01 });
+    expect(parseProgress('frame=  90 fps= 30 q=21.0 size=N/A time=00:00:03.00 bitrate=N/A speed=1.1x')).toEqual({ frames: 90, fps: 30, kbps: null, speed: 1.1 });
     expect(parseProgress('Press q to stop')).toBeNull();
     expect(explain('Connection refused')).toMatch(/internet/);
     expect(explain('Server returned 403 Forbidden')).toMatch(/stream key/);

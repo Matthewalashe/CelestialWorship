@@ -87,7 +87,7 @@ server.on('connection', socket => {
       for (const line of lines) {
         const progress = parseProgress(line);
         if (progress) {
-          if (!started) { started = true; say('You are live.'); send({ type: 'live' }); }
+          if (!started && progress.frames > 0) { started = true; say('You are live.'); send({ type: 'live' }); }
           send({ type: 'stats', ...progress });
           continue;
         }
