@@ -1,0 +1,71 @@
+name: CelestialWorship Connect
+
+# Builds the Windows helper, tests it with real FFmpeg, and keeps the zip as a download of the run.
+# Pushes that change it are built and tested only. A tag such as connect-v0.1.0 also publishes it as a release,
+# which is what the Live Studio links to.
+on:
+  workflow_dispatch:
+  push:
+    tags: ['connect-v*']
+    branches: [audit-fixes]
+    paths: ['desktop/connect/**', '.github/workflows/connect.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Bundle the program
+        shell: bash
+        run: |
+          mkdir -p build out
+          cd build
+          npm init -y >/dev/null
+          npm i ws@8 esbuild@0.28 postject@1.0.0-alpha.6
+          npx esbuild ../desktop/connect/main.mjs --bundle --platform=node --format=cjs --outfile=connect.cjs --external:bufferutil --external:utf-8-validate
+          echo '{"main":"connect.cjs","output":"sea.blob","disableExperimentalSEAWarning":true}' > sea.json
+          node --experimental-sea-config sea.json
+          cp "$(node -p process.execPath)" ../out/CelestialWorshipConnect.exe
+          npx postject ../out/CelestialWorshipConnect.exe NODE_SEA_BLOB sea.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 --overwrite
+
+      - name: Add FFmpeg
+        shell: bash
+        run: |
+          curl -sSL -o ff.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+          mkdir ff && unzip -q -j ff.zip '*/bin/ffmpeg.exe' '*/bin/ffprobe.exe' '*/LICENSE' -d ff
+          cp ff/ffmpeg.exe out/
+          cp ff/LICENSE out/FFMPEG-LICENSE.txt
+          cp desktop/connect/README.txt out/
+
+      - name: Test with real FFmpeg
+        shell: bash
+        run: |
+          mkdir test && cp ff/ffprobe.exe out/CelestialWorshipConnect.exe out/ffmpeg.exe test/
+          cd test
+          cp ../desktop/connect/e2e.mjs ../build/e2e.mjs
+          node ../build/e2e.mjs .
+
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path out/* -DestinationPath CelestialWorshipConnect-windows.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CelestialWorshipConnect-windows
+          path: CelestialWorshipConnect-windows.zip
+          retention-days: 30
+
+      - name: Publish
+        if: startsWith(github.ref, 'refs/tags/connect-v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" CelestialWorshipConnect-windows.zip --title "CelestialWorship Connect ${GITHUB_REF_NAME#connect-v}" --notes "Windows helper for the Live Studio. See README.txt inside." --latest=false

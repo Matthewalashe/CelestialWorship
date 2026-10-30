@@ -1622,5 +1622,61 @@
 "Your space is ready to use. The parish appears in the directory and Online Church once a moderator confirms it. You can already invite your people.": [
 "Àyè rẹ ti ṣetán fún lílò. Ìjọ náà yóò hàn nínú àkójọ àti Ìjọ Orí Ayélujára nígbà tí alábòójútó bá fìdí rẹ̀ múlẹ̀. O lè pe àwọn ènìyàn rẹ báyìí.",
 "Votre espace est prêt. La paroisse apparaîtra dans l’annuaire et l’Église en ligne une fois confirmée par un modérateur. Vous pouvez déjà inviter les vôtres."
+],
+"CelestialWorship Connect is running. You are ready.": [
+"CelestialWorship Connect ti ń ṣiṣẹ́. O ti ṣetán.",
+"CelestialWorship Connect est lancé. Vous êtes prêt."
+],
+"One small free helper is needed, once": [
+"Ó nílò ètò ìrànlọ́wọ́ kékeré kan lọ́fẹ̀ẹ́, lẹ́ẹ̀kan ṣoṣo",
+"Un petit assistant gratuit est nécessaire, une seule fois"
+],
+"Download CelestialWorship Connect and unzip it.": [
+"Gba CelestialWorship Connect sílẹ̀ kí o sì ṣí i.",
+"Téléchargez CelestialWorship Connect et décompressez-le."
+],
+"Open CelestialWorshipConnect.exe. If Windows warns you, choose “More info”, then “Run anyway”.": [
+"Ṣí CelestialWorshipConnect.exe. Bí Windows bá kìlọ̀ fún ọ, yan “More info”, lẹ́yìn náà “Run anyway”.",
+"Ouvrez CelestialWorshipConnect.exe. Si Windows vous avertit, choisissez « Informations complémentaires », puis « Exécuter quand même »."
+],
+"Leave it open. This box will change by itself.": [
+"Jẹ́ kí ó wà ní ṣíṣí. Àpótí yìí yóò yí padà fúnra rẹ̀.",
+"Laissez-le ouvert. Cet encadré changera tout seul."
+],
+"Download for Windows": [
+"Gba sílẹ̀ fún Windows",
+"Télécharger pour Windows"
+],
+"Streaming straight from the studio needs a Windows computer for now. On this one, record here, or stream from OBS and choose the other option.": [
+"Ìgbéjáde tààrà láti inú ilé ìgbéjáde nílò kọ̀ǹpútà Windows fún báyìí. Lórí èyí, gba sílẹ̀ níbí, tàbí gbé e jáde láti OBS kí o sì yan èkejì.",
+"La diffusion directe depuis le studio nécessite pour l’instant un ordinateur Windows. Sur celui-ci, enregistrez ici, ou diffusez depuis OBS et choisissez l’autre option."
+],
+"CelestialWorship Connect is not running. Open it and try again.": [
+"CelestialWorship Connect kò ṣiṣẹ́. Ṣí i kí o sì tún gbìyànjú.",
+"CelestialWorship Connect n’est pas lancé. Ouvrez-le et réessayez."
+],
+"The stream did not start. Check your internet connection and your stream keys.": [
+"Ìgbéjáde kò bẹ̀rẹ̀. Ṣàyẹ̀wò íńtánẹ́ẹ̀tì rẹ àti àwọn stream key rẹ.",
+"La diffusion n’a pas démarré. Vérifiez votre connexion Internet et vos clés de diffusion."
+],
+"CelestialWorship Connect was closed, so the stream has stopped.": [
+"A ti CelestialWorship Connect pa, nítorí náà ìgbéjáde ti dúró.",
+"CelestialWorship Connect a été fermé : la diffusion s’est arrêtée."
+],
+"One of your platforms stopped accepting the stream. Check its stream key. The others continue.": [
+"Ọ̀kan nínú àwọn pèpéle rẹ kò gba ìgbéjáde mọ́. Ṣàyẹ̀wò stream key rẹ̀. Àwọn yòókù ń bá a lọ.",
+"Une de vos plateformes n’accepte plus la diffusion. Vérifiez sa clé. Les autres continuent."
+],
+"Could not reach the platform. Check your internet connection.": [
+"A kò lè dé pèpéle náà. Ṣàyẹ̀wò íńtánẹ́ẹ̀tì rẹ.",
+"Impossible de joindre la plateforme. Vérifiez votre connexion Internet."
+],
+"The platform refused the stream. Check that the stream key is right and that the broadcast is set up.": [
+"Pèpéle náà kọ ìgbéjáde. Ṣàyẹ̀wò pé stream key tọ̀nà àti pé a ti ṣètò ìgbéjáde náà.",
+"La plateforme a refusé la diffusion. Vérifiez la clé et que la diffusion est bien configurée."
+],
+"The stream stopped. Check your internet connection and stream keys.": [
+"Ìgbéjáde ti dúró. Ṣàyẹ̀wò íńtánẹ́ẹ̀tì rẹ àti àwọn stream key rẹ.",
+"La diffusion s’est arrêtée. Vérifiez votre connexion Internet et vos clés."
 ]
 }

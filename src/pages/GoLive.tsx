@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import qrcode from 'qrcode-generator';
 import {
-  ChevronLeft, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2,
+  ChevronLeft, Download, CheckCircle2, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2,
 } from 'lucide-react';
 import { Compositor, type LogoCorner, type StudioSource } from '../lib/studio/compositor';
 import type { StudioLayout } from '../lib/studio/scene';
 import { hostRoom } from '../lib/studio/peers';
 import { loadTargets, saveTargets, PLATFORM_HELP, relayReady, startRelay, targetUrl, type RelaySession, type StreamPlatform, type StreamTarget } from '../lib/studio/relay';
 import { savedLogo, saveLogo } from '../lib/studio/media';
+import { CONNECT_DOWNLOAD, connectRunning, isWindowsComputer, startConnect } from '../lib/studio/connect';
 import { newRoomCode, useDisplayReceiver } from '../hooks/useLiveDisplay';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -154,7 +155,7 @@ interface LiveSession { relay: RelaySession | null; streamId: string | null; sta
 
 const toLivePlatform = (p: StreamPlatform): LivePlatform => (p === 'custom' ? 'other' : p);
 
-function GoLiveDialog({ compositor, onClose, onLive }: { compositor: Compositor; onClose: () => void; onLive: (session: LiveSession) => void }) {
+function GoLiveDialog({ compositor, onClose, onLive, onLost }: { compositor: Compositor; onClose: () => void; onLive: (session: LiveSession) => void; onLost: (reason: string) => void }) {
   const { user } = useAuth();
   const [title, setTitle] = useState('');
   const [pages, setPages] = useState<{ id: string; name: string }[]>([]);
@@ -167,9 +168,19 @@ function GoLiveDialog({ compositor, onClose, onLive }: { compositor: Compositor;
   const [links, setLinks] = useState('');
   const [alert, setAlert] = useState(true);
   const [ready, setReady] = useState<boolean | null>(null);
+  const [helper, setHelper] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { relayReady().then(r => { setReady(r); if (!r) setMode('other'); }); }, []);
+  useEffect(() => { relayReady().then(setReady); }, []);
+  // Notices Connect as soon as it is opened, so nobody has to reload
+  useEffect(() => {
+    let live = true;
+    const look = () => connectRunning().then(found => { if (live) setHelper(found); });
+    look();
+    const t = setInterval(look, 3000);
+    return () => { live = false; clearInterval(t); };
+  }, []);
+  const canStream = helper || ready === true;
   useEffect(() => {
     if (!user) return;
     myAdminParishes().then(list => {
@@ -198,8 +209,12 @@ function GoLiveDialog({ compositor, onClose, onLive }: { compositor: Compositor;
       let destinations: Destination[] = [];
       if (mode === 'studio') {
         if (!chosen.length) throw new Error(tr('Add at least one place to stream to'));
-        if (!user) throw new Error(tr('Sign in to go live'));
-        relay = await startRelay(compositor.outputStream(), chosen.map(targetUrl), () => showToast(tr('The connection dropped. Check your internet.')));
+        if (helper) {
+          relay = await startConnect(compositor.outputStream(), chosen.map(targetUrl), { onLost: onLost, onProblem: m => showToast(tr(m)) });
+        } else {
+          if (!user) throw new Error(tr('Sign in to go live'));
+          relay = await startRelay(compositor.outputStream(), chosen.map(targetUrl), () => showToast(tr('The connection dropped. Check your internet.')));
+        }
         destinations = chosen.filter(t => normalizeHttpsUrl(t.watchUrl)).map(t => ({ platform: toLivePlatform(t.platform), url: normalizeHttpsUrl(t.watchUrl)! }));
       } else {
         for (const line of links.split(/\s+/).filter(Boolean)) {
@@ -253,7 +268,23 @@ function GoLiveDialog({ compositor, onClose, onLive }: { compositor: Compositor;
 
         {mode === 'studio' ? (
           <div className="space-y-2">
-            {ready === false && <p className="text-xs rounded-xl p-3" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}>{tr('Streaming straight from the studio is being switched on. For now, record here, or stream from OBS and choose the other option.')}</p>}
+            {helper ? (
+              <p className="text-xs rounded-xl p-3 flex items-center gap-2" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}><CheckCircle2 size={15} aria-hidden style={{ color: 'var(--color-success)' }} /> {tr('CelestialWorship Connect is running. You are ready.')}</p>
+            ) : ready !== true && (
+              <div className="text-xs rounded-xl p-3 space-y-2" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text-secondary)' }}>
+                {isWindowsComputer() ? (
+                  <>
+                    <p className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>{tr('One small free helper is needed, once')}</p>
+                    <ol className="list-decimal pl-4 space-y-0.5">
+                      <li>{tr('Download CelestialWorship Connect and unzip it.')}</li>
+                      <li>{tr('Open CelestialWorshipConnect.exe. If Windows warns you, choose “More info”, then “Run anyway”.')}</li>
+                      <li>{tr('Leave it open. This box will change by itself.')}</li>
+                    </ol>
+                    <a href={CONNECT_DOWNLOAD} className="btn-primary inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-semibold"><Download size={14} aria-hidden /> {tr('Download for Windows')}</a>
+                  </>
+                ) : <p>{tr('Streaming straight from the studio needs a Windows computer for now. On this one, record here, or stream from OBS and choose the other option.')}</p>}
+              </div>
+            )}
             {targets.map(t => (
               <label key={t.id} className="flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm" style={{ borderColor: 'var(--color-border)' }}>
                 <input type="checkbox" checked={picked.includes(t.id)} onChange={e => setPicked(p => (e.target.checked ? [...p, t.id] : p.filter(x => x !== t.id)))} />
@@ -297,7 +328,7 @@ function GoLiveDialog({ compositor, onClose, onLive }: { compositor: Compositor;
           </label>
         )}
 
-        <button onClick={go} disabled={busy || (mode === 'studio' ? ready !== true : !parishId)} className="w-full py-3.5 rounded-xl font-bold text-white inline-flex items-center justify-center gap-2 disabled:opacity-50" style={{ backgroundColor: LIVE_RED }}>
+        <button onClick={go} disabled={busy || (mode === 'studio' ? !canStream : !parishId)} className="w-full py-3.5 rounded-xl font-bold text-white inline-flex items-center justify-center gap-2 disabled:opacity-50" style={{ backgroundColor: LIVE_RED }}>
           <Radio size={18} aria-hidden /> {busy ? tr('Starting…') : tr('Go live now')}
         </button>
       </div>
@@ -411,6 +442,15 @@ export default function GoLive() {
     if (live.streamId) await setStreamStatus(live.streamId, 'ended').catch(e => showToast(errorMessage(e)));
     setLive(null);
     showToast(tr('The broadcast has ended'));
+  };
+
+  // The stream stopped on its own: say so plainly, and end the listing so nobody is sent to an empty service
+  const lost = (reason: string) => {
+    showToast(tr(reason));
+    setLive(current => {
+      if (current?.streamId) void setStreamStatus(current.streamId, 'ended').catch(() => {});
+      return null;
+    });
   };
 
   const toggleRecord = () => {
@@ -551,7 +591,7 @@ export default function GoLive() {
         )}
       </div>
 
-      {goLive && <GoLiveDialog compositor={compositor} onClose={() => setGoLive(false)} onLive={s => { setLive(s); setGoLive(false); showToast(tr('You are live')); }} />}
+      {goLive && <GoLiveDialog compositor={compositor} onClose={() => setGoLive(false)} onLive={s => { setLive(s); setGoLive(false); showToast(tr('You are live')); }} onLost={lost} />}
     </div>
   );
 }
