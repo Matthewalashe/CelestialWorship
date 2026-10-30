@@ -2,7 +2,37 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { useDisplayReceiver } from '../hooks/useLiveDisplay';
 import { tr } from '../i18n';
 
+/** See-through words for OBS, vMix or Ecamm: add this page as a browser source over the cameras */
+function Overlay({ room }: { room: string | null }) {
+  const { displayState: state } = useDisplayReceiver(room);
+  useEffect(() => {
+    const els = [document.documentElement, document.body];
+    const before = els.map(e => e.style.backgroundColor);
+    els.forEach(e => { e.style.backgroundColor = 'transparent'; });
+    document.body.style.overflow = 'hidden';
+    return () => { els.forEach((e, i) => { e.style.backgroundColor = before[i]; }); document.body.style.overflow = ''; };
+  }, []);
+  const text = state.type === 'hymn' || state.type === 'verse' || state.type === 'announcement';
+  return (
+    <div className="fixed inset-0 overflow-hidden" style={{ background: 'transparent' }}>
+      {state.type === 'image' && state.imageUrl && <img src={state.imageUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />}
+      {state.type === 'video' && state.imageUrl && <video src={state.imageUrl} autoPlay playsInline className="absolute inset-0 w-full h-full object-contain"><track kind="captions" /></video>}
+      {text && (
+        <div className="absolute left-0 right-0 bottom-0 px-[4vw] py-[2vw] text-center text-white" style={{ backgroundColor: 'rgba(10,14,24,.82)', borderTop: '0.25vw solid #C9A24B' }}>
+          {state.title && <p className="font-bold mb-[0.5vw]" style={{ color: '#E8C36A', fontSize: '1.7vw' }}>{tr(state.title)}</p>}
+          <p className="font-semibold whitespace-pre-line" style={{ fontSize: state.content.length > 220 ? '2vw' : '3vw', lineHeight: 1.25 }}>{state.content}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Display() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('mode') === 'overlay' ? <Overlay room={params.get('room')} /> : <FullDisplay />;
+}
+
+function FullDisplay() {
   const room = new URLSearchParams(window.location.search).get('room');
   const { displayState: state, connected } = useDisplayReceiver(room);
   const logoUrl = '/logo.png';
@@ -41,9 +71,9 @@ export default function Display() {
         {state?.type === 'logo' && (
           <div className="flex flex-col items-center justify-center animate-slide-up relative">
             <div className="absolute inset-0 bg-[var(--color-accent-gold)]/10 blur-[100px] rounded-full animate-pulse"></div>
-            <img src={logoUrl} alt={tr('Celestial Church of Christ')} className="w-64 h-64 object-contain mb-8 z-10 drop-shadow-[0_0_30px_rgba(212,168,67,0.5)]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-            <h1 className="text-7xl font-[Outfit] font-bold tracking-widest text-white drop-shadow-2xl z-10 text-center uppercase">{tr('CelestialWorship')}</h1>
-            <p className="text-3xl text-[var(--color-accent-gold)] font-medium mt-4 tracking-widest uppercase z-10">{tr('Celestial Church of Christ')}</p>
+            <img src={state.imageUrl ?? logoUrl} alt={tr('Celestial Church of Christ')} className="w-64 h-64 object-contain mb-8 z-10 drop-shadow-[0_0_30px_rgba(212,168,67,0.5)]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            {!state.imageUrl && <h1 className="text-7xl font-[Outfit] font-bold tracking-widest text-white drop-shadow-2xl z-10 text-center uppercase">{tr('CelestialWorship')}</h1>}
+            {!state.imageUrl && <p className="text-3xl text-[var(--color-accent-gold)] font-medium mt-4 tracking-widest uppercase z-10">{tr('Celestial Church of Christ')}</p>}
             {room && (
               <p className="text-lg text-white/40 mt-10 z-10 tracking-widest">
                 {connected ? `Screen ${room.toUpperCase()} ready` : `Connecting to ${room.toUpperCase()}…`}
@@ -51,6 +81,9 @@ export default function Display() {
             )}
           </div>
         )}
+
+        {state?.type === 'image' && state.imageUrl && <img src={state.imageUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />}
+        {state?.type === 'video' && state.imageUrl && <video src={state.imageUrl} autoPlay playsInline className="absolute inset-0 w-full h-full object-contain"><track kind="captions" /></video>}
 
         {state?.type === 'hymn' && (
           <div className="w-full h-full max-w-7xl flex flex-col items-center justify-center animate-fade-in relative pt-24 pb-16">

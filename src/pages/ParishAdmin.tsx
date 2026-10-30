@@ -21,7 +21,7 @@ import {
   PLATFORMS, listLivestreams, saveLivestream, setStreamStatus, notifyLive, saveChannels, youTubeChannelId, isStreamLive,
   shareMessage, streamLink, type Livestream, type Destination, type LivePlatform, type LiveChannels,
 } from '../lib/live';
-import { PARTNER_FEATURES, listPlans, getSubscription, hasPlan, subscribe, manageSubscription, planPrice, type Plan, type Subscription } from '../lib/plan';
+import { PRICING_ON, PARTNER_FEATURES, listPlans, getSubscription, hasPlan, subscribe, manageSubscription, planPrice, type Plan, type Subscription } from '../lib/plan';
 import { ShareRow } from '../components/ShareRow';
 import { ParishMediaManager } from '../components/ParishMedia';
 import { LocationPicker } from '../components/LocationPicker';
@@ -849,7 +849,7 @@ export default function ParishAdmin() {
     details: full, plan: full, media: full || myRole === 'media', live: full || myRole === 'media', team: full, events: true,
     prayers: full || myRole === 'parochial_committee', giving: full || myRole === 'parochial_committee', appointments: full,
   };
-  const visibleTabs = TABS.filter(t => allowed[t.id]);
+  const visibleTabs = TABS.filter(t => allowed[t.id] && (t.id !== 'plan' || PRICING_ON));
   const activeTab: Tab = allowed[tab] ? tab : visibleTabs[0].id;
 
   return (
@@ -879,7 +879,7 @@ export default function ParishAdmin() {
 
       <p className="text-[11px] mb-4" style={{ color: 'var(--color-text-muted)' }}>{tr('Your role:')}{' '}{tr(TEAM_ROLES[myRole].label)}</p>
       {activeTab === 'details' && <div className="space-y-4"><DetailsTab parish={parish} onSaved={reload} /><ParishStructureCard parish={parish} onSaved={reload} /></div>}
-      {activeTab === 'plan' && <PlanTab parish={parish} />}
+      {activeTab === 'plan' && PRICING_ON && <PlanTab parish={parish} />}
       {activeTab === 'media' && <ParishMediaManager parish={parish} onSaved={reload} />}
       {activeTab === 'live' && <LiveTab parish={parish} onSaved={reload} fullAdmin={full} onPlan={() => setTab('plan')} />}
       {activeTab === 'team' && <div className="space-y-4"><ShepherdClaimsCard parishId={parish.id} /><TeamTab parishId={parish.id} /></div>}

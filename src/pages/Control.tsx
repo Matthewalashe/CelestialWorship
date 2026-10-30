@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, BookOpen, Megaphone, MonitorPlay, Search, ChevronLeft, ChevronRight, EyeOff, Image as ImageIcon, Wifi, WifiOff, ListOrdered, History as HistoryIcon, Send } from 'lucide-react';
+import { Music, BookOpen, Megaphone, MonitorPlay, Search, ChevronLeft, ChevronRight, EyeOff, Image as ImageIcon, Wifi, WifiOff, ListOrdered, History as HistoryIcon, Send, Radio, Layers, Copy, X } from 'lucide-react';
 import { useDisplayController, loadOperatorQueue, clearOperatorQueue, newRoomCode } from '../hooks/useLiveDisplay';
 import { useHymnSearch, useHymns } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
@@ -8,6 +8,9 @@ import { BIBLE_BOOKS, resolveBookName } from '../data/bibleBooks';
 import type { DisplayState, Hymn } from '../types';
 import { buildSlides, displayTitle } from '../utils/hymnText';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { savedLogo } from '../lib/studio/media';
+import { MediaGrid } from '../components/StudioMedia';
+import { showToast } from '../components/Toast';
 import { tr } from '../i18n';
 
 /**
@@ -16,7 +19,7 @@ import { tr } from '../i18n';
  * Keys: → / Space / PageDown next · ← / PageUp previous · B black · L logo · 1–9 jump to a slide.
  */
 
-type Source = 'hymns' | 'bible' | 'notices';
+type Source = 'hymns' | 'bible' | 'notices' | 'media';
 type Lang = 'yo' | 'both' | 'en';
 interface Slide { label: string; state: DisplayState }
 
@@ -33,7 +36,9 @@ function Monitor({ state, label, live }: { state: DisplayState | null; label: st
       </div>
       <div className={`relative aspect-video rounded-xl overflow-hidden bg-black text-white flex flex-col items-center justify-center p-4 text-center ${live ? 'ring-2 ring-red-500' : 'ring-1 ring-[var(--color-border)]'}`}>
         {!state || state.type === 'blank' ? <span className="text-xs text-white/70">{state ? tr('Black screen') : tr('Nothing next')}</span>
-          : state.type === 'logo' ? <img src="/logo.png" alt={tr('Logo')} className="w-1/4 opacity-90" />
+          : state.type === 'logo' ? <img src={state.imageUrl ?? '/logo.png'} alt={tr('Logo')} className="w-1/4 opacity-90" />
+          : state.type === 'image' ? <img src={state.imageUrl} alt={state.title ?? ''} className="absolute inset-0 w-full h-full object-contain" />
+          : state.type === 'video' ? <span className="text-xs text-white/80">{tr('Video')}: {state.title}</span>
           : (
             <>
               {state.title && <span className="text-[10px] font-bold uppercase tracking-wider text-[#E8C36A] mb-1.5 line-clamp-1">{tr(state.title)}</span>}
@@ -166,8 +171,31 @@ function NoticeSource({ onSend }: { onSend: (s: DisplayState) => void }) {
 
 // ── Page ─────────────────────────────────────────────────────
 
-export default function Control() {
-  usePageTitle('control', 'Operator');
+/** Link and steps for showing the words over cameras in OBS or similar software */
+function OverlayHelp({ room, onClose }: { room: string; onClose: () => void }) {
+  const link = `${window.location.origin}/display?mode=overlay&room=${room}`;
+  return (
+    <div className="px-3 sm:px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg-card)] text-sm space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-semibold">{tr('Show these words over your cameras in OBS')}</p>
+        <button onClick={onClose} aria-label={tr('Close')} className="p-1"><X size={16} /></button>
+      </div>
+      <ol className="list-decimal pl-5 text-xs space-y-0.5 text-[var(--color-text-secondary)]">
+        <li>{tr('In OBS, press + under Sources and choose Browser.')}</li>
+        <li>{tr('Paste this link, and set the size to 1920 by 1080.')}</li>
+        <li>{tr('Keep this page open. Whatever you show here appears over your cameras.')}</li>
+      </ol>
+      <div className="flex gap-2">
+        <input readOnly value={link} aria-label={tr('Overlay link')} onFocus={e => e.target.select()} className="flex-1 min-w-0 rounded-lg px-2 py-1.5 text-xs border bg-[var(--color-bg-primary)] border-[var(--color-border)]" />
+        <button onClick={() => navigator.clipboard.writeText(link).then(() => showToast(tr('Copied'))).catch(() => {})} className={`${btn} px-3 py-1.5 text-xs bg-[var(--color-accent-brand)] text-[var(--color-text-on-accent)]`}><Copy size={13} aria-hidden /> {tr('Copy link')}</button>
+      </div>
+    </div>
+  );
+}
+
+export default function Control({ embedded = false, active = true }: { embedded?: boolean; active?: boolean }) {
+  usePageTitle('control', embedded ? 'Live Studio' : 'Operator');
+  const [overlayOpen, setOverlayOpen] = useState(false);
   const { sendToDisplay, room, setRoom, remoteConnected } = useDisplayController();
   const { hymns } = useHymns();
 
@@ -210,7 +238,7 @@ export default function Control() {
   const next = useCallback(() => { if (nextSlide) go(nextSlide.state); }, [nextSlide, go]);
   const prev = useCallback(() => { if (liveIndex > 0) go(slides[liveIndex - 1].state); }, [liveIndex, slides, go]);
   const black = useCallback(() => go({ type: 'blank', content: '' }), [go]);
-  const logo = useCallback(() => go({ type: 'logo', content: '' }), [go]);
+  const logo = useCallback(() => go({ type: 'logo', content: '', imageUrl: savedLogo() ?? undefined }), [go]);
 
   // Several verses together
   const sendPicked = () => {
@@ -223,6 +251,7 @@ export default function Control() {
   };
 
   useEffect(() => {
+    if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -234,18 +263,24 @@ export default function Control() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [next, prev, black, logo, go, slides]);
+  }, [active, next, prev, black, logo, go, slides]);
 
   const openScreen = () => window.open(room ? `/display?room=${room}` : '/display', 'celestialworship-display', 'width=1920,height=1080');
-  const sourceTabs: [Source, string, React.ReactNode][] = [['hymns', 'Hymns', <Music size={16} />], ['bible', 'Bible', <BookOpen size={16} />], ['notices', 'Notices', <Megaphone size={16} />]];
+  const sourceTabs: [Source, string, React.ReactNode][] = [['hymns', 'Hymns', <Music size={16} />], ['bible', 'Bible', <BookOpen size={16} />], ['notices', 'Notices', <Megaphone size={16} />], ['media', 'Media', <ImageIcon size={16} />]];
   const itemTitle = mode === 'hymn' ? (hymn ? `${hymn.number} · ${displayTitle(hymn, lang === 'en' ? 'en' : 'yo')}` : null) : `${book} ${chapter}`;
 
   return (
-    <div className="min-h-screen lg:h-screen flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
+    <div className={`${embedded ? 'flex-1 lg:h-[calc(100vh-58px)]' : 'min-h-screen lg:h-screen'} flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]`}>
       {/* Bar */}
       <header className="flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-bg-card)]">
-        <Link to="/" className="text-sm text-[var(--color-text-secondary)] inline-flex items-center gap-1 pr-2"><ChevronLeft size={16} />{' '}{tr('Exit')}</Link>
-        <h1 className="font-bold font-[Outfit] flex items-center gap-2"><MonitorPlay size={18} className="text-[var(--color-accent-brand)]" />{' '}{tr('Operator')}</h1>
+        {!embedded && (
+          <>
+            <Link to="/" className="text-sm text-[var(--color-text-secondary)] inline-flex items-center gap-1 pr-2"><ChevronLeft size={16} />{' '}{tr('Exit')}</Link>
+            <h1 className="font-bold font-[Outfit] flex items-center gap-2"><MonitorPlay size={18} className="text-[var(--color-accent-brand)]" />{' '}{tr('Operator')}</h1>
+            <Link to="/go-live" className="text-xs font-semibold inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-white bg-red-600"><Radio size={13} aria-hidden /> {tr('Go live')}</Link>
+          </>
+        )}
+        <button onClick={() => { if (!room) setRoom(newRoomCode()); setOverlayOpen(o => !o); }} aria-expanded={overlayOpen} className="text-xs font-semibold inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)]"><Layers size={13} aria-hidden /> {tr('Words over OBS')}</button>
         <div className="ml-auto flex items-center gap-2 text-xs">
           {room ? (
             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg ${remoteConnected ? 'text-emerald-600' : 'text-[var(--color-text-muted)]'}`} title={`Open ${window.location.host}/display?room=${room} on the screen device`}>
@@ -259,19 +294,22 @@ export default function Control() {
         </div>
       </header>
 
+      {overlayOpen && room && <OverlayHelp room={room} onClose={() => setOverlayOpen(false)} />}
+
       <div className="flex-1 min-h-0 grid gap-3 p-3 lg:grid-cols-[300px_1fr_340px]">
         {/* Sources */}
         <aside className={`${panel} p-3 flex flex-col min-h-[320px] lg:min-h-0 order-2 lg:order-1`}>
           <div className="flex gap-1 mb-3" role="tablist">
             {sourceTabs.map(([id, label, icon]) => (
               <button key={id} role="tab" aria-selected={source === id} onClick={() => setSource(id)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-1.5 ${source === id ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>{icon}{label}</button>
+                      className={`flex-1 min-w-0 py-1.5 rounded-xl text-[11px] font-semibold inline-flex flex-col items-center justify-center gap-0.5 ${source === id ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-secondary)]' : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]'}`}>{icon}{tr(label)}</button>
             ))}
           </div>
           <div className="flex-1 min-h-0">
             {source === 'hymns' && <HymnSource current={mode === 'hymn' ? hymnNo : null} onPick={h => { setHymnNo(h.number); setMode('hymn'); }} />}
             {source === 'bible' && <BibleSource book={book} chapter={chapter} lang={bibleLang} onChange={(b, c, l) => { setBook(b); setChapter(c); setBibleLang(l); setPicked([]); setMode('bible'); }} />}
             {source === 'notices' && <NoticeSource onSend={go} />}
+            {source === 'media' && <div className="h-full overflow-y-auto"><MediaGrid onPick={item => go({ type: item.kind, content: '', title: item.name, imageUrl: item.url })} /></div>}
           </div>
         </aside>
 

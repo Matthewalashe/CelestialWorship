@@ -42,7 +42,7 @@ export default function LiveStream() {
     return (
       <div className="text-center py-16 px-4">
         <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>{tr('This broadcast isn’t available.')}</p>
-        <Link to="/live" className="btn-primary px-5 py-2 rounded-xl text-sm">{tr('Live')}</Link>
+        <Link to="/live" className="btn-primary px-5 py-2 rounded-xl text-sm">{tr('Online Church')}</Link>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function LiveStream() {
 
   return (
     <div className="px-4 py-6 max-w-2xl mx-auto pb-24 space-y-5">
-      <Link to="/live" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Live')}</Link>
+      <Link to="/live" className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('‹ Online Church')}</Link>
 
       {stream.status === 'scheduled' ? (
         <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: 'var(--color-bg-card)' }}>

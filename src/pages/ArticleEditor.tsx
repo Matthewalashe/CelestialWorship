@@ -225,7 +225,7 @@ export default function ArticleEditor() {
                   <option value="">{tr('No support button')}</option>
                   {pages.map(pg => <option key={pg.parish.id} value={pg.parish.id} disabled={!pg.partner}>{pg.parish.name}{pg.partner ? '' : tr('needs the Partner plan')}</option>)}
                 </select>
-                <span className="block mt-1">{tr('Readers can give to your parish or ministry from the article. Needs the Partner plan and a payout account.')}</span>
+                <span className="block mt-1">{tr('Readers can give to your parish or ministry from the article. Needs a payout account.')}</span>
               </label>
               <label className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Topics (up to 5, separated by commas)')}<input value={v.tags} onChange={e => draft.setValue({ tags: e.target.value })} placeholder={tr('faith, healing')} className={`${field} mt-1`} style={fieldStyle} />
               </label>

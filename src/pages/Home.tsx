@@ -114,7 +114,7 @@ export default function Home() {
       <section className="space-y-3">
         {liveNow.length > 0 && (
           <Link to="/live" className="flex items-center gap-2 text-sm font-semibold" style={{ color: 'var(--color-error)' }}>
-            <Radio size={16} /> {tr('Live')} · <span className="truncate" style={{ color: 'var(--color-text-primary)' }}>{liveNow.map(p => p.name).join(' · ')}</span>
+            <Radio size={16} /> {tr('Online Church')} · <span className="truncate" style={{ color: 'var(--color-text-primary)' }}>{liveNow.map(p => p.name).join(' · ')}</span>
           </Link>
         )}
         <div className="rounded-3xl p-6 space-y-5 text-white" style={{ backgroundColor: 'var(--color-accent-brand)' }}>

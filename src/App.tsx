@@ -63,6 +63,8 @@ const StoryDetail = React.lazy(() => import('./pages/StoryDetail'));
 const MapGames = React.lazy(() => import('./pages/MapGames'));
 const Moderate = React.lazy(() => import('./pages/Moderate'));
 const Admin = React.lazy(() => import('./pages/Admin'));
+const GoLive = React.lazy(() => import('./pages/GoLive'));
+const JoinStudio = React.lazy(() => import('./pages/JoinStudio'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
 
 const LoadingFallback = () => (
@@ -105,6 +107,8 @@ function App() {
           {/* Full-screen pages - no app layout */}
           <Route path="/display" element={<Display />} />
           <Route path="/control" element={<Control />} />
+          <Route path="/go-live" element={<GoLive />} />
+          <Route path="/join-studio/:code" element={<JoinStudio />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/welcome" element={<Onboarding />} />
 
@@ -137,6 +141,7 @@ function App() {
             <Route path="/parish-admin" element={<ParishAdmin />} />
             <Route path="/give" element={<Give />} />
             <Route path="/live" element={<Live />} />
+            <Route path="/online-church" element={<Live />} />
             <Route path="/live/:id" element={<LiveStream />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/library" element={<Library />} />

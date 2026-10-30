@@ -1102,5 +1102,493 @@
 "Àdúrà Wákàtí, four short prayers a day": [
 "Àdúrà Wákàtí, àdúrà kúkúrú mẹ́rin lójúmọ́",
 "Àdúrà Wákàtí, quatre courtes prières par jour"
+],
+"A line across the bottom": [
+"Ìlà kan ní ìsàlẹ̀",
+"Une ligne en bas de l’image"
+],
+"A minister or speaker joins from anywhere with this link, and waits backstage until you bring them on.": [
+"Òjíṣẹ́ tàbí olùbánisọ̀rọ̀ lè darapọ̀ láti ibikíbi pẹ̀lú ìjápọ̀ yìí, yóò sì dúró lẹ́yìn títí o fi mú un wá sórí ìtàgé.",
+"Un ministre ou un orateur rejoint de n’importe où avec ce lien, et attend en coulisses jusqu’à ce que vous le fassiez entrer."
+],
+"Add a camera to begin.": [
+"Fi kámẹ́rà kan kún un láti bẹ̀rẹ̀.",
+"Ajoutez une caméra pour commencer."
+],
+"Add a camera, choose your words, then press Go live. That is all.": [
+"Fi kámẹ́rà kún un, yan ọ̀rọ̀ rẹ, kí o sì tẹ Lọ Tààrà. Ìyẹn nìkan ni.",
+"Ajoutez une caméra, choisissez vos textes, puis appuyez sur Passer en direct. C’est tout."
+],
+"Add at least one place to stream to": [
+"Fi ibi kan ó kéré tán kún un láti gbé e jáde sí",
+"Ajoutez au moins une destination"
+],
+"Add logos, pictures or videos": [
+"Fi àmì ìdánimọ̀, àwòrán tàbí fídíò kún un",
+"Ajouter des logos, images ou vidéos"
+],
+"Add this camera": [
+"Fi kámẹ́rà yìí kún un",
+"Ajouter cette caméra"
+],
+"Add yours": [
+"Fi tìrẹ kún un",
+"Ajoutez la vôtre"
+],
+"Alert our members and followers": [
+"Sọ fún àwọn ọmọ ìjọ àti àwọn olùtẹ̀lé wa",
+"Prévenir nos membres et abonnés"
+],
+"Back to the cameras": [
+"Padà sí àwọn kámẹ́rà",
+"Revenir aux caméras"
+],
+"Background": [
+"Ẹ̀yìn àwòrán",
+"Arrière-plan"
+],
+"Backstage": [
+"Lẹ́yìn ìtàgé",
+"En coulisses"
+],
+"Bigger cameras? Use OBS or a capture card": [
+"Kámẹ́rà ńlá? Lo OBS tàbí káàdì ìgbàwọlé fídíò",
+"Des caméras plus grandes ? Utilisez OBS ou une carte d’acquisition"
+],
+"Bring on stage": [
+"Mú wá sórí ìtàgé",
+"Faire entrer à l’image"
+],
+"Camera": [
+"Kámẹ́rà",
+"Caméra"
+],
+"Cameras": [
+"Àwọn kámẹ́rà",
+"Caméras"
+],
+"Choose your sound desk or USB mixer as the microphone.": [
+"Yan ẹ̀rọ ohùn rẹ tàbí USB mixer gẹ́gẹ́ bí gbohùngbohùn.",
+"Choisissez votre table de mixage ou mixeur USB comme microphone."
+],
+"Come back here and choose “OBS Virtual Camera” above. A capture card shows up by its own name.": [
+"Padà síbí kí o sì yan “OBS Virtual Camera” lókè. Káàdì ìgbàwọlé fídíò máa ń fara hàn ní orúkọ tirẹ̀.",
+"Revenez ici et choisissez « OBS Virtual Camera » ci-dessus. Une carte d’acquisition apparaît sous son propre nom."
+],
+"Copy guest link": [
+"Da ìjápọ̀ àlejò kọ",
+"Copier le lien invité"
+],
+"Corner": [
+"Igun",
+"Coin"
+],
+"Do not list it": [
+"Má ṣe kọ ọ́ sílẹ̀",
+"Ne pas l’afficher"
+],
+"Does your parish stream?": [
+"Ṣé ìjọ rẹ ń gbé ìsìn jáde tààrà?",
+"Votre paroisse diffuse-t-elle ?"
+],
+"Facebook Live Producer, then “Streaming software”. Copy the “Stream key”.": [
+"Facebook Live Producer, lẹ́yìn náà “Streaming software”. Da “Stream key” kọ.",
+"Facebook Live Producer, puis « Streaming software ». Copiez la « Stream key »."
+],
+"From OBS or another app": [
+"Láti OBS tàbí áàpù mìíràn",
+"Depuis OBS ou une autre application"
+],
+"From this studio": [
+"Láti inú ilé ìgbéjáde yìí",
+"Depuis ce studio"
+],
+"Go live now": [
+"Lọ tààrà báyìí",
+"Passer en direct maintenant"
+],
+"Grid": [
+"Àkójọ",
+"Grille"
+],
+"Guest": [
+"Àlejò",
+"Invité"
+],
+"How are you streaming?": [
+"Báwo ni o ṣe ń gbé e jáde?",
+"Comment diffusez-vous ?"
+],
+"In OBS, press + under Sources and choose Browser.": [
+"Nínú OBS, tẹ + lábẹ́ Sources kí o sì yan Browser.",
+"Dans OBS, appuyez sur + sous Sources et choisissez Navigateur."
+],
+"In OBS, set up your cameras as usual and press “Start Virtual Camera”.": [
+"Nínú OBS, ṣètò àwọn kámẹ́rà rẹ bí ó ti máa ń rí kí o sì tẹ “Start Virtual Camera”.",
+"Dans OBS, réglez vos caméras comme d’habitude et appuyez sur « Start Virtual Camera »."
+],
+"Invite a guest": [
+"Pe àlejò kan",
+"Inviter quelqu’un"
+],
+"Join": [
+"Darapọ̀",
+"Rejoindre"
+],
+"Join a service happening now": [
+"Darapọ̀ mọ́ ìsìn tí ń lọ lọ́wọ́",
+"Rejoindre un culte en cours"
+],
+"Join the service as a guest": [
+"Darapọ̀ mọ́ ìsìn gẹ́gẹ́ bí àlejò",
+"Rejoindre le culte comme invité"
+],
+"Keep this page open. Whatever you show here appears over your cameras.": [
+"Jẹ́ kí ojú-ìwé yìí wà ní ṣíṣí. Ohunkóhun tí o bá fihàn níbí yóò hàn lórí àwọn kámẹ́rà rẹ.",
+"Gardez cette page ouverte. Ce que vous affichez ici apparaît sur vos caméras."
+],
+"Kept on this computer until you close the page": [
+"A fi pamọ́ sórí kọ̀ǹpútà yìí títí o fi ti ojú-ìwé náà",
+"Conservé sur cet ordinateur jusqu’à la fermeture de la page"
+],
+"Layout": [
+"Ìtò",
+"Disposition"
+],
+"Leave the studio?": [
+"Ṣé o fẹ́ kúrò nínú ilé ìgbéjáde?",
+"Quitter le studio ?"
+],
+"Live Studio": [
+"Ilé Ìgbéjáde Tààrà",
+"Studio en direct"
+],
+"Live captions (English or French)": [
+"Àkọlé ọ̀rọ̀ tààrà (Gẹ̀ẹ́sì tàbí Faransé)",
+"Sous-titres en direct (anglais ou français)"
+],
+"Live service": [
+"Ìsìn tààrà",
+"Culte en direct"
+],
+"Logo & media": [
+"Àmì àti àwòrán",
+"Logo et médias"
+],
+"Logo position": [
+"Ibi tí àmì wà",
+"Position du logo"
+],
+"Microphone": [
+"Gbohùngbohùn",
+"Microphone"
+],
+"Microphone or sound desk": [
+"Gbohùngbohùn tàbí ẹ̀rọ ohùn",
+"Microphone ou table de mixage"
+],
+"Mute": [
+"Pa ohùn",
+"Couper le son"
+],
+"No service is live just now": [
+"Kò sí ìsìn tí ń lọ tààrà báyìí",
+"Aucun culte en direct pour le moment"
+],
+"No sound from here": [
+"Kò sí ohùn láti ibí",
+"Pas de son d’ici"
+],
+"Notices": [
+"Ìkéde",
+"Annonces"
+],
+"One": [
+"Ọ̀kan",
+"Un seul"
+],
+"Online Church": [
+"Ìjọ Orí Ayélujára",
+"Église en ligne"
+],
+"Open it": [
+"Ṣí i",
+"L’ouvrir"
+],
+"Open the Live Studio": [
+"Ṣí Ilé Ìgbéjáde Tààrà",
+"Ouvrir le Studio en direct"
+],
+"Other (Instagram, TikTok, your website…)": [
+"Òmíràn (Instagram, TikTok, ojú-ìwé rẹ…)",
+"Autre (Instagram, TikTok, votre site…)"
+],
+"Overlay link": [
+"Ìjápọ̀ ọ̀rọ̀ orí fídíò",
+"Lien de la surimpression"
+],
+"Paste the server address and stream key the platform gives you.": [
+"Lẹ àdírẹ́sì olupin àti stream key tí pèpéle náà fún ọ.",
+"Collez l’adresse du serveur et la clé de diffusion fournies par la plateforme."
+],
+"Paste the stream key, and the server address if asked": [
+"Lẹ stream key, àti àdírẹ́sì olupin bí wọ́n bá béèrè",
+"Collez la clé de diffusion, et l’adresse du serveur si elle est demandée"
+],
+"Paste this link, and set the size to 1920 by 1080.": [
+"Lẹ ìjápọ̀ yìí, kí o sì ṣètò ìwọ̀n sí 1920 lórí 1080.",
+"Collez ce lien et réglez la taille sur 1920 par 1080."
+],
+"Paste your YouTube or Facebook live link": [
+"Lẹ ìjápọ̀ tààrà YouTube tàbí Facebook rẹ",
+"Collez votre lien de direct YouTube ou Facebook"
+],
+"Phone as a camera": [
+"Fóònù gẹ́gẹ́ bí kámẹ́rà",
+"Téléphone comme caméra"
+],
+"Phone camera": [
+"Kámẹ́rà fóònù",
+"Caméra du téléphone"
+],
+"Phone or guest": [
+"Fóònù tàbí àlejò",
+"Téléphone ou invité"
+],
+"Please allow the camera in your browser": [
+"Jọ̀wọ́ gba kámẹ́rà láyè nínú ẹ̀rọ ìwákiri rẹ",
+"Veuillez autoriser la caméra dans votre navigateur"
+],
+"Please allow the camera in your browser, then reload this page.": [
+"Jọ̀wọ́ gba kámẹ́rà láyè nínú ẹ̀rọ ìwákiri rẹ, lẹ́yìn náà tún ojú-ìwé yìí ṣí.",
+"Veuillez autoriser la caméra dans votre navigateur, puis rechargez cette page."
+],
+"Readers can give to your parish or ministry from the article. Needs a payout account.": [
+"Àwọn òǹkàwé lè ṣètọrẹ fún ìjọ tàbí iṣẹ́ òjíṣẹ́ rẹ láti inú àpilẹ̀kọ náà. Ó nílò àkáǹtì ìsanwó.",
+"Les lecteurs peuvent donner à votre paroisse ou ministère depuis l’article. Nécessite un compte de versement."
+],
+"Record": [
+"Gba sílẹ̀",
+"Enregistrer"
+],
+"Remove logo": [
+"Yọ àmì kúrò",
+"Retirer le logo"
+],
+"Scan this with the phone. No app needed.": [
+"Fi fóònù ṣàyẹ̀wò èyí. Kò nílò áàpù.",
+"Scannez ceci avec le téléphone. Aucune application requise."
+],
+"Scan with a phone to use it as a camera": [
+"Fi fóònù ṣàyẹ̀wò láti lò ó gẹ́gẹ́ bí kámẹ́rà",
+"Scannez avec un téléphone pour l’utiliser comme caméra"
+],
+"See what is coming up below, or follow a parish to be told when it goes live.": [
+"Wo ohun tí ń bọ̀ nísàlẹ̀, tàbí tẹ̀lé ìjọ kan kí a lè sọ fún ọ nígbà tí ó bá lọ tààrà.",
+"Voyez ce qui arrive ci-dessous, ou suivez une paroisse pour être prévenu de ses directs."
+],
+"Server address (rtmp://…)": [
+"Àdírẹ́sì olupin (rtmp://…)",
+"Adresse du serveur (rtmp://…)"
+],
+"Share a screen": [
+"Pín ojú ẹ̀rọ",
+"Partager un écran"
+],
+"Shared screen": [
+"Ojú ẹ̀rọ tí a pín",
+"Écran partagé"
+],
+"Show it in Online Church under": [
+"Fi hàn nínú Ìjọ Orí Ayélujára lábẹ́",
+"L’afficher dans l’Église en ligne sous"
+],
+"Show now": [
+"Fi hàn báyìí",
+"Afficher"
+],
+"Show these words over your cameras in OBS": [
+"Fi ọ̀rọ̀ wọ̀nyí hàn lórí àwọn kámẹ́rà rẹ nínú OBS",
+"Afficher ces textes sur vos caméras dans OBS"
+],
+"Sign in to go live": [
+"Wọlé láti lọ tààrà",
+"Connectez-vous pour passer en direct"
+],
+"Sound level": [
+"Ìwọ̀n ohùn",
+"Niveau sonore"
+],
+"Starting…": [
+"Ó ń bẹ̀rẹ̀…",
+"Démarrage…"
+],
+"Stop recording": [
+"Dá gbígbà sílẹ̀ dúró",
+"Arrêter l’enregistrement"
+],
+"Stream key": [
+"Stream key",
+"Clé de diffusion"
+],
+"Stream your service, as easy as a call": [
+"Gbé ìsìn rẹ jáde, ó rọrùn bí ìpè",
+"Diffusez votre culte, aussi simple qu’un appel"
+],
+"Streaming straight from the studio is being switched on. For now, record here, or stream from OBS and choose the other option.": [
+"A ń ṣí ìgbéjáde tààrà láti inú ilé ìgbéjáde. Fún báyìí, gba sílẹ̀ níbí, tàbí gbé e jáde láti OBS kí o sì yan èkejì.",
+"La diffusion directe depuis le studio est en cours d’activation. Pour l’instant, enregistrez ici, ou diffusez depuis OBS et choisissez l’autre option."
+],
+"Switch camera": [
+"Yí kámẹ́rà padà",
+"Changer de caméra"
+],
+"Take off stage": [
+"Mú kúrò lórí ìtàgé",
+"Retirer de l’image"
+],
+"Tap a camera below to bring it on stage.": [
+"Tẹ kámẹ́rà kan nísàlẹ̀ láti mú un wá sórí ìtàgé.",
+"Touchez une caméra ci-dessous pour la mettre à l’image."
+],
+"That camera could not be opened. Is another app using it?": [
+"A kò lè ṣí kámẹ́rà náà. Ṣé áàpù mìíràn ń lò ó?",
+"Impossible d’ouvrir cette caméra. Une autre application l’utilise-t-elle ?"
+],
+"The broadcast has ended": [
+"Ìgbéjáde ti parí",
+"La diffusion est terminée"
+],
+"The connection dropped. Check your internet.": [
+"Ìsopọ̀ ti já. Ṣàyẹ̀wò íńtánẹ́ẹ̀tì rẹ.",
+"La connexion a été coupée. Vérifiez votre Internet."
+],
+"The picture going out": [
+"Àwòrán tí ń jáde",
+"L’image diffusée"
+],
+"This browser cannot record. Try Chrome or Edge.": [
+"Ẹ̀rọ ìwákiri yìí kò lè gba sílẹ̀. Gbìyànjú Chrome tàbí Edge.",
+"Ce navigateur ne peut pas enregistrer. Essayez Chrome ou Edge."
+],
+"This ends what is going out.": [
+"Èyí yóò parí ohun tí ń jáde.",
+"Cela met fin à ce qui est diffusé."
+],
+"This network would not connect. Try mobile data or another Wi-Fi.": [
+"Nẹ́tíwọ́ọ̀kì yìí kò so pọ̀. Gbìyànjú dátà fóònù tàbí Wi-Fi mìíràn.",
+"Ce réseau ne permet pas la connexion. Essayez les données mobiles ou un autre Wi-Fi."
+],
+"To appear in Online Church, your parish or ministry needs a page.": [
+"Kí ó tó lè hàn nínú Ìjọ Orí Ayélujára, ìjọ tàbí iṣẹ́ òjíṣẹ́ rẹ nílò ojú-ìwé kan.",
+"Pour apparaître dans l’Église en ligne, votre paroisse ou ministère doit avoir une page."
+],
+"Top left": [
+"Òkè apá òsì",
+"En haut à gauche"
+],
+"Top right": [
+"Òkè apá ọ̀tún",
+"En haut à droite"
+],
+"Turn the phone sideways, keep it plugged in, and rest it somewhere steady.": [
+"Yí fóònù sí ẹ̀gbẹ́, jẹ́ kí ó wà lórí iná, kí o sì gbé e sí ibi tí kò ní mì.",
+"Tournez le téléphone à l’horizontale, gardez-le branché et posez-le sur un support stable."
+],
+"Unmute": [
+"Ṣí ohùn",
+"Rétablir le son"
+],
+"Use Chrome or Edge on a computer, on a cable or strong Wi-Fi. Keep this window open while you are live.": [
+"Lo Chrome tàbí Edge lórí kọ̀ǹpútà, pẹ̀lú wáyà tàbí Wi-Fi tó lágbára. Jẹ́ kí fèrèsé yìí wà ní ṣíṣí nígbà tí o bá wà ní tààrà.",
+"Utilisez Chrome ou Edge sur un ordinateur, en filaire ou avec un bon Wi-Fi. Gardez cette fenêtre ouverte pendant le direct."
+],
+"Use as logo": [
+"Lò ó gẹ́gẹ́ bí àmì",
+"Utiliser comme logo"
+],
+"Use this phone as a camera": [
+"Lo fóònù yìí gẹ́gẹ́ bí kámẹ́rà",
+"Utiliser ce téléphone comme caméra"
+],
+"Waiting for the studio to open…": [
+"Ó ń dúró kí ilé ìgbéjáde ṣí…",
+"En attente de l’ouverture du studio…"
+],
+"What is this service called?": [
+"Kí ni orúkọ ìsìn yìí?",
+"Comment s’appelle ce culte ?"
+],
+"Where can people watch?": [
+"Níbo ni àwọn ènìyàn ti lè wò ó?",
+"Où peut-on regarder ?"
+],
+"Words & screen": [
+"Ọ̀rọ̀ àti ojú ẹ̀rọ",
+"Textes et écran"
+],
+"Words hidden from stream": [
+"Ọ̀rọ̀ kò hàn nínú ìgbéjáde",
+"Textes masqués du direct"
+],
+"Words over OBS": [
+"Ọ̀rọ̀ lórí OBS",
+"Textes sur OBS"
+],
+"Words show on stream": [
+"Ọ̀rọ̀ ń hàn nínú ìgbéjáde",
+"Textes visibles dans le direct"
+],
+"Worship with parishes and shepherds wherever you are.": [
+"Jọ́sìn pẹ̀lú àwọn ìjọ àti olùṣọ́-àgùntàn níbikíbi tí o bá wà.",
+"Priez avec les paroisses et les bergers où que vous soyez."
+],
+"You are connected. The host will bring you on.": [
+"O ti so pọ̀. Olùgbàlejò yóò mú ọ wá.",
+"Vous êtes connecté. L’hôte vous fera entrer."
+],
+"You are live": [
+"O ti wà ní tààrà",
+"Vous êtes en direct"
+],
+"YouTube Studio, then Go Live, then Stream. Copy the “Stream key”.": [
+"YouTube Studio, lẹ́yìn náà Go Live, lẹ́yìn náà Stream. Da “Stream key” kọ.",
+"YouTube Studio, puis Passer au direct, puis Diffusion. Copiez la « Stream key »."
+],
+"Your channel or page link, so people can watch (optional)": [
+"Ìjápọ̀ ojú-ìwé rẹ, kí àwọn ènìyàn lè wò ó (kò pọn dandan)",
+"Le lien de votre chaîne ou page, pour qu’on puisse regarder (facultatif)"
+],
+"Your key stays on this computer.": [
+"Stream key rẹ yóò wà lórí kọ̀ǹpútà yìí.",
+"Votre clé reste sur cet ordinateur."
+],
+"Your logo, flyers, offering details and announcement videos will wait here.": [
+"Àmì rẹ, ìwé ìpolówó, àlàyé ọrẹ àti fídíò ìkéde yóò dúró síbí.",
+"Votre logo, vos affiches, les détails d’offrande et les vidéos d’annonce vous attendent ici."
+],
+"e.g. Welcome to CCC Ketu Parish": [
+"bí Ẹ káàbọ̀ sí Ìjọ CCC Ketu",
+"ex. Bienvenue à la paroisse CCC de Ketu"
+],
+"to go live and appear in Online Church.": [
+"láti lọ tààrà àti láti hàn nínú Ìjọ Orí Ayélujára.",
+"pour passer en direct et apparaître dans l’Église en ligne."
+],
+"{link} is not a valid link": [
+"{link} kì í ṣe ìjápọ̀ tó tọ́",
+"{link} n’est pas un lien valide"
+],
+"{name} could not connect on that network": [
+"{name} kò lè so pọ̀ lórí nẹ́tíwọ́ọ̀kì náà",
+"{name} n’a pas pu se connecter sur ce réseau"
+],
+"{n} worshipping live right now. Come in and join them.": [
+"{n} ń jọ́sìn tààrà báyìí. Wọlé kí o darapọ̀ mọ́ wọn.",
+"{n} en direct en ce moment. Entrez et rejoignez-les."
+],
+"‹ Online Church": [
+"‹ Ìjọ Orí Ayélujára",
+"‹ Église en ligne"
 ]
 }

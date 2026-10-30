@@ -7,6 +7,9 @@ import { invoke } from './payments';
  * their articles and livestream. Everything else in the app is free (supabase/migrations/20261025000000_partner_plan_live.sql).
  */
 
+/** Off while the app is tested with churches: everything is free and no plan is shown (see migration 20261104000000) */
+export const PRICING_ON = false;
+
 export const PARTNER_FEATURES = [
   'Tithes, offerings and gifts paid to your bank account',
   'Readers can support your articles and commentaries',
@@ -47,6 +50,7 @@ export async function getSubscription(parishId: string): Promise<Subscription | 
 }
 
 export async function hasPlan(parishId: string): Promise<boolean> {
+  if (!PRICING_ON) return true;
   const { data, error } = await supabase.rpc('parish_has_plan', { pid: parishId });
   return !error && !!data;
 }

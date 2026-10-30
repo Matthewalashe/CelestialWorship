@@ -8,7 +8,7 @@ import { useIsDesktop } from '../hooks/useMediaQuery';
 import { Avatar } from './ProfileMedia';
 import {
   Home, Church, Music, BookOpen, StickyNote, Bird, ListMusic, MonitorPlay, Moon, Sun,
-  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard, LibraryBig,
+  HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard, LibraryBig, Video,
   Baby, Calendar, Map as MapIcon, Landmark, Network, ScrollText, ChevronRight, PenLine,
 } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
@@ -59,7 +59,8 @@ const MoreGroups: { title: string; items: NavItem[] }[] = [
   {
     title: 'Worship',
     items: [
-      { path: '/live', label: 'nav.live', icon: <Radio size={20} />, blurb: 'Services as they happen' },
+      { path: '/live', label: 'nav.live', icon: <Radio size={20} />, blurb: 'Join a service happening now' },
+      { path: '/go-live', label: 'nav.golive', icon: <Video size={20} />, blurb: 'Stream your service, as easy as a call' },
       { path: '/suggestions', label: 'nav.selector', icon: <ListMusic size={20} />, blurb: 'Choose hymns for a service' },
       { path: '/control', label: 'nav.operator', icon: <MonitorPlay size={20} />, blurb: 'Hymns and verses on a screen' },
     ],

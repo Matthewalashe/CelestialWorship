@@ -182,7 +182,7 @@ export interface ConstitutionData {
 }
 
 // ---------- Live Display ----------
-export type DisplayContentType = 'hymn' | 'verse' | 'announcement' | 'blank' | 'logo';
+export type DisplayContentType = 'hymn' | 'verse' | 'announcement' | 'blank' | 'logo' | 'image' | 'video';
 
 export interface DisplayState {
   type: DisplayContentType;
@@ -192,6 +192,8 @@ export interface DisplayState {
   hymnNumber?: number;
   verseIndex?: number;
   totalVerses?: number;
+  /** A church's own logo, picture or video */
+  imageUrl?: string;
 }
 
 // ---------- Hymn Suggestion ----------
