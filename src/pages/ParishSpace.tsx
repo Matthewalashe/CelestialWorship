@@ -474,7 +474,10 @@ export default function ParishSpace() {
         <Users size={36} className="mx-auto" style={{ color: 'var(--color-accent-brand)' }} />
         <h1 className="text-xl font-bold font-[Outfit]" style={text}>{tr('Parish space')}</h1>
         <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>{tr('You are not in a parish space yet. Ask your shepherd or parish administrator to add you, or, if you run a parish, claim it in Parishes.')}</p>
-        <Link to="/directory" className="btn-primary inline-block px-6 py-2.5 rounded-xl text-sm font-semibold">{tr('Parishes')}</Link>
+        <div className="flex flex-wrap justify-center gap-2">
+          <Link to="/directory" className="btn-primary inline-block px-6 py-2.5 rounded-xl text-sm font-semibold">{tr('Find my parish')}</Link>
+          <Link to="/directory?submit=1" className="inline-block px-6 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', ...text }}>{tr('Add my parish')}</Link>
+        </div>
       </div>
     );
   }
@@ -491,6 +494,7 @@ export default function ParishSpace() {
             {spaces.map(s => <option key={s.parish_id} value={s.parish_id}>{s.name}</option>)}
           </select>
         ) : <h1 className="text-2xl font-bold font-[Outfit]" style={text}>{space.name}</h1>}
+        {space.status === 'pending' && <p className="text-xs rounded-xl px-3 py-2" style={{ ...card, color: 'var(--color-text-secondary)' }}>{tr('Your space is ready to use. The parish appears in the directory and Online Church once a moderator confirms it. You can already invite your people.')}</p>}
         <div className="grid grid-cols-3 gap-1 p-1 rounded-xl" style={card} role="tablist">
           {([['posts', tr('Posts'), <Hash key="h" size={15} />], ['rosters', tr('Rosters'), <CalendarDays key="c" size={15} />], ['people', tr('People'), <Users key="u" size={15} />]] as const).map(([id, label, icon]) => (
             <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className="py-2 rounded-lg text-sm font-semibold inline-flex items-center justify-center gap-1.5"

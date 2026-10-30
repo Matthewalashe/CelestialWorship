@@ -7,7 +7,7 @@ import { raise } from './backend';
  * (supabase/migrations/20261030000000_parish_space.sql); this file only reads and writes.
  */
 
-export interface MySpace { parish_id: string; role: string; name: string; city: string | null; logo_url: string | null }
+export interface MySpace { parish_id: string; role: string; name: string; city: string | null; logo_url: string | null; status?: string }
 export interface SpacePerson { user_id: string; role: string; display_name: string | null; church_title: string | null; avatar_url: string | null; phone: string | null; email: string | null }
 export interface Channel { id: string; parish_id: string; name: string; about: string | null }
 export type Audience = 'space' | 'people' | 'link';
@@ -173,6 +173,25 @@ export async function requestToJoin(parishId: string, note?: string): Promise<'p
   const { data, error } = await supabase.rpc('request_to_join_space', { pid: parishId, p_note: note ?? null });
   raise(error, 'Asking to join');
   return data as 'pending' | 'member';
+}
+
+/** Join a parish that so far is only in the public list: it becomes a real parish with a space */
+export async function joinListed(listedId: string): Promise<{ parishId: string; state: 'pending' | 'member' }> {
+  const { data, error } = await supabase.functions.invoke('join-listed', { body: { listed_id: listedId } });
+  if (error) {
+    let message = error.message;
+    try { message = (await (error as { context?: Response }).context?.json())?.error ?? message; } catch {}
+    throw new Error(message);
+  }
+  return { parishId: data.parish_id, state: data.state };
+}
+
+/** Requests still waiting for an answer, so nobody has to ask again */
+export async function myWaitingRequests(): Promise<{ parish_id: string; name: string }[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data } = await supabase.from('parish_space_requests').select('parish_id, parishes(name)').eq('user_id', user.id).eq('status', 'pending');
+  return ((data ?? []) as unknown as { parish_id: string; parishes: { name: string } | null }[]).map(r => ({ parish_id: r.parish_id, name: r.parishes?.name ?? '' }));
 }
 
 /** This member's answer-in-waiting for a parish, if any */

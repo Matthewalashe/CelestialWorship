@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessagesSquare, ChevronRight } from 'lucide-react';
-import { mySpaces, myInvites, acceptInvite, myRequest, requestToJoin, type MySpace } from '../lib/parishSpace';
+import { MessagesSquare, ChevronRight, Clock } from 'lucide-react';
+import { mySpaces, myInvites, myWaitingRequests, acceptInvite, joinListed, myRequest, requestToJoin, type MySpace } from '../lib/parishSpace';
 import { promptDialog } from './Dialog';
 import { useAuth } from '../hooks/useAuth';
 import { showToast } from './Toast';
@@ -16,7 +16,8 @@ const ROLE: Record<string, string> = {
 export function MySpaces() {
   const [spaces, setSpaces] = useState<MySpace[]>([]);
   const [invites, setInvites] = useState<Awaited<ReturnType<typeof myInvites>>>([]);
-  const load = useCallback(() => { mySpaces().then(setSpaces).catch(() => setSpaces([])); myInvites().then(setInvites); }, []);
+  const [waiting, setWaiting] = useState<{ parish_id: string; name: string }[]>([]);
+  const load = useCallback(() => { mySpaces().then(setSpaces).catch(() => setSpaces([])); myInvites().then(setInvites); myWaitingRequests().then(setWaiting).catch(() => {}); }, []);
   useEffect(() => { load(); }, [load]);
 
   const card = { backgroundColor: 'var(--color-bg-card)' };
@@ -30,7 +31,13 @@ export function MySpaces() {
                   className="btn-primary px-3 py-1.5 rounded-lg text-sm font-semibold">{tr('Accept')}</button>
         </div>
       ))}
-      {spaces.length === 0 && invites.length === 0 ? (
+      {waiting.map(w => (
+        <Link key={w.parish_id} to={`/directory/${w.parish_id}`} className="flex items-center gap-3 rounded-2xl p-4 text-sm" style={{ ...card, color: 'var(--color-text-secondary)' }}>
+          <Clock size={18} aria-hidden style={{ color: 'var(--color-accent-gold)' }} />
+          <span className="flex-1"><b style={{ color: 'var(--color-text-primary)' }}>{w.name}</b>: {tr('your request is with the parish. There is no need to ask again.')}</span>
+        </Link>
+      ))}
+      {spaces.length === 0 && invites.length === 0 && waiting.length === 0 ? (
         <Link to="/directory" className="flex items-center gap-3 rounded-2xl p-4 text-sm" style={{ ...card, color: 'var(--color-text-secondary)' }}>
           <MessagesSquare size={18} style={{ color: 'var(--color-accent-brand)' }} />
           <span className="flex-1">{tr('Not in a parish space yet. Find your parish and ask to join.')}</span>
@@ -44,7 +51,7 @@ export function MySpaces() {
                 {s.logo_url ? <img src={s.logo_url} alt="" className="w-9 h-9 rounded-xl object-cover" /> : <span className="w-9 h-9 rounded-xl grid place-items-center" style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-accent-brand)' }}><MessagesSquare size={16} /></span>}
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-semibold truncate" style={{ color: 'var(--color-text-primary)' }}>{s.name}</span>
-                  <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr(ROLE[s.role] ?? s.role)}{s.city ? ` · ${s.city}` : ''}</span>
+                  <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr(ROLE[s.role] ?? s.role)}{s.city ? ` · ${s.city}` : ''}{s.status === 'pending' ? ` · ${tr('waiting to be listed')}` : ''}</span>
                 </span>
                 <ChevronRight size={16} style={{ color: 'var(--color-text-muted)' }} />
               </Link>
@@ -57,7 +64,8 @@ export function MySpaces() {
 }
 
 /** On a parish's page: ask to join its space, see that the request is waiting, or open the space */
-export function JoinSpaceButton({ parishId }: { parishId: string }) {
+export function JoinSpaceButton({ parishId, listed = false }: { parishId: string; listed?: boolean }) {
+  const [realId, setRealId] = useState(parishId);
   const { user, loading } = useAuth();
   const [state, setState] = useState<'loading' | 'member' | 'pending' | 'declined' | 'none' | 'signed-out'>('loading');
   useEffect(() => {
@@ -68,23 +76,37 @@ export function JoinSpaceButton({ parishId }: { parishId: string }) {
       const spaces = await mySpaces().catch(() => []);
       if (!live) return;
       if (spaces.some(s => s.parish_id === parishId)) { setState('member'); return; }
+      if (listed) { setState('none'); return; }
       const r = await myRequest(parishId).catch(() => null);
       if (live) setState(r ?? 'none');
     })();
     return () => { live = false; };
-  }, [parishId, user, loading]);
+  }, [parishId, listed, user, loading]);
 
   const style = { borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' };
   const cls = 'px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5';
   if (state === 'loading') return null;
-  if (state === 'member') return <Link to={`/space?parish=${parishId}`} className={cls} style={style}><MessagesSquare size={15} /> {tr('Parish space')}</Link>;
+  if (state === 'member') return <Link to={`/space?parish=${realId}`} className={cls} style={style}><MessagesSquare size={15} /> {tr('Parish space')}</Link>;
   if (state === 'pending') return <span className={cls} style={{ ...style, color: 'var(--color-text-muted)' }}><MessagesSquare size={15} /> {tr('Asked to join')}</span>;
   if (state === 'signed-out') return <Link to={`/signin?returnTo=${encodeURIComponent(window.location.pathname)}`} className={cls} style={style}><MessagesSquare size={15} /> {tr('Join the parish space')}</Link>;
   return (
     <button className={cls} style={style} onClick={async () => {
+      if (listed) {
+        try {
+          const r = await joinListed(parishId);
+          setRealId(r.parishId);
+          setState(r.state);
+          showToast(r.state === 'member' ? tr('You are in the parish space') : tr('Asked, the parish will let you in'));
+        } catch (e) { showToast(errorMessage(e)); }
+        return;
+      }
       const note = await promptDialog({ title: tr('Ask to join the parish space'), message: tr('The parish will admit you. Say who you are if they may not know you (optional).'), label: tr('A note to the parish'), confirmLabel: tr('Ask to join') });
       if (note === null) return;
-      try { setState(await requestToJoin(parishId, note) === 'member' ? 'member' : 'pending'); showToast(tr('Asked, the parish will let you in')); } catch (e) { showToast(errorMessage(e)); }
+      try {
+        const joined = await requestToJoin(parishId, note) === 'member';
+        setState(joined ? 'member' : 'pending');
+        showToast(joined ? tr('You are in the parish space') : tr('Asked, the parish will let you in'));
+      } catch (e) { showToast(errorMessage(e)); }
     }}><MessagesSquare size={15} /> {tr('Ask to join the parish space')}</button>
   );
 }

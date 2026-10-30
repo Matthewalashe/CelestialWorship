@@ -16,6 +16,8 @@ import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
 import { LanguageSwitch } from './LanguageSwitch';
 import { MovedNotice } from './MovedNotice';
+import { linkHomeParish } from '../lib/homeParish';
+import { showToast } from './Toast';
 import { PictureTile, IconTile, TileGroup } from './Tiles';
 import { sendWaitingParishLeads } from '../lib/parishLeads';
 
@@ -106,12 +108,23 @@ export default function Layout() {
   const { theme, toggleTheme } = useTheme();
   const { t } = useT();
   const { canModerate, profile: account } = useAuth();
-  const { profile } = useProfile();
+  const { profile, save } = useProfile();
   const [moreOpen, setMoreOpen] = useState(false);
   const desktop = useIsDesktop();
   const studio = desktop && (location.pathname === '/' || location.pathname === '/studio');
 
   useEffect(() => { setMoreOpen(false); }, [location.pathname]);
+  // Choosing a parish anywhere also joins its space, once the person is signed in
+  useEffect(() => {
+    if (!account?.id) return;
+    let live = true;
+    linkHomeParish(account.id, profile.parishId, profile.parishName).then(r => {
+      if (!live || !r) return;
+      if (r.parishId !== profile.parishId) void save({ parishId: r.parishId });
+      if (r.state === 'member') showToast(tr('You are in your parish space'));
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [account?.id, profile.parishId, profile.parishName, save]);
   // A parish described while offline goes once the app is open again
   useEffect(() => { sendWaitingParishLeads(); }, []);
 

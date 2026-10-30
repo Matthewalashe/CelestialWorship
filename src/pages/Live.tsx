@@ -69,9 +69,11 @@ export default function Live() {
   const liveParishesOnly = useMemo(() => parishes.filter(p =>
     safeHref(p.live_url) && isLiveNow(p.live_now, p.live_updated_at) && !live.some(s => s.parish_id === p.id)), [parishes, live]);
   // Followed parishes first
+  // Only parishes confirmed in the directory appear here (and only once the directory has loaded)
+  const listedLive = live.filter(s => parish(s.parish_id));
   const byFollow = (a: Livestream, b: Livestream) => Number(follows.includes(b.parish_id)) - Number(follows.includes(a.parish_id));
 
-  const count = live.length + liveParishesOnly.length;
+  const count = listedLive.length + liveParishesOnly.length;
 
   return (
     <div className="px-4 py-6 max-w-4xl mx-auto pb-24 space-y-8">
@@ -90,7 +92,7 @@ export default function Live() {
         </div>
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
-          {[...live].sort(byFollow).map(s => {
+          {[...listedLive].sort(byFollow).map(s => {
             const p = parish(s.parish_id);
             return <LiveCard key={s.id} to={`/live/${s.id}`} title={s.title} parish={p?.name ?? ''} followed={follows.includes(s.parish_id)} picture={thumbnail(s.destinations.map(d => d.url), p?.cover_url, p?.logo_url)} />;
           })}

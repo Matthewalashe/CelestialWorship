@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Plus, MapPin, Church, Phone, Mail, User as UserIcon, ChevronRight, List, Map as MapIcon, LocateFixed } from 'lucide-react';
 import { useParishes, useParishSubmission, continentOf, PARISH_LEVELS, type ParishSubmission, type Parish, type ParishLevel } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
@@ -42,6 +42,7 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
   const { profile, save } = useProfile();
   const draft = useDraft<ParishDraft>('parish:new', { ...EMPTY, kind: initialKind, country: profile.country, state_region: profile.stateRegion });
   const v = draft.value;
+  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const valid = v.name.trim().length >= 3 && v.country.trim() && v.city.trim();
 
@@ -64,10 +65,11 @@ function SubmitParish({ onClose, initialKind }: { onClose: () => void; initialKi
       } as ParishSubmission;
       const id = await submit(row);
       // People registering a parish are usually its shepherd or admin
-      if (v.kind === 'parish' && (profile.memberType === 'shepherd' || profile.memberType === 'church_admin')) await save({ parishId: id, parishName: row.name });
+      if (!profile.parishId || profile.memberType === 'shepherd' || profile.memberType === 'church_admin') await save({ parishId: id, parishName: row.name });
       draft.clear();
-      showToast(tr('Thank you, the parish will be listed once a moderator confirms it'));
+      showToast(tr('Your parish space is ready. The parish joins the directory once a moderator confirms it.'));
       onClose();
+      navigate(`/space?parish=${id}`);
     } catch (e) {
       showToast(errorMessage(e));
     } finally {

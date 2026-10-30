@@ -94,7 +94,8 @@ function toRow(p: MemberProfile) {
     member_type: p.memberType,
     church_title: p.churchTitle || null,
     ministry: p.ministry || null,
-    parish_id: p.parishId,
+    // A listed parish has no database id until someone joins it
+    parish_id: p.parishId && /^[0-9a-f-]{36}$/i.test(p.parishId) ? p.parishId : null,
     country: p.country || null,
     state_region: p.stateRegion || null,
     phone: p.phone || null,
