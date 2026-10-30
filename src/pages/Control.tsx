@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Music, BookOpen, Megaphone, MonitorPlay, Search, ChevronLeft, ChevronRight, EyeOff, Image as ImageIcon, Wifi, WifiOff, ListOrdered, History as HistoryIcon, Send, Radio, Layers, Copy, X } from 'lucide-react';
+import { Music, BookOpen, Megaphone, MonitorPlay, Search, ChevronLeft, ChevronRight, EyeOff, Image as ImageIcon, Wifi, WifiOff, ListOrdered, History as HistoryIcon, Send, Radio, Layers, Copy, X, Palette } from 'lucide-react';
 import { useDisplayController, loadOperatorQueue, clearOperatorQueue, newRoomCode } from '../hooks/useLiveDisplay';
 import { useHymnSearch, useHymns } from '../hooks/useHymns';
 import { useBible } from '../hooks/useBible';
@@ -10,6 +10,8 @@ import { buildSlides, displayTitle } from '../utils/hymnText';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { savedLogo } from '../lib/studio/media';
 import { MediaGrid } from '../components/StudioMedia';
+import { DisplayLookPanel } from '../components/DisplayLookPanel';
+import { useLook, withLook } from '../lib/studio/look';
 import { showToast } from '../components/Toast';
 import { tr } from '../i18n';
 
@@ -19,7 +21,7 @@ import { tr } from '../i18n';
  * Keys: → / Space / PageDown next · ← / PageUp previous · B black · L logo · 1–9 jump to a slide.
  */
 
-type Source = 'hymns' | 'bible' | 'notices' | 'media';
+type Source = 'hymns' | 'bible' | 'notices' | 'media' | 'look';
 type Lang = 'yo' | 'both' | 'en';
 interface Slide { label: string; state: DisplayState }
 
@@ -196,6 +198,7 @@ function OverlayHelp({ room, onClose }: { room: string; onClose: () => void }) {
 export default function Control({ embedded = false, active = true }: { embedded?: boolean; active?: boolean }) {
   usePageTitle('control', embedded ? 'Live Studio' : 'Operator');
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const { look, update: updateLook } = useLook();
   const { sendToDisplay, room, setRoom, remoteConnected } = useDisplayController();
   const { hymns } = useHymns();
 
@@ -229,11 +232,12 @@ export default function Control({ embedded = false, active = true }: { embedded?
   const liveIndex = slides.findIndex(s => sameAsLive(s.state));
   const nextSlide = slides[liveIndex + 1] ?? (liveIndex === -1 ? slides[0] : undefined);
 
-  const go = useCallback((state: DisplayState) => {
+  const go = useCallback((plain: DisplayState) => {
+    const state = withLook(plain, look);
     sendToDisplay(state);
     setLive(state);
     setHistory(h => [{ at: new Date(), state }, ...h.filter(x => !(x.state.title === state.title && x.state.content === state.content))].slice(0, 12));
-  }, [sendToDisplay]);
+  }, [sendToDisplay, look]);
 
   const next = useCallback(() => { if (nextSlide) go(nextSlide.state); }, [nextSlide, go]);
   const prev = useCallback(() => { if (liveIndex > 0) go(slides[liveIndex - 1].state); }, [liveIndex, slides, go]);
@@ -266,7 +270,7 @@ export default function Control({ embedded = false, active = true }: { embedded?
   }, [active, next, prev, black, logo, go, slides]);
 
   const openScreen = () => window.open(room ? `/display?room=${room}` : '/display', 'celestialworship-display', 'width=1920,height=1080');
-  const sourceTabs: [Source, string, React.ReactNode][] = [['hymns', 'Hymns', <Music size={16} />], ['bible', 'Bible', <BookOpen size={16} />], ['notices', 'Notices', <Megaphone size={16} />], ['media', 'Media', <ImageIcon size={16} />]];
+  const sourceTabs: [Source, string, React.ReactNode][] = [['hymns', 'Hymns', <Music size={16} />], ['bible', 'Bible', <BookOpen size={16} />], ['notices', 'Notices', <Megaphone size={16} />], ['media', 'Media', <ImageIcon size={16} />], ['look', 'Look', <Palette size={16} />]];
   const itemTitle = mode === 'hymn' ? (hymn ? `${hymn.number} · ${displayTitle(hymn, lang === 'en' ? 'en' : 'yo')}` : null) : `${book} ${chapter}`;
 
   return (
@@ -309,6 +313,7 @@ export default function Control({ embedded = false, active = true }: { embedded?
             {source === 'hymns' && <HymnSource current={mode === 'hymn' ? hymnNo : null} onPick={h => { setHymnNo(h.number); setMode('hymn'); }} />}
             {source === 'bible' && <BibleSource book={book} chapter={chapter} lang={bibleLang} onChange={(b, c, l) => { setBook(b); setChapter(c); setBibleLang(l); setPicked([]); setMode('bible'); }} />}
             {source === 'notices' && <NoticeSource onSend={go} />}
+            {source === 'look' && <DisplayLookPanel look={look} update={updateLook} />}
             {source === 'media' && <div className="h-full overflow-y-auto"><MediaGrid onPick={item => go({ type: item.kind, content: '', title: item.name, imageUrl: item.url })} /></div>}
           </div>
         </aside>

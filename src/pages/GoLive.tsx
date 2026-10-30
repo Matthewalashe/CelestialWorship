@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import qrcode from 'qrcode-generator';
 import {
-  ChevronLeft, Download, CheckCircle2, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2,
+  ChevronLeft, Download, CheckCircle2, Users, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2,
 } from 'lucide-react';
 import { Compositor, type LogoCorner, type StudioSource } from '../lib/studio/compositor';
 import type { StudioLayout } from '../lib/studio/scene';
 import { hostRoom } from '../lib/studio/peers';
 import { loadTargets, saveTargets, PLATFORM_HELP, relayReady, startRelay, targetUrl, type RelaySession, type StreamPlatform, type StreamTarget } from '../lib/studio/relay';
 import { savedLogo, saveLogo } from '../lib/studio/media';
+import { useLiveFeedback } from '../lib/studio/reactions';
 import { CONNECT_DOWNLOAD, connectRunning, isWindowsComputer, startConnect } from '../lib/studio/connect';
 import { newRoomCode, useDisplayReceiver } from '../hooks/useLiveDisplay';
 import { useAuth } from '../hooks/useAuth';
@@ -358,6 +359,14 @@ export default function GoLive() {
   const [recording, setRecording] = useState(false);
   const [level, setLevel] = useState(0);
   const [fullUrl, setFullUrl] = useState('');
+  const [wordsStyle, setWordsStyle] = useState<'band' | 'full'>('band');
+  const [cut, setCut] = useState(false);
+  const [person, setPerson] = useState({ name: '', title: '' });
+  const [nameOn, setNameOn] = useState(false);
+  const [ticker, setTicker] = useState('');
+  const [boxText, setBoxText] = useState('');
+  const [showReactions, setShowReactions] = useState(true);
+  const { viewers, totals } = useLiveFeedback(live?.streamId ?? null, emoji => compositor.addReaction(emoji));
   const stage = useRef<HTMLDivElement>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const { displayState } = useDisplayReceiver(null);
@@ -387,6 +396,12 @@ export default function GoLive() {
   useEffect(() => { compositor.layout = layout; }, [layout, compositor]);
   useEffect(() => { compositor.wordsOn = wordsOn; }, [wordsOn, compositor]);
   useEffect(() => { compositor.banner = banner; }, [banner, compositor]);
+  useEffect(() => { compositor.wordsStyle = wordsStyle; }, [wordsStyle, compositor]);
+  useEffect(() => { compositor.fadeMs = cut ? 0 : 500; }, [cut, compositor]);
+  useEffect(() => { compositor.nameCard = nameOn && person.name.trim() ? { name: person.name.trim(), title: person.title.trim() } : null; }, [nameOn, person, compositor]);
+  useEffect(() => { compositor.ticker = ticker.trim(); }, [ticker, compositor]);
+  useEffect(() => { compositor.card = boxText.trim(); }, [boxText, compositor]);
+  useEffect(() => { compositor.showReactions = showReactions; }, [showReactions, compositor]);
   useEffect(() => { compositor.logoCorner = corner; }, [corner, compositor]);
   useEffect(() => { saveLogo(logo && /^https?:/.test(logo) ? logo : null); void compositor.setLogo(logo).catch(() => setLogo(null)); }, [logo, compositor]);
 
@@ -502,6 +517,12 @@ export default function GoLive() {
           <span aria-hidden title={tr('Sound level')} className="hidden sm:block w-16 h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-bg-secondary)' }}>
             <span className="block h-full transition-[width] duration-150" style={{ width: `${Math.round(level * 100)}%`, backgroundColor: level > 0.9 ? LIVE_RED : 'var(--color-success)' }} />
           </span>
+          {live?.streamId && (
+            <span className="hidden md:inline-flex items-center gap-2 text-xs font-semibold px-2" title={tr('Watching on the app')}>
+              <Users size={14} aria-hidden /> {viewers}
+              {Object.entries(totals).map(([emoji, n]) => <span key={emoji}>{emoji} {n}</span>)}
+            </span>
+          )}
           <button onClick={toggleRecord} aria-pressed={recording} className={chip} style={recording ? { color: LIVE_RED, borderColor: LIVE_RED } : card}><Circle size={14} fill={recording ? LIVE_RED : 'none'} aria-hidden /> {recording ? tr('Stop recording') : tr('Record')}</button>
           {live ? (
             <button onClick={endLive} className={`${chip} text-white`} style={{ backgroundColor: LIVE_RED, borderColor: 'transparent' }}><Square size={14} aria-hidden /> {tr('End')} · {elapsed}</button>
@@ -532,7 +553,9 @@ export default function GoLive() {
                   <button key={l.id} onClick={() => setLayout(l.id)} aria-pressed={layout === l.id} className="px-3 py-1.5 rounded-lg text-xs font-semibold border"
                           style={layout === l.id ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-secondary)', borderColor: 'transparent' } : card}>{tr(l.label)}</button>
                 ))}
-                <button onClick={() => setWordsOn(w => !w)} aria-pressed={wordsOn} className="ml-auto px-3 py-1.5 rounded-lg text-xs font-semibold border inline-flex items-center gap-1" style={card}>
+                <button onClick={() => setCut(c => !c)} aria-pressed={cut} className="px-3 py-1.5 rounded-lg text-xs font-semibold border" style={card}>{cut ? tr('Cut between pictures') : tr('Fade between pictures')}</button>
+                <button onClick={() => setWordsStyle(w => (w === 'band' ? 'full' : 'band'))} aria-pressed={wordsStyle === 'full'} className="ml-auto px-3 py-1.5 rounded-lg text-xs font-semibold border" style={card}>{wordsStyle === 'band' ? tr('Words over the cameras') : tr('Words fill the screen')}</button>
+                <button onClick={() => setWordsOn(w => !w)} aria-pressed={wordsOn} className="px-3 py-1.5 rounded-lg text-xs font-semibold border inline-flex items-center gap-1" style={card}>
                   {wordsOn ? <Eye size={13} aria-hidden /> : <EyeOff size={13} aria-hidden />} {wordsOn ? tr('Words show on stream') : tr('Words hidden from stream')}
                 </button>
               </div>
@@ -557,6 +580,19 @@ export default function GoLive() {
             {panel === 'phone' && <InvitePanel code={code} />}
             {panel === 'brand' && (
               <div className="rounded-2xl border p-3 space-y-3" style={card}>
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold">{tr('Name on screen')}</p>
+                  <input value={person.name} onChange={e => setPerson({ ...person, name: e.target.value })} maxLength={60} placeholder={tr('e.g. Evangelist A. Bada')} className={field} style={fieldStyle} />
+                  <input value={person.title} onChange={e => setPerson({ ...person, title: e.target.value })} maxLength={80} placeholder={tr('e.g. Today’s minister')} className={field} style={fieldStyle} />
+                  <button onClick={() => setNameOn(n => !n)} disabled={!person.name.trim()} aria-pressed={nameOn} className={`${chip} w-full`} style={nameOn ? { backgroundColor: 'var(--color-accent-brand)', color: 'var(--color-text-on-accent)', borderColor: 'transparent' } : card}>{nameOn ? tr('Hide the name') : tr('Show the name')}</button>
+                </div>
+                <label className="block text-xs font-semibold">{tr('Scrolling text')}
+                  <input value={ticker} onChange={e => setTicker(e.target.value)} maxLength={240} placeholder={tr('e.g. Join us every Wednesday for Mercy Day Service')} className={`${field} mt-1 font-normal`} style={fieldStyle} />
+                </label>
+                <label className="block text-xs font-semibold">{tr('A box in the corner')}
+                  <textarea value={boxText} onChange={e => setBoxText(e.target.value)} rows={3} maxLength={200} placeholder={tr('e.g. Offering: bank name, account number')} className={`${field} mt-1 font-normal resize-none`} style={fieldStyle} />
+                </label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={showReactions} onChange={e => setShowReactions(e.target.checked)} /> {tr('Show reactions from the app on the stream')}</label>
                 <label className="block text-xs font-semibold">{tr('A line across the bottom')}
                   <input value={banner} onChange={e => setBanner(e.target.value)} maxLength={120} placeholder={tr('e.g. Welcome to CCC Ketu Parish')} className={`${field} mt-1 font-normal`} style={fieldStyle} />
                 </label>

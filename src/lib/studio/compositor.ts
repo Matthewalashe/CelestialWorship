@@ -36,6 +36,23 @@ export class Compositor {
   banner = '';
   caption = '';
   logoCorner: LogoCorner = 'top-right';
+  /** Words across the bottom over the cameras, or filling the screen on their background */
+  wordsStyle: 'band' | 'full' = 'band';
+  /** Milliseconds of cross-fade between pictures; 0 is a straight cut */
+  fadeMs = 500;
+  nameCard: { name: string; title: string } | null = null;
+  ticker = '';
+  card = '';
+  showReactions = true;
+  private floating: { emoji: string; x: number; born: number; drift: number }[] = [];
+  private snapshot = document.createElement('canvas');
+  private sceneKey = '';
+  private fadeStart = 0;
+  private wordsKey = '';
+  private wordsStart = 0;
+  private lookUrl = '';
+  private lookEl: HTMLImageElement | HTMLVideoElement | null = null;
+  private tickerStart = 0;
   private logo: HTMLImageElement | null = null;
   private background: HTMLImageElement | null = null;
   private full: HTMLImageElement | HTMLVideoElement | null = null;
@@ -208,6 +225,29 @@ export class Compositor {
 
   // ── Drawing ───────────────────────────────────────────────
 
+  /** A reaction from someone watching rises up the side of the picture */
+  addReaction(emoji: string) {
+    if (!this.showReactions || this.floating.length > 30) return;
+    this.floating.push({ emoji, x: W - 60 - Math.random() * 110, born: performance.now(), drift: Math.random() * 40 - 20 });
+  }
+
+  private syncLook(url?: string, kind?: 'image' | 'video') {
+    const wanted = url ?? '';
+    if (wanted === this.lookUrl) return;
+    this.lookUrl = wanted;
+    if (this.lookEl instanceof HTMLVideoElement) this.lookEl.pause();
+    this.lookEl = null;
+    if (!url) return;
+    if (kind === 'video') {
+      const v = document.createElement('video');
+      v.crossOrigin = 'anonymous'; v.src = url; v.muted = true; v.loop = true; v.playsInline = true;
+      void v.play().catch(() => {});
+      this.lookEl = v;
+    } else {
+      void this.loadImage(url).then(img => { if (this.lookUrl === url) this.lookEl = img; }).catch(() => {});
+    }
+  }
+
   private drawCover(el: CanvasImageSource, srcW: number, srcH: number, x: number, y: number, w: number, h: number) {
     if (!srcW || !srcH) return;
     const c = coverCrop(srcW, srcH, { x, y, w, h });
@@ -216,6 +256,16 @@ export class Compositor {
 
   private draw() {
     const { ctx } = this;
+    // A change of picture cross-fades from the last frame shown
+    const key = `${this.layout}|${this.fullUrl}|${this.sources.filter(s => s.onStage).map(s => s.id).join(',')}`;
+    if (key !== this.sceneKey) {
+      if (this.sceneKey && this.fadeMs) {
+        this.snapshot.width = W; this.snapshot.height = H;
+        this.snapshot.getContext('2d')!.drawImage(this.canvas, 0, 0);
+        this.fadeStart = performance.now();
+      }
+      this.sceneKey = key;
+    }
     ctx.fillStyle = '#10131A';
     ctx.fillRect(0, 0, W, H);
     if (this.background) this.drawCover(this.background, this.background.naturalWidth, this.background.naturalHeight, 0, 0, W, H);
@@ -238,11 +288,32 @@ export class Compositor {
       });
     }
 
+    const fading = this.fadeStart ? (performance.now() - this.fadeStart) / this.fadeMs : 1;
+    if (fading < 1) {
+      ctx.globalAlpha = 1 - fading;
+      ctx.drawImage(this.snapshot, 0, 0);
+      ctx.globalAlpha = 1;
+    } else this.fadeStart = 0;
+
     const showing = this.wordsOn && this.words && ['hymn', 'verse', 'announcement'].includes(this.words.type);
-    if (showing) this.drawWords(this.words!);
-    else if (this.banner) this.drawBand('', this.banner);
-    else if (this.caption) this.drawCaption(this.caption);
+    this.syncLook(showing && this.wordsStyle === 'full' ? this.words!.look?.url : undefined, this.words?.look?.kind);
+    if (showing) {
+      const wordsKey = `${this.words!.title}|${this.words!.content}`;
+      if (wordsKey !== this.wordsKey) { this.wordsKey = wordsKey; this.wordsStart = performance.now(); }
+      ctx.globalAlpha = this.fadeMs ? Math.min(1, (performance.now() - this.wordsStart) / Math.max(150, this.fadeMs * 0.6)) : 1;
+      if (this.wordsStyle === 'full') this.drawFullWords(this.words!);
+      else this.drawWords(this.words!);
+      ctx.globalAlpha = 1;
+    } else {
+      this.wordsKey = '';
+      if (this.banner) this.drawBand('', this.banner);
+      else if (this.caption) this.drawCaption(this.caption);
+      if (this.nameCard && !this.banner) this.drawNameCard(this.nameCard);
+      if (this.ticker) this.drawTicker(this.ticker);
+    }
+    if (this.card) this.drawCard(this.card);
     this.drawLogo();
+    this.drawFloating();
   }
 
   private drawLogo() {
@@ -278,6 +349,103 @@ export class Compositor {
     ctx.font = `600 ${size}px ${FONT}`;
     ctx.fillStyle = '#FFFFFF';
     lines.forEach(line => { ctx.fillText(line, W / 2, y, maxW); y += size * 1.25; });
+  }
+
+  /** The words filling the screen on the parish's background, as on the projector */
+  private drawFullWords(state: DisplayState) {
+    const { ctx } = this;
+    ctx.fillStyle = state.look?.color ?? '#000000';
+    ctx.fillRect(0, 0, W, H);
+    if (this.lookEl) {
+      if (this.lookEl instanceof HTMLVideoElement) this.drawCover(this.lookEl, this.lookEl.videoWidth, this.lookEl.videoHeight, 0, 0, W, H);
+      else this.drawCover(this.lookEl, this.lookEl.naturalWidth, this.lookEl.naturalHeight, 0, 0, W, H);
+      ctx.fillStyle = `rgba(0,0,0,${state.look?.dim ?? 0.45})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    const at = (s: string, size: number) => { ctx.font = `700 ${size}px ${FONT}`; return ctx.measureText(s).width; };
+    const { size, lines } = fitWords(state.content, W - 140, H - 190, at, [72, 62, 54, 46, 40, 34, 28]);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    if (state.title) {
+      ctx.font = `700 28px ${FONT}`;
+      ctx.fillStyle = '#E8C36A';
+      ctx.fillText(state.title, W / 2, 44, W - 140);
+    }
+    ctx.font = `700 ${size}px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    let y = 96 + (H - 150 - lines.length * size * 1.25) / 2;
+    lines.forEach(line => { ctx.fillText(line, W / 2, y, W - 140); y += size * 1.25; });
+  }
+
+  /** Who is speaking, low on the left */
+  private drawNameCard({ name, title }: { name: string; title: string }) {
+    const { ctx } = this;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.font = `700 34px ${FONT}`;
+    const nameW = ctx.measureText(name).width;
+    ctx.font = `500 22px ${FONT}`;
+    const titleW = title ? ctx.measureText(title).width : 0;
+    const w = Math.min(W - 120, Math.max(nameW, titleW) + 48), h = title ? 96 : 66, x = 40, y = H - h - 70;
+    ctx.fillStyle = 'rgba(10,14,24,.88)';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = '#C9A24B';
+    ctx.fillRect(x, y, 6, h);
+    ctx.font = `700 34px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(name, x + 24, y + 12, w - 36);
+    if (title) {
+      ctx.font = `500 22px ${FONT}`;
+      ctx.fillStyle = '#E8C36A';
+      ctx.fillText(title, x + 24, y + 56, w - 36);
+    }
+  }
+
+  /** Scrolling text along the very bottom */
+  private drawTicker(text: string) {
+    const { ctx } = this;
+    if (!this.tickerStart) this.tickerStart = performance.now();
+    ctx.font = `600 24px ${FONT}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const width = ctx.measureText(text).width + 80;
+    const travelled = ((performance.now() - this.tickerStart) * 0.09) % (W + width);
+    ctx.fillStyle = 'rgba(10,14,24,.88)';
+    ctx.fillRect(0, H - 44, W, 44);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(text, W - travelled, H - 22);
+  }
+
+  /** A box in the corner: giving details, a phone number, a verse */
+  private drawCard(text: string) {
+    const { ctx } = this;
+    const at = (s: string, size: number) => { ctx.font = `600 ${size}px ${FONT}`; return ctx.measureText(s).width; };
+    const { size, lines } = fitWords(text, 340, 220, at, [26, 22, 20, 18]);
+    const h = lines.length * size * 1.25 + 28, x = W - 380, y = 112;
+    ctx.fillStyle = 'rgba(10,14,24,.88)';
+    ctx.fillRect(x, y, 368, h);
+    ctx.fillStyle = '#C9A24B';
+    ctx.fillRect(x, y, 368, 3);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.font = `600 ${size}px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    lines.forEach((line, i) => ctx.fillText(line, x + 14, y + 14 + i * size * 1.25, 340));
+  }
+
+  private drawFloating() {
+    const { ctx } = this;
+    const now = performance.now();
+    this.floating = this.floating.filter(f => now - f.born < 3200);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = `38px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", ${FONT}`;
+    for (const f of this.floating) {
+      const t = (now - f.born) / 3200;
+      ctx.globalAlpha = t > 0.7 ? (1 - t) / 0.3 : 1;
+      ctx.fillText(f.emoji, f.x + Math.sin(t * 6) * f.drift, H - 90 - t * 380);
+    }
+    ctx.globalAlpha = 1;
   }
 
   private drawCaption(text: string) {

@@ -1678,5 +1678,161 @@
 "The stream stopped. Check your internet connection and stream keys.": [
 "Ìgbéjáde ti dúró. Ṣàyẹ̀wò íńtánẹ́ẹ̀tì rẹ àti àwọn stream key rẹ.",
 "La diffusion s’est arrêtée. Vérifiez votre connexion Internet et vos clés."
+],
+"Look": [
+"Ìrísí",
+"Apparence"
+],
+"Background for hymns": [
+"Ẹ̀yìn orin",
+"Arrière-plan des cantiques"
+],
+"Background for the Bible": [
+"Ẹ̀yìn Bíbélì",
+"Arrière-plan de la Bible"
+],
+"Between slides": [
+"Láàárín àwọn ojú-ìwé",
+"Entre les diapositives"
+],
+"Fade": [
+"Rírọ̀",
+"Fondu"
+],
+"Slide": [
+"Yíyọ̀",
+"Glissement"
+],
+"Zoom": [
+"Sísún mọ́",
+"Zoom"
+],
+"Cut": [
+"Gígé",
+"Coupe"
+],
+"Speed": [
+"Ìyára",
+"Vitesse"
+],
+"Your own pictures and videos": [
+"Àwòrán àti fídíò tìrẹ",
+"Vos images et vidéos"
+],
+"For hymns": [
+"Fún orin",
+"Pour les cantiques"
+],
+"For the Bible": [
+"Fún Bíbélì",
+"Pour la Bible"
+],
+"Darken the picture so the words stand out": [
+"Mú àwòrán ṣókùnkùn kí ọ̀rọ̀ lè hàn dáadáa",
+"Assombrir l’image pour faire ressortir le texte"
+],
+"Black": [
+"Dúdú",
+"Noir"
+],
+"Night blue": [
+"Búlù alẹ́",
+"Bleu nuit"
+],
+"Royal blue": [
+"Búlù ọba",
+"Bleu roi"
+],
+"Purple": [
+"Àlùkò",
+"Violet"
+],
+"Deep green": [
+"Àwọ̀ ewé dúdú",
+"Vert profond"
+],
+"Wine": [
+"Àwọ̀ wáìnì",
+"Bordeaux"
+],
+"Cut between pictures": [
+"Gé láàárín àwọn àwòrán",
+"Coupe entre les images"
+],
+"Fade between pictures": [
+"Rọ̀ láàárín àwọn àwòrán",
+"Fondu entre les images"
+],
+"Words over the cameras": [
+"Ọ̀rọ̀ lórí àwọn kámẹ́rà",
+"Textes sur les caméras"
+],
+"Words fill the screen": [
+"Ọ̀rọ̀ kún ojú ẹ̀rọ",
+"Textes en plein écran"
+],
+"Name on screen": [
+"Orúkọ lójú ẹ̀rọ",
+"Nom à l’écran"
+],
+"e.g. Evangelist A. Bada": [
+"bí Ajíhìnrere A. Bada",
+"ex. Évangéliste A. Bada"
+],
+"e.g. Today’s minister": [
+"bí Òjíṣẹ́ òní",
+"ex. Le ministre du jour"
+],
+"Show the name": [
+"Fi orúkọ hàn",
+"Afficher le nom"
+],
+"Hide the name": [
+"Fi orúkọ pamọ́",
+"Masquer le nom"
+],
+"Scrolling text": [
+"Ọ̀rọ̀ tí ń sáré",
+"Texte défilant"
+],
+"e.g. Join us every Wednesday for Mercy Day Service": [
+"bí Ẹ darapọ̀ mọ́ wa ní Ọjọ́rú fún Ìsìn Ọjọ́ Àánú",
+"ex. Rejoignez-nous chaque mercredi pour le culte de miséricorde"
+],
+"A box in the corner": [
+"Àpótí kan ní igun",
+"Un encadré dans le coin"
+],
+"e.g. Offering: bank name, account number": [
+"bí Ọrẹ: orúkọ báńkì, nọ́ńbà àkáǹtì",
+"ex. Offrande : banque, numéro de compte"
+],
+"Show reactions from the app on the stream": [
+"Fi ìdáhùn láti áàpù hàn nínú ìgbéjáde",
+"Afficher les réactions de l’application dans le direct"
+],
+"Watching on the app": [
+"Àwọn tí ń wò lórí áàpù",
+"Spectateurs sur l’application"
+],
+"React": [
+"Fèsì",
+"Réagir"
+],
+"Amen": [
+"Àmín",
+"Amen"
+],
+"Halleluyah": [
+"Halleluyah",
+"Alléluia"
+],
+"Love": [
+"Ìfẹ́",
+"Amour"
+],
+"Peace": [
+"Àlàáfíà",
+"Paix"
 ]
 }

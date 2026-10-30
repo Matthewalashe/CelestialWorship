@@ -10,6 +10,7 @@ import { ErrorState, type Loadable } from '../components/CommunityStates';
 import { getLivestream, bestEmbed, isStreamLive, shareMessage, streamLink, type Livestream } from '../lib/live';
 import { parishCanReceive } from '../lib/payments';
 import { downloadIcs } from '../utils/churchCalendar';
+import { useLiveAudience, REACTIONS } from '../lib/studio/reactions';
 import { tr } from '../i18n';
 
 export default function LiveStream() {
@@ -18,6 +19,7 @@ export default function LiveStream() {
   const [state, setState] = useState<Loadable<Livestream | null>>({ status: 'loading' });
   const [canGive, setCanGive] = useState(false);
   const stream = state.status === 'ready' ? state.data : null;
+  const react = useLiveAudience(stream && isStreamLive(stream) ? stream.id : null);
   usePageTitle('live', stream?.title ?? 'Live');
 
   const load = useCallback(async () => {
@@ -76,6 +78,15 @@ export default function LiveStream() {
         </div>
       ) : (
         <LivePlayer embed={bestEmbed(stream, ended ? null : parish?.live_channels)} destinations={stream.destinations} title={stream.title} live={live} />
+      )}
+
+      {live && (
+        <div className="flex items-center justify-center gap-2" role="group" aria-label={tr('React')}>
+          {REACTIONS.map(r => (
+            <button key={r.emoji} onClick={() => react(r.emoji)} aria-label={tr(r.label)} title={tr(r.label)} className="w-12 h-12 rounded-full border text-xl transition-transform active:scale-125"
+                    style={{ backgroundColor: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>{r.emoji}</button>
+          ))}
+        </div>
       )}
 
       <div>

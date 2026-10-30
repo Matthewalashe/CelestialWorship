@@ -194,7 +194,12 @@ export interface DisplayState {
   totalVerses?: number;
   /** A church's own logo, picture or video */
   imageUrl?: string;
+  /** Its background and how it comes in */
+  look?: DisplayLook;
 }
+
+export type DisplayTransition = 'fade' | 'slide' | 'zoom' | 'cut';
+export interface DisplayLook { transition: DisplayTransition; seconds: number; color?: string; url?: string; kind?: 'image' | 'video'; dim?: number }
 
 // ---------- Hymn Suggestion ----------
 export interface HymnSuggestion {
