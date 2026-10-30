@@ -15,6 +15,8 @@ const made = spawnSync(ffmpeg, ['-y', '-hide_banner', '-loglevel', 'error', '-f'
 if (made.status !== 0) throw new Error('could not make the test recording');
 
 const receiver = spawn(ffmpeg, ['-y', '-hide_banner', '-loglevel', 'error', '-listen', '1', '-f', 'flv', '-i', 'rtmp://127.0.0.1:19350/live/testkey', '-c', 'copy', 'received.flv'], { stdio: 'inherit' });
+// A second platform, to prove one stream reaches several at once
+const receiver2 = spawn(ffmpeg, ['-y', '-hide_banner', '-loglevel', 'error', '-listen', '1', '-f', 'flv', '-i', 'rtmp://127.0.0.1:19351/live/secondkey', '-c', 'copy', 'received2.flv'], { stdio: 'inherit' });
 const connect = spawn(join(dir, 'CelestialWorshipConnect.exe'), { env: { ...process.env, CW_ALLOW_ORIGIN: 'https://e2e.test' }, stdio: 'pipe' });
 const log = [];
 connect.stdout.on('data', d => log.push(String(d)));
@@ -41,7 +43,7 @@ const ended = new Promise(resolve => {
   });
 });
 await new Promise(r => socket.on('open', r));
-socket.send(JSON.stringify({ type: 'start', urls: ['rtmp://127.0.0.1:19350/live/testkey'] }));
+socket.send(JSON.stringify({ type: 'start', urls: ['rtmp://127.0.0.1:19350/live/testkey', 'rtmp://127.0.0.1:19351/live/secondkey'] }));
 const data = readFileSync('input.webm');
 for (let i = 0; i < data.length; i += 64 * 1024) { socket.send(data.subarray(i, i + 64 * 1024)); await wait(30); }
 socket.send(JSON.stringify({ type: 'stop' }));
@@ -49,6 +51,7 @@ const end = await Promise.race([ended, wait(60_000).then(() => ({ timeout: true 
 if (end.timeout) throw new Error('Connect never finished');
 await wait(3000);
 receiver.kill();
+receiver2.kill();
 connect.kill();
 
 if (!events.some(e => e.type === 'live')) throw new Error('Connect never reported being live');
@@ -63,6 +66,14 @@ const codecs = (info.streams ?? []).map(s => s.codec_name);
 if (!codecs.includes('h264') || !codecs.includes('aac')) throw new Error(`wrong formats arrived: ${codecs}`);
 if (Number(info.format?.duration) < 10) throw new Error('too little video arrived');
 console.log('PASS H.264 and AAC arrived at the RTMP server');
+
+const second = JSON.parse(spawnSync(ffprobe, ['-v', 'error', '-show_entries', 'stream=codec_name', '-show_entries', 'format=duration', '-of', 'json', 'received2.flv'], { encoding: 'utf8' }).stdout || '{}');
+if (!(second.streams ?? []).some(x => x.codec_name === 'h264') || Number(second.format?.duration) < 10) throw new Error('the second platform did not receive the stream');
+console.log('PASS a second platform receives the same stream');
+
+// Facebook, Instagram and others only accept the secure kind of connection
+if (!/rtmps/.test(spawnSync(ffmpeg, ['-hide_banner', '-protocols'], { encoding: 'utf8' }).stdout)) throw new Error('this FFmpeg cannot make secure connections');
+console.log('PASS FFmpeg can make the secure connection Facebook needs');
 
 // Key frames every two seconds, as YouTube asks
 const frames = spawnSync(ffprobe, ['-v', 'error', '-select_streams', 'v', '-skip_frame', 'nokey', '-show_entries', 'frame=pts_time', '-of', 'csv=p=0', 'received.flv'], { encoding: 'utf8' });
