@@ -9,10 +9,10 @@ import type { RelaySession } from './relay';
  */
 
 const ADDRESS = 'ws://127.0.0.1:47650';
-export const CONNECT_DOWNLOAD = 'https://github.com/Matthewalashe/CelestialWorship/releases/download/connect-v0.1.0/CelestialWorshipConnect-windows.zip';
-/** Turned on once the installer (connect-v0.2.0) is published: until then the zip above is all there is */
+export const CONNECT_DOWNLOAD = 'https://github.com/Matthewalashe/CelestialWorship/releases/download/connect-v0.3.0/CelestialWorshipConnect-windows.zip';
+/** Turned on once the installer (connect-v0.3.0) is published: until then the zip above is all there is */
 export const CONNECT_INSTALLER_PUBLISHED = true;
-export const CONNECT_SETUP = 'https://github.com/Matthewalashe/CelestialWorship/releases/download/connect-v0.2.0/CelestialWorshipConnect-Setup.exe';
+export const CONNECT_SETUP = 'https://github.com/Matthewalashe/CelestialWorship/releases/download/connect-v0.3.0/CelestialWorshipConnect-Setup.exe';
 /** Wakes an installed Connect, if it is not already running */
 export const CONNECT_OPEN = 'celestialworship-connect://start';
 
