@@ -26,6 +26,13 @@ describe('CelestialWorship Connect', () => {
     expect(parseProgress('')).toBeNull();
   });
 
+  it('sends more data for 1080p, and treats anything unknown as the ordinary picture', () => {
+    const rate = (q?: string) => { const a = ffmpegArgs(['rtmp://x/y'], q); return a[a.indexOf('-b:v') + 1]; };
+    expect(rate()).toBe('3000k');
+    expect(rate('1080p')).toBe('6000k');
+    expect(rate('; rm -rf')).toBe('3000k');
+  });
+
   it('never repeats a stream key', () => {
     expect(redact('[flv] Could not open rtmps://live-api-s.facebook.com:443/rtmp/SECRET-KEY: I/O error')).not.toContain('SECRET-KEY');
   });

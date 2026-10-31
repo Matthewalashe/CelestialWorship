@@ -85,7 +85,7 @@ server.on('connection', socket => {
     if (active) { send({ type: 'ended', ok: false, reason: 'Another stream is already running on this computer.' }); return; }
     if (!validTargets(message.urls)) { send({ type: 'ended', ok: false, reason: 'One of the stream addresses is not valid.' }); return; }
 
-    const args = ffmpegArgs(message.urls);
+    const args = ffmpegArgs(message.urls, message.quality);
     const child = FFMPEG.endsWith('.mjs') ? spawn(process.execPath, [FFMPEG, ...args], { windowsHide: true }) : spawn(FFMPEG, args, { windowsHide: true });
     mine = active = child;
     let started = false;
