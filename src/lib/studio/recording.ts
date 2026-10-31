@@ -48,11 +48,11 @@ export class StudioRecorder {
   private type: string;
 
   /** `onProblem` hears anything the person should know while it runs */
-  private constructor(stream: MediaStream, type: string, writer: Writable | null, name: string, private onProblem: (m: string) => void) {
+  private constructor(stream: MediaStream, type: string, writer: Writable | null, name: string, private onProblem: (m: string) => void, bits = 4_000_000) {
     this.type = type;
     this.writer = writer;
     this.name = name;
-    this.rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 4_000_000 });
+    this.rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: bits });
     this.rec.ondataavailable = e => {
       if (!e.data.size) return;
       this.bytes += e.data.size;
@@ -75,11 +75,11 @@ export class StudioRecorder {
     this.rec.start(5000);
   }
 
-  static async start(stream: MediaStream, file: FileHandle | null, onProblem: (m: string) => void): Promise<StudioRecorder> {
+  static async start(stream: MediaStream, file: FileHandle | null, onProblem: (m: string) => void, bits?: number): Promise<StudioRecorder> {
     const type = recordingType();
     if (!type) throw new Error('This browser cannot record. Try Chrome or Edge.');
     const writer = file ? await file.createWritable() : null;
-    return new StudioRecorder(stream, type, writer, file?.name ?? suggestedName(), onProblem);
+    return new StudioRecorder(stream, type, writer, file?.name ?? suggestedName(), onProblem, bits);
   }
 
   get paused() { return this.rec.state === 'paused'; }
@@ -140,7 +140,7 @@ export function clock(ms: number): string {
 
 // ── A record of past broadcasts, on this computer ───────────
 
-export interface StudioSession { at: number; title: string; ms: number; platforms: string[]; peakViewers: number; reactions: number; drops: number }
+export interface StudioSession { at: number; title: string; parish?: string; ms: number; platforms: string[]; peakViewers: number; reactions: number; drops: number }
 const SESSIONS = 'cw-studio-sessions';
 
 export function loadSessions(): StudioSession[] {

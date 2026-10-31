@@ -11,6 +11,7 @@ import { getLivestream, bestEmbed, isStreamLive, shareMessage, streamLink, type 
 import { parishCanReceive } from '../lib/payments';
 import { downloadIcs } from '../utils/churchCalendar';
 import { useLiveAudience, REACTIONS } from '../lib/studio/reactions';
+import { LiveInteract } from '../components/LiveInteract';
 import { tr } from '../i18n';
 
 export default function LiveStream() {
@@ -19,7 +20,7 @@ export default function LiveStream() {
   const [state, setState] = useState<Loadable<Livestream | null>>({ status: 'loading' });
   const [canGive, setCanGive] = useState(false);
   const stream = state.status === 'ready' ? state.data : null;
-  const react = useLiveAudience(stream && isStreamLive(stream) ? stream.id : null);
+  const { react, send, vote, poll, voted } = useLiveAudience(stream && isStreamLive(stream) ? stream.id : null);
   usePageTitle('live', stream?.title ?? 'Live');
 
   const load = useCallback(async () => {
@@ -88,6 +89,7 @@ export default function LiveStream() {
           ))}
         </div>
       )}
+      {live && <LiveInteract send={send} vote={vote} poll={poll} voted={voted} />}
 
       <div>
         <h1 className="text-xl font-bold font-[Outfit]" style={{ color: 'var(--color-text-primary)' }}>{tr(stream.title)}</h1>

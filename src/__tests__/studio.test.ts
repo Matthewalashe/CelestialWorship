@@ -2,8 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { coverCrop, cropRect, fitWords, layoutRects, wrapText, WHOLE_VIEW } from '../lib/studio/scene';
 import { parseTarget, targetUrl } from '../lib/studio/relay';
 import { isTooSlow, nextSlowCount, retryWait } from '../lib/studio/connect';
-import { allowanceFor, uploadNeeded } from '../lib/studio/allowance';
+import { allowanceFor, goalShare, tierOf, uploadNeeded } from '../lib/studio/allowance';
+import { cleanMessage, cleanPoll, countVotes, makePoll, recordVote } from '../lib/studio/reactions';
 import { clock, fileSize } from '../lib/studio/recording';
+import { findScriptures, keyPoints, sermonNotes } from '../lib/studio/notes';
 
 const W = 1280, H = 720;
 const perChar = (s: string, size = 10) => s.length * size * 0.5;
@@ -97,20 +99,64 @@ describe('a stream that drops', () => {
 
 describe('the plan', () => {
   it('keeps the limits asleep while testing, with our mark on', () => {
-    const a = allowanceFor(false, false);
+    const a = allowanceFor(false, 'free');
     expect(a.watermark).toBe(true);
-    expect(a.platforms).toBe(Infinity);
-    expect(a.analytics).toBe(true);
+    expect(a.platforms).toBe(8);
+    expect(a.hd).toBe(true);
   });
-  it('gives the free plan two platforms, three hours and our mark', () => {
-    const a = allowanceFor(true, false);
-    expect([a.platforms, a.hours, a.watermark, a.transcript, a.analytics]).toEqual([2, 3, true, false, false]);
+  it('gives the free plan two platforms, three hours, 720p and our mark', () => {
+    const a = allowanceFor(true, 'free');
+    expect([a.platforms, a.hours, a.watermark, a.transcript, a.analytics, a.hd, a.audience, a.kits, a.clips, a.schedule]).toEqual([2, 3, true, false, false, false, false, 0, false, false]);
   });
-  it('lifts every limit on the paid plan', () => {
-    const a = allowanceFor(true, true);
-    expect([a.platforms, a.hours, a.watermark, a.transcript, a.analytics]).toEqual([Infinity, Infinity, false, true, true]);
+  it('lifts the limits on Premium, and adds all-parish reports on Enterprise', () => {
+    const p = allowanceFor(true, 'premium'), e = allowanceFor(true, 'enterprise');
+    expect([p.hours, p.watermark, p.hd, p.allParishes]).toEqual([Infinity, false, true, false]);
+    expect([e.watermark, e.allParishes, e.kits]).toEqual([false, true, Infinity]);
   });
-  it('adds up upload speed', () => { expect(uploadNeeded(2)).toBe(7); });
+  it('reads the tier from a subscription, and only a current one counts', () => {
+    expect(tierOf(null)).toBe('free');
+    expect(tierOf({ plan_id: 'enterprise-monthly', status: 'active' })).toBe('enterprise');
+    expect(tierOf({ plan_id: 'partner-monthly', status: 'non_renewing' })).toBe('premium');
+    expect(tierOf({ plan_id: 'enterprise-monthly', status: 'cancelled' })).toBe('free');
+    expect(tierOf({ plan_id: 'partner-monthly', status: 'past_due' })).toBe('free');
+  });
+  it('adds up upload speed', () => { expect(uploadNeeded(2)).toBe(7); expect(uploadNeeded(2, '1080p')).toBe(13); });
+  it('never overfills the giving goal', () => {
+    expect(goalShare(50, 100)).toBe(0.5);
+    expect(goalShare(500, 100)).toBe(1);
+    for (const [r, t] of [[0, 0], [10, 0], [-5, 10], [NaN, 10], [10, NaN]]) expect(goalShare(r, t)).toBe(0);
+  });
+});
+
+describe('what viewers send', () => {
+  it('keeps a proper comment, tidied', () => {
+    const m = cleanMessage({ kind: 'comment', name: ' Ade\u0000 ', text: '  Amen \n  brethren\u202e ', from: 'x' }, 5);
+    expect(m).toMatchObject({ kind: 'comment', name: 'Ade', text: 'Amen brethren', at: 5 });
+  });
+  it('refuses anything else, and cuts what is too long', () => {
+    for (const bad of [null, 1, {}, { kind: 'comment', text: '   ', from: 'x' }, { kind: 'script', text: 'a', from: 'x' }, { kind: 'comment', text: 'a' }, { kind: 'comment', text: 5, from: 'x' }]) expect(cleanMessage(bad)).toBeNull();
+    expect(cleanMessage({ kind: 'prayer', text: 'a'.repeat(999), from: 'x' })!.text).toHaveLength(240);
+  });
+  it('asks a poll for a question and at least two answers', () => {
+    expect(makePoll('1', '', ['a', 'b'])).toBeNull();
+    expect(makePoll('1', 'q', ['a', ' '])).toBeNull();
+    expect(makePoll('1', 'q', ['a', 'b', 'c', 'd', 'e'])!.options).toHaveLength(4);
+  });
+  it('counts one vote per person, the latest counting, and only valid ones', () => {
+    const poll = makePoll('p', 'q', ['a', 'b'])!;
+    const votes = new Map<string, number>();
+    expect(recordVote(votes, poll, { pollId: 'p', voter: 'v1', option: 0 })).toBe(true);
+    expect(recordVote(votes, poll, { pollId: 'p', voter: 'v1', option: 1 })).toBe(true);
+    expect(recordVote(votes, poll, { pollId: 'p', voter: 'v2', option: 1 })).toBe(true);
+    for (const bad of [{ pollId: 'other', voter: 'v3', option: 0 }, { pollId: 'p', voter: 'v3', option: 9 }, { pollId: 'p', voter: 'v3', option: -1 }, { pollId: 'p', voter: 'v3', option: 0.5 }, { pollId: 'p', option: 0 }, null]) expect(recordVote(votes, poll, bad)).toBe(false);
+    expect(countVotes(votes, 2)).toEqual([0, 2]);
+    expect(recordVote(votes, { ...poll, open: false }, { pollId: 'p', voter: 'v4', option: 0 })).toBe(false);
+  });
+  it('checks a poll before a viewer page shows it', () => {
+    expect(cleanPoll(null)).toBeNull();
+    expect(cleanPoll({ id: 'p', question: 'q', options: ['a', 'b'], counts: [1] })).toBeNull();
+    expect(cleanPoll({ id: 'p', question: 'q', options: ['a', 'b'], counts: [-1, 'x'], open: true })).toMatchObject({ counts: [0, 0], open: true });
+  });
 });
 
 describe('framing and cropping', () => {
@@ -146,5 +192,23 @@ describe('numbers shown', () => {
     expect(clock(-5)).toBe('0:00:00');
     expect(fileSize(5 * 1024 ** 3)).toBe('5.0 GB');
     expect(fileSize(10)).toBe('1 MB');
+  });
+});
+
+describe('sermon notes', () => {
+  it('finds Scriptures however they are spoken, once each', () => {
+    expect(findScriptures('turn to John 3:16 and first Corinthians chapter 13 verse 4 to 7, and again John 3:16. Psalm 23')).toEqual(['John 3:16', '1 Corinthians 13:4-7', 'Psalm 23']);
+    expect(findScriptures('John went home and Mark sat down')).toEqual([]);
+  });
+  it('picks the lines about what is said most, in the order said', () => {
+    const lines = ['good morning to you all today', 'faith moves mountains when faith is planted in the heart', 'we had rice after the meeting last week outside', 'without faith the heart cannot please God at all', 'short'];
+    const points = keyPoints(lines, 2);
+    expect(points).toEqual([lines[1], lines[3]]);
+  });
+  it('copes with nothing said', () => {
+    expect(keyPoints([])).toEqual([]);
+    const text = sermonNotes([], { title: 'T', date: 'D', scriptures: 'S', points: 'P', full: 'F' });
+    expect(text).toContain('T\nD');
+    expect(text).not.toContain('P\n');
   });
 });

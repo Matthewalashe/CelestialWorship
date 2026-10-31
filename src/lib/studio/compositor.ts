@@ -24,6 +24,9 @@ export interface StudioSource {
 
 export type LogoCorner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export type StudioShape = 'wide' | 'tall';
+export type StudioQuality = '720p' | '1080p';
+export interface PollView { question: string; options: string[]; counts: number[] }
+export interface GoalView { label: string; raisedText: string; targetText: string; share: number }
 
 const LONG = 1280, SHORT = 720;
 /** Pictures per second: going out, in the preview, and when nothing on screen is moving */
@@ -43,6 +46,16 @@ export class Compositor {
   private lastDrawn = '';
   /** Our mark, top left, on everything that goes out, unless the church has upgraded */
   watermark = true;
+  /** The colour of lines and titles, from the church's saved look */
+  accent = '#E8C36A';
+  /** A comment the host has chosen to show */
+  spotlight: { name: string; text: string } | null = null;
+  pollView: PollView | null = null;
+  goal: GoalView | null = null;
+  /** A video shown over the whole screen has played to its end */
+  onFullEnded: () => void = () => {};
+  private scale = 1;
+  private tall: { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } | null = null;
   /** Hearing a camera or microphone stop by itself, such as a cable pulled out */
   onSourceLost: (label: string) => void = () => {};
   private paused = false;
@@ -161,7 +174,7 @@ export class Compositor {
   /** Everything else that decides the picture: while it is unchanged there is nothing to redraw */
   private signature(): string {
     return JSON.stringify([this.W, this.layout, this.wordsOn, this.wordsStyle, this.words?.type, this.words?.title, this.words?.content, this.words?.look, this.banner, this.caption, this.card, this.nameCard,
-      this.paused, this.watermark, !!this.mark, this.logoCorner, !!this.logo, this.background?.src, this.fullUrl, !!this.full, this.lookUrl, !!this.lookEl]);
+      this.paused, this.accent, this.spotlight, this.pollView, this.goal, this.scale, this.watermark, !!this.mark, this.logoCorner, !!this.logo, this.background?.src, this.fullUrl, !!this.full, this.lookUrl, !!this.lookEl]);
   }
 
   /** Wide for YouTube and Facebook, tall for TikTok and Instagram. Not while something is going out. */
@@ -170,8 +183,7 @@ export class Compositor {
     const tall = shape === 'tall';
     this.W = tall ? SHORT : LONG;
     this.H = tall ? LONG : SHORT;
-    this.canvas.width = this.W;
-    this.canvas.height = this.H;
+    this.applySize();
     this.fadeStart = 0;
     this.sceneKey = '';
     this.drawSafely();
@@ -184,6 +196,23 @@ export class Compositor {
     this.master.gain.value = on ? 0 : 1;
   }
 
+  /** Everything is laid out on a 1280 by 720 plan and scaled, so 1080p changes only the sharpness */
+  private applySize() {
+    this.canvas.width = Math.round(this.W * this.scale);
+    this.canvas.height = Math.round(this.H * this.scale);
+    this.ctx.setTransform(this.scale, 0, 0, this.scale, 0, 0);
+  }
+
+  /** Not while something is going out */
+  setQuality(quality: StudioQuality) {
+    if (this.sending) return;
+    this.scale = quality === '1080p' ? 1.5 : 1;
+    this.applySize();
+    this.fadeStart = 0;
+    this.sceneKey = '';
+    this.drawSafely();
+  }
+
   get isTall() { return this.H > this.W; }
 
   /** Recording or streaming has started or stopped */
@@ -191,6 +220,25 @@ export class Compositor {
     this.sending = on;
     if (on) this.resumeSound();
     this.setRate(on ? SENDING_RATE : PREVIEW_RATE);
+  }
+
+  /** The middle of the picture, upright: a clip ready for TikTok and Instagram, made while everything else carries on */
+  tallStream(): MediaStream {
+    const canvas = document.createElement('canvas');
+    canvas.width = 720;
+    canvas.height = 1280;
+    this.tall = { canvas, ctx: canvas.getContext('2d', { alpha: false })! };
+    this.drawTall();
+    return new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...this.mix.stream.getAudioTracks()]);
+  }
+
+  stopTall() { this.tall = null; }
+
+  private drawTall() {
+    if (!this.tall) return;
+    const { width: w, height: h } = this.canvas;
+    const cw = Math.min(w, h * (9 / 16));
+    this.tall.ctx.drawImage(this.canvas, (w - cw) / 2, 0, cw, h, 0, 0, 720, 1280);
   }
 
   /** The picture as it is now, with everything on it */
@@ -342,7 +390,7 @@ export class Compositor {
       sound.connect(this.master);
       sound.connect(this.analyser);
       // When the video finishes, back to the cameras rather than hold its last frame
-      video.onended = () => { if (load === this.fullLoad) void this.showFull(null); };
+      video.onended = () => { if (load === this.fullLoad) { void this.showFull(null); this.onFullEnded(); } };
       this.fullSource = sound;
       this.full = video;
       this.resumeSound();
@@ -390,7 +438,7 @@ export class Compositor {
     const key = `${this.layout}|${this.fullUrl}|${this.sources.filter(s => s.onStage).map(s => s.id).join(',')}`;
     if (key !== this.sceneKey) {
       if (this.sceneKey && this.fadeMs) {
-        this.snapshot.width = W; this.snapshot.height = H;
+        this.snapshot.width = this.canvas.width; this.snapshot.height = this.canvas.height;
         this.snapshot.getContext('2d')!.drawImage(this.canvas, 0, 0);
         this.fadeStart = performance.now();
       }
@@ -421,7 +469,7 @@ export class Compositor {
     const fading = this.fadeStart ? (performance.now() - this.fadeStart) / this.fadeMs : 1;
     if (fading < 1) {
       ctx.globalAlpha = 1 - fading;
-      ctx.drawImage(this.snapshot, 0, 0);
+      ctx.drawImage(this.snapshot, 0, 0, W, H);
       ctx.globalAlpha = 1;
     } else this.fadeStart = 0;
 
@@ -445,13 +493,97 @@ export class Compositor {
       if (this.banner) raised = this.drawBand('', this.banner, floor);
       else if (this.caption) { this.drawCaption(this.caption, floor); raised = floor + 84; }
     }
-    if (this.nameCard && !showing && !this.banner) this.drawNameCard(this.nameCard, floor);
+    if (this.spotlight && !showing) this.drawSpotlight(this.spotlight, Math.max(raised, floor));
+    else if (this.nameCard && !showing && !this.banner) this.drawNameCard(this.nameCard, floor);
+    if (this.pollView) this.drawPoll(this.pollView);
+    if (this.goal) this.drawGoal(this.goal);
     if (this.ticker) this.drawTicker(this.ticker);
     if (this.card) this.drawCard(this.card);
     this.drawLogo(raised);
     if (this.paused) this.drawPaused();
     this.drawWatermark();
     this.drawFloating();
+    this.drawTall();
+  }
+
+  /** A viewer's comment, chosen by the host */
+  private drawSpotlight({ name, text }: { name: string; text: string }, floor: number) {
+    const { ctx, W, H } = this;
+    const boxW = Math.min(760, W - 80), inner = boxW - 44;
+    const at = (s: string, size: number) => { ctx.font = `600 ${size}px ${FONT}`; return ctx.measureText(s).width; };
+    const { size, lines } = fitWords(text, inner, 150, at, [30, 26, 22, 20]);
+    const h = lines.length * size * 1.25 + (name ? 62 : 32), x = 40, y = H - floor - h - 26;
+    ctx.fillStyle = 'rgba(10,14,24,.9)';
+    ctx.fillRect(x, y, boxW, h);
+    ctx.fillStyle = this.accent;
+    ctx.fillRect(x, y, 6, h);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    let line = y + 16;
+    if (name) {
+      ctx.font = `700 22px ${FONT}`;
+      ctx.fillText(name, x + 24, line, inner);
+      line += 32;
+    }
+    ctx.font = `600 ${size}px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    lines.forEach(l => { ctx.fillText(l, x + 24, line, inner); line += size * 1.25; });
+  }
+
+  private drawPoll({ question, options, counts }: PollView) {
+    const { ctx, W } = this;
+    const boxW = Math.min(460, W - 40), x = 20, y = 110, inner = boxW - 32;
+    const total = counts.reduce((a, b) => a + b, 0);
+    const at = (s: string, size: number) => { ctx.font = `700 ${size}px ${FONT}`; return ctx.measureText(s).width; };
+    const { size, lines } = fitWords(question, inner, 90, at, [26, 22, 20]);
+    const top = lines.length * size * 1.25 + 24;
+    ctx.fillStyle = 'rgba(10,14,24,.9)';
+    ctx.fillRect(x, y, boxW, top + options.length * 50 + 8);
+    ctx.fillStyle = this.accent;
+    ctx.fillRect(x, y, boxW, 3);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.font = `700 ${size}px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    lines.forEach((l, i) => ctx.fillText(l, x + 16, y + 14 + i * size * 1.25, inner));
+    options.forEach((option, i) => {
+      const rowY = y + top + i * 50, share = total ? counts[i] / total : 0;
+      ctx.fillStyle = 'rgba(255,255,255,.14)';
+      ctx.fillRect(x + 16, rowY, inner, 42);
+      ctx.fillStyle = this.accent;
+      ctx.globalAlpha = 0.55;
+      ctx.fillRect(x + 16, rowY, inner * share, 42);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `600 21px ${FONT}`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(option, x + 26, rowY + 21, inner - 90);
+      ctx.textAlign = 'right';
+      ctx.fillText(`${Math.round(share * 100)}%`, x + 16 + inner - 10, rowY + 21);
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'left';
+    });
+  }
+
+  /** How far the church is towards a giving goal */
+  private drawGoal({ label, raisedText, targetText, share }: GoalView) {
+    const { ctx, W, H } = this;
+    const boxW = Math.min(460, W - 40), x = (W - boxW) / 2, y = W > H ? 20 : 74;
+    ctx.fillStyle = 'rgba(10,14,24,.9)';
+    ctx.fillRect(x, y, boxW, 74);
+    ctx.textBaseline = 'top';
+    ctx.textAlign = 'left';
+    ctx.font = `700 21px ${FONT}`;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(label, x + 14, y + 10, boxW * 0.5);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = this.accent;
+    ctx.fillText(`${raisedText} / ${targetText}`, x + boxW - 14, y + 10, boxW * 0.45);
+    ctx.fillStyle = 'rgba(255,255,255,.18)';
+    ctx.fillRect(x + 14, y + 44, boxW - 28, 16);
+    ctx.fillStyle = this.accent;
+    ctx.fillRect(x + 14, y + 44, (boxW - 28) * share, 16);
   }
 
   private drawPaused() {
@@ -520,14 +652,14 @@ export class Compositor {
     ctx.fillStyle = 'rgba(10,14,24,.82)';
     const top = H - floor - bandH;
     ctx.fillRect(0, top, W, bandH);
-    ctx.fillStyle = '#C9A24B';
+    ctx.fillStyle = this.accent;
     ctx.fillRect(0, top, W, 3);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     let y = top + 16;
     if (title) {
       ctx.font = `700 22px ${FONT}`;
-      ctx.fillStyle = '#E8C36A';
+      ctx.fillStyle = this.accent;
       ctx.fillText(title, W / 2, y, maxW);
       y += titleH;
     }
@@ -554,7 +686,7 @@ export class Compositor {
     ctx.textBaseline = 'top';
     if (state.title) {
       ctx.font = `700 28px ${FONT}`;
-      ctx.fillStyle = '#E8C36A';
+      ctx.fillStyle = this.accent;
       ctx.fillText(state.title, W / 2, 44, W - 140);
     }
     ctx.font = `700 ${size}px ${FONT}`;
@@ -575,14 +707,14 @@ export class Compositor {
     const w = Math.min(W - 120, Math.max(nameW, titleW) + 48), h = title ? 96 : 66, x = 40, y = H - h - floor - 26;
     ctx.fillStyle = 'rgba(10,14,24,.88)';
     ctx.fillRect(x, y, w, h);
-    ctx.fillStyle = '#C9A24B';
+    ctx.fillStyle = this.accent;
     ctx.fillRect(x, y, 6, h);
     ctx.font = `700 34px ${FONT}`;
     ctx.fillStyle = '#FFFFFF';
     ctx.fillText(name, x + 24, y + 12, w - 36);
     if (title) {
       ctx.font = `500 22px ${FONT}`;
-      ctx.fillStyle = '#E8C36A';
+      ctx.fillStyle = this.accent;
       ctx.fillText(title, x + 24, y + 56, w - 36);
     }
   }
@@ -611,7 +743,7 @@ export class Compositor {
     const h = lines.length * size * 1.25 + 28, x = W - boxW - 12, y = 112;
     ctx.fillStyle = 'rgba(10,14,24,.88)';
     ctx.fillRect(x, y, boxW, h);
-    ctx.fillStyle = '#C9A24B';
+    ctx.fillStyle = this.accent;
     ctx.fillRect(x, y, boxW, 3);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';

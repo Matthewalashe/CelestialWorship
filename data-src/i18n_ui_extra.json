@@ -2458,5 +2458,389 @@
 "ON STAGE": [
 "LÓRÍ ÌTÀGÉ",
 "EN SCÈNE"
+],
+"Comment": [
+"Ọ̀rọ̀",
+"Commentaire"
+],
+"Comments": [
+"Àwọn ọ̀rọ̀",
+"Commentaires"
+],
+"Prayer request": [
+"Ìbéèrè àdúrà",
+"Demande de prière"
+],
+"Prayer requests": [
+"Àwọn ìbéèrè àdúrà",
+"Demandes de prière"
+],
+"What are you sending?": [
+"Kí ni ò ń fi ránṣẹ́?",
+"Que voulez-vous envoyer ?"
+],
+"Please wait a moment before sending again": [
+"Jọ̀wọ́ dúró díẹ̀ kí o tó tún fi ránṣẹ́",
+"Veuillez patienter un instant avant de renvoyer"
+],
+"Your prayer request was sent to the church": [
+"A ti fi ìbéèrè àdúrà rẹ ránṣẹ́ sí ìjọ",
+"Votre demande de prière a été envoyée à l’église"
+],
+"Sent": [
+"A ti fi ránṣẹ́",
+"Envoyé"
+],
+"Your request goes only to the person running the service, without your name.": [
+"Ìbéèrè rẹ yóò lọ sọ́dọ̀ ẹni tí ń darí ìsìn nìkan, láìsí orúkọ rẹ.",
+"Votre demande n’est envoyée qu’à la personne qui dirige le culte, sans votre nom."
+],
+"Say something to the church": [
+"Sọ nǹkan kan fún ìjọ",
+"Dites quelque chose à l’église"
+],
+"Send": [
+"Fi ránṣẹ́",
+"Envoyer"
+],
+"Write a question and at least two answers": [
+"Kọ ìbéèrè àti ó kéré tán ìdáhùn méjì",
+"Écrivez une question et au moins deux réponses"
+],
+"This opens when you are live and listed in Online Church. It covers people watching on the app; comments on YouTube or Facebook stay there.": [
+"Èyí yóò ṣí nígbà tí o bá wà lórí afẹ́fẹ́ tí o sì wà nínú Ìjọ Orí Ayélujára. Ó jẹ́ fún àwọn tí ń wò lórí áàpù; ọ̀rọ̀ lórí YouTube tàbí Facebook yóò wà níbẹ̀.",
+"Ceci s’ouvre quand vous êtes en direct et listé dans l’Église en ligne. Cela concerne les spectateurs de l’application ; les commentaires sur YouTube ou Facebook restent là-bas."
+],
+"Poll": [
+"Ìbò",
+"Sondage"
+],
+"Show on the screen": [
+"Fi hàn lójú ẹ̀rọ",
+"Afficher à l’écran"
+],
+"Take off the screen": [
+"Yọ kúrò lójú ẹ̀rọ",
+"Retirer de l’écran"
+],
+"Stop the voting": [
+"Dá ìbò dúró",
+"Arrêter le vote"
+],
+"Remove the poll": [
+"Yọ ìbò kúrò",
+"Retirer le sondage"
+],
+"Your question": [
+"Ìbéèrè rẹ",
+"Votre question"
+],
+"Answer {n}": [
+"Ìdáhùn {n}",
+"Réponse {n}"
+],
+"Add an answer": [
+"Fi ìdáhùn kún un",
+"Ajouter une réponse"
+],
+"Start the poll": [
+"Bẹ̀rẹ̀ ìbò",
+"Lancer le sondage"
+],
+"Dismiss": [
+"Yọ ọ́ kúrò",
+"Écarter"
+],
+"Only you see these, and they carry no name.": [
+"Ìwọ nìkan ni ó ń rí ìwọ̀nyí, wọn kò sì ní orúkọ.",
+"Vous seul les voyez, et ils ne portent aucun nom."
+],
+"Prayed for": [
+"A ti gbàdúrà",
+"Prière faite"
+],
+"Audience": [
+"Àwọn òǹwòran",
+"Public"
+],
+"Colour of lines and titles": [
+"Àwọ̀ àwọn ìlà àti àkọlé",
+"Couleur des lignes et des titres"
+],
+"Save this look": [
+"Fi ìrísí yìí pamọ́",
+"Enregistrer ce style"
+],
+"Upgrade to save your looks.": [
+"Gbé ètò rẹ sókè láti fi àwọn ìrísí rẹ pamọ́.",
+"Passez à l’offre supérieure pour enregistrer vos styles."
+],
+"Saves your logo, colour and words, to bring back with one tap. Kept on this computer.": [
+"Ó ń fi àmì, àwọ̀ àti ọ̀rọ̀ rẹ pamọ́, láti mú wọn padà pẹ̀lú ìfọwọ́kàn kan. Yóò wà lórí kọ̀ǹpútà yìí.",
+"Enregistre votre logo, votre couleur et vos textes, à retrouver d’un geste. Conservé sur cet ordinateur."
+],
+"Use": [
+"Lo",
+"Utiliser"
+],
+"Delete this look?": [
+"Ṣé kí a pa ìrísí yìí rẹ́?",
+"Supprimer ce style ?"
+],
+"A name for this look": [
+"Orúkọ fún ìrísí yìí",
+"Un nom pour ce style"
+],
+"Saved": [
+"A ti fi pamọ́",
+"Enregistré"
+],
+"Brand looks": [
+"Àwọn ìrísí ìjọ",
+"Styles de la marque"
+],
+"Gold": [
+"Wúrà",
+"Or"
+],
+"White": [
+"Funfun",
+"Blanc"
+],
+"Sky blue": [
+"Búlù ojú ọ̀run",
+"Bleu ciel"
+],
+"Green": [
+"Àwọ̀ ewé",
+"Vert"
+],
+"Rose": [
+"Àwọ̀ rósì",
+"Rose"
+],
+"Lilac": [
+"Àwọ̀ líláàkì",
+"Lilas"
+],
+"This opens when secure giving is ready.": [
+"Èyí yóò ṣí nígbà tí ọ̀nà ọrẹ tí ó láàbò bá ṣetán.",
+"Ceci s’ouvrira quand le don sécurisé sera prêt."
+],
+"What is it for?": [
+"Fún kí ni?",
+"C’est pour quoi ?"
+],
+"e.g. Building fund": [
+"bí Owó ìkọ́lé",
+"ex. Fonds de construction"
+],
+"Goal": [
+"Àfojúsùn",
+"Objectif"
+],
+"Given so far": [
+"Ohun tí a ti fi fúnni",
+"Donné à ce jour"
+],
+"Hide the goal": [
+"Fi àfojúsùn pamọ́",
+"Masquer l’objectif"
+],
+"Show the goal": [
+"Fi àfojúsùn hàn",
+"Afficher l’objectif"
+],
+"Giving goal": [
+"Àfojúsùn ọrẹ",
+"Objectif de dons"
+],
+"Plans": [
+"Àwọn ètò",
+"Offres"
+],
+"See the plans": [
+"Wo àwọn ètò",
+"Voir les offres"
+],
+"By parish": [
+"Ní ìjọ-ìjọ",
+"Par paroisse"
+],
+"Free": [
+"Ọ̀fẹ́",
+"Gratuit"
+],
+"Premium": [
+"Premium",
+"Premium"
+],
+"Enterprise": [
+"Enterprise",
+"Entreprise"
+],
+"Up to 2 platforms at once": [
+"Títí dé pèpéle 2 ní ẹ̀ẹ̀kan",
+"Jusqu’à 2 plateformes à la fois"
+],
+"Up to 3 hours at a stretch": [
+"Títí dé wákàtí 3 ní ẹ̀ẹ̀kan",
+"Jusqu’à 3 heures d’affilée"
+],
+"Your logo beside our small mark": [
+"Àmì rẹ lẹ́gbẹ̀ẹ́ àmì wa kékeré",
+"Votre logo à côté de notre petite marque"
+],
+"Up to 8 platforms at once": [
+"Títí dé pèpéle 8 ní ẹ̀ẹ̀kan",
+"Jusqu’à 8 plateformes à la fois"
+],
+"No time limit": [
+"Kò sí òpin àkókò",
+"Sans limite de temps"
+],
+"Your logo in place of our mark": [
+"Àmì rẹ dípò àmì wa",
+"Votre logo à la place de notre marque"
+],
+"Live captions and a transcript": [
+"Àkọlé tààrà àti àkọsílẹ̀ ọ̀rọ̀",
+"Sous-titres en direct et transcription"
+],
+"Viewers, reactions and past broadcasts": [
+"Òǹwòran, ìdáhùn àti ìgbéjáde àtẹ̀yìnwá",
+"Spectateurs, réactions et anciennes diffusions"
+],
+"Comments, prayer requests and polls": [
+"Ọ̀rọ̀, ìbéèrè àdúrà àti ìbò",
+"Commentaires, demandes de prière et sondages"
+],
+"Saved brand looks": [
+"Àwọn ìrísí ìjọ tí a fi pamọ́",
+"Styles de marque enregistrés"
+],
+"Clips of the best moments": [
+"Àwọn ègé àkókò tí ó dára jù",
+"Extraits des meilleurs moments"
+],
+"Scheduled recorded services": [
+"Ìsìn tí a gbà sílẹ̀ tí a ṣètò",
+"Cultes enregistrés programmés"
+],
+"Receive gifts during the service": [
+"Gba ọrẹ nígbà ìsìn",
+"Recevoir des dons pendant le culte"
+],
+"Everything in Premium": [
+"Gbogbo ohun tí ó wà nínú Premium",
+"Tout ce qu’offre Premium"
+],
+"Reports across all your parishes": [
+"Ìròyìn gbogbo àwọn ìjọ rẹ",
+"Rapports pour toutes vos paroisses"
+],
+"Unlimited brand looks": [
+"Ìrísí ìjọ láìní òpin",
+"Styles de marque illimités"
+],
+"A person to help you set up": [
+"Ẹnìkan láti ràn ọ́ lọ́wọ́ láti ṣètò",
+"Une personne pour vous aider à démarrer"
+],
+"Start a clip": [
+"Bẹ̀rẹ̀ ègé kan",
+"Commencer un extrait"
+],
+"End the clip": [
+"Parí ègé náà",
+"Terminer l’extrait"
+],
+"Start later, or play a recorded service": [
+"Bẹ̀rẹ̀ lẹ́yìn náà, tàbí ṣe ìsìn tí a gbà sílẹ̀",
+"Commencer plus tard, ou diffuser un culte enregistré"
+],
+"Start at": [
+"Bẹ̀rẹ̀ ní",
+"Commencer à"
+],
+"Play this video, then end the broadcast": [
+"Ṣe fídíò yìí, lẹ́yìn náà parí ìgbéjáde",
+"Lire cette vidéo, puis terminer la diffusion"
+],
+"No, use my cameras": [
+"Rárá, lo àwọn kámẹ́rà mi",
+"Non, utiliser mes caméras"
+],
+"Add your video under Media first.": [
+"Kọ́kọ́ fi fídíò rẹ kún un lábẹ́ Media.",
+"Ajoutez d’abord votre vidéo dans Médias."
+],
+"Leave this computer on and this window open until it finishes. A service on our own servers, with the computer off, is not available yet.": [
+"Fi kọ̀ǹpútà yìí sílẹ̀ ní títàn, má sì ti fèrèsé yìí títí yóò fi parí. Ìsìn lórí sáfà wa, nígbà tí kọ̀ǹpútà bá kú, kò tíì sí.",
+"Laissez cet ordinateur allumé et cette fenêtre ouverte jusqu’à la fin. Un culte sur nos serveurs, ordinateur éteint, n’est pas encore disponible."
+],
+"Going live at {time}. Leave this window open.": [
+"Yóò lọ sórí afẹ́fẹ́ ní {time}. Má ṣe ti fèrèsé yìí.",
+"Passage en direct à {time}. Laissez cette fenêtre ouverte."
+],
+"Sharpness of the picture": [
+"Bí àwòrán ṣe mọ́ tó",
+"Netteté de l’image"
+],
+"1080p needs a strong computer and about 6.5 Mbps of upload speed for each platform. Cameras already added stay as they are; add them again for the full sharpness.": [
+"1080p nílò kọ̀ǹpútà alágbára àti nǹkan bí 6.5 Mbps ìyára ìfiránṣẹ́ fún pèpéle kọ̀ọ̀kan. Àwọn kámẹ́rà tí a ti fi kún un yóò wà bí wọ́n ṣe wà; tún fi wọ́n kún un fún ìmọ́tótó kíkún.",
+"Le 1080p demande un ordinateur puissant et environ 6.5 Mbps en envoi par plateforme. Les caméras déjà ajoutées ne changent pas ; ajoutez-les de nouveau pour une netteté complète."
+],
+"Upgrade to Premium for 1080p.": [
+"Gbé ètò rẹ sókè sí Premium fún 1080p.",
+"Passez à Premium pour le 1080p."
+],
+"Live Studio: 1080p": [
+"Live Studio: 1080p",
+"Live Studio : 1080p"
+],
+"Makes an upright clip of this moment, ready for TikTok and Instagram": [
+"Ó ń ṣe ègé òró ti àkókò yìí, tí ó ṣetán fún TikTok àti Instagram",
+"Crée un extrait vertical de ce moment, prêt pour TikTok et Instagram"
+],
+"Sermon notes": [
+"Àkọsílẹ̀ ìwàásù",
+"Notes de prédication"
+],
+"Scriptures mentioned": [
+"Àwọn ẹsẹ tí a mẹ́nu bà",
+"Écritures citées"
+],
+"Main points": [
+"Àwọn kókó pàtàkì",
+"Points principaux"
+],
+"Everything that was said": [
+"Gbogbo ohun tí a sọ",
+"Tout ce qui a été dit"
+],
+"Make sermon notes": [
+"Ṣe àkọsílẹ̀ ìwàásù",
+"Créer les notes de prédication"
+],
+"Picked out from what the computer heard, so please read and correct it. Captions cannot hear Yorùbá yet.": [
+"A yàn án láti inú ohun tí kọ̀ǹpútà gbọ́, nítorí náà jọ̀wọ́ kà á kí o sì ṣàtúnṣe rẹ̀. Àkọlé kò tíì lè gbọ́ Yorùbá.",
+"Extrait de ce que l’ordinateur a entendu : veuillez relire et corriger. Les sous-titres ne reconnaissent pas encore le yoruba."
+],
+"Copy": [
+"Dà á kọ",
+"Copier"
+],
+"Download": [
+"Gbà á sílẹ̀",
+"Télécharger"
+],
+"Live captions, a transcript and sermon notes": [
+"Àkọlé tààrà, àkọsílẹ̀ ọ̀rọ̀ àti àkọsílẹ̀ ìwàásù",
+"Sous-titres en direct, transcription et notes de prédication"
+],
+"Upright clips for TikTok and Instagram": [
+"Ègé òró fún TikTok àti Instagram",
+"Extraits verticaux pour TikTok et Instagram"
 ]
 }

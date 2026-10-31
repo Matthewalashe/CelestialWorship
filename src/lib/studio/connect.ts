@@ -67,7 +67,7 @@ export interface ConnectEvents {
   onLost: (reason: string) => void;
 }
 
-export function startConnect(output: MediaStream, urls: string[], events: ConnectEvents): Promise<RelaySession> {
+export function startConnect(output: MediaStream, urls: string[], events: ConnectEvents, quality: '720p' | '1080p' = '720p'): Promise<RelaySession> {
   return new Promise((resolve, reject) => {
     const mimeType = ['video/webm;codecs=h264,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t));
     if (!mimeType) { reject(new Error('This browser cannot stream. Please use Chrome or Edge.')); return; }
@@ -126,9 +126,9 @@ export function startConnect(output: MediaStream, urls: string[], events: Connec
       socket.onerror = () => end('CelestialWorship Connect is not running. Open it and try again.');
       socket.onclose = () => end('CelestialWorship Connect was closed, so the stream has stopped.');
       socket.onopen = () => {
-        socket.send(JSON.stringify({ type: 'start', urls }));
+        socket.send(JSON.stringify({ type: 'start', urls, quality }));
         try {
-          recorder = new MediaRecorder(output, { mimeType, videoBitsPerSecond: 5_000_000, audioBitsPerSecond: 192_000 });
+          recorder = new MediaRecorder(output, { mimeType, videoBitsPerSecond: quality === '1080p' ? 9_000_000 : 5_000_000, audioBitsPerSecond: 192_000 });
         } catch { end('This browser cannot stream. Please use Chrome or Edge.'); return; }
         recorder.ondataavailable = e => {
           if (!e.data.size) return;

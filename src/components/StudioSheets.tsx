@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Download, ImagePlus, Trash2, Film } from 'lucide-react';
+import { Download, ImagePlus, Lock, Trash2, Film } from 'lucide-react';
 import { Sheet, confirmDialog } from './Dialog';
 import { DefaultBackgrounds } from './DisplayLookPanel';
 import { cropImage } from './ImageCropper';
@@ -9,7 +9,9 @@ import { useLook } from '../lib/studio/look';
 import { clock, downloadBlob, fileSize, loadSessions, type RecordingResult, type StudioSession } from '../lib/studio/recording';
 import type { Compositor, LogoCorner, StudioSource } from '../lib/studio/compositor';
 import type { ConnectStats } from '../lib/studio/connect';
-import type { StudioAllowance } from '../lib/studio/allowance';
+import { GIVING_ON, STUDIO_PLANS, type StudioAllowance } from '../lib/studio/allowance';
+import { makePoll, type LiveMessage, type LivePoll } from '../lib/studio/reactions';
+import { ACCENTS, type BrandKit } from '../lib/studio/brand';
 import { WHOLE_VIEW } from '../lib/studio/scene';
 import { errorMessage } from '../lib/backend';
 import { tr, trf } from '../i18n';
@@ -210,6 +212,9 @@ export function AnalyticsSheet({ allowance, onClose }: { allowance: StudioAllowa
   }
   const total = sessions.reduce((n, s) => n + s.ms, 0);
   const peak = sessions.reduce((n, s) => Math.max(n, s.peakViewers), 0);
+  const parishes = new Map<string, StudioSession[]>();
+  sessions.forEach(s => { if (s.parish) parishes.set(s.parish, [...(parishes.get(s.parish) ?? []), s]); });
+  const byParish = [...parishes.entries()];
   return (
     <Sheet label={tr('Analytics')} onClose={onClose} wide>
       <div className="space-y-3">
@@ -220,6 +225,12 @@ export function AnalyticsSheet({ allowance, onClose }: { allowance: StudioAllowa
               <Fact label={tr('Time live')} value={clock(total)} />
               <Fact label={tr('Most watching on the app')} value={peak} />
             </div>
+            {allowance.allParishes && byParish.length > 1 && (
+              <div>
+                <p className="text-xs font-semibold pb-1">{tr('By parish')}</p>
+                {byParish.map(([name, list]) => <Fact key={name} label={name} value={`${list.length} · ${clock(list.reduce((n, s) => n + s.ms, 0))}`} />)}
+              </div>
+            )}
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
                 <thead style={muted}><tr><th className="py-1 pr-2 font-semibold">{tr('Date')}</th><th className="pr-2 font-semibold">{tr('Service')}</th><th className="pr-2 font-semibold">{tr('Length')}</th><th className="pr-2 font-semibold">{tr('Watching')}</th><th className="font-semibold">{tr('Reactions')}</th></tr></thead>
@@ -229,6 +240,140 @@ export function AnalyticsSheet({ allowance, onClose }: { allowance: StudioAllowa
             <p className="text-[11px]" style={muted}>{tr('Counts are for people on the app, and this list is kept on this computer.')}</p>
           </>
         )}
+      </div>
+    </Sheet>
+  );
+}
+
+// ── People on the app ───────────────────────────────────────
+
+export function AudiencePanel({ connected, messages, poll, shownId, pollOnScreen, onShow, onDismiss, onStartPoll, onClosePoll, onClearPoll, onPollOnScreen }: {
+  connected: boolean; messages: LiveMessage[]; poll: LivePoll | null; shownId: string | null; pollOnScreen: boolean;
+  onShow: (m: LiveMessage | null) => void; onDismiss: (id: string) => void; onStartPoll: (p: LivePoll) => void; onClosePoll: () => void; onClearPoll: () => void; onPollOnScreen: (on: boolean) => void;
+}) {
+  const [question, setQuestion] = useState('');
+  const [answers, setAnswers] = useState(['', '']);
+  const field = 'w-full rounded-xl px-3 py-2 text-sm border outline-none';
+  const fieldStyle = { backgroundColor: 'var(--color-bg-primary)', ...border, color: 'var(--color-text-primary)' };
+  const start = () => {
+    const made = makePoll(crypto.randomUUID(), question, answers);
+    if (!made) { showToast(tr('Write a question and at least two answers')); return; }
+    onStartPoll(made);
+    setQuestion(''); setAnswers(['', '']);
+  };
+  const prayers = messages.filter(m => m.kind === 'prayer');
+  const comments = messages.filter(m => m.kind === 'comment');
+  const total = poll ? poll.counts.reduce((a, b) => a + b, 0) : 0;
+  return (
+    <div className="rounded-2xl border p-3 space-y-4" style={{ backgroundColor: 'var(--color-bg-card)', ...border }}>
+      {!connected && <p className="text-xs" style={muted}>{tr('This opens when you are live and listed in Online Church. It covers people watching on the app; comments on YouTube or Facebook stay there.')}</p>}
+      <section className="space-y-2">
+        <p className="text-xs font-semibold">{tr('Poll')}</p>
+        {poll ? (
+          <div className="space-y-1.5 text-sm">
+            <p className="font-semibold">{poll.question}</p>
+            {poll.options.map((o, i) => <div key={o} className="flex justify-between gap-2 text-xs"><span>{o}</span><span className="font-semibold">{poll.counts[i]} ({total ? Math.round((poll.counts[i] / total) * 100) : 0}%)</span></div>)}
+            <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={pollOnScreen} onChange={e => onPollOnScreen(e.target.checked)} /> {tr('Show on the screen')}</label>
+            <div className="flex flex-wrap gap-1">
+              {poll.open && <button onClick={onClosePoll} className={smallBtn} style={border}>{tr('Stop the voting')}</button>}
+              <button onClick={onClearPoll} className={smallBtn} style={border}>{tr('Remove the poll')}</button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <input value={question} onChange={e => setQuestion(e.target.value)} maxLength={140} placeholder={tr('Your question')} className={field} style={fieldStyle} />
+            {answers.map((a, i) => <input key={i} value={a} onChange={e => setAnswers(answers.map((x, j) => (j === i ? e.target.value : x)))} maxLength={60} placeholder={trf('Answer {n}', { n: i + 1 })} className={field} style={fieldStyle} />)}
+            <div className="flex gap-1">
+              {answers.length < 4 && <button onClick={() => setAnswers([...answers, ''])} className={smallBtn} style={border}>{tr('Add an answer')}</button>}
+              <button onClick={start} disabled={!connected} className={`${smallBtn} disabled:opacity-50`} style={border}>{tr('Start the poll')}</button>
+            </div>
+          </div>
+        )}
+      </section>
+      <section className="space-y-2">
+        <p className="text-xs font-semibold">{tr('Comments')} ({comments.length})</p>
+        {comments.map(m => (
+          <div key={m.id} className="rounded-xl border p-2 text-sm" style={border}>
+            {m.name && <p className="text-xs font-semibold">{m.name}</p>}
+            <p className="break-words">{m.text}</p>
+            <div className="flex gap-1 pt-1">
+              <button onClick={() => onShow(shownId === m.id ? null : m)} className={smallBtn} style={border}>{shownId === m.id ? tr('Take off the screen') : tr('Show on the screen')}</button>
+              <button onClick={() => { if (shownId === m.id) onShow(null); onDismiss(m.id); }} className={smallBtn} style={border}>{tr('Dismiss')}</button>
+            </div>
+          </div>
+        ))}
+      </section>
+      <section className="space-y-2">
+        <p className="text-xs font-semibold">{tr('Prayer requests')} ({prayers.length})</p>
+        <p className="text-[11px]" style={muted}>{tr('Only you see these, and they carry no name.')}</p>
+        {prayers.map(m => (
+          <div key={m.id} className="rounded-xl border p-2 text-sm" style={border}>
+            <p className="break-words">{m.text}</p>
+            <button onClick={() => onDismiss(m.id)} className={`${smallBtn} mt-1`} style={border}>{tr('Prayed for')}</button>
+          </div>
+        ))}
+      </section>
+    </div>
+  );
+}
+
+// ── Saved looks ─────────────────────────────────────────────
+
+export function BrandPanel({ kits, accent, limit, onAccent, onSave, onApply, onRemove }: { kits: BrandKit[]; accent: string; limit: number; onAccent: (c: string) => void; onSave: () => void; onApply: (k: BrandKit) => void; onRemove: (k: BrandKit) => void }) {
+  return (
+    <div className="rounded-2xl border p-3 space-y-3" style={{ backgroundColor: 'var(--color-bg-card)', ...border }}>
+      <fieldset>
+        <legend className="text-xs font-semibold pb-1.5">{tr('Colour of lines and titles')}</legend>
+        <div className="flex flex-wrap gap-1.5">
+          {ACCENTS.map(a => <button key={a.color} onClick={() => onAccent(a.color)} aria-pressed={accent === a.color} aria-label={tr(a.name)} title={tr(a.name)} className="w-8 h-8 rounded-lg border-2" style={{ backgroundColor: a.color, borderColor: accent === a.color ? 'var(--color-accent-brand)' : 'var(--color-border)' }} />)}
+        </div>
+      </fieldset>
+      <button onClick={onSave} disabled={kits.length >= limit} className="w-full py-2.5 rounded-xl border text-sm font-semibold disabled:opacity-50" style={border}>{tr('Save this look')}</button>
+      <p className="text-[11px]" style={muted}>{limit === 0 ? tr('Upgrade to save your looks.') : tr('Saves your logo, colour and words, to bring back with one tap. Kept on this computer.')}</p>
+      {kits.map(k => (
+        <div key={k.id} className="flex items-center gap-2 rounded-xl border p-2" style={border}>
+          <span aria-hidden className="w-4 h-4 rounded shrink-0" style={{ backgroundColor: k.accent }} />
+          <span className="flex-1 min-w-0 text-sm font-semibold truncate">{k.name}</span>
+          <button onClick={() => onApply(k)} className={smallBtn} style={border}>{tr('Use')}</button>
+          <button onClick={async () => { if (await confirmDialog({ title: tr('Delete this look?'), confirmLabel: tr('Delete'), danger: true })) onRemove(k); }} aria-label={`${tr('Remove')} ${k.name}`} style={muted}><Trash2 size={14} /></button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Giving goal ─────────────────────────────────────────────
+
+export interface GoalDraft { label: string; raised: string; target: string; on: boolean }
+
+export function GivingPanel({ goal, onChange }: { goal: GoalDraft; onChange: (g: GoalDraft) => void }) {
+  const field = 'w-full rounded-xl px-3 py-2 text-sm border outline-none font-normal mt-1 disabled:opacity-60';
+  const fieldStyle = { backgroundColor: 'var(--color-bg-primary)', ...border, color: 'var(--color-text-primary)' };
+  return (
+    <div className="rounded-2xl border p-3 space-y-2" style={{ backgroundColor: 'var(--color-bg-card)', ...border }}>
+      {!GIVING_ON && <p className="text-xs font-semibold inline-flex items-center gap-1.5"><Lock size={13} aria-hidden /> {tr('This opens when secure giving is ready.')}</p>}
+      <label className="block text-xs font-semibold">{tr('What is it for?')}<input disabled={!GIVING_ON} value={goal.label} onChange={e => onChange({ ...goal, label: e.target.value })} maxLength={40} placeholder={tr('e.g. Building fund')} className={field} style={fieldStyle} /></label>
+      <div className="grid grid-cols-2 gap-2">
+        <label className="block text-xs font-semibold">{tr('Goal')}<input disabled={!GIVING_ON} value={goal.target} onChange={e => onChange({ ...goal, target: e.target.value })} inputMode="numeric" className={field} style={fieldStyle} /></label>
+        <label className="block text-xs font-semibold">{tr('Given so far')}<input disabled={!GIVING_ON} value={goal.raised} onChange={e => onChange({ ...goal, raised: e.target.value })} inputMode="numeric" className={field} style={fieldStyle} /></label>
+      </div>
+      <button disabled={!GIVING_ON || !goal.label.trim() || !(Number(goal.target) > 0)} onClick={() => onChange({ ...goal, on: !goal.on })} aria-pressed={goal.on} className="w-full py-2 rounded-xl border text-sm font-semibold disabled:opacity-50" style={border}>{goal.on ? tr('Hide the goal') : tr('Show the goal')}</button>
+    </div>
+  );
+}
+
+// ── Plans (only offered when pricing is on) ─────────────────
+
+export function PlansSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <Sheet label={tr('Plans')} onClose={onClose} wide>
+      <div className="grid sm:grid-cols-3 gap-3">
+        {STUDIO_PLANS.map(p => (
+          <div key={p.tier} className="rounded-2xl border p-3" style={border}>
+            <p className="font-bold pb-2">{tr(p.name)}</p>
+            <ul className="space-y-1 text-xs">{p.features.map(f => <li key={f}>{tr(f)}</li>)}</ul>
+          </div>
+        ))}
       </div>
     </Sheet>
   );
