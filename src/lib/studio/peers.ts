@@ -5,10 +5,38 @@ import type { Compositor } from './compositor';
 /**
  * Phones and guests reach the studio directly, device to device (WebRTC), through a link with a room code. The
  * database's realtime channel only introduces them. A person who joins waits backstage until the host brings them on.
- * Networks that refuse direct connections need a relay server, which this does not yet have; the person is told.
+ * Networks that refuse direct connections go through a relay server when one is set up (turn-credentials).
  */
 
-const ICE: RTCConfiguration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+const STUN: RTCIceServer[] = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
+const ICE: RTCConfiguration = { iceServers: STUN };
+
+/** Adds the relay, where it is set up. Never holds anyone up for long, and direct connections still work without it. */
+let relayServers: Promise<RTCIceServer[]> | null = null;
+function withRelay(): Promise<RTCConfiguration> {
+  relayServers ??= Promise.race([
+    supabase.functions.invoke('turn-credentials', { body: {} }).then(({ data }) => (Array.isArray(data?.iceServers) ? data.iceServers as RTCIceServer[] : [])).catch(() => []),
+    new Promise<RTCIceServer[]>(done => setTimeout(() => done([]), 4000)),
+  ]);
+  return relayServers.then(extra => ({ iceServers: [...STUN, ...extra] }));
+}
+
+/**
+ * Connection details can arrive before the description they belong to, and a browser refuses them until then.
+ * They wait here instead of being lost.
+ */
+export function candidateQueue(pc: Pick<RTCPeerConnection, 'remoteDescription' | 'addIceCandidate'>) {
+  const waiting: RTCIceCandidateInit[] = [];
+  return {
+    add(c: RTCIceCandidateInit) {
+      if (pc.remoteDescription) void pc.addIceCandidate(c).catch(() => {});
+      else waiting.push(c);
+    },
+    flush() {
+      for (const c of waiting.splice(0)) void pc.addIceCandidate(c).catch(() => {});
+    },
+  };
+}
 export type GuestRole = 'phone' | 'guest';
 const channelName = (code: string) => `studio-${code.toUpperCase()}`;
 
@@ -18,11 +46,13 @@ type Signal = { to: string; from: string; description?: RTCSessionDescriptionIni
 /** The host's side: every person who joins becomes a source, not yet on stage */
 export function hostRoom(code: string, compositor: Compositor, onError: (name: string) => void): () => void {
   const peers = new Map<string, RTCPeerConnection>();
+  const queues = new Map<string, ReturnType<typeof candidateQueue>>();
   const rt = supabase.channel(channelName(code), { config: { broadcast: { self: false } } });
   const send = (signal: Signal) => rt.send({ type: 'broadcast', event: 'signal', payload: signal });
   const drop = (id: string) => {
     peers.get(id)?.close();
     peers.delete(id);
+    queues.delete(id);
     compositor.dropBus(id);
     compositor.removeSource(id, false);
   };
@@ -32,9 +62,17 @@ export function hostRoom(code: string, compositor: Compositor, onError: (name: s
     if (!hello?.id || peers.has(hello.id)) return;
     const pc = new RTCPeerConnection(ICE);
     peers.set(hello.id, pc);
+    queues.set(hello.id, candidateQueue(pc));
+    let retried = false;
     pc.onicecandidate = e => { if (e.candidate) send({ to: hello.id, from: 'host', candidate: e.candidate.toJSON() }); };
     pc.onconnectionstatechange = () => {
-      if (pc.connectionState === 'failed') { onError(hello.name); drop(hello.id); }
+      if (pc.connectionState === 'failed') {
+        // Networks change their minds: try once more before giving up
+        if (!retried) {
+          retried = true;
+          void pc.createOffer({ iceRestart: true }).then(o => pc.setLocalDescription(o)).then(() => send({ to: hello.id, from: 'host', description: pc.localDescription!.toJSON() })).catch(() => { onError(hello.name); drop(hello.id); });
+        } else { onError(hello.name); drop(hello.id); }
+      }
       if (pc.connectionState === 'closed' || pc.connectionState === 'disconnected') setTimeout(() => { if (pc.connectionState !== 'connected') drop(hello.id); }, 8000);
     };
     const incoming = new MediaStream();
@@ -53,6 +91,8 @@ export function hostRoom(code: string, compositor: Compositor, onError: (name: s
     } else {
       pc.addTransceiver('audio', { direction: 'recvonly' });
     }
+    pc.setConfiguration(await withRelay());
+    if (pc.signalingState === 'closed') return;
     await pc.setLocalDescription(await pc.createOffer());
     send({ to: hello.id, from: 'host', description: pc.localDescription!.toJSON() });
   });
@@ -62,8 +102,9 @@ export function hostRoom(code: string, compositor: Compositor, onError: (name: s
     if (signal.to !== 'host') return;
     const pc = peers.get(signal.from);
     if (!pc) return;
-    if (signal.description) await pc.setRemoteDescription(signal.description);
-    if (signal.candidate) await pc.addIceCandidate(signal.candidate).catch(() => {});
+    const queue = queues.get(signal.from);
+    if (signal.candidate) queue?.add(signal.candidate);
+    if (signal.description) { await pc.setRemoteDescription(signal.description).catch(() => {}); queue?.flush(); }
   });
 
   rt.on('broadcast', { event: 'bye' }, ({ payload }) => { if (payload?.id) drop(payload.id); });
@@ -83,6 +124,7 @@ export function joinRoom(code: string, hello: Hello, stream: MediaStream, onStat
   const pc = new RTCPeerConnection(ICE);
   let channel: RealtimeChannel | null = null;
   let answered = false;
+  const queue = candidateQueue(pc);
   const rt = supabase.channel(channelName(code), { config: { broadcast: { self: false } } });
   channel = rt;
   const send = (signal: Signal) => rt.send({ type: 'broadcast', event: 'signal', payload: signal });
@@ -97,19 +139,21 @@ export function joinRoom(code: string, hello: Hello, stream: MediaStream, onStat
   rt.on('broadcast', { event: 'signal' }, async ({ payload }) => {
     const signal = payload as Signal;
     if (signal.to !== hello.id) return;
+    if (signal.candidate) queue.add(signal.candidate);
     if (signal.description) {
       await pc.setRemoteDescription(signal.description);
+      queue.flush();
       // The host offered a slot for the picture and one for the sound: fill them
       for (const t of pc.getTransceivers()) {
         const kind = t.receiver.track.kind;
         const track = stream.getTracks().find(x => x.kind === kind);
         if (track) { await t.sender.replaceTrack(track); t.direction = kind === 'audio' && hello.role === 'guest' ? 'sendrecv' : 'sendonly'; }
       }
+      pc.setConfiguration(await withRelay());
       await pc.setLocalDescription(await pc.createAnswer());
       answered = true;
       send({ to: 'host', from: hello.id, description: pc.localDescription!.toJSON() });
     }
-    if (signal.candidate) await pc.addIceCandidate(signal.candidate).catch(() => {});
   });
 
   // Keep knocking until the host's studio is open and answers

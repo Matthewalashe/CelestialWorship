@@ -84,7 +84,7 @@ export default function JoinStudio() {
         <div className="w-full max-w-md text-center space-y-3" aria-live="polite">
           {status === 'connecting' && <p className="font-semibold animate-pulse">{tr('Waiting for the studio to open…')}</p>}
           {status === 'backstage' && <p className="font-semibold" style={{ color: 'var(--color-success)' }}>{tr('You are connected. The host will bring you on.')}</p>}
-          {status === 'failed' && <p className="font-semibold" style={{ color: 'var(--color-warning)' }}>{tr('This network would not connect. Try mobile data or another Wi-Fi.')}</p>}
+          {status === 'failed' && <p className="font-semibold" style={{ color: 'var(--color-warning)' }}>{tr('This network would not connect. Put the phone on the same Wi-Fi as the computer and try again.')}</p>}
           <button onClick={leave} className="px-4 py-2 rounded-xl border text-sm font-semibold inline-flex items-center gap-2" style={{ borderColor: 'var(--color-border)' }}><LogOut size={15} aria-hidden /> {tr('Leave')}</button>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Download, ImagePlus, Lock, Trash2, Film } from 'lucide-react';
+import { Copy, Download, ImagePlus, Lock, Trash2, Film } from 'lucide-react';
 import { Sheet, confirmDialog } from './Dialog';
 import { DefaultBackgrounds } from './DisplayLookPanel';
 import { cropImage } from './ImageCropper';
@@ -7,7 +7,8 @@ import { showToast } from './Toast';
 import { addLogo, listLogos, removeLogo, type MediaItem } from '../lib/studio/media';
 import { useLook } from '../lib/studio/look';
 import { clock, downloadBlob, fileSize, loadSessions, type RecordingResult, type StudioSession } from '../lib/studio/recording';
-import type { Compositor, LogoCorner, StudioSource } from '../lib/studio/compositor';
+import type { Compositor, LogoCorner, StudioSource, TextSettings } from '../lib/studio/compositor';
+import qrcode from 'qrcode-generator';
 import type { ConnectStats } from '../lib/studio/connect';
 import { GIVING_ON, STUDIO_PLANS, type StudioAllowance } from '../lib/studio/allowance';
 import { makePoll, type LiveMessage, type LivePoll } from '../lib/studio/reactions';
@@ -52,7 +53,7 @@ export function FrameSheet({ source, compositor, onClose }: { source: StudioSour
 
 const CORNERS: { id: LogoCorner; label: string }[] = [{ id: 'top-right', label: 'Top right' }, { id: 'top-left', label: 'Top left' }, { id: 'bottom-right', label: 'Bottom right' }, { id: 'bottom-left', label: 'Bottom left' }];
 
-export function LogoPanel({ logo, corner, watermark, onLogo, onCorner }: { logo: string | null; corner: LogoCorner; watermark: boolean; onLogo: (item: MediaItem | null) => void; onCorner: (c: LogoCorner) => void }) {
+export function LogoPanel({ logo, corner, watermark, size, onSize, onLogo, onCorner }: { logo: string | null; corner: LogoCorner; watermark: boolean; size: number; onSize: (n: number) => void; onLogo: (item: MediaItem | null) => void; onCorner: (c: LogoCorner) => void }) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
@@ -77,6 +78,8 @@ export function LogoPanel({ logo, corner, watermark, onLogo, onCorner }: { logo:
           {CORNERS.map(c => <option key={c.id} value={c.id}>{tr(c.label)}</option>)}
         </select>
       </label>
+      <label className="block text-xs font-semibold">{tr('Size')}<input type="range" min={0.5} max={2.5} step={0.1} value={size} onChange={e => onSize(Number(e.target.value))} className="w-full" /></label>
+      <p className="text-[11px]" style={muted}>{tr('Add as many logos as you like, and tap the one to show.')}</p>
       {logo && <button onClick={() => onLogo(null)} className="text-xs underline" style={muted}>{tr('Take the logo off the screen')}</button>}
       {watermark && <p className="text-[11px]" style={muted}>{tr('Our small mark stays at the top left beside your logo.')}</p>}
       <ul className="grid grid-cols-2 gap-2">
@@ -177,6 +180,7 @@ export function StreamSheet({ startedAt, stats, platforms, viewers, totals, reco
         <Fact label={tr('Live for')} value={clock(Date.now() - startedAt)} />
         <Fact label={tr('Health')} value={health} />
         {s && <Fact label={tr('Pictures per second')} value={Math.round(s.fps)} />}
+        {s?.behind != null && <Fact label={tr('Behind real time, leaving this computer')} value={`${Math.round(s.behind)} s`} />}
         {s?.kbps != null && <Fact label={tr('Speed going out')} value={`${(s.kbps / 1000).toFixed(1)} Mbps`} />}
         <Fact label={tr('Going to')} value={platforms.join(', ') || '–'} />
         <Fact label={tr('Watching on the app')} value={viewers} />
@@ -377,4 +381,60 @@ export function PlansSheet({ onClose }: { onClose: () => void }) {
       </div>
     </Sheet>
   );
+}
+
+// ── How the words sit ───────────────────────────────────────
+
+function Choice<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: [T, string][]; onChange: (v: T) => void }) {
+  return (
+    <fieldset>
+      <legend className="text-xs font-semibold pb-1">{tr(label)}</legend>
+      <div className="flex flex-wrap gap-1">
+        {options.map(([id, name]) => (
+          <button key={id} onClick={() => onChange(id)} aria-pressed={value === id} className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border"
+                  style={value === id ? { backgroundColor: 'var(--color-text-primary)', color: 'var(--color-bg-secondary)', borderColor: 'transparent' } : border}>{tr(name)}</button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+export function TextLook({ text, tall, onChange }: { text: TextSettings; tall: boolean; onChange: (t: TextSettings) => void }) {
+  return (
+    <div className="space-y-3 border-b pb-3" style={border}>
+      <label className="block text-xs font-semibold">{tr('Size of the words')}<input type="range" min={0.7} max={1.8} step={0.05} value={text.scale} onChange={e => onChange({ ...text, scale: Number(e.target.value) })} className="w-full" /></label>
+      <Choice label="Where the words sit" value={text.position} onChange={position => onChange({ ...text, position })} options={[['bottom', 'Bottom'], ['middle', 'Middle'], ['top', 'Top']]} />
+      <Choice label="Where the scrolling text runs" value={text.ticker} onChange={ticker => onChange({ ...text, ticker })} options={[['bottom', 'Bottom'], ['top', 'Top']]} />
+      <Choice label="Behind the words" value={text.plate} onChange={plate => onChange({ ...text, plate })} options={[['auto', 'Automatic'], ['clear', 'See-through'], ['soft', 'Light shade'], ['dark', 'Dark']]} />
+      {tall && <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={text.lift} onChange={e => onChange({ ...text, lift: e.target.checked })} /> {tr('Keep above TikTok and Instagram’s own buttons')}</label>}
+    </div>
+  );
+}
+
+// ── Following on the app ────────────────────────────────────
+
+export function ShareSheet({ link, onScreen, onScreenChange, onClose }: { link: string | null; onScreen: boolean; onScreenChange: (on: boolean) => void; onClose: () => void }) {
+  const [code] = useState(() => { if (!link) return ''; const qr = qrcode(0, 'M'); qr.addData(link); qr.make(); return qr.createDataURL(8, 2); });
+  return (
+    <Sheet label={tr('Share this service')} onClose={onClose}>
+      {link ? (
+        <div className="space-y-3 text-center">
+          <img src={code} alt={tr('Scan to watch on CelestialWorship')} className="w-56 h-56 mx-auto rounded-xl bg-white" />
+          <p className="text-xs break-all" style={muted}>{link}</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            <button onClick={() => { navigator.clipboard.writeText(link).then(() => showToast(tr('Copied'))).catch(() => {}); }} className="btn-primary px-4 py-2 rounded-xl text-sm font-semibold inline-flex items-center gap-1.5"><Copy size={14} aria-hidden /> {tr('Copy link')}</button>
+            <a href={code} download="celestialworship-qr.gif" className="px-4 py-2 rounded-xl text-sm font-semibold border inline-flex items-center gap-1.5" style={border}><Download size={14} aria-hidden /> {tr('Download')}</a>
+          </div>
+          <label className="flex items-center justify-center gap-2 text-sm"><input type="checkbox" checked={onScreen} onChange={e => onScreenChange(e.target.checked)} /> {tr('Show this code on the stream')}</label>
+        </div>
+      ) : <p className="text-sm">{tr('To have a link and code, choose your parish or ministry under “Show it in Online Church” when you go live.')}</p>}
+    </Sheet>
+  );
+}
+
+export function shareCodeImage(link: string): string {
+  const qr = qrcode(0, 'M');
+  qr.addData(link);
+  qr.make();
+  return qr.createDataURL(8, 0);
 }

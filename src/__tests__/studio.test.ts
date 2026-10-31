@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { coverCrop, cropRect, fitWords, layoutRects, wrapText, WHOLE_VIEW } from '../lib/studio/scene';
 import { parseTarget, targetUrl } from '../lib/studio/relay';
-import { isTooSlow, nextSlowCount, retryWait } from '../lib/studio/connect';
+import { atLeast, isTooSlow, nextSlowCount, retryWait } from '../lib/studio/connect';
+import { candidateQueue } from '../lib/studio/peers';
+import { ringingBin } from '../lib/studio/compositor';
 import { allowanceFor, goalShare, tierOf, uploadNeeded } from '../lib/studio/allowance';
 import { cleanMessage, cleanPoll, countVotes, makePoll, recordVote } from '../lib/studio/reactions';
 import { clock, fileSize } from '../lib/studio/recording';
@@ -210,5 +212,43 @@ describe('sermon notes', () => {
     const text = sermonNotes([], { title: 'T', date: 'D', scriptures: 'S', points: 'P', full: 'F' });
     expect(text).toContain('T\nD');
     expect(text).not.toContain('P\n');
+  });
+});
+
+describe('phones reaching the studio', () => {
+  it('holds connection details that arrive early, and loses none', async () => {
+    const added: unknown[] = [];
+    const pc = { remoteDescription: null as unknown, addIceCandidate: async (c: unknown) => { added.push(c); } };
+    const q = candidateQueue(pc as never);
+    q.add({ candidate: 'a' }); q.add({ candidate: 'b' });
+    expect(added).toEqual([]);
+    pc.remoteDescription = {};
+    q.flush();
+    q.add({ candidate: 'c' });
+    expect(added).toEqual([{ candidate: 'a' }, { candidate: 'b' }, { candidate: 'c' }]);
+    q.flush();
+    expect(added).toHaveLength(3);
+  });
+});
+
+describe('hearing a microphone screech', () => {
+  const flat = (n = 256, v = 60) => Array.from({ length: n }, () => v);
+  it('notices one sharp loud pitch', () => { const d = flat(); d[40] = 250; expect(ringingBin(d)).toBe(40); });
+  it('leaves speech and music alone', () => {
+    const music = flat(256, 130); music[20] = 230; music[21] = 225;
+    expect(ringingBin(music)).toBe(-1);
+    expect(ringingBin(flat(256, 0))).toBe(-1);
+    const quiet = flat(256, 20); quiet[40] = 150;
+    expect(ringingBin(quiet)).toBe(-1);
+  });
+});
+
+describe('Connect versions', () => {
+  it('knows which can pass video on untouched', () => {
+    expect(atLeast('0.3.0', 0, 3)).toBe(true);
+    expect(atLeast('1.0.0', 0, 3)).toBe(true);
+    expect(atLeast('0.2.0', 0, 3)).toBe(false);
+    expect(atLeast(undefined, 0, 3)).toBe(false);
+    expect(atLeast('nonsense', 0, 3)).toBe(false);
   });
 });

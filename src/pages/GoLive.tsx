@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import qrcode from 'qrcode-generator';
 import {
-  ChevronLeft, Download, CheckCircle2, Users, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2, Crop, Pause, Play, Activity, BarChart3, Aperture as CameraIcon, BadgeCheck, Type, Palette, AlertTriangle, MessagesSquare, NotebookPen, Scissors, HandCoins, Sparkles,
+  ChevronLeft, Download, CheckCircle2, Users, Camera, MonitorUp, Smartphone, UserPlus, Radio, Square, Mic, MicOff, Trash2, Eye, EyeOff, Copy, Circle, Music2, Plus, X, ExternalLink, Layout as LayoutIcon, Image as ImageIcon, Captions, Settings2, Crop, Pause, Play, Activity, BarChart3, Aperture as CameraIcon, BadgeCheck, Type, Palette, AlertTriangle, MessagesSquare, NotebookPen, Scissors, HandCoins, Sparkles, Share2,
 } from 'lucide-react';
-import { Compositor, type LogoCorner, type StudioQuality, type StudioShape, type StudioSource } from '../lib/studio/compositor';
+import { Compositor, type LogoCorner, DEFAULT_TEXT, type StudioQuality, type StudioShape, type StudioSource, type TextSettings } from '../lib/studio/compositor';
 import type { StudioLayout } from '../lib/studio/scene';
 import { hostRoom } from '../lib/studio/peers';
 import { loadTargets, parseTarget, saveTargets, PLATFORM_HELP, relayReady, startRelay, targetUrl, type RelaySession, type StreamPlatform, type StreamTarget } from '../lib/studio/relay';
@@ -17,7 +17,8 @@ import { sermonNotes } from '../lib/studio/notes';
 import { loadKits, saveKits, type BrandKit } from '../lib/studio/brand';
 import type { LiveMessage } from '../lib/studio/reactions';
 import { StudioRecorder, canSaveAsYouGo, chooseFile, clock, downloadBlob, saveSession, type RecordingResult, type StudioSession } from '../lib/studio/recording';
-import { AnalyticsSheet, AudiencePanel, BackgroundPanel, BrandPanel, FrameSheet, GivingPanel, LogoPanel, PlansSheet, type GoalDraft, PictureSheet, RecordSheet, SavedRecordingSheet, StreamSheet, SummarySheet } from '../components/StudioSheets';
+import { streamLink } from '../lib/live';
+import { AnalyticsSheet, ShareSheet, TextLook, shareCodeImage, AudiencePanel, BackgroundPanel, BrandPanel, FrameSheet, GivingPanel, LogoPanel, PlansSheet, type GoalDraft, PictureSheet, RecordSheet, SavedRecordingSheet, StreamSheet, SummarySheet } from '../components/StudioSheets';
 import { newRoomCode, useDisplayReceiver } from '../hooks/useLiveDisplay';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -78,6 +79,7 @@ function AddCamera({ compositor, quality, onClose }: { compositor: Compositor; q
   const [cam, setCam] = useState('');
   const [mic, setMic] = useState('');
   const [busy, setBusy] = useState(false);
+  const [cleanVoice, setCleanVoice] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -95,8 +97,8 @@ function AddCamera({ compositor, quality, onClose }: { compositor: Compositor; q
       const stream = await navigator.mediaDevices.getUserMedia({
         // No more than the picture going out: asking a webcam for more only makes the computer work harder
         video: { deviceId: cam ? { exact: cam } : undefined, width: { ideal: quality === '1080p' ? 1920 : 1280 }, height: { ideal: quality === '1080p' ? 1080 : 720 }, frameRate: { ideal: 30, max: 30 } },
-        // Singing and instruments: the phone-call filters would cut them to pieces
-        audio: mic === 'none' ? false : { deviceId: mic ? { exact: mic } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+        // A single speaker gets the filters that stop echo and screeching; singing and instruments from a desk would be cut to pieces by them
+        audio: mic === 'none' ? false : { deviceId: mic ? { exact: mic } : undefined, echoCancellation: cleanVoice, noiseSuppression: cleanVoice, autoGainControl: cleanVoice },
       });
       const label = cams.find(c => c.deviceId === cam)?.label || stream.getVideoTracks()[0]?.label || tr('Camera');
       compositor.addSource({ id: `cam-${crypto.randomUUID()}`, label, kind: 'camera', stream });
@@ -119,6 +121,7 @@ function AddCamera({ compositor, quality, onClose }: { compositor: Compositor; q
           <option value="none">{tr('No sound from here')}</option>
         </select>
       </label>
+      <label className="flex items-start gap-2 text-xs"><input type="checkbox" className="mt-0.5" checked={cleanVoice} onChange={e => setCleanVoice(e.target.checked)} /> {tr('Clean up the voice, to stop echo and screeching. Turn this off for a choir, band or sound desk.')}</label>
       <button onClick={add} disabled={busy} className="btn-primary w-full py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50">{tr('Add this camera')}</button>
       <details className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
         <summary className="font-semibold cursor-pointer">{tr('Bigger cameras? Use OBS or a capture card')}</summary>
@@ -437,6 +440,7 @@ function GoLiveDialog({ compositor, allowance, quality, shape, onShape, stats, o
             </div>
           </details>
         )}
+        {mode === 'studio' && <p className="text-[11px]" style={muted}>{tr('To check your stream on YouTube, mute that tab or use headphones. Playing it aloud near the microphone causes echo and screeching.')}</p>}
         {waitingFor > 0 && (
           <div className="text-sm rounded-xl p-3 flex items-center justify-between gap-2" style={{ backgroundColor: 'var(--color-bg-primary)' }}>
             <span>{trf('Going live at {time}. Leave this window open.', { time: new Date(waitingFor).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) })}</span>
@@ -457,12 +461,21 @@ function GoLiveDialog({ compositor, allowance, quality, shape, onShape, stats, o
 /** The sound meter redraws itself, so a moving needle does not redraw the whole page */
 function LevelMeter({ compositor }: { compositor: Compositor }) {
   const bar = useRef<HTMLSpanElement>(null);
+  const ring = useRef({ pitch: -1, count: 0, warned: 0 });
   useEffect(() => {
     const t = setInterval(() => {
       if (!bar.current || document.hidden) return;
       const level = compositor.level();
       bar.current.style.width = `${Math.round(level * 100)}%`;
       bar.current.style.backgroundColor = level > 0.9 ? LIVE_RED : 'var(--color-success)';
+      // The same sharp pitch for over a second and a half: a microphone is hearing its own speakers
+      const pitch = compositor.ringingPitch(), r = ring.current;
+      r.count = pitch >= 0 && Math.abs(pitch - r.pitch) <= 1 ? r.count + 1 : 0;
+      r.pitch = pitch;
+      if (r.count >= 8 && Date.now() - r.warned > 30_000) {
+        r.warned = Date.now();
+        showToast(tr('Screeching? The microphone is hearing the speakers. Mute any tab playing your stream, and turn the speakers down.'));
+      }
     }, 200);
     return () => clearInterval(t);
   }, [compositor]);
@@ -498,6 +511,12 @@ export default function GoLive() {
   const [goal, setGoal] = useState<GoalDraft>({ label: '', raised: '', target: '', on: false });
   const [clipping, setClipping] = useState(false);
   const [plansOpen, setPlansOpen] = useState(false);
+  const [text, setText] = useState<TextSettings>(() => {
+    try { return { ...DEFAULT_TEXT, ...JSON.parse(localStorage.getItem('cw-studio-text') || '{}') }; } catch { return DEFAULT_TEXT; }
+  });
+  const [shareOpen, setShareOpen] = useState(false);
+  const [qrOnScreen, setQrOnScreen] = useState(false);
+  const [tipSeen, setTipSeen] = useState(() => { try { return !!localStorage.getItem('cw-studio-tip'); } catch { return false; } });
   const [notes, setNotes] = useState<string | null>(null);
   const clip = useRef<StudioRecorder | null>(null);
   const stopLiveNow = useRef<() => void>(() => {});
@@ -571,6 +590,14 @@ export default function GoLive() {
   useEffect(() => { compositor.setShape(shape); }, [shape, compositor]);
   useEffect(() => { compositor.setQuality(quality); }, [quality, compositor]);
   useEffect(() => { compositor.accent = accent; }, [accent, compositor]);
+  useEffect(() => { compositor.text = text; try { localStorage.setItem('cw-studio-text', JSON.stringify(text)); } catch {} }, [text, compositor]);
+  useEffect(() => { void compositor.setQr(qrOnScreen && live?.streamId ? shareCodeImage(streamLink(live.streamId)) : null).catch(() => {}); }, [qrOnScreen, live?.streamId, compositor]);
+  // The first steps are shown once; after that the screen belongs to the service
+  useEffect(() => {
+    if (tipSeen || !sources.some(s => s.onStage)) return;
+    setTipSeen(true);
+    try { localStorage.setItem('cw-studio-tip', '1'); } catch {}
+  }, [sources, tipSeen]);
   useEffect(() => { compositor.spotlight = shown ? { name: shown.name, text: shown.text } : null; }, [shown, compositor]);
   useEffect(() => { compositor.pollView = poll && pollOnScreen ? { question: poll.question, options: poll.options, counts: poll.counts } : null; }, [poll, pollOnScreen, compositor]);
   useEffect(() => {
@@ -661,7 +688,7 @@ export default function GoLive() {
     const record: StudioSession = { at: session.startedAt, title: session.title, parish: session.parish, ms: Date.now() - session.startedAt, platforms: session.platforms, peakViewers: peak.current, reactions: reactionCount.current, drops: drops.current };
     saveSession(record);
     setSummary(record);
-    setLive(null); setPaused(false); setReconnecting(false); setShown(null); setPollOnScreen(false);
+    setLive(null); setPaused(false); setReconnecting(false); setShown(null); setPollOnScreen(false); setQrOnScreen(false); setShareOpen(false);
     stats.current = null;
   };
 
@@ -809,6 +836,7 @@ export default function GoLive() {
           <button onClick={() => setSheet('options')} aria-label={tr('Options')} title={tr('Options')} className={chip} style={card}><Settings2 size={15} aria-hidden /></button>
           <button onClick={() => setSheet('analytics')} aria-label={tr('Analytics')} title={tr('Analytics')} className={chip} style={card}><BarChart3 size={15} aria-hidden /></button>
           <button onClick={() => void takePicture()} aria-label={tr('Take a picture')} title={tr('Take a picture')} className={chip} style={card}><CameraIcon size={15} aria-hidden /></button>
+          {live && <button onClick={() => setShareOpen(true)} className={chip} style={card}><Share2 size={14} aria-hidden /> {tr('Share')}</button>}
           {live && (
             <button onClick={() => setSheet('stream')} className={chip} style={card} title={tr('Your stream')}><Activity size={14} aria-hidden /> <Users size={14} aria-hidden /> {viewers}</button>
           )}
@@ -834,8 +862,8 @@ export default function GoLive() {
           <div className={`relative rounded-xl overflow-hidden bg-black w-full ${shape === 'tall' ? 'aspect-[9/16] max-h-[70vh]' : 'aspect-video'} ${studio ? 'lg:aspect-auto lg:max-h-none lg:flex-1 lg:min-h-0' : ''}`} ref={stage} style={live ? { outline: `3px solid ${LIVE_RED}` } : undefined}>
             {live && <span className="absolute left-1/2 -translate-x-1/2 top-2 text-[11px] font-bold text-white px-2 py-0.5 rounded z-10" style={{ backgroundColor: LIVE_RED }}>● {reconnecting ? tr('RECONNECTING') : paused ? tr('PAUSED') : tr('LIVE')}</span>}
             {!live && recording && <span className="absolute left-1/2 -translate-x-1/2 top-2 text-[11px] font-bold text-white px-2 py-0.5 rounded z-10" style={{ backgroundColor: LIVE_RED }}>● {paused ? tr('PAUSED') : tr('RECORDING')}</span>}
-            {studio && onStage.length === 0 && !fullUrl && (
-              <p className="absolute inset-0 grid place-items-center text-white/80 text-sm text-center px-6 z-10">{sources.length ? tr('Tap a camera below to bring it on stage.') : tr('Add a camera to begin.')}</p>
+            {studio && !tipSeen && onStage.length === 0 && !fullUrl && !(wordsOn && ['hymn', 'verse', 'announcement'].includes(displayState.type)) && (
+              <p className="absolute left-1/2 -translate-x-1/2 bottom-3 max-w-[90%] rounded-lg bg-black/70 text-white text-xs text-center px-3 py-1.5 z-10">{sources.length ? tr('Tap a camera below to bring it on stage.') : tr('Add a camera to begin.')}</p>
             )}
           </div>
           {studio && (
@@ -876,13 +904,14 @@ export default function GoLive() {
             </div>
             {panel === 'add' && <AddCamera compositor={compositor} quality={quality} onClose={() => setPanel(null)} />}
             {panel === 'phone' && <InvitePanel code={code} />}
-            {panel === 'logo' && <LogoPanel logo={logo} corner={corner} watermark={allowance.watermark} onCorner={setCorner} onLogo={item => { setLogoKind(item?.kind ?? 'image'); setLogo(item?.url ?? null); }} />}
+            {panel === 'logo' && <LogoPanel logo={logo} corner={corner} watermark={allowance.watermark} size={text.logoScale} onSize={logoScale => setText({ ...text, logoScale })} onCorner={setCorner} onLogo={item => { setLogoKind(item?.kind ?? 'image'); setLogo(item?.url ?? null); }} />}
             {panel === 'backgrounds' && <BackgroundPanel compositor={compositor} />}
             {panel === 'brand' && <BrandPanel kits={kits} accent={accent} limit={allowance.kits} onAccent={setAccent} onSave={() => void saveKit()} onApply={applyKit} onRemove={removeKit} />}
             {panel === 'giving' && <GivingPanel goal={goal} onChange={setGoal} />}
             {panel === 'audience' && allowance.audience && <AudiencePanel connected={!!live?.streamId} messages={messages} poll={poll} shownId={shown?.id ?? null} pollOnScreen={pollOnScreen} onShow={setShown} onDismiss={dismiss} onStartPoll={startPoll} onClosePoll={closePoll} onClearPoll={() => { setPollOnScreen(false); clearPoll(); }} onPollOnScreen={setPollOnScreen} />}
             {panel === 'text' && (
               <div className="rounded-2xl border p-3 space-y-3" style={card}>
+                <TextLook text={text} tall={shape === 'tall'} onChange={setText} />
                 <label className="block text-xs font-semibold">{tr('Scrolling text')}
                   <input value={ticker} onChange={e => setTicker(e.target.value)} maxLength={240} placeholder={tr('e.g. Join us every Wednesday for Mercy Day Service')} className={`${field} mt-1 font-normal`} style={fieldStyle} />
                 </label>
@@ -925,6 +954,7 @@ export default function GoLive() {
       {sheet === 'record' && <RecordSheet canDisk={canSaveAsYouGo()} onChoose={toDisk => void startRecording(toDisk)} onClose={() => setSheet(null)} />}
       {sheet === 'stream' && live && <StreamSheet startedAt={live.startedAt} stats={stats} platforms={live.platforms} viewers={viewers} totals={totals} reconnecting={reconnecting} onClose={() => setSheet(null)} />}
       {sheet === 'analytics' && <AnalyticsSheet allowance={allowance} onClose={() => setSheet(null)} />}
+      {shareOpen && <ShareSheet link={live?.streamId ? streamLink(live.streamId) : null} onScreen={qrOnScreen} onScreenChange={setQrOnScreen} onClose={() => setShareOpen(false)} />}
       {plansOpen && <PlansSheet onClose={() => setPlansOpen(false)} />}
       {sheet === 'options' && (
         <Sheet label={tr('Options')} onClose={() => setSheet(null)}>

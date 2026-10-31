@@ -21,10 +21,18 @@ const START_TIMEOUT = 25_000;
 const SILENCE_LIMIT = 20_000;
 /** Connect has fallen this far behind the camera */
 const TOO_MUCH_WAITING = 64 * 1024 * 1024;
+const TOO_FAR_BEHIND = 15;
 const SLOW_SPEED = 0.9;
 const SLOW_REPORTS = 10;
 const STABLE_AFTER = 60_000;
 const RETRY_WAITS = [2000, 5000, 10_000, 20_000];
+
+/** Whether a version such as 0.3.0 is at least major.minor */
+export function atLeast(version: unknown, major: number, minor: number): boolean {
+  const m = typeof version === 'string' ? version.match(/^(\d+)\.(\d+)/) : null;
+  if (!m) return false;
+  return Number(m[1]) > major || (Number(m[1]) === major && Number(m[2]) >= minor);
+}
 
 /** How long to wait before trying again, or null when it is time to give up */
 export function retryWait(failures: number): number | null {
@@ -54,7 +62,7 @@ export function connectRunning(): Promise<boolean> {
   });
 }
 
-export interface ConnectStats { fps: number; kbps: number | null; speed: number | null }
+export interface ConnectStats { fps: number; kbps: number | null; speed: number | null; /** Seconds the stream has fallen behind real time, leaving this computer */ behind?: number | null }
 
 export interface ConnectEvents {
   onStats?: (s: ConnectStats) => void;
@@ -94,6 +102,7 @@ export function startConnect(output: MediaStream, urls: string[], events: Connec
       let liveAt = 0;
       let slow = 0;
       let warnedWaiting = false;
+      let warnedBehind = false;
       // Blobs read at their own pace: without this queue a later piece can overtake an earlier one and ruin the video
       let queue: Promise<void> = Promise.resolve();
 
@@ -126,9 +135,15 @@ export function startConnect(output: MediaStream, urls: string[], events: Connec
       socket.onerror = () => end('CelestialWorship Connect is not running. Open it and try again.');
       socket.onclose = () => end('CelestialWorship Connect was closed, so the stream has stopped.');
       socket.onopen = () => {
-        socket.send(JSON.stringify({ type: 'start', urls, quality }));
+        // Connect says hello first, and which version it is
+      };
+      const begin = (canCopy: boolean) => {
+        // The browser's encoder, often the graphics chip, does the work once. Connect passes it on untouched, which is far lighter and sooner.
+        const copy = canCopy && /h264/.test(mimeType);
+        socket.send(JSON.stringify({ type: 'start', urls, quality, copy }));
+        const bits = copy ? (quality === '1080p' ? 6_000_000 : 3_000_000) : quality === '1080p' ? 9_000_000 : 5_000_000;
         try {
-          recorder = new MediaRecorder(output, { mimeType, videoBitsPerSecond: quality === '1080p' ? 9_000_000 : 5_000_000, audioBitsPerSecond: 192_000 });
+          recorder = new MediaRecorder(output, { mimeType, videoBitsPerSecond: bits, audioBitsPerSecond: 160_000, videoKeyFrameIntervalDuration: 2000 } as MediaRecorderOptions);
         } catch { end('This browser cannot stream. Please use Chrome or Edge.'); return; }
         recorder.ondataavailable = e => {
           if (!e.data.size) return;
@@ -142,16 +157,23 @@ export function startConnect(output: MediaStream, urls: string[], events: Connec
 
       socket.onmessage = e => {
         if (typeof e.data !== 'string') return;
-        let m: { type?: string; message?: string; reason?: string | null } & Partial<ConnectStats>;
+        let m: { type?: string; message?: string; reason?: string | null; version?: string; seconds?: number | null } & Partial<ConnectStats>;
         try { m = JSON.parse(e.data); } catch { return; }
-        if (m.type === 'live') {
+        if (m.type === 'hello') {
+          begin(atLeast(m.version, 0, 3));
+        } else if (m.type === 'live') {
           wentLive = true;
           liveAt = lastHeard = Date.now();
           clearTimeout(startTimer);
           if (!settled) { settled = true; resolve(session); } else events.onBack?.();
         } else if (m.type === 'stats') {
           lastHeard = Date.now();
-          const stats = { fps: m.fps ?? 0, kbps: m.kbps ?? null, speed: m.speed ?? null };
+          const behind = wentLive && typeof m.seconds === 'number' ? Math.max(0, (Date.now() - liveAt) / 1000 - m.seconds) : null;
+          const stats = { fps: m.fps ?? 0, kbps: m.kbps ?? null, speed: m.speed ?? null, behind };
+          if (behind !== null && behind > TOO_FAR_BEHIND && !warnedBehind) {
+            warnedBehind = true;
+            events.onProblem?.('Your stream is falling behind. Your computer or internet cannot keep up. Try 720p, or fewer platforms.');
+          }
           events.onStats?.(stats);
           slow = nextSlowCount(slow, stats.speed);
           if (isTooSlow(slow)) events.onProblem?.('Your internet cannot keep up. Stream to fewer platforms, or move closer to the router.');

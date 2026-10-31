@@ -52,7 +52,7 @@ jobs:
           mkdir test && cp ff/ffprobe.exe out/CelestialWorshipConnect.exe out/ffmpeg.exe test/
           cd test
           cp ../desktop/connect/e2e.mjs ../build/e2e.mjs
-          node ../build/e2e.mjs .
+          CW_FIXTURE="$PWD/../desktop/connect/fixtures/chrome-h264.webm" node ../build/e2e.mjs .
 
       - name: Package
         shell: pwsh
@@ -61,7 +61,7 @@ jobs:
       - name: Build the installer
         shell: bash
         env:
-          CONNECT_VERSION: '0.2.0'
+          CONNECT_VERSION: '0.3.0'
         run: |
           cp -r out out-installed
           node desktop/connect/windowless.mjs out-installed/CelestialWorshipConnect.exe

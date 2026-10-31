@@ -2842,5 +2842,101 @@
 "Upright clips for TikTok and Instagram": [
 "Ègé òró fún TikTok àti Instagram",
 "Extraits verticaux pour TikTok et Instagram"
+],
+"Size of the words": [
+"Ìwọ̀n àwọn ọ̀rọ̀",
+"Taille des textes"
+],
+"Where the words sit": [
+"Ibi tí àwọn ọ̀rọ̀ wà",
+"Position des textes"
+],
+"Where the scrolling text runs": [
+"Ibi tí ọ̀rọ̀ tí ń sáré wà",
+"Position du texte défilant"
+],
+"Behind the words": [
+"Lẹ́yìn àwọn ọ̀rọ̀",
+"Derrière les textes"
+],
+"Bottom": [
+"Ìsàlẹ̀",
+"Bas"
+],
+"Middle": [
+"Àárín",
+"Milieu"
+],
+"Top": [
+"Òkè",
+"Haut"
+],
+"Automatic": [
+"Fúnra rẹ̀",
+"Automatique"
+],
+"See-through": [
+"Tí a lè ríran kọjá",
+"Transparent"
+],
+"Light shade": [
+"Òjìji díẹ̀",
+"Ombre légère"
+],
+"Dark": [
+"Dúdú",
+"Sombre"
+],
+"Keep above TikTok and Instagram’s own buttons": [
+"Fi sókè àwọn bọ́tìnì TikTok àti Instagram",
+"Rester au-dessus des boutons de TikTok et Instagram"
+],
+"Add as many logos as you like, and tap the one to show.": [
+"Fi iye àmì tí o bá fẹ́ kún un, kí o sì tẹ èyí tí o fẹ́ fi hàn.",
+"Ajoutez autant de logos que vous voulez et touchez celui à afficher."
+],
+"Share this service": [
+"Pín ìsìn yìí",
+"Partager ce culte"
+],
+"Share": [
+"Pín",
+"Partager"
+],
+"Scan to watch on CelestialWorship": [
+"Ṣe àyẹ̀wò láti wò ó lórí CelestialWorship",
+"Scannez pour regarder sur CelestialWorship"
+],
+"Show this code on the stream": [
+"Fi kóòdù yìí hàn nínú ìgbéjáde",
+"Afficher ce code dans le direct"
+],
+"To have a link and code, choose your parish or ministry under “Show it in Online Church” when you go live.": [
+"Láti ní ìlujá àti kóòdù, yan ìjọ tàbí iṣẹ́ ìránṣẹ́ rẹ lábẹ́ “Fi hàn nínú Ìjọ Orí Ayélujára” nígbà tí o bá lọ sórí afẹ́fẹ́.",
+"Pour obtenir un lien et un code, choisissez votre paroisse ou ministère sous « Afficher dans l’Église en ligne » au passage en direct."
+],
+"Behind real time, leaving this computer": [
+"Ìdádúró ní kọ̀ǹpútà yìí",
+"Retard au départ de cet ordinateur"
+],
+"Your stream is falling behind. Your computer or internet cannot keep up. Try 720p, or fewer platforms.": [
+"Ìgbéjáde rẹ ń dẹ́yìn. Kọ̀ǹpútà tàbí ìntánẹ́ẹ̀tì rẹ kò lè tẹ̀ lé e. Gbìyànjú 720p, tàbí pèpéle díẹ̀.",
+"Votre direct prend du retard. Votre ordinateur ou internet ne suit pas. Essayez le 720p ou moins de plateformes."
+],
+"Clean up the voice, to stop echo and screeching. Turn this off for a choir, band or sound desk.": [
+"Ṣe ohùn ní mímọ́, láti dá àtúnsọ àti ariwo gíga dúró. Pa èyí fún ẹgbẹ́ akọrin, ẹgbẹ́ olórin tàbí ẹ̀rọ ohùn.",
+"Nettoyer la voix pour éviter l’écho et les sifflements. Désactivez pour une chorale, un groupe ou une table de mixage."
+],
+"Screeching? The microphone is hearing the speakers. Mute any tab playing your stream, and turn the speakers down.": [
+"Ariwo gíga? Gbohùngbohùn ń gbọ́ àwọn sípíkà. Pa ohùn táàbù tí ń ṣe ìgbéjáde rẹ, kí o sì dín ohùn sípíkà kù.",
+"Un sifflement ? Le micro entend les haut-parleurs. Coupez le son de tout onglet qui lit votre direct et baissez les haut-parleurs."
+],
+"To check your stream on YouTube, mute that tab or use headphones. Playing it aloud near the microphone causes echo and screeching.": [
+"Láti wo ìgbéjáde rẹ lórí YouTube, pa ohùn táàbù náà tàbí lo ẹ̀rọ etí. Ṣíṣe é sókè nítòsí gbohùngbohùn ń fa àtúnsọ àti ariwo gíga.",
+"Pour vérifier votre direct sur YouTube, coupez le son de l’onglet ou utilisez un casque. Le lire à voix haute près du micro provoque écho et sifflements."
+],
+"This network would not connect. Put the phone on the same Wi-Fi as the computer and try again.": [
+"Nẹ́tíwọ́ọ̀kì yìí kò so pọ̀. Fi fóònù sórí Wi-Fi kan náà pẹ̀lú kọ̀ǹpútà, kí o sì tún gbìyànjú.",
+"Ce réseau n’a pas pu se connecter. Mettez le téléphone sur le même Wi-Fi que l’ordinateur et réessayez."
 ]
 }

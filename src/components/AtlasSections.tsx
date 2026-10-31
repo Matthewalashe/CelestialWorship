@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Lightbulb, BookOpen, Church, Mail, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lightbulb, BookOpen, Mail, X } from 'lucide-react';
+import { CelestialIcon } from './CelestialIcon';
 import { AtlasMap, LayerToggle, type MapLayer } from './AtlasMap';
 import { PLACES, placeById, type LonLat } from '../data/bibleLands';
 import { SPREAD, ANCIENT_NAMES } from '../data/christianity';
@@ -107,7 +108,7 @@ export function ExploreAtlas({ layer, onLayer }: { layer: MapLayer; onLayer: (l:
           </div>
           {ancient && <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}><span className="font-semibold">{tr('In Bible times')}:</span> <em>{tr(ancient.then)}</em>. {tr(ancient.note)}</p>}
           <p className="text-sm inline-flex items-center gap-1.5" style={{ color: parishCount ? 'var(--color-accent-brand)' : 'var(--color-text-muted)' }}>
-            <Church size={14} aria-hidden />{parishCount ? `${parishCount} ${tr('Celestial parishes in the directory')}` : tr('No Celestial parish listed here yet')}
+            <CelestialIcon size={14} aria-hidden />{parishCount ? `${parishCount} ${tr('Celestial parishes in the directory')}` : tr('No Celestial parish listed here yet')}
           </p>
           {parishCount > 0 && <Link to="/directory?view=map" className="text-xs font-semibold underline" style={{ color: 'var(--color-accent-brand)' }}>{tr('Open the map of parishes')}</Link>}
         </div>

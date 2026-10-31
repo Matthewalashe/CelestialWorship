@@ -50,6 +50,31 @@ socket.send(JSON.stringify({ type: 'stop' }));
 const end = await Promise.race([ended, wait(60_000).then(() => ({ timeout: true }))]);
 if (end.timeout) throw new Error('Connect never finished');
 await wait(3000);
+
+// A real recording from Chrome, passed on untouched: the light way, with key frames still every two seconds
+const receiver3 = spawn(ffmpeg, ['-y', '-hide_banner', '-loglevel', 'error', '-listen', '1', '-f', 'flv', '-i', 'rtmp://127.0.0.1:19352/live/copykey', '-c', 'copy', 'received3.flv'], { stdio: 'inherit' });
+await wait(1500);
+const socket3 = new WebSocket('ws://127.0.0.1:47650', { origin: 'https://e2e.test' });
+const ended3 = new Promise(resolve => socket3.on('message', d => { const m = JSON.parse(d.toString()); if (m.type !== 'stats') console.log('copy event', JSON.stringify(m)); if (m.type === 'ended') resolve(m); }));
+await new Promise(r => socket3.on('open', r));
+socket3.send(JSON.stringify({ type: 'start', urls: ['rtmp://127.0.0.1:19352/live/copykey'], copy: true }));
+const fixture = readFileSync(process.env.CW_FIXTURE);
+for (let i = 0; i < fixture.length; i += 64 * 1024) { socket3.send(fixture.subarray(i, i + 64 * 1024)); await wait(40); }
+socket3.send(JSON.stringify({ type: 'stop' }));
+await Promise.race([ended3, wait(60_000)]);
+await wait(3000);
+receiver3.kill();
+const copied = JSON.parse(spawnSync(ffprobe, ['-v', 'error', '-show_entries', 'stream=codec_name,width,height', '-show_entries', 'format=duration', '-of', 'json', 'received3.flv'], { encoding: 'utf8' }).stdout || '{}');
+console.log(JSON.stringify(copied));
+const copiedCodecs = (copied.streams ?? []).map(x => x.codec_name);
+if (!copiedCodecs.includes('h264') || !copiedCodecs.includes('aac') || Number(copied.format?.duration) < 8) throw new Error(`the untouched stream did not arrive: ${copiedCodecs}`);
+console.log('PASS a Chrome recording passes through untouched, with AAC sound');
+const copyKeys = spawnSync(ffprobe, ['-v', 'error', '-select_streams', 'v', '-skip_frame', 'nokey', '-show_entries', 'frame=pts_time', '-of', 'csv=p=0', 'received3.flv'], { encoding: 'utf8' }).stdout.trim().split(/\s+/).map(Number).filter(Number.isFinite);
+const copyGaps = copyKeys.slice(1).map((k, i) => k - copyKeys[i]);
+console.log('key frame gaps', copyGaps.join(' '));
+if (!copyGaps.length || Math.max(...copyGaps) > 4.5) throw new Error(`untouched stream has key frames too far apart: ${copyGaps.join(', ')}`);
+console.log('PASS the untouched stream has key frames close enough for YouTube');
+
 receiver.kill();
 receiver2.kill();
 connect.kill();

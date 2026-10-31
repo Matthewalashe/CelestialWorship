@@ -1,5 +1,5 @@
 import type { DisplayState } from '../../types';
-import { cropRect, fitWords, layoutRects, WHOLE_VIEW, type CropView, type StudioLayout } from './scene';
+import { cropRect, fitWords, layoutRects, WHOLE_VIEW, wrapText, type CropView, type StudioLayout } from './scene';
 import { loadLogo, type LogoPicture } from './animatedLogo';
 
 /**
@@ -25,6 +25,18 @@ export interface StudioSource {
 export type LogoCorner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export type StudioShape = 'wide' | 'tall';
 export type StudioQuality = '720p' | '1080p';
+export interface TextSettings {
+  /** Bigger or smaller, all on-screen words together */
+  scale: number;
+  position: 'bottom' | 'middle' | 'top';
+  ticker: 'bottom' | 'top';
+  /** What is behind the words: see-through, a light shade, or dark. Auto is see-through unless a camera is showing. */
+  plate: 'auto' | 'clear' | 'soft' | 'dark';
+  /** On a tall picture, stay above the buttons TikTok and Instagram put over the bottom of the screen */
+  lift: boolean;
+  logoScale: number;
+}
+export const DEFAULT_TEXT: TextSettings = { scale: 1, position: 'bottom', ticker: 'bottom', plate: 'auto', lift: false, logoScale: 1 };
 export interface PollView { question: string; options: string[]; counts: number[] }
 export interface GoalView { label: string; raisedText: string; targetText: string; share: number }
 
@@ -34,6 +46,17 @@ const SENDING_RATE = 30, PREVIEW_RATE = 15, RESTING_RATE = 4;
 const FONT = 'Inter, "Segoe UI", system-ui, sans-serif';
 /** Draws even when the window is behind another: browsers slow a page's own timers, not a worker's */
 const TICK_WORKER = 'let t;onmessage=e=>{clearInterval(t);if(e.data)t=setInterval(()=>postMessage(0),e.data)}';
+
+/** The position of one sharp, loud pitch among the frequencies, or -1. Music and speech spread much wider. */
+export function ringingBin(data: ArrayLike<number>): number {
+  let peak = -1, top = 0, sum = 0;
+  for (let i = 3; i < data.length; i++) {
+    sum += data[i];
+    if (data[i] > top) { top = data[i]; peak = i; }
+  }
+  const average = sum / Math.max(1, data.length - 3);
+  return top >= 200 && top - average >= 120 ? peak : -1;
+}
 
 export class Compositor {
   readonly canvas = document.createElement('canvas');
@@ -46,6 +69,8 @@ export class Compositor {
   private lastDrawn = '';
   /** Our mark, top left, on everything that goes out, unless the church has upgraded */
   watermark = true;
+  text: TextSettings = DEFAULT_TEXT;
+  private qr: HTMLImageElement | null = null;
   /** The colour of lines and titles, from the church's saved look */
   accent = '#E8C36A';
   /** A comment the host has chosen to show */
@@ -119,7 +144,7 @@ export class Compositor {
     silence.start();
     // Nothing to mix until there is a sound to mix
     void this.audio.suspend().catch(() => {});
-    void this.loadImage('/emblem.png').then(img => { this.mark = img; }).catch(() => {});
+    void this.loadImage('/pwa-192x192.png').then(img => { this.mark = img; }).catch(() => {});
     this.drawSafely();
     this.lastDrawn = this.signature();
     this.setRate(RESTING_RATE);
@@ -174,7 +199,7 @@ export class Compositor {
   /** Everything else that decides the picture: while it is unchanged there is nothing to redraw */
   private signature(): string {
     return JSON.stringify([this.W, this.layout, this.wordsOn, this.wordsStyle, this.words?.type, this.words?.title, this.words?.content, this.words?.look, this.banner, this.caption, this.card, this.nameCard,
-      this.paused, this.accent, this.spotlight, this.pollView, this.goal, this.scale, this.watermark, !!this.mark, this.logoCorner, !!this.logo, this.background?.src, this.fullUrl, !!this.full, this.lookUrl, !!this.lookEl]);
+      this.text, !!this.qr, this.paused, this.accent, this.spotlight, this.pollView, this.goal, this.scale, this.watermark, !!this.mark, this.logoCorner, !!this.logo, this.background?.src, this.fullUrl, !!this.full, this.lookUrl, !!this.lookEl]);
   }
 
   /** Wide for YouTube and Facebook, tall for TikTok and Instagram. Not while something is going out. */
@@ -337,6 +362,14 @@ export class Compositor {
 
   dropBus(ownerId: string) { this.buses.delete(ownerId); }
 
+  /** Which pitch stands far above the rest now, if any: how a microphone hearing its own speakers begins */
+  ringingPitch(): number {
+    if (!this.sources.length) return -1;
+    const data = new Uint8Array(this.analyser.frequencyBinCount);
+    this.analyser.getByteFrequencyData(data);
+    return ringingBin(data);
+  }
+
   /** How loud the programme is now, 0 to 1 */
   level(): number {
     if (!this.sources.length && !this.full) return 0;
@@ -365,6 +398,9 @@ export class Compositor {
     this.logo?.dispose();
     this.logo = next;
   }
+
+  /** A code on the picture so people can follow on the app; nothing to take it off */
+  async setQr(dataUrl: string | null) { this.qr = dataUrl ? await this.loadImage(dataUrl) : null; }
 
   async setBackground(url: string | null) { this.background = url ? await this.loadImage(url) : null; }
 
@@ -474,7 +510,10 @@ export class Compositor {
     } else this.fadeStart = 0;
 
     const showing = this.wordsOn && this.words && ['hymn', 'verse', 'announcement'].includes(this.words.type);
-    this.syncLook(showing && this.wordsStyle === 'full' ? this.words!.look?.url : undefined, this.words?.look?.kind);
+    const stageEmpty = !this.full && !this.sources.some(s => s.onStage);
+    this.syncLook(showing && (this.wordsStyle === 'full' || stageEmpty) ? this.words!.look?.url : undefined, this.words?.look?.kind);
+    // With no camera, the chosen hymn or Bible background stands behind the words
+    if (showing && this.wordsStyle === 'band' && stageEmpty) this.drawLookBehind(this.words!);
     if (showing) {
       const wordsKey = `${this.words!.title}|${this.words!.content}`;
       if (wordsKey !== this.wordsKey) { this.wordsKey = wordsKey; this.wordsStart = performance.now(); }
@@ -484,8 +523,8 @@ export class Compositor {
       this.wordsKey = '';
     }
     // Everything low on the screen stands above the scrolling text, and above what a tall platform's own buttons cover
-    let floor = H > W ? 300 : 0;
-    if (this.ticker) floor = Math.max(floor, 44);
+    const lift = H > W && this.text.lift ? 300 : 0;
+    const floor = lift + (this.ticker && this.text.ticker === 'bottom' ? this.tickerHeight() : 0);
     const wordsBand = showing && this.wordsStyle === 'band';
     let raised = floor;
     if (wordsBand) { raised = this.drawWords(this.words!, floor); ctx.globalAlpha = 1; }
@@ -497,9 +536,10 @@ export class Compositor {
     else if (this.nameCard && !showing && !this.banner) this.drawNameCard(this.nameCard, floor);
     if (this.pollView) this.drawPoll(this.pollView);
     if (this.goal) this.drawGoal(this.goal);
-    if (this.ticker) this.drawTicker(this.ticker);
+    if (this.ticker) this.drawTicker(this.ticker, lift);
     if (this.card) this.drawCard(this.card);
     this.drawLogo(raised);
+    if (this.qr) this.drawQr(raised);
     if (this.paused) this.drawPaused();
     this.drawWatermark();
     this.drawFloating();
@@ -601,18 +641,21 @@ export class Compositor {
   private drawWatermark() {
     if (!this.watermark) return;
     const { ctx } = this;
-    const x = 20, y = 18, h = 34;
+    const x = 20, y = 16, h = 44;
     let left = x;
     ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,.65)';
+    ctx.shadowColor = 'rgba(0,0,0,.7)';
     ctx.shadowBlur = 6;
-    ctx.globalAlpha = 0.9;
     if (this.mark?.naturalWidth) {
-      const w = (this.mark.naturalWidth / this.mark.naturalHeight) * h;
-      ctx.drawImage(this.mark, x, y, w, h);
-      left += w + 8;
+      ctx.beginPath();
+      ctx.roundRect(x, y, h, h, 9);
+      ctx.save();
+      ctx.clip();
+      ctx.drawImage(this.mark, x, y, h, h);
+      ctx.restore();
+      left += h + 10;
     }
-    ctx.font = `700 19px ${FONT}`;
+    ctx.font = `700 24px ${FONT}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#FFFFFF';
@@ -620,17 +663,58 @@ export class Compositor {
     ctx.restore();
   }
 
+  /** How dark the panel behind words is */
+  private plate(): number {
+    const { plate } = this.text;
+    if (plate === 'dark') return 0.85;
+    if (plate === 'soft') return 0.45;
+    if (plate === 'clear') return 0;
+    return this.full || this.sources.some(s => s.onStage) ? 0.82 : 0;
+  }
+
+  /** Words with little or nothing behind them need a soft edge to stay readable */
+  private withEdge(draw: () => void) {
+    const { ctx } = this;
+    ctx.save();
+    if (this.plate() < 0.6) { ctx.shadowColor = 'rgba(0,0,0,.9)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 2; }
+    draw();
+    ctx.restore();
+  }
+
+  private drawLookBehind(state: DisplayState) {
+    const { ctx, W, H } = this;
+    if (this.lookEl) {
+      if (this.lookEl instanceof HTMLVideoElement) this.drawCover(this.lookEl, this.lookEl.videoWidth, this.lookEl.videoHeight, 0, 0, W, H);
+      else this.drawCover(this.lookEl, this.lookEl.naturalWidth, this.lookEl.naturalHeight, 0, 0, W, H);
+      ctx.fillStyle = `rgba(0,0,0,${state.look?.dim ?? 0.45})`;
+      ctx.fillRect(0, 0, W, H);
+    } else if (state.look?.color && state.look.color !== '#000000') {
+      ctx.fillStyle = state.look.color;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  private drawQr(bottom: number) {
+    const { ctx, W, H } = this;
+    const size = 170, pad = 8, x = W - size - 28, y = H - bottom - size - 28;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(x - pad, y - pad, size + pad * 2, size + pad * 2);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(this.qr!, x, y, size, size);
+    ctx.imageSmoothingEnabled = true;
+  }
+
   private drawLogo(bottom: number) {
     if (!this.logo) return;
     const { W, H } = this;
     const image = this.logo.frame(performance.now());
     if (!image) return;
-    const scale = Math.min(220 / (this.logo.width || 1), 72 / (this.logo.height || 1));
+    const scale = Math.min(240 * this.text.logoScale / (this.logo.width || 1), 90 * this.text.logoScale / (this.logo.height || 1));
     const w = this.logo.width * scale, h = this.logo.height * scale;
     const left = this.logoCorner.endsWith('left');
     const x = left ? 28 : W - w - 28;
     let y: number;
-    if (this.logoCorner.startsWith('top')) y = left && this.watermark ? 60 : 24;
+    if (this.logoCorner.startsWith('top')) y = left && this.watermark ? 72 : 24;
     else {
       // Clear of the name on screen too, which sits low on the left
       const name = left && this.nameCard ? 170 + bottom : 0;
@@ -641,32 +725,46 @@ export class Compositor {
 
   private drawWords(state: DisplayState, floor: number) { return this.drawBand(state.title ?? '', state.content, floor); }
 
-  /** Returns how far up the screen the band reaches */
+  /** Returns how far up the screen the band reaches, measured from the bottom. Long words are never cut off. */
   private drawBand(title: string, text: string, floor: number): number {
     const { ctx, W, H } = this;
-    const pad = 40, maxW = W - pad * 2, maxBody = H * 0.3;
+    const k = this.text.scale;
+    const pad = 36, maxW = W - pad * 2;
     const at = (s: string, size: number) => { ctx.font = `600 ${size}px ${FONT}`; return ctx.measureText(s).width; };
-    const { size, lines } = fitWords(text, maxW, maxBody, at);
-    const titleH = title ? 34 : 0;
+    const steps = (W > H ? [64, 56, 50, 44, 38, 32, 28, 24] : [58, 52, 46, 40, 36, 32, 28, 24]).map(n => Math.round(n * k));
+    // The band keeps to part of the screen if it can; a long verse may take more rather than lose its end
+    const roomy = H - 110 - floor;
+    let fit = fitWords(text, maxW, Math.min(roomy, H * 0.45), at, steps.filter(n => n >= 36 * k));
+    if (wrapText(text, maxW, t => at(t, fit.size)).length > fit.lines.length) fit = fitWords(text, maxW, roomy, at, steps);
+    const { size, lines } = fit;
+    const titleSize = Math.round(32 * k);
+    const titleH = title ? titleSize * 1.4 : 0;
     const bandH = titleH + lines.length * size * 1.25 + 36;
-    ctx.fillStyle = 'rgba(10,14,24,.82)';
-    const top = H - floor - bandH;
-    ctx.fillRect(0, top, W, bandH);
-    ctx.fillStyle = this.accent;
-    ctx.fillRect(0, top, W, 3);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    let y = top + 16;
-    if (title) {
-      ctx.font = `700 22px ${FONT}`;
+    const top = this.text.position === 'middle' ? (H - bandH) / 2 : this.text.position === 'top' ? 76 : H - floor - bandH;
+    const alpha = this.plate();
+    if (alpha > 0) {
+      ctx.fillStyle = `rgba(10,14,24,${alpha})`;
+      ctx.fillRect(0, top, W, bandH);
       ctx.fillStyle = this.accent;
-      ctx.fillText(title, W / 2, y, maxW);
-      y += titleH;
+      ctx.fillRect(0, top, W, 3);
     }
-    ctx.font = `600 ${size}px ${FONT}`;
-    ctx.fillStyle = '#FFFFFF';
-    lines.forEach(line => { ctx.fillText(line, W / 2, y, maxW); y += size * 1.25; });
-    return floor + bandH;
+    const base = ctx.globalAlpha;
+    this.withEdge(() => {
+      ctx.globalAlpha = base;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      let y = top + 16;
+      if (title) {
+        ctx.font = `700 ${titleSize}px ${FONT}`;
+        ctx.fillStyle = this.accent;
+        ctx.fillText(title, W / 2, y, maxW);
+        y += titleH;
+      }
+      ctx.font = `600 ${size}px ${FONT}`;
+      ctx.fillStyle = '#FFFFFF';
+      lines.forEach(line => { ctx.fillText(line, W / 2, y, maxW); y += size * 1.25; });
+    });
+    return this.text.position === 'bottom' ? floor + bandH : floor;
   }
 
   /** The words filling the screen on the parish's background, as on the projector */
@@ -681,57 +779,64 @@ export class Compositor {
       ctx.fillRect(0, 0, W, H);
     }
     const at = (s: string, size: number) => { ctx.font = `700 ${size}px ${FONT}`; return ctx.measureText(s).width; };
-    const { size, lines } = fitWords(state.content, W - 140, H - 190, at, [72, 62, 54, 46, 40, 34, 28]);
+    const k = this.text.scale;
+    const { size, lines } = fitWords(state.content, W - 100, H - 190, at, [84, 72, 62, 54, 46, 40, 34, 28, 24].map(n => Math.round(n * k)));
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     if (state.title) {
-      ctx.font = `700 28px ${FONT}`;
+      ctx.font = `700 ${Math.round(34 * k)}px ${FONT}`;
       ctx.fillStyle = this.accent;
-      ctx.fillText(state.title, W / 2, 44, W - 140);
+      ctx.fillText(state.title, W / 2, 76, W - 100);
     }
     ctx.font = `700 ${size}px ${FONT}`;
     ctx.fillStyle = '#FFFFFF';
-    let y = 96 + (H - 150 - lines.length * size * 1.25) / 2;
-    lines.forEach(line => { ctx.fillText(line, W / 2, y, W - 140); y += size * 1.25; });
+    let y = 110 + (H - 150 - lines.length * size * 1.25) / 2;
+    lines.forEach(line => { ctx.fillText(line, W / 2, y, W - 100); y += size * 1.25; });
   }
 
   /** Who is speaking, low on the left */
   private drawNameCard({ name, title }: { name: string; title: string }, floor: number) {
     const { ctx, W, H } = this;
+    const k = this.text.scale, nameSize = Math.round(42 * k), titleSize = Math.round(28 * k);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.font = `700 34px ${FONT}`;
+    ctx.font = `700 ${nameSize}px ${FONT}`;
     const nameW = ctx.measureText(name).width;
-    ctx.font = `500 22px ${FONT}`;
+    ctx.font = `500 ${titleSize}px ${FONT}`;
     const titleW = title ? ctx.measureText(title).width : 0;
-    const w = Math.min(W - 120, Math.max(nameW, titleW) + 48), h = title ? 96 : 66, x = 40, y = H - h - floor - 26;
+    const w = Math.min(W - 60, Math.max(nameW, titleW) + 48), h = nameSize * 1.45 + (title ? titleSize * 1.4 : 0) + 8, x = 30, y = H - h - floor - 26;
     ctx.fillStyle = 'rgba(10,14,24,.88)';
     ctx.fillRect(x, y, w, h);
     ctx.fillStyle = this.accent;
     ctx.fillRect(x, y, 6, h);
-    ctx.font = `700 34px ${FONT}`;
+    ctx.font = `700 ${nameSize}px ${FONT}`;
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(name, x + 24, y + 12, w - 36);
+    ctx.fillText(name, x + 24, y + 10, w - 36);
     if (title) {
-      ctx.font = `500 22px ${FONT}`;
+      ctx.font = `500 ${titleSize}px ${FONT}`;
       ctx.fillStyle = this.accent;
-      ctx.fillText(title, x + 24, y + 56, w - 36);
+      ctx.fillText(title, x + 24, y + 10 + nameSize * 1.35, w - 36);
     }
   }
 
-  /** Scrolling text along the very bottom */
-  private drawTicker(text: string) {
+  private tickerHeight() { return Math.round(60 * this.text.scale); }
+
+  /** Scrolling text, along the very bottom or the top */
+  private drawTicker(text: string, lift: number) {
     const { ctx, W, H } = this;
     if (!this.tickerStart) this.tickerStart = performance.now();
-    ctx.font = `600 24px ${FONT}`;
+    const h = this.tickerHeight();
+    const y = this.text.ticker === 'top' ? 72 : H - lift - h;
+    ctx.font = `600 ${Math.round(36 * this.text.scale)}px ${FONT}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     const width = ctx.measureText(text).width + 80;
-    const travelled = ((performance.now() - this.tickerStart) * 0.09) % (W + width);
-    ctx.fillStyle = 'rgba(10,14,24,.88)';
-    ctx.fillRect(0, H - 44, W, 44);
+    const travelled = ((performance.now() - this.tickerStart) * 0.11) % (W + width);
+    const alpha = Math.max(this.plate(), 0.55);
+    ctx.fillStyle = `rgba(10,14,24,${alpha})`;
+    ctx.fillRect(0, y, W, h);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(text, W - travelled, H - 22);
+    ctx.fillText(text, W - travelled, y + h / 2);
   }
 
   /** A box in the corner: giving details, a phone number, a verse */
@@ -739,8 +844,8 @@ export class Compositor {
     const { ctx, W } = this;
     const at = (s: string, size: number) => { ctx.font = `600 ${size}px ${FONT}`; return ctx.measureText(s).width; };
     const boxW = Math.min(368, W - 24), inner = boxW - 28;
-    const { size, lines } = fitWords(text, inner, 220, at, [26, 22, 20, 18]);
-    const h = lines.length * size * 1.25 + 28, x = W - boxW - 12, y = 112;
+    const { size, lines } = fitWords(text, inner, 300, at, [34, 30, 26, 22].map(n => Math.round(n * this.text.scale)));
+    const h = lines.length * size * 1.25 + 28, x = W - boxW - 12, y = 130;
     ctx.fillStyle = 'rgba(10,14,24,.88)';
     ctx.fillRect(x, y, boxW, h);
     ctx.fillStyle = this.accent;
@@ -769,14 +874,14 @@ export class Compositor {
 
   private drawCaption(text: string, floor: number) {
     const { ctx, W, H } = this;
-    ctx.font = `600 28px ${FONT}`;
+    ctx.font = `600 ${Math.round(36 * this.text.scale)}px ${FONT}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const tail = text.length > 110 ? text.slice(-110) : text;
     const w = Math.min(W - 80, ctx.measureText(tail).width + 40);
     ctx.fillStyle = 'rgba(0,0,0,.72)';
-    ctx.fillRect((W - w) / 2, H - floor - 84, w, 50);
+    ctx.fillRect((W - w) / 2, H - floor - 90, w, 60);
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(tail, W / 2, H - floor - 74, W - 100);
+    ctx.fillText(tail, W / 2, H - floor - 80, W - 60);
   }
 }

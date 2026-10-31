@@ -22,7 +22,7 @@ describe('CelestialWorship Connect', () => {
   });
 
   it('reads the odd progress lines FFmpeg can print', () => {
-    expect(parseProgress('frame=    0 fps=0.0 q=0.0 size=N/A time=N/A bitrate=N/A speed=N/A')).toEqual({ frames: 0, fps: 0, kbps: null, speed: null });
+    expect(parseProgress('frame=    0 fps=0.0 q=0.0 size=N/A time=N/A bitrate=N/A speed=N/A')).toEqual({ frames: 0, fps: 0, kbps: null, speed: null, seconds: null });
     expect(parseProgress('')).toBeNull();
   });
 
@@ -33,13 +33,20 @@ describe('CelestialWorship Connect', () => {
     expect(rate('; rm -rf')).toBe('3000k');
   });
 
+  it('passes the video on untouched only when told to', () => {
+    expect(ffmpegArgs(['rtmp://x/y'], '720p', true).join(' ')).toContain('-c:v copy');
+    expect(ffmpegArgs(['rtmp://x/y'], '720p', true)).not.toContain('libx264');
+    expect(ffmpegArgs(['rtmp://x/y'])).toContain('libx264');
+    expect(ffmpegArgs(['rtmp://x/y'], '720p', true)).toContain('aac');
+  });
+
   it('never repeats a stream key', () => {
     expect(redact('[flv] Could not open rtmps://live-api-s.facebook.com:443/rtmp/SECRET-KEY: I/O error')).not.toContain('SECRET-KEY');
   });
 
   it('reads FFmpeg progress and explains failures plainly', () => {
-    expect(parseProgress('frame=  120 fps= 30 q=21.0 size=     512kB time=00:00:04.00 bitrate=1048.6kbits/s speed=1.01x')).toEqual({ frames: 120, fps: 30, kbps: 1048.6, speed: 1.01 });
-    expect(parseProgress('frame=  90 fps= 30 q=21.0 size=N/A time=00:00:03.00 bitrate=N/A speed=1.1x')).toEqual({ frames: 90, fps: 30, kbps: null, speed: 1.1 });
+    expect(parseProgress('frame=  120 fps= 30 q=21.0 size=     512kB time=00:00:04.00 bitrate=1048.6kbits/s speed=1.01x')).toEqual({ frames: 120, fps: 30, kbps: 1048.6, speed: 1.01, seconds: 4 });
+    expect(parseProgress('frame=  90 fps= 30 q=21.0 size=N/A time=00:00:03.00 bitrate=N/A speed=1.1x')).toEqual({ frames: 90, fps: 30, kbps: null, speed: 1.1, seconds: 3 });
     expect(parseProgress('Press q to stop')).toBeNull();
     expect(explain('Connection refused')).toMatch(/internet/);
     expect(explain('Server returned 403 Forbidden')).toMatch(/stream key/);

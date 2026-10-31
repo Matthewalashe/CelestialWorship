@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { WebSocketServer } from 'ws';
 import { explain, ffmpegArgs, parseProgress, redact, validTargets } from './args.mjs';
 
-const VERSION = '0.2.0';
+const VERSION = '0.3.0';
 const PORT = 47650;
 const ORIGINS = new Set(['https://celestialworship.online', 'https://www.celestialworship.online', ...(process.env.CW_ALLOW_ORIGIN ? [process.env.CW_ALLOW_ORIGIN] : [])]);
 const FFMPEG = process.env.CW_FFMPEG || join(dirname(process.execPath), process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
@@ -85,7 +85,7 @@ server.on('connection', socket => {
     if (active) { send({ type: 'ended', ok: false, reason: 'Another stream is already running on this computer.' }); return; }
     if (!validTargets(message.urls)) { send({ type: 'ended', ok: false, reason: 'One of the stream addresses is not valid.' }); return; }
 
-    const args = ffmpegArgs(message.urls, message.quality);
+    const args = ffmpegArgs(message.urls, message.quality, message.copy === true);
     const child = FFMPEG.endsWith('.mjs') ? spawn(process.execPath, [FFMPEG, ...args], { windowsHide: true }) : spawn(FFMPEG, args, { windowsHide: true });
     mine = active = child;
     let started = false;

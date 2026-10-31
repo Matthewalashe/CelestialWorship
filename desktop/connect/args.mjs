@@ -8,16 +8,18 @@ export const validTargets = urls => Array.isArray(urls) && urls.length > 0 && ur
  * The browser's recording comes in on stdin and goes out to every platform at once. The video is always encoded here,
  * because the platforms need a key frame every two seconds, which a browser's recording does not promise.
  */
-export function ffmpegArgs(urls, quality = '720p') {
+export function ffmpegArgs(urls, quality = '720p', copy = false) {
   // Anything but the exact word means the ordinary picture: this comes in from outside
   const rate = quality === '1080p' ? ['6000k', '6000k', '12000k'] : ['3000k', '3000k', '6000k'];
   const outputs = urls.map(u => `[f=flv:onfail=ignore:flvflags=no_duration_filesize]${u}`).join('|');
   return [
     '-hide_banner', '-loglevel', 'warning', '-stats',
-    '-fflags', '+genpts', '-thread_queue_size', '1024', '-f', 'webm', '-i', 'pipe:0',
+    // Do not sit waiting to study the input: every second here is a second late
+    '-fflags', '+genpts+nobuffer', '-probesize', '500000', '-analyzeduration', '500000', '-thread_queue_size', '1024', '-f', 'webm', '-i', 'pipe:0',
     '-map', '0:v:0', '-map', '0:a:0',
-    '-c:v', 'libx264', '-preset', 'superfast', '-tune', 'zerolatency', '-pix_fmt', 'yuv420p', '-r', '30', '-g', '60', '-keyint_min', '60',
-    '-b:v', rate[0], '-maxrate', rate[1], '-bufsize', rate[2],
+    // Already H.264 from the browser, with key frames every two seconds: pass it on untouched
+    ...(copy ? ['-c:v', 'copy'] : ['-c:v', 'libx264', '-preset', 'superfast', '-tune', 'zerolatency', '-pix_fmt', 'yuv420p', '-r', '30', '-g', '60', '-keyint_min', '60',
+      '-b:v', rate[0], '-maxrate', rate[1], '-bufsize', rate[2]]),
     '-c:a', 'aac', '-b:a', '160k', '-ar', '44100', '-af', 'aresample=async=1',
     '-flags', '+global_header', '-f', 'tee', outputs,
   ];
@@ -35,7 +37,8 @@ export function parseProgress(line) {
   if (!m) return null;
   const kbps = line.match(/bitrate=\s*([\d.]+)kbits\/s/);
   const speed = line.match(/speed=\s*([\d.]+)x/);
-  return { frames: Number(m[1]), fps: Number(m[2]), kbps: kbps ? Number(kbps[1]) : null, speed: speed ? Number(speed[1]) : null };
+  const time = line.match(/time=(\d+):(\d+):(\d+(?:\.\d+)?)/);
+  return { frames: Number(m[1]), fps: Number(m[2]), kbps: kbps ? Number(kbps[1]) : null, speed: speed ? Number(speed[1]) : null, seconds: time ? Number(time[1]) * 3600 + Number(time[2]) * 60 + Number(time[3]) : null };
 }
 
 /** A plain sentence for what went wrong, or null if the line is not a problem */
