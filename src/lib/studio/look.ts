@@ -17,11 +17,27 @@ export const TRANSITIONS: { id: DisplayTransition; name: string }[] = [
   { id: 'fade', name: 'Fade' }, { id: 'slide', name: 'Slide' }, { id: 'zoom', name: 'Zoom' }, { id: 'cut', name: 'Cut' },
 ];
 
+/** Pictures ready for everyone to use; a church can add its own as well */
+export const DEFAULT_BACKGROUNDS: { name: string; url: string }[] = [
+  { name: 'Blue sky', url: '/backgrounds/clouds-blue.jpg' }, { name: 'Dawn', url: '/backgrounds/clouds-dawn.jpg' },
+  { name: 'Night clouds', url: '/backgrounds/clouds-night.jpg' }, { name: 'Light on blue', url: '/backgrounds/light-royal.jpg' },
+  { name: 'Light on purple', url: '/backgrounds/light-purple.jpg' }, { name: 'Stars', url: '/backgrounds/stars.jpg' },
+  { name: 'Candlelight', url: '/backgrounds/candlelight.jpg' }, { name: 'Stained glass', url: '/backgrounds/stained-glass.jpg' },
+  { name: 'White cloth', url: '/backgrounds/white-cloth.jpg' },
+];
+
 const KEY = 'cw-display-look';
 const DEFAULTS: LookSettings = { hymn: { color: '#000000', dim: 0.45 }, verse: { color: '#000000', dim: 0.45 }, transition: 'fade', seconds: 0.5 };
 
 export function loadLook(): LookSettings {
-  try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) || '{}') }; } catch { return DEFAULTS; }
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+    return {
+      hymn: { ...DEFAULTS.hymn, ...saved?.hymn }, verse: { ...DEFAULTS.verse, ...saved?.verse },
+      transition: TRANSITIONS.some(t => t.id === saved?.transition) ? saved.transition : DEFAULTS.transition,
+      seconds: Number.isFinite(saved?.seconds) ? saved.seconds : DEFAULTS.seconds,
+    };
+  } catch { return DEFAULTS; }
 }
 
 export function useLook() {

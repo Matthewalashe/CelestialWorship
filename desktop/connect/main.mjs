@@ -3,17 +3,28 @@
 //
 // It only listens on this computer, and only answers the CelestialWorship website.
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { WebSocketServer } from 'ws';
 import { explain, ffmpegArgs, parseProgress, redact, validTargets } from './args.mjs';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const PORT = 47650;
 const ORIGINS = new Set(['https://celestialworship.online', 'https://www.celestialworship.online', ...(process.env.CW_ALLOW_ORIGIN ? [process.env.CW_ALLOW_ORIGIN] : [])]);
 const FFMPEG = process.env.CW_FFMPEG || join(dirname(process.execPath), process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
 
-const say = text => console.log(`  ${text}`);
+// Installed, it has no window, so what it says also goes to a small log that a helper can ask for. Keys never reach this.
+const LOG_DIR = join(process.env.LOCALAPPDATA || dirname(process.execPath), 'CelestialWorshipConnect');
+const LOG = join(LOG_DIR, 'connect.log');
+try {
+  mkdirSync(LOG_DIR, { recursive: true });
+  if (existsSync(LOG) && statSync(LOG).size > 1024 * 1024) writeFileSync(LOG, '');
+} catch {}
+process.stdout.on('error', () => {});
+process.stderr.on('error', () => {});
+const toLog = text => { try { appendFileSync(LOG, `${new Date().toISOString()} ${text}\n`); } catch {} };
+const say = text => { toLog(text); try { console.log(`  ${text}`); } catch {} };
+const MAX_LINE = 16 * 1024;
 
 console.log('\n  CelestialWorship Connect\n  ------------------------');
 if (!process.env.CW_FFMPEG && !existsSync(FFMPEG)) {
@@ -36,7 +47,8 @@ server.on('listening', () => {
 
 server.on('error', e => {
   say(e.code === 'EADDRINUSE' ? 'Connect is already running. You can close this window.' : 'Connect could not start. Please restart your computer and try again.');
-  setTimeout(() => process.exit(1), 15_000);
+  // Opened a second time with no one looking, it simply steps aside
+  setTimeout(() => process.exit(e.code === 'EADDRINUSE' ? 0 : 1), process.stdout.isTTY ? 15_000 : 500);
 });
 
 let active = null;
@@ -46,6 +58,7 @@ server.on('connection', socket => {
   send({ type: 'hello', version: VERSION });
   let mine = null;
   let lastProblem = '';
+  let waiting = false;
 
   const stop = () => {
     if (!mine) return;
@@ -58,9 +71,10 @@ server.on('connection', socket => {
 
   socket.on('message', (data, isBinary) => {
     if (isBinary) {
-      if (mine && !mine.stdin.write(data)) {
+      if (mine && !mine.stdin.write(data) && !waiting) {
+        waiting = true;
         socket._socket.pause();
-        mine.stdin.once('drain', () => socket._socket.resume());
+        mine.stdin.once('drain', () => { waiting = false; socket._socket.resume(); });
       }
       return;
     }
@@ -83,7 +97,7 @@ server.on('connection', socket => {
       tail += chunk.toString();
       // Progress lines end with a carriage return, messages with a new line
       const lines = tail.split(/[\r\n]+/);
-      tail = lines.pop() ?? '';
+      tail = (lines.pop() ?? '').slice(-MAX_LINE);
       for (const line of lines) {
         const progress = parseProgress(line);
         if (progress) {
@@ -93,7 +107,7 @@ server.on('connection', socket => {
         }
         const problem = explain(line);
         if (problem && problem !== lastProblem) { lastProblem = problem; say(problem); send({ type: 'problem', message: problem }); }
-        else if (line.trim()) console.error(`  ${redact(line).slice(0, 200)}`);
+        else if (line.trim()) { toLog(redact(line).slice(0, 200)); try { console.error(`  ${redact(line).slice(0, 200)}`); } catch {} }
       }
     });
 
@@ -110,4 +124,4 @@ server.on('connection', socket => {
   socket.on('error', () => {});
 });
 
-process.on('uncaughtException', e => console.error(`  ${redact(String(e?.message ?? e)).slice(0, 200)}`));
+process.on('uncaughtException', e => toLog(redact(String(e?.message ?? e)).slice(0, 200)));

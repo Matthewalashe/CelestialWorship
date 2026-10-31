@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Camera, ImagePlus } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
 import { setProfileImage } from '../lib/media';
+import { cropImage } from './ImageCropper';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
 import { tr } from '../i18n';
@@ -25,9 +26,11 @@ export function ProfileMedia() {
   const change = async (kind: 'avatar' | 'banner', file?: File) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) { showToast(tr('Choose a photo')); return; }
+    const cropped = await cropImage(file, kind === 'avatar' ? { aspect: 1, round: true } : { aspect: 3 });
+    if (!cropped) return;
     setBusy(kind);
     try {
-      const url = await setProfileImage(kind, file, kind === 'avatar' ? profile.avatarUrl : profile.bannerUrl);
+      const url = await setProfileImage(kind, cropped, kind === 'avatar' ? profile.avatarUrl : profile.bannerUrl);
       await save(kind === 'avatar' ? { avatarUrl: url } : { bannerUrl: url });
       showToast(kind === 'avatar' ? tr('Photo updated') : tr('Banner updated'));
     } catch (e) {

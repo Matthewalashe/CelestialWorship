@@ -1,6 +1,6 @@
 // What CelestialWorship Connect asks FFmpeg to do, and how it reads the answers. Kept apart so it can be tested.
 
-const SAFE_URL = /^rtmps?:\/\/[^\s|[\]]+$/;
+const SAFE_URL = /^rtmps?:\/\/[^\s|[\]]+$/i;
 
 export const validTargets = urls => Array.isArray(urls) && urls.length > 0 && urls.length <= 8 && urls.every(u => typeof u === 'string' && SAFE_URL.test(u));
 

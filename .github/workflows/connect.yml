@@ -58,10 +58,28 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path out/* -DestinationPath CelestialWorshipConnect-windows.zip
 
+      - name: Build the installer
+        shell: bash
+        env:
+          CONNECT_VERSION: '0.2.0'
+        run: |
+          cp -r out out-installed
+          node desktop/connect/windowless.mjs out-installed/CelestialWorshipConnect.exe
+          choco install innosetup -y --no-progress
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" desktop/connect/installer.iss
+
+      - name: Test the installer by installing it
+        shell: bash
+        run: |
+          cp desktop/connect/install_test.mjs build/install_test.mjs
+          node build/install_test.mjs "$PWD/installer/CelestialWorshipConnect-Setup.exe"
+
       - uses: actions/upload-artifact@v4
         with:
           name: CelestialWorshipConnect-windows
-          path: CelestialWorshipConnect-windows.zip
+          path: |
+            CelestialWorshipConnect-windows.zip
+            installer/CelestialWorshipConnect-Setup.exe
           retention-days: 30
 
       - name: Publish
@@ -69,4 +87,4 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" CelestialWorshipConnect-windows.zip --title "CelestialWorship Connect ${GITHUB_REF_NAME#connect-v}" --notes "Windows helper for the Live Studio. See README.txt inside." --latest=false
+        run: gh release create "$GITHUB_REF_NAME" CelestialWorshipConnect-windows.zip installer/CelestialWorshipConnect-Setup.exe --title "CelestialWorship Connect ${GITHUB_REF_NAME#connect-v}" --notes "Windows helper for the Live Studio. See README.txt inside." --latest=false

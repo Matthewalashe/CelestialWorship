@@ -12,8 +12,9 @@ export function layoutRects(layout: StudioLayout, count: number, W: number, H: n
     const w = Math.round(W * 0.26), h = Math.round(w * 9 / 16), gap = Math.round(W * 0.02);
     return [full, ...Array.from({ length: count - 1 }, (_, i) => ({ x: W - w - gap, y: H - (h + gap) * (i + 1), w, h }))];
   }
-  if (layout === 'split' && count === 2) return [{ x: 0, y: 0, w: W / 2, h: H }, { x: W / 2, y: 0, w: W / 2, h: H }];
-  const cols = Math.ceil(Math.sqrt(count));
+  // A tall picture stacks people one above the other
+  if (layout === 'split' && count === 2) return H > W ? [{ x: 0, y: 0, w: W, h: H / 2 }, { x: 0, y: H / 2, w: W, h: H / 2 }] : [{ x: 0, y: 0, w: W / 2, h: H }, { x: W / 2, y: 0, w: W / 2, h: H }];
+  const cols = H > W ? Math.ceil(count / Math.ceil(Math.sqrt(count))) : Math.ceil(Math.sqrt(count));
   const rows = Math.ceil(count / cols);
   const w = W / cols, h = H / rows;
   return Array.from({ length: count }, (_, i) => {
@@ -30,6 +31,17 @@ export function coverCrop(srcW: number, srcH: number, box: Rect): Rect {
   const scale = Math.max(box.w / srcW, box.h / srcH);
   const w = box.w / scale, h = box.h / scale;
   return { x: (srcW - w) / 2, y: (srcH - h) / 2, w, h };
+}
+
+/** How a picture or camera is framed: zoomed in by `zoom`, and where the spare part goes (0 to 1 across and down) */
+export interface CropView { zoom: number; x: number; y: number }
+export const WHOLE_VIEW: CropView = { zoom: 1, x: 0.5, y: 0.5 };
+
+/** The part of a source to keep for a shape, framed as chosen */
+export function cropRect(srcW: number, srcH: number, aspect: number, view: CropView): Rect {
+  const fit = srcW / srcH > aspect ? { w: srcH * aspect, h: srcH } : { w: srcW, h: srcW / aspect };
+  const w = fit.w / view.zoom, h = fit.h / view.zoom;
+  return { x: (srcW - w) * view.x, y: (srcH - h) * view.y, w, h };
 }
 
 /** Lines of text that fit a width, keeping the author's line breaks */

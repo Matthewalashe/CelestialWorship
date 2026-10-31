@@ -520,7 +520,7 @@
 "Appareils actifs par jour"
 ],
 "Analytics": [
-"Ìtúpalẹ̀ ìlò",
+"Ìṣirò",
 "Statistiques"
 ],
 "App version": [
@@ -1484,11 +1484,11 @@
 "Pour apparaître dans l’Église en ligne, votre paroisse ou ministère doit avoir une page."
 ],
 "Top left": [
-"Òkè apá òsì",
+"Òkè òsì",
 "En haut à gauche"
 ],
 "Top right": [
-"Òkè apá ọ̀tún",
+"Òkè ọ̀tún",
 "En haut à droite"
 ],
 "Turn the phone sideways, keep it plugged in, and rest it somewhere steady.": [
@@ -1834,5 +1834,629 @@
 "Peace": [
 "Àlàáfíà",
 "Paix"
+],
+"Crop your picture": [
+"Gé àwòrán rẹ",
+"Recadrer votre image"
+],
+"Crop your logo": [
+"Gé àmì rẹ",
+"Recadrer votre logo"
+],
+"As it is": [
+"Bí ó ṣe rí",
+"Tel quel"
+],
+"Wide": [
+"Fífẹ̀",
+"Large"
+],
+"Square": [
+"Oníhà mẹ́rin",
+"Carré"
+],
+"Tall": [
+"Gíga",
+"Vertical"
+],
+"Shape": [
+"Ìrísí",
+"Forme"
+],
+"Drag the picture to choose what shows.": [
+"Fa àwòrán náà láti yan ohun tí yóò hàn.",
+"Faites glisser l’image pour choisir ce qui s’affiche."
+],
+"Use this": [
+"Lo èyí",
+"Utiliser"
+],
+"Frame {name}": [
+"Ṣàtúnṣe àwòrán {name}",
+"Cadrer {name}"
+],
+"Frame": [
+"Ṣàtúnṣe àwòrán",
+"Cadrer"
+],
+"Watch the main screen as you move these. This matters most for a tall picture, to keep the speaker in view.": [
+"Máa wo ojú ẹ̀rọ ńlá bí o ṣe ń gbé ìwọ̀nyí. Ó ṣe pàtàkì jù fún àwòrán gíga, kí olùsọ̀rọ̀ lè máa hàn.",
+"Regardez l’écran principal en les déplaçant. C’est surtout utile pour une image verticale, afin de garder l’orateur dans le cadre."
+],
+"Left and right": [
+"Òsì àti ọ̀tún",
+"Gauche et droite"
+],
+"Up and down": [
+"Òkè àti ìsàlẹ̀",
+"Haut et bas"
+],
+"Reset": [
+"Dá padà",
+"Réinitialiser"
+],
+"Done": [
+"Ó ti parí",
+"Terminé"
+],
+"Add a logo": [
+"Fi àmì kún un",
+"Ajouter un logo"
+],
+"Logo": [
+"Àmì",
+"Logo"
+],
+"Where it sits": [
+"Ibi tí ó wà",
+"Emplacement"
+],
+"Bottom right": [
+"Ìsàlẹ̀ ọ̀tún",
+"En bas à droite"
+],
+"Bottom left": [
+"Ìsàlẹ̀ òsì",
+"En bas à gauche"
+],
+"PNG, JPG, SVG or a moving GIF. For a 3D logo, export it from your design program as a GIF or a short WebM or MP4 video.": [
+"PNG, JPG, SVG tàbí GIF tí ń gbé. Fún àmì 3D, gbé e jáde láti inú ètò àwòrán rẹ gẹ́gẹ́ bí GIF tàbí fídíò WebM tàbí MP4 kúkúrú.",
+"PNG, JPG, SVG ou GIF animé. Pour un logo 3D, exportez-le depuis votre logiciel en GIF ou en courte vidéo WebM ou MP4."
+],
+"Take the logo off the screen": [
+"Yọ àmì kúrò lójú ẹ̀rọ",
+"Retirer le logo de l’écran"
+],
+"Our small mark stays at the top left beside your logo.": [
+"Àmì wa kékeré yóò wà ní òkè òsì lẹ́gbẹ̀ẹ́ àmì rẹ.",
+"Notre petite marque reste en haut à gauche, à côté de votre logo."
+],
+"Use this logo": [
+"Lo àmì yìí",
+"Utiliser ce logo"
+],
+"Delete this logo?": [
+"Ṣé kí a pa àmì yìí rẹ́?",
+"Supprimer ce logo ?"
+],
+"That logo could not be shown": [
+"A kò lè fi àmì náà hàn",
+"Ce logo n’a pas pu être affiché"
+],
+"Pictures ready for you to use. To add your own, go to Media.": [
+"Àwọn àwòrán tí ó ti ṣetán fún ọ. Láti fi tìrẹ kún un, lọ sí Media.",
+"Des images prêtes à l’emploi. Pour ajouter les vôtres, allez dans Médias."
+],
+"No picture behind the cameras": [
+"Kò sí àwòrán lẹ́yìn àwọn kámẹ́rà",
+"Pas d’image derrière les caméras"
+],
+"Behind the cameras": [
+"Lẹ́yìn àwọn kámẹ́rà",
+"Derrière les caméras"
+],
+"Our pictures, ready to use": [
+"Àwọn àwòrán wa, tí ó ti ṣetán",
+"Nos images, prêtes à l’emploi"
+],
+"Blue sky": [
+"Ojú ọ̀run búlù",
+"Ciel bleu"
+],
+"Dawn": [
+"Àfẹ̀mọ́júmọ́",
+"Aube"
+],
+"Night clouds": [
+"Àwọsánmà alẹ́",
+"Nuages de nuit"
+],
+"Light on blue": [
+"Ìmọ́lẹ̀ lórí búlù",
+"Lumière sur bleu"
+],
+"Light on purple": [
+"Ìmọ́lẹ̀ lórí àlùkò",
+"Lumière sur violet"
+],
+"Stars": [
+"Àwọn ìràwọ̀",
+"Étoiles"
+],
+"Candlelight": [
+"Ìmọ́lẹ̀ àbẹ́là",
+"Lueur des bougies"
+],
+"Stained glass": [
+"Díńgí aláwọ̀",
+"Vitrail"
+],
+"White cloth": [
+"Aṣọ funfun",
+"Tissu blanc"
+],
+"Record this service": [
+"Ṣe àkọsílẹ̀ fídíò ìsìn yìí",
+"Enregistrer ce culte"
+],
+"The recording is exactly what the main screen shows, with its sound. Keep this window open until you stop.": [
+"Ohun tí ojú ẹ̀rọ ńlá ń fi hàn gan-an ni a ó gbà sílẹ̀, pẹ̀lú ohùn rẹ̀. Má ṣe ti fèrèsé yìí títí tí o fi dá a dúró.",
+"L’enregistrement montre exactement l’écran principal, avec le son. Gardez cette fenêtre ouverte jusqu’à l’arrêt."
+],
+"Choose a file, and save as it records (best)": [
+"Yan fáìlì, kí o sì máa fi pamọ́ bí ó ṣe ń gbà á (ó dára jù)",
+"Choisir un fichier et enregistrer au fur et à mesure (recommandé)"
+],
+"Keep it here, and save when I stop": [
+"Fi í sí ibí, kí n fi pamọ́ nígbà tí mo bá dá a dúró",
+"Le garder ici et l’enregistrer à l’arrêt"
+],
+"Saving as it records is safer: a long service stays safe even if the computer has trouble.": [
+"Fífi pamọ́ bí ó ṣe ń gbà á ni ó láàbò jù: ìsìn gígùn yóò wà ní àìléwu bí kọ̀ǹpútà tilẹ̀ ní ìṣòro.",
+"Enregistrer au fur et à mesure est plus sûr : un long culte reste protégé même si l’ordinateur a un problème."
+],
+"Your recording": [
+"Àkọsílẹ̀ rẹ",
+"Votre enregistrement"
+],
+"Discard this recording?": [
+"Ṣé kí a jù àkọsílẹ̀ yìí nù?",
+"Abandonner cet enregistrement ?"
+],
+"It has not been saved, and it cannot be brought back.": [
+"A kò tíì fi í pamọ́, a kò sì lè rí i padà.",
+"Il n’a pas été enregistré et ne pourra pas être récupéré."
+],
+"Discard": [
+"Jù ú nù",
+"Abandonner"
+],
+"Length": [
+"Gígùn",
+"Durée"
+],
+"Size": [
+"Ìwọ̀n",
+"Taille"
+],
+"File": [
+"Fáìlì",
+"Fichier"
+],
+"It has been saved in the file you chose.": [
+"A ti fi í pamọ́ sínú fáìlì tí o yàn.",
+"Il a été enregistré dans le fichier choisi."
+],
+"Download the recording": [
+"Gba àkọsílẹ̀ náà sílẹ̀",
+"Télécharger l’enregistrement"
+],
+"A picture of the screen": [
+"Àwòrán ojú ẹ̀rọ",
+"Une image de l’écran"
+],
+"Download the picture": [
+"Gba àwòrán náà sílẹ̀",
+"Télécharger l’image"
+],
+"Take a picture": [
+"Ya àwòrán",
+"Prendre une image"
+],
+"Your stream": [
+"Ìgbéjáde rẹ",
+"Votre direct"
+],
+"Reconnecting…": [
+"Ó ń tún so pọ̀…",
+"Reconnexion…"
+],
+"Not measured for this kind of stream": [
+"A kì í wọ̀n ọ́n fún irú ìgbéjáde yìí",
+"Non mesuré pour ce type de direct"
+],
+"Struggling: your internet cannot keep up": [
+"Ó ń ṣòro: ìntánẹ́ẹ̀tì rẹ kò lè tẹ̀ lé e",
+"En difficulté : votre internet ne suit pas"
+],
+"Good": [
+"Ó dára",
+"Bon"
+],
+"Live for": [
+"Àkókò lórí afẹ́fẹ́",
+"En direct depuis"
+],
+"Health": [
+"Ipò",
+"État"
+],
+"Pictures per second": [
+"Àwòrán ní ìṣẹ́jú-àáyá",
+"Images par seconde"
+],
+"Speed going out": [
+"Ìyára tí ń jáde",
+"Débit sortant"
+],
+"Going to": [
+"Ó ń lọ sí",
+"Diffusé vers"
+],
+"Went to": [
+"Ó lọ sí",
+"Diffusé vers"
+],
+"People watching on YouTube, Facebook and other platforms are counted in those platforms’ own studios.": [
+"Àwọn tí ń wò lórí YouTube, Facebook àti àwọn míì ni a ń kà nínú ilé-iṣẹ́ àwọn pèpéle náà.",
+"Les spectateurs de YouTube, Facebook et autres sont comptés dans les studios de ces plateformes."
+],
+"Your broadcast has ended": [
+"Ìgbéjáde rẹ ti parí",
+"Votre diffusion est terminée"
+],
+"Most watching on the app": [
+"Iye tí ó pọ̀ jù tí ń wò lórí áàpù",
+"Maximum de spectateurs sur l’application"
+],
+"Reactions": [
+"Àwọn ìdáhùn",
+"Réactions"
+],
+"Connection drops": [
+"Ìgbà tí ìsopọ̀ já",
+"Coupures de connexion"
+],
+"Upgrade to see viewers, reactions and your past broadcasts.": [
+"Gbé ètò rẹ sókè láti rí àwọn òǹwòran, ìdáhùn àti àwọn ìgbéjáde rẹ àtẹ̀yìnwá.",
+"Passez à l’offre supérieure pour voir les spectateurs, les réactions et vos anciennes diffusions."
+],
+"Your broadcasts will be listed here after you go live.": [
+"A ó to àwọn ìgbéjáde rẹ síbí lẹ́yìn tí o bá ti lọ sórí afẹ́fẹ́.",
+"Vos diffusions seront listées ici après votre passage en direct."
+],
+"Broadcasts": [
+"Àwọn ìgbéjáde",
+"Diffusions"
+],
+"Time live": [
+"Àkókò lórí afẹ́fẹ́",
+"Temps en direct"
+],
+"Date": [
+"Ọjọ́",
+"Date"
+],
+"Service": [
+"Ìsìn",
+"Culte"
+],
+"Watching": [
+"Òǹwòran",
+"Spectateurs"
+],
+"Counts are for people on the app, and this list is kept on this computer.": [
+"Iye yìí jẹ́ ti àwọn tí ó wà lórí áàpù, a sì ń pa àkójọ yìí mọ́ sórí kọ̀ǹpútà yìí.",
+"Ces chiffres concernent l’application, et cette liste reste sur cet ordinateur."
+],
+"Options": [
+"Àwọn àṣàyàn",
+"Options"
+],
+"On-screen text": [
+"Ọ̀rọ̀ lójú ẹ̀rọ",
+"Texte à l’écran"
+],
+"Backgrounds": [
+"Àwọn ẹ̀yìn",
+"Arrière-plans"
+],
+"Media": [
+"Media",
+"Médias"
+],
+"Pause": [
+"Dá dúró díẹ̀",
+"Pause"
+],
+"Resume": [
+"Tẹ̀síwájú",
+"Reprendre"
+],
+"Shape of the picture": [
+"Ìrísí àwòrán",
+"Forme de l’image"
+],
+"Wide (YouTube, Facebook, X)": [
+"Fífẹ̀ (YouTube, Facebook, X)",
+"Large (YouTube, Facebook, X)"
+],
+"Tall (TikTok, Instagram)": [
+"Gíga (TikTok, Instagram)",
+"Vertical (TikTok, Instagram)"
+],
+"The shape can be changed when nothing is going out.": [
+"A lè yí ìrísí padà nígbà tí kò sí ohun tí ń jáde.",
+"La forme peut être changée quand rien n’est diffusé."
+],
+"Upgrade for live captions and a transcript.": [
+"Gbé ètò rẹ sókè fún àkọlé tààrà àti àkọsílẹ̀ ọ̀rọ̀.",
+"Passez à l’offre supérieure pour les sous-titres en direct et la transcription."
+],
+"Download the transcript": [
+"Gba àkọsílẹ̀ ọ̀rọ̀ sílẹ̀",
+"Télécharger la transcription"
+],
+"We will be right back": [
+"A ó padà dé láìpẹ́",
+"Nous revenons tout de suite"
+],
+"RECONNECTING": [
+"Ó Ń TÚN SO PỌ̀",
+"RECONNEXION"
+],
+"PAUSED": [
+"Ó DÚRÓ DÍẸ̀",
+"EN PAUSE"
+],
+"RECORDING": [
+"Ó Ń GBÀ SÍLẸ̀",
+"ENREGISTREMENT"
+],
+"End the broadcast?": [
+"Ṣé kí a parí ìgbéjáde náà?",
+"Terminer la diffusion ?"
+],
+"You have been live for {time}. Everyone watching will be disconnected.": [
+"O ti wà lórí afẹ́fẹ́ fún {time}. Ìsopọ̀ gbogbo àwọn tí ń wò yóò já.",
+"Vous êtes en direct depuis {time}. Tous les spectateurs seront déconnectés."
+],
+"End the broadcast": [
+"Parí ìgbéjáde náà",
+"Terminer la diffusion"
+],
+"Come back on air?": [
+"Ṣé kí o padà sórí afẹ́fẹ́?",
+"Revenir à l’antenne ?"
+],
+"The cameras and sound return at once.": [
+"Àwọn kámẹ́rà àti ohùn yóò padà lẹ́sẹ̀kẹsẹ̀.",
+"Les caméras et le son reviennent aussitôt."
+],
+"Viewers stay connected and see “We will be right back”, with no sound. Any recording pauses too.": [
+"Àwọn òǹwòran yóò wà ní ìsopọ̀, wọn yóò sì rí “A ó padà dé láìpẹ́”, láìsí ohùn. Àkọsílẹ̀ èyíkéyìí yóò dúró pẹ̀lú.",
+"Les spectateurs restent connectés et voient « Nous revenons tout de suite », sans son. Tout enregistrement se met aussi en pause."
+],
+"The recording pauses until you resume.": [
+"Àkọsílẹ̀ yóò dúró títí tí o fi tẹ̀síwájú.",
+"L’enregistrement est en pause jusqu’à la reprise."
+],
+"Pause the broadcast?": [
+"Ṣé kí ìgbéjáde dúró díẹ̀?",
+"Mettre la diffusion en pause ?"
+],
+"Pause the recording?": [
+"Ṣé kí àkọsílẹ̀ dúró díẹ̀?",
+"Mettre l’enregistrement en pause ?"
+],
+"Stop recording?": [
+"Ṣé kí a dá àkọsílẹ̀ dúró?",
+"Arrêter l’enregistrement ?"
+],
+"You will be able to save it next.": [
+"O lè fi í pamọ́ lẹ́yìn èyí.",
+"Vous pourrez l’enregistrer ensuite."
+],
+"{name} has stopped. Check that it is still plugged in.": [
+"{name} ti dúró. Wò ó bóyá ó ṣì wà ní ìsopọ̀.",
+"{name} s’est arrêté. Vérifiez qu’il est toujours branché."
+],
+"Remove {name}?": [
+"Ṣé kí a yọ {name} kúrò?",
+"Retirer {name} ?"
+],
+"Its stream key will be forgotten on this computer.": [
+"Kọ́kọ́rọ́ ìgbéjáde rẹ̀ yóò kúrò lórí kọ̀ǹpútà yìí.",
+"Sa clé de diffusion sera oubliée sur cet ordinateur."
+],
+"The free plan streams for up to {hours} hours at a time. Upgrade to stream for longer.": [
+"Ètò ọ̀fẹ́ ń gbéjáde fún wákàtí {hours} ní ẹ̀ẹ̀kan. Gbé ètò rẹ sókè fún àkókò gígùn.",
+"L’offre gratuite diffuse jusqu’à {hours} heures d’affilée. Passez à l’offre supérieure pour diffuser plus longtemps."
+],
+"Ten minutes left on the free plan. Upgrade to stream for longer.": [
+"Ìṣẹ́jú mẹ́wàá ló kù lórí ètò ọ̀fẹ́. Gbé ètò rẹ sókè fún àkókò gígùn.",
+"Il reste dix minutes sur l’offre gratuite. Passez à l’offre supérieure pour diffuser plus longtemps."
+],
+"The free plan streams to {n} platforms at once. Upgrade to add more.": [
+"Ètò ọ̀fẹ́ ń gbéjáde sí pèpéle {n} ní ẹ̀ẹ̀kan. Gbé ètò rẹ sókè láti fi kún un.",
+"L’offre gratuite diffuse vers {n} plateformes à la fois. Passez à l’offre supérieure pour en ajouter."
+],
+"Streaming to {n} platforms at once": [
+"Ìgbéjáde sí pèpéle {n} ní ẹ̀ẹ̀kan",
+"Diffusion vers {n} plateformes à la fois"
+],
+"You need at least {mbps} Mbps of upload speed, and about {gb} GB of data each hour. If your internet is slower, every stream will suffer. Test it at fast.com first (press “Show more info”).": [
+"O nílò ó kéré tán {mbps} Mbps ìyára ìfiránṣẹ́, àti nǹkan bí {gb} GB dátà ní wákàtí kọ̀ọ̀kan. Bí ìntánẹ́ẹ̀tì rẹ bá lọ́ra jù bẹ́ẹ̀ lọ, gbogbo ìgbéjáde ni yóò bàjẹ́. Kọ́kọ́ dán an wò ní fast.com (tẹ “Show more info”).",
+"Il vous faut au moins {mbps} Mbps en envoi et environ {gb} Go de données par heure. Si votre internet est plus lent, toutes les diffusions en souffriront. Testez d’abord sur fast.com (cliquez sur « Show more info »)."
+],
+"{n} platforms need at least {mbps} Mbps of upload speed.": [
+"Pèpéle {n} nílò ó kéré tán {mbps} Mbps ìyára ìfiránṣẹ́.",
+"{n} plateformes demandent au moins {mbps} Mbps en envoi."
+],
+"Nothing is on the screen": [
+"Kò sí nǹkan lójú ẹ̀rọ",
+"Rien n’est à l’écran"
+],
+"People would see an empty picture. Go live anyway?": [
+"Àwọn ènìyàn yóò rí àwòrán òfo. Ṣé kí o lọ sórí afẹ́fẹ́ síbẹ̀?",
+"Les gens verraient une image vide. Passer en direct quand même ?"
+],
+"Go live anyway": [
+"Lọ sórí afẹ́fẹ́ síbẹ̀",
+"Passer en direct quand même"
+],
+"There is no sound": [
+"Kò sí ohùn",
+"Il n’y a pas de son"
+],
+"No microphone is on, so people would hear nothing. Go live anyway?": [
+"Kò sí gbohùngbohùn tí ó ṣí, àwọn ènìyàn kò ní gbọ́ nǹkan. Ṣé kí o lọ sórí afẹ́fẹ́ síbẹ̀?",
+"Aucun micro n’est actif, les gens n’entendraient rien. Passer en direct quand même ?"
+],
+"The connection dropped. Trying again…": [
+"Ìsopọ̀ já. A ń gbìyànjú lẹ́ẹ̀kan sí i…",
+"La connexion a été coupée. Nouvelle tentative…"
+],
+"You are back on air": [
+"O ti padà sórí afẹ́fẹ́",
+"Vous êtes de retour à l’antenne"
+],
+"A name for this account, e.g. Ketu Parish page": [
+"Orúkọ fún àkáǹtì yìí, bí ojú-ìwé Ìjọ Ketu",
+"Un nom pour ce compte, ex. page de la paroisse de Ketu"
+],
+"You can add several accounts of the same platform, such as two Facebook pages. Each needs its own stream key.": [
+"O lè fi àkáǹtì púpọ̀ ti pèpéle kan náà kún un, bí ojú-ìwé Facebook méjì. Ọ̀kọ̀ọ̀kan nílò kọ́kọ́rọ́ ìgbéjáde tirẹ̀.",
+"Vous pouvez ajouter plusieurs comptes d’une même plateforme, comme deux pages Facebook. Chacun a besoin de sa propre clé de diffusion."
+],
+"TikTok and Instagram show a tall picture, YouTube and Facebook a wide one, and one shape goes to all. Choose the one that matters most today.": [
+"TikTok àti Instagram ń fi àwòrán gíga hàn, YouTube àti Facebook ń fi fífẹ̀ hàn, ìrísí kan ṣoṣo ló sì ń lọ sí gbogbo wọn. Yan èyí tí ó ṣe pàtàkì jù lónìí.",
+"TikTok et Instagram affichent une image verticale, YouTube et Facebook une image large, et une seule forme part vers tous. Choisissez celle qui compte le plus aujourd’hui."
+],
+"TikTok and Instagram show a tall picture. A wide one appears small, with bars.": [
+"TikTok àti Instagram ń fi àwòrán gíga hàn. Èyí tí ó fẹ̀ yóò kéré, pẹ̀lú àwọn ìlà.",
+"TikTok et Instagram affichent une image verticale. Une image large apparaît petite, avec des bandes."
+],
+"Make the picture tall": [
+"Mú àwòrán ga",
+"Rendre l’image verticale"
+],
+"Your picture is tall. On YouTube, Facebook and X it will have bars at the sides.": [
+"Àwòrán rẹ ga. Lórí YouTube, Facebook àti X yóò ní àwọn ìlà ní ẹ̀gbẹ́.",
+"Votre image est verticale. Sur YouTube, Facebook et X, elle aura des bandes sur les côtés."
+],
+"Make the picture wide": [
+"Mú àwòrán fẹ̀",
+"Rendre l’image large"
+],
+"Install our small free helper, once": [
+"Fi olùrànlọ́wọ́ wa kékeré ọ̀fẹ́ sórí kọ̀ǹpútà, lẹ́ẹ̀kan",
+"Installez une fois notre petit assistant gratuit"
+],
+"It starts by itself with your computer after that, and you will not see it. If Windows warns you, choose “More info”, then “Run anyway”.": [
+"Lẹ́yìn náà yóò máa bẹ̀rẹ̀ fúnra rẹ̀ pẹ̀lú kọ̀ǹpútà rẹ, o kò sì ní rí i. Bí Windows bá kìlọ̀ fún ọ, yan “More info”, lẹ́yìn náà “Run anyway”.",
+"Il démarre ensuite tout seul avec votre ordinateur, sans s’afficher. Si Windows vous avertit, choisissez « Informations complémentaires », puis « Exécuter quand même »."
+],
+"Install for Windows": [
+"Fi sórí Windows",
+"Installer pour Windows"
+],
+"Already installed? Open it": [
+"Ó ti wà lórí rẹ̀? Ṣí i",
+"Déjà installé ? Ouvrez-le"
+],
+"Instagram": [
+"Instagram",
+"Instagram"
+],
+"TikTok": [
+"TikTok",
+"TikTok"
+],
+"Needs a professional account. On instagram.com on a computer, press Create, then Live, and copy the server address and stream key. They change every time. When your picture appears there, press Go Live on Instagram too.": [
+"Ó nílò àkáǹtì oníṣẹ́. Lórí instagram.com lórí kọ̀ǹpútà, tẹ Create, lẹ́yìn náà Live, kí o sì da àdírẹ́sì sáfà àti kọ́kọ́rọ́ ìgbéjáde kọ. Wọ́n ń yí padà ní gbogbo ìgbà. Nígbà tí àwòrán rẹ bá hàn níbẹ̀, tẹ Go Live lórí Instagram pẹ̀lú.",
+"Nécessite un compte professionnel. Sur instagram.com depuis un ordinateur, cliquez sur Créer, puis Live, et copiez l’adresse du serveur et la clé de diffusion. Elles changent à chaque fois. Quand votre image y apparaît, cliquez aussi sur Passer en direct sur Instagram."
+],
+"TikTok only gives some accounts a stream key. In the TikTok app, or LIVE Producer if you see it, copy the server address and stream key. If you see no key, your account does not have this yet.": [
+"TikTok ń fún àwọn àkáǹtì kan nìkan ní kọ́kọ́rọ́ ìgbéjáde. Nínú áàpù TikTok, tàbí LIVE Producer bí o bá rí i, da àdírẹ́sì sáfà àti kọ́kọ́rọ́ kọ. Bí o kò bá rí kọ́kọ́rọ́, àkáǹtì rẹ kò tíì ní èyí.",
+"TikTok ne donne une clé de diffusion qu’à certains comptes. Dans l’application TikTok, ou LIVE Producer si vous le voyez, copiez l’adresse du serveur et la clé. Sans clé, votre compte n’a pas encore cette option."
+],
+"In X Media Studio, open Producer, then Sources, and create an RTMP source. Copy its address and key, then start the broadcast there. Your account must be allowed to go live on X.": [
+"Nínú X Media Studio, ṣí Producer, lẹ́yìn náà Sources, kí o sì ṣẹ̀dá orísun RTMP. Da àdírẹ́sì àti kọ́kọ́rọ́ rẹ̀ kọ, lẹ́yìn náà bẹ̀rẹ̀ ìgbéjáde níbẹ̀. Àkáǹtì rẹ gbọ́dọ̀ ní àṣẹ láti lọ sórí afẹ́fẹ́ lórí X.",
+"Dans X Media Studio, ouvrez Producer, puis Sources, et créez une source RTMP. Copiez son adresse et sa clé, puis lancez la diffusion là-bas. Votre compte doit être autorisé à passer en direct sur X."
+],
+"This computer is falling behind. Close other programs, or stream to fewer platforms.": [
+"Kọ̀ǹpútà yìí ń dẹ́yìn. Ti àwọn ètò míì, tàbí gbéjáde sí pèpéle díẹ̀.",
+"Cet ordinateur prend du retard. Fermez d’autres programmes ou diffusez vers moins de plateformes."
+],
+"Your internet cannot keep up. Stream to fewer platforms, or move closer to the router.": [
+"Ìntánẹ́ẹ̀tì rẹ kò lè tẹ̀ lé e. Gbéjáde sí pèpéle díẹ̀, tàbí sún mọ́ ẹ̀rọ Wi-Fi.",
+"Votre internet ne suit pas. Diffusez vers moins de plateformes ou rapprochez-vous du routeur."
+],
+"The stream stopped moving. Check your internet connection.": [
+"Ìgbéjáde ti dúró. Ṣàyẹ̀wò ìntánẹ́ẹ̀tì rẹ.",
+"Le direct s’est figé. Vérifiez votre connexion internet."
+],
+"The browser stopped recording the picture.": [
+"Aṣàwákiri ti dá gbígba àwòrán dúró.",
+"Le navigateur a cessé d’enregistrer l’image."
+],
+"The recording could not be written to that file. Keep this window open and save it when you stop.": [
+"A kò lè kọ àkọsílẹ̀ sínú fáìlì náà. Má ṣe ti fèrèsé yìí, kí o sì fi í pamọ́ nígbà tí o bá dá a dúró.",
+"L’enregistrement n’a pas pu être écrit dans ce fichier. Gardez cette fenêtre ouverte et enregistrez-le à l’arrêt."
+],
+"This recording is getting very large for the computer’s memory. Stop and save it soon.": [
+"Àkọsílẹ̀ yìí ti ń tóbi jù fún ìrántí kọ̀ǹpútà. Dá a dúró kí o sì fi í pamọ́ láìpẹ́.",
+"Cet enregistrement devient très lourd pour la mémoire de l’ordinateur. Arrêtez-le et enregistrez-le bientôt."
+],
+"The recording stopped because of a problem in the browser.": [
+"Àkọsílẹ̀ dúró nítorí ìṣòro nínú aṣàwákiri.",
+"L’enregistrement s’est arrêté à cause d’un problème du navigateur."
+],
+"Add pictures or videos": [
+"Fi àwòrán tàbí fídíò kún un",
+"Ajouter des images ou des vidéos"
+],
+"Your flyers, offering details and announcement videos will wait here.": [
+"Àwọn ìwé ìpolówó, àlàyé ọrẹ àti fídíò ìkéde rẹ yóò dúró síbí.",
+"Vos affiches, détails d’offrande et vidéos d’annonces vous attendront ici."
+],
+"Live Studio: more than two platforms at once": [
+"Live Studio: ju pèpéle méjì lọ ní ẹ̀ẹ̀kan",
+"Live Studio : plus de deux plateformes à la fois"
+],
+"Live Studio: stream for more than three hours": [
+"Live Studio: gbéjáde ju wákàtí mẹ́ta lọ",
+"Live Studio : diffuser plus de trois heures"
+],
+"Live Studio: your own logo in place of our mark": [
+"Live Studio: àmì tìrẹ dípò àmì wa",
+"Live Studio : votre logo à la place de notre marque"
+],
+"Live Studio: live captions and a transcript": [
+"Live Studio: àkọlé tààrà àti àkọsílẹ̀ ọ̀rọ̀",
+"Live Studio : sous-titres en direct et transcription"
+],
+"Live Studio: receive gifts during the service": [
+"Live Studio: gba ọrẹ nígbà ìsìn",
+"Live Studio : recevoir des dons pendant le culte"
+],
+"Live Studio: viewers, reactions and past broadcasts": [
+"Live Studio: òǹwòran, ìdáhùn àti ìgbéjáde àtẹ̀yìnwá",
+"Live Studio : spectateurs, réactions et anciennes diffusions"
+],
+"ON STAGE": [
+"LÓRÍ ÌTÀGÉ",
+"EN SCÈNE"
 ]
 }

@@ -9,7 +9,7 @@ It is free, and your video goes straight from your computer to the platforms.
    Windows may say "Windows protected your PC". Click "More info", then "Run anyway".
 3. Leave the window open and go to the Live Studio in Chrome or Edge. Press Go live.
 
-You need about 3 Mbps of upload speed for each platform you stream to. It uses about 1.35 GB of data per hour, per platform.
+You need about 3.5 Mbps of upload speed for each platform you stream to. It uses about 1.35 GB of data per hour, per platform.
 
 Your stream keys stay on your computer. Connect only listens on this computer, and only answers the CelestialWorship website.
 

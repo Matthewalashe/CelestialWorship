@@ -21,6 +21,11 @@ describe('CelestialWorship Connect', () => {
     expect(args).toContain('aac');
   });
 
+  it('reads the odd progress lines FFmpeg can print', () => {
+    expect(parseProgress('frame=    0 fps=0.0 q=0.0 size=N/A time=N/A bitrate=N/A speed=N/A')).toEqual({ frames: 0, fps: 0, kbps: null, speed: null });
+    expect(parseProgress('')).toBeNull();
+  });
+
   it('never repeats a stream key', () => {
     expect(redact('[flv] Could not open rtmps://live-api-s.facebook.com:443/rtmp/SECRET-KEY: I/O error')).not.toContain('SECRET-KEY');
   });

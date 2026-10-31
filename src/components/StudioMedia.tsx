@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ImagePlus, Trash2, Film } from 'lucide-react';
 import { addMedia, listMedia, removeMedia, type MediaItem } from '../lib/studio/media';
+import { cropImage } from './ImageCropper';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
 import { tr } from '../i18n';
 
-/** A church's logos, pictures and videos: add once, then one tap to show */
+/** A church's pictures and videos: add once, then one tap to show */
 export function MediaGrid({ onPick, actions }: { onPick?: (item: MediaItem) => void; actions?: (item: MediaItem) => React.ReactNode }) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [busy, setBusy] = useState(false);
@@ -18,7 +19,9 @@ export function MediaGrid({ onPick, actions }: { onPick?: (item: MediaItem) => v
     setBusy(true);
     try {
       for (const f of Array.from(files)) {
-        const item = await addMedia(f);
+        const cropped = await cropImage(f);
+        if (!cropped) continue;
+        const item = await addMedia(cropped);
         if (item.local) showToast(tr('Kept on this computer until you close the page'));
       }
       load();
@@ -30,9 +33,9 @@ export function MediaGrid({ onPick, actions }: { onPick?: (item: MediaItem) => v
       <input ref={input} type="file" accept="image/*,video/mp4,video/webm" multiple className="hidden" onChange={e => add(e.target.files)} />
       <button onClick={() => input.current?.click()} disabled={busy} className="w-full py-2.5 rounded-xl border border-dashed text-sm font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-50"
               style={{ borderColor: 'var(--color-border)', color: 'var(--color-accent-brand)' }}>
-        <ImagePlus size={16} aria-hidden /> {busy ? tr('Adding…') : tr('Add logos, pictures or videos')}
+        <ImagePlus size={16} aria-hidden /> {busy ? tr('Adding…') : tr('Add pictures or videos')}
       </button>
-      {items.length === 0 && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Your logo, flyers, offering details and announcement videos will wait here.')}</p>}
+      {items.length === 0 && <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Your flyers, offering details and announcement videos will wait here.')}</p>}
       <ul className="grid grid-cols-2 gap-2">
         {items.map(item => (
           <li key={item.id} className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg-card)' }}>

@@ -16,6 +16,12 @@ export const PARTNER_FEATURES = [
   'Livestream to YouTube, Facebook and more from one place',
   'Live alerts to your members and followers',
   'Scheduled broadcasts on the church-wide Live page',
+  'Live Studio: more than two platforms at once',
+  'Live Studio: stream for more than three hours',
+  'Live Studio: your own logo in place of our mark',
+  'Live Studio: live captions and a transcript',
+  'Live Studio: receive gifts during the service',
+  'Live Studio: viewers, reactions and past broadcasts',
 ];
 
 export interface Plan { id: string; name: string; amount_minor: number; currency: string; interval: 'monthly' | 'annually' }

@@ -6,7 +6,7 @@ import { supabase } from '../../supabase';
  * Stream keys stay on this computer; they pass through our server only at the moment of going live.
  */
 
-export type StreamPlatform = 'youtube' | 'facebook' | 'custom';
+export type StreamPlatform = 'youtube' | 'facebook' | 'instagram' | 'tiktok' | 'x' | 'custom';
 
 export interface StreamTarget {
   id: string;
@@ -18,20 +18,46 @@ export interface StreamTarget {
   watchUrl: string;
 }
 
-export const PLATFORM_HELP: Record<StreamPlatform, { label: string; server: string; steps: string; link?: string }> = {
+export const PLATFORM_HELP: Record<StreamPlatform, { label: string; server: string; steps: string; link?: string; tall?: boolean }> = {
   youtube: { label: 'YouTube', server: 'rtmp://a.rtmp.youtube.com/live2', steps: 'YouTube Studio, then Go Live, then Stream. Copy the “Stream key”.', link: 'https://studio.youtube.com/channel/UC/livestreaming' },
   facebook: { label: 'Facebook', server: 'rtmps://live-api-s.facebook.com:443/rtmp', steps: 'Facebook Live Producer, then “Streaming software”. Copy the “Stream key”.', link: 'https://www.facebook.com/live/producer' },
-  custom: { label: 'Other (Instagram, TikTok, your website…)', server: '', steps: 'Paste the server address and stream key the platform gives you.' },
+  instagram: { label: 'Instagram', server: '', tall: true, steps: 'Needs a professional account. On instagram.com on a computer, press Create, then Live, and copy the server address and stream key. They change every time. When your picture appears there, press Go Live on Instagram too.', link: 'https://www.instagram.com/' },
+  tiktok: { label: 'TikTok', server: '', tall: true, steps: 'TikTok only gives some accounts a stream key. In the TikTok app, or LIVE Producer if you see it, copy the server address and stream key. If you see no key, your account does not have this yet.', link: 'https://www.tiktok.com/live/producer' },
+  x: { label: 'X', server: '', steps: 'In X Media Studio, open Producer, then Sources, and create an RTMP source. Copy its address and key, then start the broadcast there. Your account must be allowed to go live on X.', link: 'https://studio.x.com/producer' },
+  custom: { label: 'Other', server: '', steps: 'Paste the server address and stream key the platform gives you.' },
 };
 
 const KEY = 'cw-studio-targets';
 
 export function loadTargets(): StreamTarget[] {
-  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+  try {
+    const list: unknown = JSON.parse(localStorage.getItem(KEY) || '[]');
+    if (!Array.isArray(list)) return [];
+    return list.filter((t): t is StreamTarget => !!t && typeof t.id === 'string' && typeof t.server === 'string' && typeof t.key === 'string' && t.platform in PLATFORM_HELP)
+      .map(t => ({ ...t, name: t.name || PLATFORM_HELP[t.platform].label, watchUrl: t.watchUrl || '' }));
+  } catch { return []; }
 }
 
 export function saveTargets(targets: StreamTarget[]) {
   try { localStorage.setItem(KEY, JSON.stringify(targets)); } catch {}
+}
+
+/**
+ * Makes sense of what was pasted. People often paste the whole address into the key box, or add stray spaces.
+ * Null if it cannot be a stream address: spaces and the marks | [ ] would break the sending command.
+ */
+export function parseTarget(serverText: string, keyText: string): { server: string; key: string } | null {
+  let server = serverText.trim().replace(/\/+$/, '');
+  let key = keyText.trim().replace(/^\/+/, '');
+  if (/^rtmps?:\/\//i.test(key)) {
+    const cut = key.replace(/\/+$/, '').lastIndexOf('/');
+    const whole = key.replace(/\/+$/, '');
+    if (cut <= 'rtmps://'.length) return null;
+    server = whole.slice(0, cut);
+    key = whole.slice(cut + 1);
+  }
+  if (!key || !/^rtmps?:\/\/[^\s|[\]]+$/i.test(server) || /[\s|[\]]/.test(key)) return null;
+  return { server, key };
 }
 
 /** The address the relay sends to. The key is the last part. */

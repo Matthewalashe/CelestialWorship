@@ -1,3 +1,4 @@
+import { cropImage } from '../components/ImageCropper';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, Plus, BookOpen, Link2, FileText, Headphones, Video, ExternalLink } from 'lucide-react';
@@ -102,7 +103,7 @@ function AddItem({ onClose, onDone, initialKind }: { onClose: () => void; onDone
               </button>
               <button onClick={() => coverInput.current?.click()} className="px-3 rounded-xl text-sm border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}>{cover ? tr('Cover ✓') : tr('Cover')}</button>
               <input ref={fileInput} type="file" accept="application/pdf,application/epub+zip" className="hidden" onChange={e => setFile(e.target.files?.[0])} />
-              <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={e => setCover(e.target.files?.[0])} />
+              <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void cropImage(f, { aspect: 2 / 3 }).then(c => { if (c) setCover(c); }); }} />
             </div>
           )}
           {!file && (

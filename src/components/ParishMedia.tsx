@@ -3,6 +3,7 @@ import { ImagePlus, Link2, Trash2, Play } from 'lucide-react';
 import { listParishMedia, addParishMediaFile, addParishVideoLink, deleteParishMedia, setParishImage, type ParishMedia } from '../lib/media';
 import { embedUrl } from '../lib/live';
 import { Sheet, confirmDialog } from './Dialog';
+import { cropImage } from './ImageCropper';
 import { showToast } from './Toast';
 import { errorMessage } from '../lib/backend';
 import type { Parish } from '../hooks/useParishes';
@@ -85,8 +86,8 @@ export function ParishMediaManager({ parish, onSaved }: { parish: Parish & { log
           <button disabled={busy} onClick={() => logoInput.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Change logo')}</button>
           <button disabled={busy} onClick={() => coverInput.current?.click()} className="px-4 py-2 rounded-xl text-sm font-semibold border" style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-primary)' }}>{tr('Change cover')}</button>
         </div>
-        <input ref={logoInput} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) run(async () => { await setParishImage(parish.id, 'logo', f, parish.logo_url); }, 'Logo updated'); }} />
-        <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) run(async () => { await setParishImage(parish.id, 'cover', f, parish.cover_url); }, 'Cover updated'); }} />
+        <input ref={logoInput} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void cropImage(f, { aspect: 1 }).then(c => { if (c) void run(async () => { await setParishImage(parish.id, 'logo', c, parish.logo_url); }, 'Logo updated'); }); }} />
+        <input ref={coverInput} type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void cropImage(f, { aspect: 8 / 3 }).then(c => { if (c) void run(async () => { await setParishImage(parish.id, 'cover', c, parish.cover_url); }, 'Cover updated'); }); }} />
       </div>
 
       <div className="rounded-2xl border p-4 space-y-3" style={card}>
@@ -96,7 +97,7 @@ export function ParishMediaManager({ parish, onSaved }: { parish: Parish & { log
           <ImagePlus size={18} /> {busy ? tr('Uploading…') : tr('Choose photos or a short video')}
         </button>
         <input ref={fileInput} type="file" accept="image/*,video/mp4,video/webm" multiple className="hidden"
-               onChange={e => { const files = [...(e.target.files ?? [])]; e.target.value = ''; if (files.length) run(async () => { for (const f of files.slice(0, 10)) await addParishMediaFile(parish.id, f, caption); setCaption(''); }, files.length > 1 ? `${Math.min(files.length, 10)} added` : 'Added'); }} />
+               onChange={e => { const files = [...(e.target.files ?? [])]; e.target.value = ''; if (files.length) run(async () => { for (const f of files.slice(0, 10)) { const c = await cropImage(f); if (c) await addParishMediaFile(parish.id, c, caption); } setCaption(''); }, files.length > 1 ? `${Math.min(files.length, 10)} added` : 'Added'); }} />
         <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{tr('Photos are made smaller on your phone before they upload. Videos up to 50 MB (MP4); for longer videos add a link instead.')}</p>
         <div className="flex gap-2">
           <input value={link} onChange={e => setLink(e.target.value)} inputMode="url" placeholder={tr('YouTube or Facebook video link')} className={field} style={fieldStyle} />

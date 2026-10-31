@@ -1,4 +1,4 @@
-import { BACKGROUND_COLOURS, TRANSITIONS, type LookBackground, type LookSettings } from '../lib/studio/look';
+import { BACKGROUND_COLOURS, DEFAULT_BACKGROUNDS, TRANSITIONS, type LookBackground, type LookSettings } from '../lib/studio/look';
 import { MediaGrid } from './StudioMedia';
 import { tr } from '../i18n';
 
@@ -28,6 +28,21 @@ function BackgroundChoice({ title, value, onChange }: { title: string; value: Lo
   );
 }
 
+/** The pictures that come with the app. `actions` says what each can be used for. */
+export function DefaultBackgrounds({ actions }: { actions: (url: string) => React.ReactNode }) {
+  return (
+    <ul className="grid grid-cols-2 gap-2">
+      {DEFAULT_BACKGROUNDS.map(b => (
+        <li key={b.url} className="rounded-xl border overflow-hidden border-[var(--color-border)]">
+          <img src={b.url} alt={tr(b.name)} loading="lazy" className="w-full aspect-video object-cover" />
+          <p className="px-2 pt-1 text-[11px] truncate">{tr(b.name)}</p>
+          <div className="flex flex-wrap gap-1 px-2 pb-2 pt-1">{actions(b.url)}</div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** The operator's choices for how words look on the screen */
 export function DisplayLookPanel({ look, update }: { look: LookSettings; update: (c: Partial<LookSettings>) => void }) {
   return (
@@ -48,6 +63,15 @@ export function DisplayLookPanel({ look, update }: { look: LookSettings; update:
           </label>
         )}
       </fieldset>
+      <div className="border-t pt-3 border-[var(--color-border)]">
+        <p className="text-xs font-semibold mb-2">{tr('Our pictures, ready to use')}</p>
+        <DefaultBackgrounds actions={url => (
+          <>
+            <button onClick={() => update({ hymn: { ...look.hymn, url, kind: 'image' } })} className="text-[11px] font-semibold px-2 py-1 rounded-lg border border-[var(--color-border)]">{tr('For hymns')}</button>
+            <button onClick={() => update({ verse: { ...look.verse, url, kind: 'image' } })} className="text-[11px] font-semibold px-2 py-1 rounded-lg border border-[var(--color-border)]">{tr('For the Bible')}</button>
+          </>
+        )} />
+      </div>
       <div className="border-t pt-3 border-[var(--color-border)]">
         <p className="text-xs font-semibold mb-2">{tr('Your own pictures and videos')}</p>
         <MediaGrid actions={item => (
