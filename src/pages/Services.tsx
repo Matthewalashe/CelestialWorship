@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ChevronRight, Baby, Cake, Heart, Droplets, Sparkles, HandHeart, Footprints, Hammer, Home, Flame, Flower2, Moon, CalendarCheck, Clock } from 'lucide-react';
-import { CelestialIcon } from '../components/CelestialIcon';
+import { ChurchEmblem } from '../components/ChurchEmblem';
 import { useServices } from '../hooks/useServices';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { iconSquare } from '../components/Tiles';
@@ -45,7 +45,7 @@ const ICONS: Record<string, React.ReactNode> = {
   new_moon: <Moon size={20} />, baby_christening: <Baby size={20} />, birthday: <Cake size={20} />, holy_matrimony: <Heart size={20} />,
   baptism: <Droplets size={20} />, prophets_prophetess_dreamers: <Sparkles size={20} />, pregnant_women: <HandHeart size={20} />,
   washing_feet_communion: <Footprints size={20} />, laying_foundation_stone: <Hammer size={20} />, private_house_dedication: <Home size={20} />,
-  church_dedication: <CelestialIcon size={20} />, christian_wake: <Flame size={20} />, burial: <Flower2 size={20} />, remembrance: <Flower2 size={20} />,
+  church_dedication: <ChurchEmblem size={20} />, christian_wake: <Flame size={20} />, burial: <Flower2 size={20} />, remembrance: <Flower2 size={20} />,
   end_of_year: <CalendarCheck size={20} />, hourly_prayer: <Clock size={20} />,
 };
 

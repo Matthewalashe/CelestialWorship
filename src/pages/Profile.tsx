@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Clock, LogOut, Gavel, Save, Settings, LayoutDashboard } from 'lucide-react';
-import { CelestialIcon } from '../components/CelestialIcon';
+import { ChurchEmblem } from '../components/ChurchEmblem';
 import { useProfile, MEMBER_TYPES, CHURCH_TITLE_SUGGESTIONS, MINISTRY_SUGGESTIONS, type MemberType, type MemberProfile } from '../hooks/useProfile';
 import { useAuth } from '../hooks/useAuth';
 import { useParishes } from '../hooks/useParishes';
@@ -206,7 +206,7 @@ export default function Profile() {
       <section className="rounded-2xl border p-4 space-y-2" style={card}>
         {profile.memberType === 'independent_shepherd' ? (
           <Link to="/directory?submit=1&kind=ministry" className="flex items-center gap-3 py-2" style={{ color: 'var(--color-text-primary)' }}>
-            <CelestialIcon size={18} style={{ color: 'var(--color-accent-brand)' }} />
+            <ChurchEmblem size={18} style={{ color: 'var(--color-accent-brand)' }} />
             <span className="flex-1">
               <span className="block font-semibold text-sm">{tr('Register your ministry')}</span>
               <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('A page for your articles, livestreams, prayer requests and giving')}</span>
@@ -214,7 +214,7 @@ export default function Profile() {
           </Link>
         ) : (
           <Link to="/directory?submit=1" className="flex items-center gap-3 py-2" style={{ color: 'var(--color-text-primary)' }}>
-            <CelestialIcon size={18} style={{ color: 'var(--color-accent-brand)' }} />
+            <ChurchEmblem size={18} style={{ color: 'var(--color-accent-brand)' }} />
             <span className="flex-1">
               <span className="block font-semibold text-sm">{tr('Register a parish')}</span>
               <span className="block text-xs" style={{ color: 'var(--color-text-muted)' }}>{tr('Add your church to the directory')}</span>

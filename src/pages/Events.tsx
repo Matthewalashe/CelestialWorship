@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Plus, MapPin, CalendarPlus, Clock } from 'lucide-react';
-import { CelestialIcon } from '../components/CelestialIcon';
+import { ChurchEmblem } from '../components/ChurchEmblem';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { useParishes } from '../hooks/useParishes';
@@ -288,7 +288,7 @@ export default function Events() {
               {open.ends_at && ` – ${new Date(open.ends_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}</p>
             {open.location && <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><MapPin size={15} /> {open.location}</p>}
             {(parishName(open.parish_id) || open.builtIn) && (
-              <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><CelestialIcon size={15} /> {open.builtIn ? tr('Observed by the whole Church') : parishName(open.parish_id)}</p>
+              <p className="text-sm mt-1 flex items-center gap-2" style={{ color: 'var(--color-text-secondary)' }}><ChurchEmblem size={15} /> {open.builtIn ? tr('Observed by the whole Church') : parishName(open.parish_id)}</p>
             )}
             {open.description && <p className="text-sm mt-4 whitespace-pre-line leading-relaxed" style={{ color: 'var(--color-text-primary)' }}>{tr(open.description)}</p>}
             {open.contact && <p className="text-sm mt-3" style={{ color: 'var(--color-text-secondary)' }}>{tr('Enquiries:')}{' '}{open.contact}</p>}

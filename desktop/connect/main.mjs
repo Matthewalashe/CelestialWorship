@@ -9,7 +9,7 @@ import { WebSocketServer } from 'ws';
 import { explain, ffmpegArgs, parseProgress, redact, validTargets } from './args.mjs';
 
 const VERSION = '0.3.0';
-const PORT = 47650;
+const PORT = Number(process.env.CW_PORT) || 47650;
 const ORIGINS = new Set(['https://celestialworship.online', 'https://www.celestialworship.online', ...(process.env.CW_ALLOW_ORIGIN ? [process.env.CW_ALLOW_ORIGIN] : [])]);
 const FFMPEG = process.env.CW_FFMPEG || join(dirname(process.execPath), process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg');
 

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Plus, MapPin, Phone, Mail, User as UserIcon, ChevronRight, List, Map as MapIcon, LocateFixed } from 'lucide-react';
-import { CelestialIcon } from '../components/CelestialIcon';
+import { ChurchEmblem } from '../components/ChurchEmblem';
 import { useParishes, useParishSubmission, continentOf, PARISH_LEVELS, type ParishSubmission, type Parish, type ParishLevel } from '../hooks/useParishes';
 import { useDraft } from '../hooks/useDraft';
 import { useProfile } from '../hooks/useProfile';
@@ -180,7 +180,7 @@ function ParishCard({ p, onClaim, away }: { p: Parish; onClaim: () => void; away
     return (
       <div className="rounded-2xl border p-4" style={card}>
         <Link to={`/directory/${p.id}`} className="flex items-start gap-3">
-          <CelestialIcon size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-brand)' }} />
+          <ChurchEmblem size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent-brand)' }} />
           <span className="flex-1 min-w-0">{body}</span>
           <ChevronRight size={16} className="shrink-0" style={{ color: 'var(--color-text-muted)' }} />
         </Link>
@@ -191,7 +191,7 @@ function ParishCard({ p, onClaim, away }: { p: Parish; onClaim: () => void; away
   return (
     <div className="rounded-2xl border p-4" style={card}>
       <div className="flex items-start gap-3">
-        <CelestialIcon size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
+        <ChurchEmblem size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--color-text-muted)' }} />
         <span className="flex-1 min-w-0">{body}{contact}</span>
       </div>
       {p.listing && (

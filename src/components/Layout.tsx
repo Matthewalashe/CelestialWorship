@@ -11,7 +11,7 @@ import {
   HandHeart, CalendarDays, MapPin, Menu, HandCoins, Radio, GraduationCap, User, Gavel, Download, MessagesSquare, LayoutDashboard, LibraryBig, Video,
   Baby, Calendar, Map as MapIcon, Landmark, Network, ScrollText, ChevronRight, PenLine,
 } from 'lucide-react';
-import { CelestialIcon } from './CelestialIcon';
+import { ChurchEmblem } from './ChurchEmblem';
 import logoUrl from '../assets/logo.png';
 import type { ReactNode } from 'react';
 import { Sheet } from './Dialog';
@@ -35,7 +35,7 @@ interface NavItem {
 /** What people come for: today, the service, devotion, hymns and the Bible (then the Menu) */
 const NavItems: NavItem[] = [
   { path: '/', label: 'nav.home', icon: <Home size={20} /> },
-  { path: '/services', label: 'nav.services', icon: <CelestialIcon size={20} /> },
+  { path: '/services', label: 'nav.services', icon: <ChurchEmblem size={20} /> },
   { path: '/devotion', label: 'nav.devotion', icon: <Bird size={20} /> },
   { path: '/hymns', label: 'nav.hymns', icon: <Music size={20} /> },
   { path: '/bible', label: 'nav.bible', icon: <BookOpen size={20} /> },
